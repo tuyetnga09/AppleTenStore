@@ -1,0 +1,136 @@
+CREATE database SmartPhone_Teen;
+USE SmartPhone_Teen;
+-- CREATE TABLE Capacity
+CREATE TABLE Capacity(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL
+);
+-- CREATE TABLE Color
+CREATE TABLE Color(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL, 
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+-- CREATE TABLE Manufacture
+CREATE TABLE Manufacture(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+-- CREATE TABLE Category
+CREATE TABLE Category(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+-- CREATE TABLE Battery
+CREATE TABLE Battery(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+-- CREATE TABLE Chip
+CREATE TABLE Chip(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+-- CREATE TABLE Ram
+CREATE TABLE Ram(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+
+-- CREATE TABLE Screen
+CREATE TABLE Screen(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+-- CREATE TABLE Size
+CREATE TABLE Size(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+Code NVARCHAR(10) NOT NULL,
+Name NVARCHAR(100) NOT NULL,
+DateCreate DATE NOT NULL,
+DateUpdate DATE NOT NULL,
+PersonCreate nvarchar(150) NOT NULL,
+PersonUpdate nvarchar(150) NOT NULL,
+Status INT NOT NULL
+);
+-- CREATE TABLE Product_Detail
+DROP TABLE Product_Detail;
+CREATE TABLE Product_Detail(
+    Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+    Code NVARCHAR(10) NOT NULL,
+    Name NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(250) NOT NULL,
+    Status INT NOT NULL,
+    DateCreate DATE NOT NULL,
+    DateUpdate DATE NOT NULL,
+    PersonCreate nvarchar(150) NOT NULL,
+    PersonUpdate nvarchar(150) NOT NULL,
+    ImportPrice FLOAT NOT NULL,
+    Price FLOAT NOT NULL,
+    IdCapacity NVARCHAR(50),
+    IdColor NVARCHAR(50),
+    IdManufacture NVARCHAR(50),
+    IdCategory NVARCHAR(50),
+    IdBattery NVARCHAR(50),
+    IdChip NVARCHAR(50),
+    IdRam NVARCHAR(50),
+    IdScreen NVARCHAR(50),
+    IdSize NVARCHAR(50),
+    FOREIGN KEY (IdCapacity) REFERENCES Capacity(Id),
+    FOREIGN KEY (IdColor) REFERENCES Color(Id),
+    FOREIGN KEY (IdManufacture) REFERENCES Manufacture(Id),
+    FOREIGN KEY (IdCategory) REFERENCES Category(Id),
+    FOREIGN KEY (IdBattery) REFERENCES Battery(Id),
+    FOREIGN KEY (IdChip) REFERENCES Chip(Id),
+    FOREIGN KEY (IdRam) REFERENCES Ram(Id),
+    FOREIGN KEY (IdScreen) REFERENCES Screen(Id),
+    FOREIGN KEY (IdSize) REFERENCES Size(Id)
+);
+
+
