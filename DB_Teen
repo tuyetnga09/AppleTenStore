@@ -132,5 +132,18 @@ CREATE TABLE Product_Detail(
     FOREIGN KEY (IdScreen) REFERENCES Screen(Id),
     FOREIGN KEY (IdSize) REFERENCES Size(Id)
 );
-
+-- CREATE TABLE Images 
+CREATE TABLE Images(
+ Id NVARCHAR(50) DEFAULT (UUID()) PRIMARY KEY,
+ NameImages NVARCHAR(100) NOT NULL,
+ LinkImages NVARCHAR(250) NOT NULL,
+ Discription NVARCHAR(250) NOT NULL,
+ DateCreate DATE NOT NULL,
+ DateUpdate DATE NOT NULL,
+ PersonCreate nvarchar(150) NOT NULL,
+ PersonUpdate nvarchar(150) NOT NULL,
+ Status INT NOT NULL, 
+ IdProductDetails NVARCHAR(50),
+  FOREIGN KEY (IdProductDetails) REFERENCES Product_Detail(Id)
+); 
 
