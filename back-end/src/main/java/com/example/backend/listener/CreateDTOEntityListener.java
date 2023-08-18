@@ -8,6 +8,6 @@ import java.util.UUID;
 public class CreateDTOEntityListener {
     @PrePersist
     private void onCreate(DuplicateAttribute entity){
-        entity.setId(UUID.randomUUID());
+        entity.setId(Integer.valueOf((UUID.randomUUID().toString())));
     }
 }

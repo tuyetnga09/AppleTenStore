@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class CategoryServiceImpl implements Iservice<Category> {
     @Autowired
@@ -19,17 +20,18 @@ public class CategoryServiceImpl implements Iservice<Category> {
     }
 
     @Override
-    public void insert(Category category) {
+    public Category insert(Category category) {
+        return categoryRepository.save(category);
+    }
 
+
+    @Override
+    public Category update(Category category, Integer id) {
+        return categoryRepository.save(category);
     }
 
     @Override
-    public void update(Category category, String id) {
-
-    }
-
-    @Override
-    public void delete(String id) {
-
+    public Category delete(String id) {
+        return categoryRepository.findById(id).get();
     }
 }

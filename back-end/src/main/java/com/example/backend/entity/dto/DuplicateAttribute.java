@@ -4,13 +4,13 @@ import com.example.backend.listener.CreateDTOEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.GenericGenerator;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,9 +18,10 @@ import java.util.UUID;
 @EntityListeners(CreateDTOEntityListener.class)
 public abstract class DuplicateAttribute extends Auto_properties implements Identify {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(length = 50, updatable = false)
-    private UUID id;
+    @Column(length = 10, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+
 
 }

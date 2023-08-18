@@ -1,16 +1,19 @@
 package com.example.backend.controller.product_controller.service;
 
+import com.example.backend.entity.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public interface Iservice<T> {
     Page<T> getAll(Pageable pageable);
 
-    void insert(T t);
+    Category insert(T t);
 
-    void update(T t,String id);
+    Category update(T t, Integer id);
 
-    void delete(String id);
+    Category delete(String id);
 }
