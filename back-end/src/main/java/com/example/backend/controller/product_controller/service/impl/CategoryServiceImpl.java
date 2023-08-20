@@ -16,22 +16,27 @@ public class CategoryServiceImpl implements Iservice<Category> {
 
     @Override
     public Page<Category> getAll(Pageable pageable) {
-        return categoryRepository.findAll(pageable);
+       return categoryRepository.findAll(pageable);
     }
 
     @Override
-    public Category insert(Category category) {
-        return categoryRepository.save(category);
-    }
-
-
-    @Override
-    public Category update(Category category, Integer id) {
-        return categoryRepository.save(category);
+    public void insert(Category category) {
+        categoryRepository.save(category);
     }
 
     @Override
-    public Category delete(String id) {
+    public void update(Category category, Integer id) {
+        categoryRepository.save(category);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        categoryRepository.deleteById(id);
+    }
+
+    public Category getOne(Integer id) {
         return categoryRepository.findById(id).get();
     }
+
+
 }

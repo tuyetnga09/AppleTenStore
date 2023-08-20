@@ -11,9 +11,9 @@ import java.util.UUID;
 public interface Iservice<T> {
     Page<T> getAll(Pageable pageable);
 
-    Category insert(T t);
+    void insert(T t);
 
-    Category update(T t, Integer id);
+    void update(T t, Integer id);
 
-    Category delete(String id);
+    void delete(Integer id);
 }

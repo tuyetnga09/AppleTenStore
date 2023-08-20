@@ -19,6 +19,6 @@ public class AuditingEntityListener {
     @PreUpdate
     private void onUpdate(Auto_properties entity) {
         entity.setDateUpdate(new Date());
-        entity.setPersonUpdate(null);
+//        entity.setPersonUpdate(null);
     }
 }
