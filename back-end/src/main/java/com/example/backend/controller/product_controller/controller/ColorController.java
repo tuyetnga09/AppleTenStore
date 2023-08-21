@@ -25,8 +25,8 @@ public class ColorController {
     private ColorServiceImpl colorService;
 
     @GetMapping("display")
-    public Page<Color> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,2);
+    public Page<Color> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page, 2);
         return colorService.getAll(pageable);
     }
 
@@ -36,14 +36,15 @@ public class ColorController {
     }
 
     @PutMapping("update/{id}")
-    public void update(@RequestBody Color color,@PathVariable("id") Integer id) {
+    public void update(@RequestBody Color color, @PathVariable("id") Integer id) {
         color.setId(id);
         colorService.update(color, id);
     }
 
     // hàm xử lý
     @DeleteMapping("delete")
-    public void delete(@RequestParam("id")Integer id) {
+    public void delete(@RequestParam("id") Integer id) {
         colorService.delete(id);
     }
+
 }
