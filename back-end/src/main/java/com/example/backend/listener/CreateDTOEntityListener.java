@@ -3,11 +3,10 @@ package com.example.backend.listener;
 import com.example.backend.entity.dto.DuplicateAttribute;
 import jakarta.persistence.PrePersist;
 
-import java.util.UUID;
 
 public class CreateDTOEntityListener {
     @PrePersist
     private void onCreate(DuplicateAttribute entity){
-        entity.setId(Integer.valueOf((UUID.randomUUID().toString())));
+        entity.setId(Integer.valueOf(String.valueOf((entity))));
     }
 }
