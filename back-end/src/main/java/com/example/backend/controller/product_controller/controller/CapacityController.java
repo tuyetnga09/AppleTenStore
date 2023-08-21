@@ -41,7 +41,7 @@ public class CapacityController {
         capacityService.update(capacity, id);
     }
 
-    //ham delete
+    //ham delete capacity
     @DeleteMapping("delete")
     public void delete(@RequestParam("id")Integer id) {
         capacityService.delete(id);
