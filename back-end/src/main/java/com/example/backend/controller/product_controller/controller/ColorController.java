@@ -41,6 +41,7 @@ public class ColorController {
         colorService.update(color, id);
     }
 
+    // hàm xử lý
     @DeleteMapping("delete")
     public void delete(@RequestParam("id")Integer id) {
         colorService.delete(id);
