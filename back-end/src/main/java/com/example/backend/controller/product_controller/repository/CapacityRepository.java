@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CapacityRepository extends ICapacityRepository {
-    Page<Capacity> findAll(Pageable pageable);
+    Page<Capacity> findAll(Pageable  pageable);
 }

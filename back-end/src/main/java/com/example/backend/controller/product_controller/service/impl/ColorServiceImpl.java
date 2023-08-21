@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ColorServiceImpl implements Iservice<Color> {
     @Autowired
-    private ColorRepository colorRepository;
+    private ColorRepository  colorRepository;
     @Override
     public Page<Color> getAll(Pageable pageable) {
         return colorRepository.findAll(pageable);

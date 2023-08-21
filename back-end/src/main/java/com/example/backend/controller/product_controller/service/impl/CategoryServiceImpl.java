@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoryServiceImpl implements Iservice<Category> {
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryRepository  categoryRepository;
 
     @Override
     public Page<Category> getAll(Pageable pageable) {

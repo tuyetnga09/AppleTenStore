@@ -9,7 +9,7 @@ import java.util.Date;
 public class AuditingEntityListener {
     @PrePersist
     private void onCreate(Auto_properties entity) {
-        entity.setDateCreate(new Date());
+        entity.setDateCreate(new Date()) ;
         entity.setDateUpdate(new Date());
         entity.setStatus(0);
         entity.setPersonCreate(null);
