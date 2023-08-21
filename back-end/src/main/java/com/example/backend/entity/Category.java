@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class Category extends DuplicateAttribute implements Identify {
-    private String code;
+    private String code ;
     private String name;
 
 }

@@ -1,5 +1,5 @@
 package com.example.backend.response;
 
-public class CategoryResponse {
+public class CategoryResponse  {
 
 }

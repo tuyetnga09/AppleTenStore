@@ -47,8 +47,8 @@ public class CategoryController {
         categoryService.update(category, id);
     }
 
-    @DeleteMapping("delete")
-    public void delete(@RequestParam("id")Integer id) {
+    @DeleteMapping("delete/{id}")
+    public void delete(@PathVariable("id") Integer id) {
         categoryService.delete(id);
     }
 

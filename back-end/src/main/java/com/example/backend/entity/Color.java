@@ -18,6 +18,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class Color  extends DuplicateAttribute implements Identify {
-    private String code;
+    private String code ;
     private String name;
 }

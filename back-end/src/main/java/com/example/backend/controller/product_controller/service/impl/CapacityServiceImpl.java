@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CapacityServiceImpl implements Iservice<Capacity> {
     @Autowired
-    private CapacityRepository capacityRepository;
+    private CapacityRepository  capacityRepository;
     @Override
     public Page<Capacity> getAll(Pageable pageable) {
         return capacityRepository.findAll(pageable);

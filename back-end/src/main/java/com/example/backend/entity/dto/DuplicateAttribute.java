@@ -13,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-@EntityListeners(CreateDTOEntityListener.class)
+//@EntityListeners(CreateDTOEntityListener.class)
 public abstract class DuplicateAttribute extends Auto_properties implements Identify {
     @Id
     @Column(length = 10, updatable = false)

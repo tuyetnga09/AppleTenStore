@@ -14,7 +14,7 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auto_properties {
     @Column(name = "person_create")
-    private String personCreate;
+    private String  personCreate;
     @Column(name = "person_update")
     private String personUpdate;
     @Column(name = "date_create")

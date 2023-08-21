@@ -1,4 +1,4 @@
 package com.example.backend.request;
 
-public interface CategoryRequest {
+public interface CategoryRequest  {
 }

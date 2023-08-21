@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ColorRepository extends IColorRepository {
-    Page<Color> findAll(Pageable pageable);
+    Page<Color> findAll(Pageable  pageable);
 }
