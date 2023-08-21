@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.CrossOrigin;
+=======
+>>>>>>> origin/main
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+<<<<<<< HEAD
 @CrossOrigin("*")
+=======
+>>>>>>> origin/main
 @RestController
 @RequestMapping("/color/")
 public class ColorController {
@@ -43,6 +49,10 @@ public class ColorController {
         colorService.update(color, id);
     }
 
+<<<<<<< HEAD
+=======
+    // hàm xử lý
+>>>>>>> origin/main
     @DeleteMapping("delete")
     public void delete(@RequestParam("id")Integer id) {
         colorService.delete(id);
