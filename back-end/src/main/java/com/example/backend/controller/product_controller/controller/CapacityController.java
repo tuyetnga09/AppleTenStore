@@ -35,6 +35,7 @@ public class CapacityController {
         capacityService.insert(capacity);
     }
 
+
     @PutMapping("update/{id}")
     public void update(@RequestBody Capacity capacity,@PathVariable("id") Integer id) {
         capacity.setId(id);
