@@ -36,7 +36,7 @@ public class ColorController {
     }
 
     @PutMapping("update/{id}")
-    public void update(@RequestBody Color color, @PathVariable("id") Integer id) {
+    public void update(@RequestBody Color color,@PathVariable("id") Integer id) {
         color.setId(id);
         colorService.update(color, id);
     }

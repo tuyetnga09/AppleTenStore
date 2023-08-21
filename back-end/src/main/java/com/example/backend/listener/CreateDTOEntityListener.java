@@ -7,6 +7,6 @@ import jakarta.persistence.PrePersist;
 public class CreateDTOEntityListener {
     @PrePersist
     private void onCreate(DuplicateAttribute entity){
-        entity.setId(Integer.valueOf(String.valueOf((entity)) )) ;
+        entity.setId(Integer.valueOf(String.valueOf((entity))));
     }
 }
