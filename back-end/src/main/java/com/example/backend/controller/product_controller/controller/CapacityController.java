@@ -41,8 +41,8 @@ public class CapacityController {
         capacityService.update(capacity, id);
     }
 
-    @DeleteMapping("delete/{id}")
-    public void delete(@PathVariable("id") Integer id) {
+    @DeleteMapping("delete")
+    public void delete(@RequestParam("id")Integer id) {
         capacityService.delete(id);
     }
 
