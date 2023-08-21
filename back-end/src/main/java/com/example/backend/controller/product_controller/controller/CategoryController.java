@@ -56,4 +56,5 @@ public class CategoryController {
     public List<Category> getCategory() {
         return categoryRepository.findAll();
     }
+    //test
 }
