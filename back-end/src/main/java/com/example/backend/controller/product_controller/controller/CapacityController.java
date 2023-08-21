@@ -1,9 +1,7 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.service.impl.CapacityServiceImpl;
-import com.example.backend.controller.product_controller.service.impl.CategoryServiceImpl;
 import com.example.backend.entity.Capacity;
-import com.example.backend.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
