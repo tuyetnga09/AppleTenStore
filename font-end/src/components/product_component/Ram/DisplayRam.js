@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import "../../../css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPencilAlt} from "@fortawesome/free-solid-svg-icons";
-import { FaSearch, FaPlus, FaFileExcel  } from 'react-icons/fa';
+import { FaSearch, FaPlus, FaFileExcel } from 'react-icons/fa';
+import { IoMdDownload } from 'react-icons/io';
+
 
 const DisplayRam = () => {
   const [ram, setRam] = useState([]);
@@ -78,16 +80,23 @@ const DisplayRam = () => {
               <button class="btn btn-outline-success" type="submit" style={{ marginLeft: '15px'}}>
                 <FaSearch className="search-icon" />
               </button>
-            </form>
-            <br />
 
-            <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px', marginBottom: '20px'}}>
+              <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px',  marginLeft: '15px'}}>
               <FaPlus className="add-icon" />
             </button>
 
-            <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px', marginBottom: '20px'}}>
+            <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
               <FaFileExcel className="excel-icon" />
             </button>
+
+            <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
+              <IoMdDownload className="download-icon" />
+            </button>
+
+            </form>
+            <br />
+
+            
 
             <div class="table-wrap">
               <table class="table">
@@ -127,6 +136,7 @@ const DisplayRam = () => {
                             <FontAwesomeIcon icon={faTimes} />
                           </span>
                         </button>
+
                         <button
                           type="button"
                           class="close"
@@ -137,6 +147,7 @@ const DisplayRam = () => {
                             <FontAwesomeIcon icon={faPencilAlt} style={{ marginRight: '15px' }}/>
                           </span>
                         </button>
+
                       </td>
                     </tr>
                   ))}
