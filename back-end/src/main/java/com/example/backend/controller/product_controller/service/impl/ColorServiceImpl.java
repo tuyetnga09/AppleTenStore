@@ -23,6 +23,7 @@ public class ColorServiceImpl implements Iservice<Color> {
 
     }
 
+
     @Override
     public void update(Color color, Integer id) {
         colorRepository.save(color);
