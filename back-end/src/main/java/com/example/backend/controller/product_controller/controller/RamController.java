@@ -45,7 +45,7 @@ public class RamController {
     }
 
     @DeleteMapping("delete/{id}")
-    public void delete(@PathVariable("id") Integer id) {
+    public void delete(@PathVariable("id")  Integer id) {
         ramService.delete(id);
     }
 }
