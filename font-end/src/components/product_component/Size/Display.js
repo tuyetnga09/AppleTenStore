@@ -3,7 +3,14 @@ import { readAll, deleteSize } from "../../../service/size.service";
 import { Link } from "react-router-dom";
 import "../../../css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClose,
+  faDownload,
+  faEdit,
+  faFileExcel,
+  faPlus,
+  faSearch,
+} from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
 import { Button } from "reactstrap";
 import Pagination from "../Size/Paging.js";
@@ -58,11 +65,46 @@ const Display = () => {
         </div>
         <div className="row">
           <div className="col-md-12">
-            <h3 className="h5 mb-4 text-center">
-              <Button color="success" tag={Link} to="/size/new">
-                Add
-              </Button>
-            </h3>
+            <form class="d-flex" role="search">
+              <input
+                class="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <button
+                class="btn btn-outline-success"
+                type="submit"
+                style={{ marginLeft: "15px" }}
+              >
+                <FontAwesomeIcon icon={faSearch} className="search-icon" />
+              </button>
+              <Link to="/size/new">
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  style={{ marginRight: "15px", marginLeft: "15px" }}
+                >
+                  <FontAwesomeIcon icon={faPlus} className="add-icon" />
+                </button>
+              </Link>
+              <button
+                type="button"
+                class="btn btn-outline-success"
+                style={{ marginRight: "15px" }}
+              >
+                <FontAwesomeIcon icon={faFileExcel} className="excel-icon" />
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline-success"
+                style={{ marginRight: "15px" }}
+              >
+                <FontAwesomeIcon icon={faDownload} className="download-icon" />
+              </button>
+            </form>
+            <br />
             <div className="table-wrap">
               <table className="table">
                 <thead className="thead-primary">
