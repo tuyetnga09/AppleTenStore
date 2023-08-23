@@ -6,39 +6,40 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose, faEdit } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
 import { Button } from "reactstrap";
-// import Pagination from "../Size/Paging.js";
+import Pagination from "../Size/Paging.js";
 
 const Display = () => {
   const [display, setDisplay] = useState([]);
 
-  // const [pagination, setPagination] = useState({
-  //   page: 0,
-  //   limit: 5,
-  //   totalRows: 1,
-  // });
+  const [pagination, setPagination] = useState({
+    page: 0,
+    limit: 5,
+    totalRows: 1,
+  });
 
-  // const [filters, setFilters] = useState({
-  //   page: 0,
-  // });
+  const [filters, setFilters] = useState({
+    page: 0,
+  });
 
   useEffect(() => {
-    const paramsString = queryString.stringify();
+    const paramsString = queryString.stringify(filters);
     readAll(paramsString)
       .then((response) => {
-        setDisplay(response.data);
-        // setPagination(response.page);
+        console.log(response.data);
+        setDisplay(response.data.content);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, []);
+  }, [filters]);
 
-  // function handlePageChange(newPage) {
-  //   console.log("New Page: " + newPage);
-  //   setFilters({
-  //     page: newPage,
-  //   });
-  // }
+  function handlePageChange(newPage) {
+    console.log("New Page: " + newPage);
+    setFilters({
+      page: newPage,
+    });
+  }
 
   async function remove(id) {
     deleteSize(id).then(() => {
@@ -124,7 +125,7 @@ const Display = () => {
             </div>
           </div>
         </div>
-        {/* <Pagination pagination={pagination} onPageChange={handlePageChange} /> */}
+        <Pagination pagination={pagination} onPageChange={handlePageChange} />
       </div>
     </section>
   );
