@@ -65,15 +65,15 @@ const Display = () => {
         </div>
         <div className="row">
           <div className="col-md-12">
-            <form class="d-flex" role="search">
+            <form className="d-flex" role="search">
               <input
-                class="form-control me-2"
+                className="form-control me-2"
                 type="search"
                 placeholder="Search"
                 aria-label="Search"
               />
               <button
-                class="btn btn-outline-success"
+                className="btn btn-outline-success"
                 type="submit"
                 style={{ marginLeft: "15px" }}
               >
@@ -82,7 +82,7 @@ const Display = () => {
               <Link to="/size/new">
                 <button
                   type="button"
-                  class="btn btn-outline-success"
+                  className="btn btn-outline-success"
                   style={{ marginRight: "15px", marginLeft: "15px" }}
                 >
                   <FontAwesomeIcon icon={faPlus} className="add-icon" />
@@ -90,7 +90,7 @@ const Display = () => {
               </Link>
               <button
                 type="button"
-                class="btn btn-outline-success"
+                className="btn btn-outline-success"
                 style={{ marginRight: "15px" }}
               >
                 <FontAwesomeIcon icon={faFileExcel} className="excel-icon" />
@@ -98,7 +98,7 @@ const Display = () => {
 
               <button
                 type="button"
-                class="btn btn-outline-success"
+                className="btn btn-outline-success"
                 style={{ marginRight: "15px" }}
               >
                 <FontAwesomeIcon icon={faDownload} className="download-icon" />

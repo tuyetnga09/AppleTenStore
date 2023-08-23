@@ -6,7 +6,7 @@
   display: inline-flex;
   position: relative;
 }
-.pagination li a.page-link {
+.pagination li button.page-link {
   color: #111;
   background: transparent;
   font-size: 16px;
@@ -28,17 +28,17 @@
   font-size: 23px;
   line-height: 31px;
 }
-.pagination li a.page-link:hover,
-.pagination li a.page-link:focus,
-.pagination li.active a.page-link:hover,
-.pagination li.active a.page-link {
+.pagination li button.page-link:hover,
+.pagination li button.page-link:focus,
+.pagination li.active button.page-link:hover,
+.pagination li.active button.page-link {
   color: #fff;
   background: transparent;
   line-height: 24px;
   border-color: #ccc;
   border-top-color: transparent;
 }
-.pagination li a.page-link:before {
+.pagination li button.page-link:before {
   content: "";
   background-color: #f27521;
   height: 100%;
@@ -52,10 +52,10 @@
   z-index: -1;
   transition: all 0.3s ease 0s;
 }
-.pagination li a.page-link:hover:before,
-.pagination li a.page-link:focus:before,
-.pagination li.active a.page-link:hover:before,
-.pagination li.active a.page-link:before {
+.pagination li button.page-link:hover:before,
+.pagination li button.page-link:focus:before,
+.pagination li.active button.page-link:hover:before,
+.pagination li.active button.page-link:before {
   opacity: 1;
   top: -4px;
 }
