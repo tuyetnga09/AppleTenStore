@@ -26,7 +26,7 @@ import java.util.List;
 public class ScreenController {
     @Autowired
     private ScreenServiceImpl screenService;
-
+//
     @GetMapping("display")
     public List<Screen> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 10);
