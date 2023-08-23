@@ -1,11 +1,15 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.controller.product_controller.repository.RamRepository;
 import com.example.backend.controller.product_controller.service.impl.RamServiceImpl;
 import com.example.backend.entity.Ram;
+import com.example.backend.entity.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +30,26 @@ public class RamController {
     @Autowired
     private RamServiceImpl ramService;
 
+    @Autowired
+    private RamRepository ramRepository;
+
+    @GetMapping("{id}")
+    public ResponseEntity<Ram> detail(@PathVariable("id") Integer id){
+        return new ResponseEntity<>(ramRepository.findById(id).orElse(null), HttpStatus.OK);
+    }
+
     @GetMapping("display")
-    public List<Ram> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, 10);
+    public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page, 5);
         Page<Ram> listRam = ramService.getAll(pageable);
-        return listRam.getContent();
+        return listRam;
+    }
+
+    @GetMapping("displayDelete")
+    public Page<Ram> viewAllDelete(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<Ram> listRam = ramService.getDelete(pageable);
+        return listRam;
     }
 
     @PostMapping("save")
@@ -44,8 +63,15 @@ public class RamController {
         ramService.insert(ram);
     }
 
-    @DeleteMapping("delete/{id}")
+    @PutMapping("delete/{id}")
     public void delete(@PathVariable("id")  Integer id) {
-        ramService.delete(id);
+        Ram ram = ramRepository.findById(id).orElse(null);
+        ramService.removeRam(ram);
+    }
+
+    @PutMapping("return/{id}")
+    public void returnDelete(@PathVariable("id")  Integer id) {
+        Ram ram = ramRepository.findById(id).orElse(null);
+        ramService.returnRam(ram);
     }
 }

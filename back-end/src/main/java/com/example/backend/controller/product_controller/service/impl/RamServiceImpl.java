@@ -22,6 +22,20 @@ public class RamServiceImpl implements Iservice<Ram> {
         return ramRepository.findAll(pageable);
     }
 
+    public Page<Ram> getDelete(Pageable pageable) {
+        return ramRepository.deleteRam(pageable);
+    }
+
+    public void removeRam(Ram ram){
+        ram.setStatus(1);
+        ramRepository.save(ram);
+    }
+
+    public void returnRam(Ram ram){
+        ram.setStatus(0);
+        ramRepository.save(ram);
+    }
+
     @Override
     public void insert(Ram ram) {
         ram.setDateCreate(new Date());

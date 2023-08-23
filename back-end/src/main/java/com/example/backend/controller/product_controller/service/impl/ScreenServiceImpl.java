@@ -21,6 +21,20 @@ public class ScreenServiceImpl implements Iservice<Screen> {
         return screenRepository.findAll(pageable);
     }
 
+    public Page<Screen> getDelete(Pageable pageable) {
+        return screenRepository.deleteScreen(pageable);
+    }
+
+    public void deleteScreen(Screen screen){
+        screen.setStatus(1);
+        screenRepository.save(screen);
+    }
+
+    public void returnScreen(Screen screen){
+        screen.setStatus(0);
+        screenRepository.save(screen);
+    }
+
     @Override
     public void insert(Screen screen) {
         screen.setDateCreate(new Date());

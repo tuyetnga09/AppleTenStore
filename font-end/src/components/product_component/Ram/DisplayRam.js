@@ -3,58 +3,56 @@ import { readAll, deleteRam } from "../../../service/ram.service";
 import { Link } from 'react-router-dom';
 import "../../../css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faPencilAlt} from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPencilAlt, faTrash} from "@fortawesome/free-solid-svg-icons";
 import { FaSearch, FaPlus, FaFileExcel } from 'react-icons/fa';
 import { IoMdDownload } from 'react-icons/io';
-
+import Pagination from "../Ram/PageNext";
+import queryString from "query-string";
 
 const DisplayRam = () => {
   const [ram, setRam] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5); // Số mục hiển thị trên mỗi trang
+
+  const [pagination, setPagination] = useState({
+    page: 0,
+    limit: 5,
+    totalRows: 1,
+  });
+
+  const [filters, setFilters] = useState({
+    page: 0,
+  });
 
   //hien thi danh sach
   useEffect(() => {
-    readAll()
+    const paramsString = queryString.stringify(filters);
+    readAll(paramsString)
       .then((response) => {
-        console.log(`${response.data}`);
-        setRam(response.data);
+        console.log(response.data);
+        
+        setRam(response.data.content);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
       });
+  }, [filters]);
 
-
-  }, []);
   //xoa 
-  const handleDelete = (id) => {
-    deleteRam(id)
-      .then((response) => {
-        setRam(ram.filter((ramD) => ramD.id !== id));
-      })
-      .catch((error) => {
-        console.log(`Error deleting: ${error}`);
-      });
-  };
+  async function handleDelete(id) {
+    deleteRam(id).then(() => {
+      let newArr = [...ram].filter((s) => s.id !== id);
+      setRam(newArr);
+    });
+  }
 
-  //Phân trang
-  const lastPage = Math.ceil(ram.length / itemsPerPage);
-  const nextPage = () => {
-    if (currentPage < lastPage) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-  // Tính toán index của mục đầu tiên và cuối cùng trên trang hiện tại
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = ram.slice(indexOfFirstItem, indexOfLastItem);
-  // Thay đổi trang
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  function handlePageChange(newPage) {
+    console.log("New Page: " + newPage);
+    setFilters({
+      page: newPage,
+    });
+  }
+ 
 
   return (
     <section class="ftco-section">
@@ -71,6 +69,13 @@ const DisplayRam = () => {
           <div class="col-md-12">
 
             <form class="d-flex" role="search">
+
+            <Link to="/ram/displayDelete">
+            <button class="btn btn-outline-success" type="submit" style={{ marginRight: '15px'}}>
+                    <FontAwesomeIcon icon={faTrash} />
+              </button>
+            </Link>
+            
               <input
                 class="form-control me-2"
                 type="search"
@@ -81,22 +86,22 @@ const DisplayRam = () => {
                 <FaSearch className="search-icon" />
               </button>
 
-              <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px',  marginLeft: '15px'}}>
-              <FaPlus className="add-icon" />
-            </button>
-
+            <Link to="/ram/new">
+                <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px',  marginLeft: '15px'}}>
+                <FaPlus className="add-icon" />
+              </button>
+            </Link>
+              
             <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
               <FaFileExcel className="excel-icon" />
             </button>
 
-            <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
+            <button type="button" class="btn btn-outline-success">
               <IoMdDownload className="download-icon" />
             </button>
 
             </form>
             <br />
-
-            
 
             <div class="table-wrap">
               <table class="table">
@@ -123,7 +128,7 @@ const DisplayRam = () => {
                       <td>{ramD.dateUpdate}</td>
                       <td>{ramD.personCreate}</td>
                       <td>{ramD.personUpdate}</td>
-                      <td>{ramD.status}</td>
+                      <td>{ramD.status === 0 ? "Hoạt động" : "Không hoạt động"}</td>
                       <td>
                         <button
                           type="button"
@@ -137,7 +142,8 @@ const DisplayRam = () => {
                           </span>
                         </button>
 
-                        <button
+                        <Link to={"/screen/" + ramD.id}>
+                          <button
                           type="button"
                           class="close"
                           data-dismiss="alert"
@@ -147,6 +153,8 @@ const DisplayRam = () => {
                             <FontAwesomeIcon icon={faPencilAlt} style={{ marginRight: '15px' }}/>
                           </span>
                         </button>
+                        </Link>
+                        
 
                       </td>
                     </tr>
@@ -156,34 +164,8 @@ const DisplayRam = () => {
             </div>
           </div>
         </div>
+        <Pagination pagination={pagination} onPageChange={handlePageChange} />
       </div>
-      <br/>
-
-      <nav aria-label="Page navigation example">
-        <ul className="pagination">
-          <li className="page-item">
-            <a className="page-link" href="#" onClick={prevPage}>
-              Previous
-            </a>
-          </li>
-          {Array.from({ length: lastPage }).map((item, index) => (
-            <li className="page-item" key={index}>
-              <a
-                className={`page-link ${index + 1 === currentPage ? "active" : ""}`}
-                href="#"
-                onClick={() => paginate(index + 1)}
-              >
-                {index + 1}
-              </a>
-            </li>
-          ))}
-          <li className="page-item">
-            <a className="page-link" href="#" onClick={nextPage}>
-              Next
-            </a>
-          </li>
-        </ul>
-      </nav>
     </section>
   );
 };
