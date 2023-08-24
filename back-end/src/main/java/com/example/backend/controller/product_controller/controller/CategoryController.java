@@ -3,6 +3,7 @@ package com.example.backend.controller.product_controller.controller;
 import com.example.backend.controller.product_controller.repository.CategoryRepository;
 import com.example.backend.controller.product_controller.service.impl.CategoryServiceImpl;
 import com.example.backend.entity.Category;
+import com.example.backend.entity.Screen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,14 +48,15 @@ public class CategoryController {
         categoryService.update(category, id);
     }
 
-    @DeleteMapping("delete/{id}")
+    @PutMapping("delete/{id}")
     public void delete(@PathVariable("id") Integer id) {
-        categoryService.delete(id);
+        Category category = categoryRepository.findById(id).orElse(null);
+        categoryService.delete(category);
     }
 
-    @GetMapping("getAll")
-    public List<Category> getCategory() {
-        return categoryRepository.findAll();
+    @PutMapping("return/{id}")
+    public void returnS(@PathVariable("id") Integer id) {
+        Category category = categoryRepository.findById(id).orElse(null);
+        categoryService.returnDelete(category);
     }
-    //test
 }

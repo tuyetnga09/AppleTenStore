@@ -38,4 +38,13 @@ public class SizeServiceImpl implements Iservice<Size> {
             sizeRepository.deleteById(id);
         }
     }
+    @Override
+    public void delete(Size size) {
+
+    }
+
+    @Override
+    public void returnDelete(Size size) {
+
+    }
 }

@@ -66,12 +66,12 @@ public class ScreenController {
     @PutMapping("delete/{id}")
     public void delete(@PathVariable("id") Integer id) {
         Screen screen = screenRepository.findById(id).orElse(null);
-        screenService.deleteScreen(screen);
+        screenService.delete(screen);
     }
 
     @PutMapping("return/{id}")
     public void returnS(@PathVariable("id") Integer id) {
         Screen screen = screenRepository.findById(id).orElse(null);
-        screenService.returnScreen(screen);
+        screenService.returnDelete(screen);
     }
 }

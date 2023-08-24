@@ -31,6 +31,20 @@ public class CapacityServiceImpl implements Iservice<Capacity> {
     public void delete(Integer id) {
         capacityRepository.deleteById(id);
     }
+
+    @Override
+    public void delete(Capacity capacity) {
+        capacity.setStatus(1);
+        capacityRepository.save(capacity);
+
+    }
+
+    @Override
+    public void returnDelete(Capacity capacity) {
+        capacity.setStatus(0);
+        capacityRepository.save(capacity);
+    }
+
     public Capacity getOne(Integer id) {
         return capacityRepository.findById(id).get();
     }

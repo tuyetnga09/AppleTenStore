@@ -25,16 +25,6 @@ public class ScreenServiceImpl implements Iservice<Screen> {
         return screenRepository.deleteScreen(pageable);
     }
 
-    public void deleteScreen(Screen screen){
-        screen.setStatus(1);
-        screenRepository.save(screen);
-    }
-
-    public void returnScreen(Screen screen){
-        screen.setStatus(0);
-        screenRepository.save(screen);
-    }
-
     @Override
     public void insert(Screen screen) {
         screen.setDateCreate(new Date());
@@ -55,6 +45,18 @@ public class ScreenServiceImpl implements Iservice<Screen> {
     @Override
     public void delete(Integer id) {
         screenRepository.deleteById(id);
+    }
+
+    @Override
+    public void delete(Screen screen) {
+        screen.setStatus(1);
+        screenRepository.save(screen);
+    }
+
+    @Override
+    public void returnDelete(Screen screen) {
+        screen.setStatus(0);
+        screenRepository.save(screen);
     }
 
     public Screen getOne(Integer id){

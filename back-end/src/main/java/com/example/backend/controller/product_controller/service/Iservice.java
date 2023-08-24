@@ -1,6 +1,7 @@
 package com.example.backend.controller.product_controller.service;
 
 import com.example.backend.entity.Category;
+import com.example.backend.entity.Screen;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,4 +17,7 @@ public interface Iservice<T> {
     void update(T t, Integer id);
 
     void delete(Integer id);
+    void delete(T t);
+
+    void returnDelete(T t);
 }

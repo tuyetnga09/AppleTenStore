@@ -66,12 +66,12 @@ public class RamController {
     @PutMapping("delete/{id}")
     public void delete(@PathVariable("id")  Integer id) {
         Ram ram = ramRepository.findById(id).orElse(null);
-        ramService.removeRam(ram);
+        ramService.delete(ram);
     }
 
     @PutMapping("return/{id}")
     public void returnDelete(@PathVariable("id")  Integer id) {
         Ram ram = ramRepository.findById(id).orElse(null);
-        ramService.returnRam(ram);
+        ramService.returnDelete(ram);
     }
 }

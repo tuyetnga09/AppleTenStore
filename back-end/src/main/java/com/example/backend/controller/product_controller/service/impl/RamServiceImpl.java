@@ -26,16 +26,6 @@ public class RamServiceImpl implements Iservice<Ram> {
         return ramRepository.deleteRam(pageable);
     }
 
-    public void removeRam(Ram ram){
-        ram.setStatus(1);
-        ramRepository.save(ram);
-    }
-
-    public void returnRam(Ram ram){
-        ram.setStatus(0);
-        ramRepository.save(ram);
-    }
-
     @Override
     public void insert(Ram ram) {
         ram.setDateCreate(new Date());
@@ -56,6 +46,19 @@ public class RamServiceImpl implements Iservice<Ram> {
     @Override
     public void delete(Integer id) {
         ramRepository.deleteById(id);
+    }
+
+    @Override
+    public void delete(Ram ram) {
+        ram.setStatus(1);
+        ramRepository.save(ram);
+
+    }
+
+    @Override
+    public void returnDelete(Ram ram) {
+        ram.setStatus(0);
+        ramRepository.save(ram);
     }
 
     public Ram getOne(Integer id) {

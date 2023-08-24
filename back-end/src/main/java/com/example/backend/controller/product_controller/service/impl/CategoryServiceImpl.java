@@ -34,6 +34,18 @@ public class CategoryServiceImpl implements Iservice<Category> {
         categoryRepository.deleteById(id);
     }
 
+    @Override
+    public void delete(Category category) {
+        category.setStatus(1);
+        categoryRepository.save(category);
+    }
+
+    @Override
+    public void returnDelete(Category category) {
+        category.setStatus(0);
+        categoryRepository.save(category);
+    }
+
     public Category getOne(Integer id) {
         return categoryRepository.findById(id).get();
     }

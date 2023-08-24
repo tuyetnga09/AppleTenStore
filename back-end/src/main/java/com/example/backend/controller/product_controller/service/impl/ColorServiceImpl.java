@@ -33,6 +33,19 @@ public class ColorServiceImpl implements Iservice<Color> {
     public void delete(Integer id) {
         colorRepository.deleteById(id);
     }
+
+    @Override
+    public void delete(Color color) {
+        color.setStatus(1);
+        colorRepository.save(color);
+    }
+
+    @Override
+    public void returnDelete(Color color) {
+        color.setStatus(0);
+        colorRepository.save(color);
+    }
+
     public Color getOne(Integer id) {
         return colorRepository.findById(id).get();
     }
