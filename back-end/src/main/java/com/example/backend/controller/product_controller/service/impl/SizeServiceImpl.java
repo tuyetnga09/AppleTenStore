@@ -19,6 +19,10 @@ public class SizeServiceImpl implements Iservice<Size> {
         return sizeRepository.findAll(pageable);
     }
 
+    public Page<Size> getDelete(Pageable pageable) {
+        return sizeRepository.deleteSize(pageable);
+    }
+
     @Override
     public void insert(Size size) {
         sizeRepository.save(size);
@@ -40,11 +44,17 @@ public class SizeServiceImpl implements Iservice<Size> {
     }
     @Override
     public void delete(Size size) {
-
+        size.setStatus(1);
+        sizeRepository.save(size);
     }
 
     @Override
     public void returnDelete(Size size) {
+        size.setStatus(0);
+        sizeRepository.save(size);
+    }
 
+    public Size getOne(Integer id) {
+        return sizeRepository.findById(id).get();
     }
 }

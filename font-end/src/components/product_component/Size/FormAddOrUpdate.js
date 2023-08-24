@@ -6,6 +6,8 @@ import {
   useHistory,
   useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 const FormAddOrUpdate = () => {
   const [sizeItem, setSizeItem] = useState({});
@@ -94,8 +96,10 @@ const FormAddOrUpdate = () => {
                 <div className="inner"></div>
                 <Input type="submit" value={"SUBMIT"}></Input>
               </div>
-              <button>
-                <a href="/size/getAll">CANNEL</a>
+              <button class="btn btn-light" type="button">
+                <a href="/size/getAll">
+                  <FontAwesomeIcon icon={faTimesCircle} />
+                </a>
               </button>
             </div>
           </div>

@@ -9,6 +9,7 @@ import ScreenCreateOrUpdate from "./components/product_component/Screen/DisplayS
 import ScreenDeleteScreen from "./components/product_component/Screen/DisplayReturnDeleteS";
 import Display from "./components/product_component/Size/Display";
 import FormAddOrUpdate from "./components/product_component/Size/FormAddOrUpdate";
+import ReturnDeleteSize from "./components/product_component/Size/ReturnDeleteSize";
 
 function App() {
   return (
@@ -24,12 +25,20 @@ function App() {
           <Route path="/ram/:id" exact component={RamCreateOrUpdate} />
 
           <Route path="/size/getAll" exact component={Display} />
+          <Route
+            path="/size/displayDelete"
+            exact
+            component={ReturnDeleteSize}
+          />
           <Route path="/size/:id" exact component={FormAddOrUpdate} />
 
           <Route path="/screen/display" exact component={ScreenDisplay} />
-          <Route path="/screen/displayDelete" exact component={ScreenDeleteScreen} />
+          <Route
+            path="/screen/displayDelete"
+            exact
+            component={ScreenDeleteScreen}
+          />
           <Route path="/screen/:id" exact component={ScreenCreateOrUpdate} />
-
         </Switch>
         {/* </div> */}
       </Router>
