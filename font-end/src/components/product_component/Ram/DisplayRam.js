@@ -17,7 +17,6 @@ const DisplayRam = () => {
     limit: 5,
     totalRows: 1,
   });
-
   const [filters, setFilters] = useState({
     page: 0,
   });
@@ -55,10 +54,9 @@ const DisplayRam = () => {
  
 
   return (
-    <section class="ftco-section">
-      <div class="container">
+    <section style={{marginLeft: '50px'}}>  
         <div class="row justify-content-center">
-          <div class="col-md-6 text-center mb-4">
+          <div class="col-md-3 text-center mb-3">
             <h2 class="heading-section">RAM</h2>
           </div>
         </div>
@@ -165,7 +163,7 @@ const DisplayRam = () => {
           </div>
         </div>
         <Pagination pagination={pagination} onPageChange={handlePageChange} />
-      </div>
+     
     </section>
   );
 };
