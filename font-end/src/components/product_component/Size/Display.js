@@ -107,7 +107,6 @@ const Display = () => {
                 type="button"
                 className="btn btn-outline-success"
                 style={{ marginRight: "15px" }}
-                onClick={{ alert: "ok" }}
               >
                 <FontAwesomeIcon icon={faFileExcel} className="excel-icon" />
               </button>
