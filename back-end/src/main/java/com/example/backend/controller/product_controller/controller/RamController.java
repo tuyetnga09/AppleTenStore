@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -73,5 +74,16 @@ public class RamController {
     public void returnDelete(@PathVariable("id")  Integer id) {
         Ram ram = ramRepository.findById(id).orElse(null);
         ramService.returnDelete(ram);
+    }
+
+    @PostMapping("import")
+    public ResponseEntity<String>  importRam(@RequestParam("file") MultipartFile file){
+        try {
+            ramService.importDataFromExcel(file);
+            return ResponseEntity.ok("Import Thành Công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("Import Thất bại");
+        }
     }
 }

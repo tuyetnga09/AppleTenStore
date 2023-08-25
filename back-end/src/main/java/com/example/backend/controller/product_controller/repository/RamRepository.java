@@ -16,5 +16,6 @@ public interface RamRepository extends IRamRepository {
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  FROM RAM WHERE Status = 1", nativeQuery = true)
     Page<Ram> deleteRam(Pageable pageable);
 
+    Ram findByCode(String code);
 
 }

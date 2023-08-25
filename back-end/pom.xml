@@ -52,6 +52,17 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version> <!-- Phiên bản mới nhất có thể thay đổi -->
         </dependency>
+        <!-- Thư viện import Excel -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>4.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>4.1.2</version>
+        </dependency>
 
     </dependencies>
 
