@@ -1,4 +1,11 @@
 import httpClient from "../api/http-comons";
+
+const config = {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+};
+
 export const readAll = (page) => {
   return httpClient.get(`/battery/getAll?${page}`);
 };
@@ -25,4 +32,8 @@ export const deleteBattery = (id) => {
 
 export const returnBattery = (id) => {
   return httpClient.put(`/battery/return/${id}`);
+};
+
+export const importBattery = (form) => {
+  return httpClient.post("/battery/import", form, config);
 };

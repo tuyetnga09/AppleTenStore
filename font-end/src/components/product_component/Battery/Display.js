@@ -103,13 +103,15 @@ const Display = () => {
                   <FontAwesomeIcon icon={faPlus} className="add-icon" />
                 </button>
               </Link>
-              <button
-                type="button"
-                className="btn btn-outline-success"
-                style={{ marginRight: "15px" }}
-              >
-                <FontAwesomeIcon icon={faFileExcel} className="excel-icon" />
-              </button>
+              <Link to="/battery/im">
+                <button
+                  type="button"
+                  className="btn btn-outline-success"
+                  style={{ marginRight: "15px" }}
+                >
+                  <FontAwesomeIcon icon={faFileExcel} className="excel-icon" />
+                </button>
+              </Link>
 
               <button
                 type="button"

@@ -15,4 +15,6 @@ public interface SizeRepository extends ISizeRepository {
 
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  FROM size WHERE Status = 1", nativeQuery = true)
     Page<Size> deleteSize(Pageable pageable);
+
+    Size findByCode(String code);
 }

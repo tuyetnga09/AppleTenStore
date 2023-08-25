@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/size/")
@@ -70,5 +71,16 @@ public class SizeController {
         Size size = service.getOne(id);
         service.returnDelete(size);
         return new ResponseEntity<>("Return ok", HttpStatus.OK);
+    }
+
+    @PostMapping("import")
+    public ResponseEntity<String>  importSize(@RequestParam("file") MultipartFile file){
+        try {
+            service.importDataFromExcel(file);
+            return ResponseEntity.ok("Import Thành Công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("Import Thất bại");
+        }
     }
 }

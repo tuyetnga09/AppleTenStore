@@ -11,9 +11,11 @@ import ScreenDeleteScreen from "./components/product_component/Screen/DisplayRet
 import DisplaySize from "./components/product_component/Size/Display";
 import FormAddOrUpdateSize from "./components/product_component/Size/FormAddOrUpdate";
 import ReturnDeleteSize from "./components/product_component/Size/ReturnDeleteSize";
+import ImportSize from "./components/product_component/Size/ImportSize";
 import DisplayBattery from "./components/product_component/Battery/Display";
 import FormAddOrUpdateBattery from "./components/product_component/Battery/FormAddOrUpdate";
 import ReturnDeleteBattery from "./components/product_component/Battery/ReturnDeleteBattery";
+import ImportBattery from "./components/product_component/Battery/ImportBattery";
 
 function App() {
   return (
@@ -28,8 +30,9 @@ function App() {
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/displayDelete" exact component={ReturnDeleteRam} />
           <Route path="/ram/:id" exact component={RamCreateOrUpdate} />
-          
+
           <Route path="/size/getAll" exact component={DisplaySize} />
+          <Route path="/size/im" exact component={ImportSize} />
           <Route
             path="/size/displayDelete"
             exact
@@ -38,6 +41,7 @@ function App() {
           <Route path="/size/:id" exact component={FormAddOrUpdateSize} />
 
           <Route path="/battery/getAll" exact component={DisplayBattery} />
+          <Route path="/battery/im" exact component={ImportBattery} />
           <Route
             path="/battery/displayDelete"
             exact

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/battery/")
@@ -70,5 +71,16 @@ public class BatteryController {
         Battery battery = service.getOne(id);
         service.returnDelete(battery);
         return new ResponseEntity<>("Return ok", HttpStatus.OK);
+    }
+
+    @PostMapping("import")
+    public ResponseEntity<String>  importBattery(@RequestParam("file") MultipartFile file){
+        try {
+            service.importDataFromExcel(file);
+            return ResponseEntity.ok("Import Thành Công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("Import Thất bại");
+        }
     }
 }
