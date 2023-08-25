@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import RamDisplay from "./components/product_component/Ram/DisplayRam";
 import RamCreateOrUpdate from "./components/product_component/Ram/DisplayRamCreate";
 import ReturnDeleteRam from "./components/product_component/Ram/DisplayReturnDelete";
+import ImportRam from "./components/product_component/Ram/DisplayImportRam";
 import ScreenDisplay from "./components/product_component/Screen/DisplayScreen";
 import ScreenCreateOrUpdate from "./components/product_component/Screen/DisplayScreenCreateOrUpdate";
 import ScreenDeleteScreen from "./components/product_component/Screen/DisplayReturnDeleteS";
@@ -24,9 +25,10 @@ function App() {
         {/* <div className="container"> */}
         <Switch>
           <Route path="/ram/display" exact component={RamDisplay} />
+          <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/displayDelete" exact component={ReturnDeleteRam} />
           <Route path="/ram/:id" exact component={RamCreateOrUpdate} />
-
+          
           <Route path="/size/getAll" exact component={DisplaySize} />
           <Route
             path="/size/displayDelete"

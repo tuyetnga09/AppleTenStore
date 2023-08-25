@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { readAll, deleteRam } from "../../../service/ram.service";
+import { readAll, deleteRam, importRam } from "../../../service/ram.service";
 import { Link } from 'react-router-dom';
 import "../../../css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +11,7 @@ import queryString from "query-string";
 
 const DisplayRam = () => {
   const [ram, setRam] = useState([]);
+
 
   const [pagination, setPagination] = useState({
     page: 0,
@@ -44,7 +45,7 @@ const DisplayRam = () => {
     });
   }
 
-
+  //import
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
@@ -52,7 +53,6 @@ const DisplayRam = () => {
     });
   }
  
-
   return (
     <section style={{marginLeft: '50px'}}>  
         <div class="row justify-content-center">
@@ -90,9 +90,11 @@ const DisplayRam = () => {
               </button>
             </Link>
               
+            <Link to="/ram/im">
             <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
               <FaFileExcel className="excel-icon" />
             </button>
+            </Link>
 
             <button type="button" class="btn btn-outline-success">
               <IoMdDownload className="download-icon" />
@@ -101,6 +103,8 @@ const DisplayRam = () => {
             </form>
             <br />
 
+           
+           
             <div class="table-wrap">
               <table class="table">
                 <thead class="thead-primary">
@@ -140,7 +144,7 @@ const DisplayRam = () => {
                           </span>
                         </button>
 
-                        <Link to={"/screen/" + ramD.id}>
+                        <Link to={"/ram/" + ramD.id}>
                           <button
                           type="button"
                           class="close"
