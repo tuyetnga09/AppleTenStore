@@ -8,17 +8,14 @@ import {
   faDownload,
   faEdit,
   faFileExcel,
-  faPencilAlt,
   faPlus,
   faSearch,
-  faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
-import { Button } from "reactstrap";
 import Pagination from "../Battery/Paging.js";
-import { FaFileExcel, FaPlus, FaSearch } from "react-icons/fa";
-import { IoMdDownload } from "react-icons/io";
+import * as XLSX from "xlsx";
+import * as FileSaver from "file-saver";
 
 const Display = () => {
   const [display, setDisplay] = useState([]);
@@ -32,6 +29,10 @@ const Display = () => {
   const [filters, setFilters] = useState({
     page: 0,
   });
+
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const fileExtension = ".xlsx";
 
   useEffect(() => {
     const paramsString = queryString.stringify(filters);
@@ -58,6 +59,14 @@ const Display = () => {
       let newArr = [...display].filter((s) => s.id !== id);
       setDisplay(newArr);
     });
+  }
+
+  function handleDownload(csvData, fileName) {
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
   }
 
   return (
@@ -117,6 +126,7 @@ const Display = () => {
                 type="button"
                 className="btn btn-outline-success"
                 style={{ marginRight: "15px" }}
+                onClick={() => handleDownload(display, "battery")}
               >
                 <FontAwesomeIcon icon={faDownload} className="download-icon" />
               </button>
