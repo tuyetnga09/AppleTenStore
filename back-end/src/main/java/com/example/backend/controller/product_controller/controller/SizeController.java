@@ -34,16 +34,16 @@ public class SizeController {
     }
 
     @GetMapping("getAll")
-    public ResponseEntity<Page<Size>> paging(@RequestParam(value = "page", defaultValue = "0") Integer page){
+    public ResponseEntity<Page<Size>> paging(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key){
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Size> sizePage = service.getAll(pageable);
+        Page<Size> sizePage = service.search(pageable, key);
         return new ResponseEntity<>(sizePage, HttpStatus.OK);
     }
 
     @GetMapping("displayDelete")
-    public ResponseEntity<Page<Size>> viewAllDelete(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Size>> viewAllDelete(@RequestParam(value = "page",defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Size> sizePage = service.getDelete(pageable);
+        Page<Size> sizePage = service.getDelete(pageable, key);
         return new ResponseEntity<>(sizePage, HttpStatus.OK);
     }
 

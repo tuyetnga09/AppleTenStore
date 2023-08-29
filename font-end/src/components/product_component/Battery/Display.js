@@ -28,6 +28,7 @@ const Display = () => {
 
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
 
   const fileType =
@@ -50,6 +51,7 @@ const Display = () => {
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
+      ...filters,
       page: newPage,
     });
   }
@@ -67,6 +69,15 @@ const Display = () => {
     const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: fileType });
     FileSaver.saveAs(data, fileName + fileExtension);
+  }
+
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
   }
 
   return (
@@ -95,6 +106,8 @@ const Display = () => {
                 type="search"
                 placeholder="Search"
                 aria-label="Search"
+                name="key"
+                onChange={handleChange}
               />
               <button
                 className="btn btn-outline-success"
@@ -199,129 +212,6 @@ const Display = () => {
         <Pagination pagination={pagination} onPageChange={handlePageChange} />
       </div>
     </section>
-
-    // <section style={{ marginLeft: "50px" }}>
-    //   <div class="row justify-content-center">
-    //     <div class="col-md-3 text-center mb-3">
-    //       <h2 class="heading-section">SIZE</h2>
-    //     </div>
-    //   </div>
-    //   <div class="row">
-    //     <div class="row"></div>
-    //     <div class="col-md-12">
-    //       <form class="d-flex" role="search">
-    //         <Link to="/ram/displayDelete">
-    //           <button
-    //             class="btn btn-outline-success"
-    //             type="submit"
-    //             style={{ marginRight: "15px" }}
-    //           >
-    //             <FontAwesomeIcon icon={faTrash} />
-    //           </button>
-    //         </Link>
-
-    //         <input
-    //           class="form-control me-2"
-    //           type="search"
-    //           placeholder="Search"
-    //           aria-label="Search"
-    //         />
-    //         <button
-    //           class="btn btn-outline-success"
-    //           type="submit"
-    //           style={{ marginLeft: "15px" }}
-    //         >
-    //           <FaSearch className="search-icon" />
-    //         </button>
-
-    //         <Link to="/ram/new">
-    //           <button
-    //             type="button"
-    //             class="btn btn-outline-success"
-    //             style={{ marginRight: "15px", marginLeft: "15px" }}
-    //           >
-    //             <FaPlus className="add-icon" />
-    //           </button>
-    //         </Link>
-
-    //         <button
-    //           type="button"
-    //           class="btn btn-outline-success"
-    //           style={{ marginRight: "15px" }}
-    //         >
-    //           <FaFileExcel className="excel-icon" />
-    //         </button>
-
-    //         <button type="button" class="btn btn-outline-success">
-    //           <IoMdDownload className="download-icon" />
-    //         </button>
-    //       </form>
-    //       <br />
-
-    //       <div class="table-wrap">
-    //         <table class="table">
-    //           <thead class="thead-primary">
-    //             <tr>
-    //               <th>ID</th>
-    //               <th>CODE</th>
-    //               <th>NAME</th>
-    //               <th>DATE-CREATE</th>
-    //               <th>DATE-UPDATE</th>
-    //               <th>PERSON-CREATE</th>
-    //               <th>PERSON-UPDATE</th>
-    //               <th>STATUS</th>
-    //               <th>ACTION</th>
-    //             </tr>
-    //           </thead>
-    //           <tbody>
-    //             {display.map((s) => (
-    //               <tr class="alert" role="alert" key={s.id}>
-    //                 <td>{s.id}</td>
-    //                 <td>{s.code}</td>
-    //                 <td>{s.name}</td>
-    //                 <td>{s.dateCreate}</td>
-    //                 <td>{s.dateUpdate}</td>
-    //                 <td>{s.personCreate}</td>
-    //                 <td>{s.personUpdate}</td>
-    //                 <td>{s.status === 0 ? "Hoạt động" : "Không hoạt động"}</td>
-    //                 <td>
-    //                   <button
-    //                     type="button"
-    //                     class="close"
-    //                     data-dismiss="alert"
-    //                     aria-label="Close"
-    //                     onClick={() => remove(s.id)}
-    //                   >
-    //                     <span aria-hidden="true">
-    //                       <FontAwesomeIcon icon={faTimes} />
-    //                     </span>
-    //                   </button>
-
-    //                   <Link to={"/screen/" + s.id}>
-    //                     <button
-    //                       type="button"
-    //                       class="close"
-    //                       data-dismiss="alert"
-    //                       aria-label="Close"
-    //                     >
-    //                       <span aria-hidden="true">
-    //                         <FontAwesomeIcon
-    //                           icon={faPencilAlt}
-    //                           style={{ marginRight: "15px" }}
-    //                         />
-    //                       </span>
-    //                     </button>
-    //                   </Link>
-    //                 </td>
-    //               </tr>
-    //             ))}
-    //           </tbody>
-    //         </table>
-    //       </div>
-    //     </div>
-    //   </div>
-    //   <Pagination pagination={pagination} onPageChange={handlePageChange} />
-    // </section>
   );
 };
 export default Display;
