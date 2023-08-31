@@ -37,3 +37,7 @@ export const returnRam = (id) =>{
 export const importRam = (form) =>{
   return  httpClient.post("/ram/import", form, config);
 }
+
+export const search = (page, search) =>{
+  return  httpClient.get(`/ram/search?${page}`, search);
+}

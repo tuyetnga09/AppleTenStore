@@ -8,6 +8,8 @@ import { FaSearch, FaPlus, FaFileExcel } from 'react-icons/fa';
 import { IoMdDownload } from 'react-icons/io';
 import Pagination from "../Screen/PageNext";
 import queryString from "query-string";
+import * as XLSX from "xlsx";
+import * as FileSaver from "file-saver";
 
 const DisplayScreen = () => {
   const [screen, setScreen] = useState([]);
@@ -21,6 +23,10 @@ const DisplayScreen = () => {
   const [filters, setFilters] = useState({
     page: 0,
   });
+
+  const fileType =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const fileExtension = ".xlsx";
 
   //hien thi danh sach
   useEffect(() => {
@@ -51,6 +57,16 @@ const DisplayScreen = () => {
       page: newPage,
     });
   }
+
+    //dowload
+    function handleDownload(csvData, fileName) {
+      const ws = XLSX.utils.json_to_sheet(csvData);
+      const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const data = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(data, fileName + fileExtension);
+    }
+   
  
 
   return (
@@ -89,11 +105,13 @@ const DisplayScreen = () => {
               </button>
             </Link>
 
+            <Link to="/screen/im">
             <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
               <FaFileExcel className="excel-icon" />
             </button>
+            </Link>
 
-            <button type="button" class="btn btn-outline-success">
+            <button type="button" class="btn btn-outline-success" onClick={() => handleDownload(screen, "ScreenFile")}>
               <IoMdDownload className="download-icon" />
             </button>
 

@@ -108,4 +108,8 @@ public class RamServiceImpl implements Iservice<Ram> {
         workbook.close();
     }
 
+    public Page<Ram> search(String search,Pageable pageable) {
+        return ramRepository.search(search ,pageable);
+    }
+
 }

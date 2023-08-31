@@ -1,4 +1,11 @@
 import httpClient from "../api/http-comons";
+
+const config = {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+};
+
 export const readAll = (page) =>{
     return  httpClient.get(`/screen/display?${page}`);
 }
@@ -26,3 +33,8 @@ export const deleteScreen = (id) =>{
 export const returnScreen = (id) =>{
   return  httpClient.put(`/screen/return/${id}`);
 }
+
+export const importScreen = (form) =>{
+  return  httpClient.post("/screen/import", form, config);
+}
+

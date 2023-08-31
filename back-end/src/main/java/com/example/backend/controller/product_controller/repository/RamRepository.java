@@ -18,4 +18,7 @@ public interface RamRepository extends IRamRepository {
 
     Ram findByCode(String code);
 
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status FROM ram WHERE Code LIKE %?1% OR Name LIKE %?1% OR DateCreate LIKE %?1% OR DateUpdate LIKE %?1% OR PersonCreate LIKE %?1% OR PersonUpdate LIKE %?1% AND Status = 0", nativeQuery = true)
+    Page<Ram> search(String search ,Pageable pageable);
+
 }

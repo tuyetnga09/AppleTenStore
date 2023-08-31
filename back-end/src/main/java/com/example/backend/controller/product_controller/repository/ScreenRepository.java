@@ -16,6 +16,7 @@ public interface ScreenRepository extends IScreenRepository {
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  FROM screen WHERE Status = 1", nativeQuery = true)
     Page<Screen> deleteScreen(Pageable pageable);
 
+    Screen findByCode(String code);
 
 
 }
