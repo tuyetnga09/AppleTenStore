@@ -34,16 +34,16 @@ public class BatteryController {
     }
 
     @GetMapping("getAll")
-    public ResponseEntity<Page<Battery>> paging(@RequestParam(value = "page", defaultValue = "0") Integer page){
+    public ResponseEntity<Page<Battery>> paging(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key){
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Battery> batteryPage = service.getAll(pageable);
+        Page<Battery> batteryPage = service.search(pageable, key);
         return new ResponseEntity<>(batteryPage, HttpStatus.OK);
     }
 
     @GetMapping("displayDelete")
-    public ResponseEntity<Page<Battery>> viewAllDelete(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Battery>> viewAllDelete(@RequestParam(value = "page",defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Battery> batteryPage = service.getDelete(pageable);
+        Page<Battery> batteryPage = service.getDelete(pageable, key);
         return new ResponseEntity<>(batteryPage, HttpStatus.OK);
     }
 

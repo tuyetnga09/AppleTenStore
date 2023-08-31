@@ -27,8 +27,8 @@ public class SizeServiceImpl implements Iservice<Size> {
         return sizeRepository.findAll(pageable);
     }
 
-    public Page<Size> getDelete(Pageable pageable) {
-        return sizeRepository.deleteSize(pageable);
+    public Page<Size> getDelete(Pageable pageable, String key) {
+        return sizeRepository.deleteSize(pageable, key);
     }
 
     @Override
@@ -100,5 +100,9 @@ public class SizeServiceImpl implements Iservice<Size> {
         }
 
         workbook.close();
+    }
+
+    public Page<Size> search(Pageable pageable, String key) {
+        return sizeRepository.search(pageable, key);
     }
 }

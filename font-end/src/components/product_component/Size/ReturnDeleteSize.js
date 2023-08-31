@@ -8,6 +8,8 @@ import { FaSearch, FaPlus, FaFileExcel } from "react-icons/fa";
 import { IoMdDownload } from "react-icons/io";
 import Pagination from "../Size/Paging.js";
 import queryString from "query-string";
+import * as XLSX from "xlsx";
+import * as FileSaver from "file-saver";
 
 const ReturnDeleteSize = () => {
   const [size, setSize] = useState([]);
@@ -20,7 +22,12 @@ const ReturnDeleteSize = () => {
 
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
+
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const fileExtension = ".xlsx";
 
   //hien thi danh sach
   useEffect(() => {
@@ -48,8 +55,26 @@ const ReturnDeleteSize = () => {
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
+      ...filters,
       page: newPage,
     });
+  }
+
+  function handleDownload(csvData, fileName) {
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
+  }
+
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
   }
 
   return (
@@ -79,6 +104,8 @@ const ReturnDeleteSize = () => {
                 type="search"
                 placeholder="Search"
                 aria-label="Search"
+                name="key"
+                onChange={handleChange}
               />
               <button
                 class="btn btn-outline-success"
@@ -106,12 +133,16 @@ const ReturnDeleteSize = () => {
                 <FaFileExcel className="excel-icon" />
               </button>
 
-              <button type="button" class="btn btn-outline-success">
+              <button
+                type="button"
+                class="btn btn-outline-success"
+                onClick={() => handleDownload(size, "size")}
+              >
                 <IoMdDownload className="download-icon" />
               </button>
             </form>
             <br />
-          
+
             <div class="table-wrap">
               <table class="table">
                 <thead class="thead-primary">

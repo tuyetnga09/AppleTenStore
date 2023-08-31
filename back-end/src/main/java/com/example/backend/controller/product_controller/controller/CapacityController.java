@@ -33,18 +33,14 @@ public class CapacityController {
         capacityService.insert(capacity);
     }
 
-
     @PutMapping("update/{id}")
     public void update(@RequestBody Capacity capacity,@PathVariable("id") Integer id) {
         capacity.setId(id);
         capacityService.update(capacity, id);
     }
-
-    //ham delete
     @DeleteMapping("delete")
     public void delete(@RequestParam("id")Integer id) {
         capacityService.delete(id);
     }
-
 
 }

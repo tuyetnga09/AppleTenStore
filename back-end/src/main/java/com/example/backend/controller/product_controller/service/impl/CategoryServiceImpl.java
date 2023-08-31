@@ -49,6 +49,8 @@ public class CategoryServiceImpl implements Iservice<Category> {
     public Category getOne(Integer id) {
         return categoryRepository.findById(id).get();
     }
-
+    public Page<Category> getDelete(Pageable pageable) {
+        return categoryRepository.deleteCategory(pageable);
+    }
 
 }

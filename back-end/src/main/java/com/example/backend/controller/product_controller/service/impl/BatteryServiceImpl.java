@@ -27,8 +27,8 @@ public class BatteryServiceImpl implements Iservice<Battery> {
         return batteryRepository.findAll(pageable);
     }
 
-    public Page<Battery> getDelete(Pageable pageable) {
-        return batteryRepository.deleteBattery(pageable);
+    public Page<Battery> getDelete(Pageable pageable, String key) {
+        return batteryRepository.deleteBattery(pageable, key);
     }
 
     @Override
@@ -100,5 +100,9 @@ public class BatteryServiceImpl implements Iservice<Battery> {
         }
 
         workbook.close();
+    }
+
+    public Page<Battery> search(Pageable pageable, String key) {
+        return batteryRepository.search(pageable, key);
     }
 }
