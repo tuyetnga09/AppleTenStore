@@ -46,7 +46,8 @@ const DisplayReturnDelete = () => {
   }
 
 
-  function handlePageChange(newPage) {
+  function handlePageChange
+  (newPage) {
     console.log("New Page: " + newPage);
     setFilters({
       page: newPage,
@@ -56,7 +57,7 @@ const DisplayReturnDelete = () => {
 
   return (
     <section class="ftco-section">
-      <div class="container">
+      <div class="">
         <div class="row justify-content-center">
           <div class="col-md-6 text-center mb-4">
             <h2 class="heading-section">RAM DELETE</h2>

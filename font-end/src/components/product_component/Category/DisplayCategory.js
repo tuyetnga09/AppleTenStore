@@ -7,6 +7,7 @@ import { faTimes, faPencilAlt, faTrash} from "@fortawesome/free-solid-svg-icons"
 import { FaSearch, FaPlus, FaFileExcel } from 'react-icons/fa';
 import { IoMdDownload } from 'react-icons/io';
 import queryString from "query-string";
+import Pagination from "../Category/PageNext";
 
 const DisplayCategory = () => {
   const [category, setCategory] = useState([]);
@@ -36,14 +37,21 @@ const DisplayCategory = () => {
   }, [filters]);
 
 
-    async function handleDelete(id) {
+  async function handleDelete(id) {
       deleteCategory(id).then(() => {
         let newArr = [...category].filter((s) => s.id !== id);
         setCategory(newArr);
       });
     }
   
-  
+   //import
+   function handlePageChange(newPage) {
+    console.log("New Page: " + newPage);
+    setFilters({
+      page: newPage,
+    });
+  }
+ 
   return (
     <section style={{ marginLeft: "50px" }}>
       <div class="row justify-content-center">
@@ -80,13 +88,11 @@ const DisplayCategory = () => {
               </button>
             </Link>
               
-            <button
-              type="button"
-              class="btn btn-outline-success"
-              style={{ marginRight: "15px" }}
-            >
+            <Link to="/category/im">
+            <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
               <FaFileExcel className="excel-icon" />
             </button>
+            </Link>
 
             <button type="button" class="btn btn-outline-success">
               <IoMdDownload className="download-icon" />
@@ -128,14 +134,14 @@ const DisplayCategory = () => {
                           class="close"
                           data-dismiss="alert"
                           aria-label="Close"
-NP={() => handleDelete(cat.id)}
+                        NP={() => handleDelete(cat.id)}
                         >
                           <span aria-hidden="true">
                             <FontAwesomeIcon icon={faTimes} />
                           </span>
                         </button>
 
-                        <Link to={"/screen/" + cat.id}>
+                        <Link to={"/category/" + cat.id}>
                           <button
                           type="button"
                           class="close"
@@ -156,7 +162,7 @@ NP={() => handleDelete(cat.id)}
           </div>
         </div>
       </div>
-      {/* <Pagination pagination={pagination} onPageChange={handlePageChange} /> */}
+      <Pagination pagination={pagination} onPageChange={handlePageChange} />
     </section>
   );
 };

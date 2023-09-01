@@ -1,4 +1,9 @@
 import httpClient from "../api/http-comons";
+const config = {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+};
 export const readAll = (page) =>{
     return  httpClient.get(`/category/display?${page}`);
 }
@@ -25,4 +30,11 @@ export const deleteCategory = (id) =>{
 
 export const returnCategory = (id) =>{
   return  httpClient.put(`/category/return/${id}`);
+}
+export const importCategory = (form) =>{
+  return  httpClient.post("/category/import", form, config);
+}
+
+export const search = (page, search) =>{
+  return  httpClient.get(`/category/search?${page}`, search);
 }
