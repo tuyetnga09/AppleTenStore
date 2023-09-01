@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { readAll, deleteRam, importRam, search ,createRam } from "../../../service/ram.service";
+import { readAll, deleteRam, importRam } from "../../../service/ram.service";
 import { Link } from 'react-router-dom';
 import "../../../css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPencilAlt, faTrash} from "@fortawesome/free-solid-svg-icons";
-import { FaSearch, FaPlus, FaFileExcel , FaQrcode } from 'react-icons/fa';
+import { FaSearch, FaPlus, FaFileExcel } from 'react-icons/fa';
 import { IoMdDownload } from 'react-icons/io';
 import Pagination from "../Ram/PageNext";
 import queryString from "query-string";
-import * as XLSX from "xlsx";
-import * as FileSaver from "file-saver";
-
 
 const DisplayRam = () => {
   const [ram, setRam] = useState([]);
@@ -21,17 +18,9 @@ const DisplayRam = () => {
     limit: 5,
     totalRows: 1,
   });
-  
   const [filters, setFilters] = useState({
     page: 0,
   });
-
-  const fileType =
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-  const fileExtension = ".xlsx";
-
-  const [searchTerm, setSearchTerm] = useState("");
-
 
   //hien thi danh sach
   useEffect(() => {
@@ -56,40 +45,13 @@ const DisplayRam = () => {
     });
   }
 
-  //phantrang
+  //import
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
       page: newPage,
     });
   }
-
-  //dowload
-  function handleDownload(csvData, fileName) {
-    const ws = XLSX.utils.json_to_sheet(csvData);
-    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const data = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data, fileName + fileExtension);
-  }
-
-//timkiem
-const handleSearch = (searchTerm) => {
-  const params = new URLSearchParams();
-  params.append("page", pagination.page);
-  params.append("search", searchTerm);
-
-  search(params.toString())
-    .then((response) => {
-      console.log(response.data);
-      setRam(response.data.content);
-      setPagination(response.data);
-    })
-    .catch((error) => {
-      console.log(`${error}`);
-    });
-};
-
  
   return (
     <section style={{marginLeft: '50px'}}>  
@@ -100,14 +62,14 @@ const handleSearch = (searchTerm) => {
         </div>
         <div class="row">
           <div class="row">
-
+            
           </div>        
           <div class="col-md-12">
 
             <form class="d-flex" role="search">
 
             <Link to="/ram/displayDelete">
-            <button class="btn btn-outline-success"  style={{ marginRight: '15px'}}>
+            <button class="btn btn-outline-success" type="submit" style={{ marginRight: '15px'}}>
                     <FontAwesomeIcon icon={faTrash} />
               </button>
             </Link>
@@ -117,15 +79,10 @@ const handleSearch = (searchTerm) => {
                 type="search"
                 placeholder="Search"
                 aria-label="Search"
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                />
-                <Link to="/ram/scan">
-                  <button class="btn btn-outline-success"  style={{ marginLeft: '15px'}}>
-                <FaQrcode  className="qr-icon" />
+              />
+              <button class="btn btn-outline-success" type="submit" style={{ marginLeft: '15px'}}>
+                <FaSearch className="search-icon" />
               </button>
-                </Link>
-              
 
             <Link to="/ram/new">
                 <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px',  marginLeft: '15px'}}>
@@ -139,12 +96,14 @@ const handleSearch = (searchTerm) => {
             </button>
             </Link>
 
-            <button type="button" class="btn btn-outline-success" onClick={() => handleDownload(ram, "RamFile")}>
+            <button type="button" class="btn btn-outline-success">
               <IoMdDownload className="download-icon" />
             </button>
 
             </form>
             <br />
+
+           
            
             <div class="table-wrap">
               <table class="table">

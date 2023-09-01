@@ -1,5 +1,4 @@
 package com.example.backend.controller.product_controller.controller;
-
 import com.example.backend.controller.product_controller.repository.CategoryRepository;
 import com.example.backend.controller.product_controller.service.impl.CategoryServiceImpl;
 import com.example.backend.entity.Category;
@@ -7,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @CrossOrigin("*")
@@ -51,12 +52,6 @@ public class CategoryController {
         categoryService.delete(category);
     }
 
-    @PutMapping("return/{id}")
-    public void returnS(@PathVariable("id") Integer id) {
-        Category category = categoryRepository.findById(id).orElse(null);
-        categoryService.returnDelete(category);
-    }
-
     @GetMapping("displayDelete")
     public Page<Category> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
@@ -68,6 +63,25 @@ public class CategoryController {
     public void returnDelete(@PathVariable("id") Integer id) {
         Category category = categoryRepository.findById(id).orElse(null);
         categoryService.returnDelete(category);
+    }
+
+    @PostMapping("import")
+    public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file){
+        try {
+            categoryService.importDataFromExcel(file);
+            return ResponseEntity.ok("Import Thành Công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok("Import Thất bại");
+        }
+    }
+
+    @GetMapping("search")
+    public Page<Category> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
+                            @RequestParam(value = "search",required = false) String search) {
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<Category> listCategory = categoryService.search(search, pageable);
+        return listCategory;
     }
 
 

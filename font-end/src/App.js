@@ -17,7 +17,14 @@ import DisplayBattery from "./components/product_component/Battery/Display";
 import FormAddOrUpdateBattery from "./components/product_component/Battery/FormAddOrUpdate";
 import ReturnDeleteBattery from "./components/product_component/Battery/ReturnDeleteBattery";
 import ImportBattery from "./components/product_component/Battery/ImportBattery";
-
+import DisplayCategory from "./components/product_component/Category/DisplayCategory";
+import CategoryDisplayReturn from "./components/product_component/Category/CategoryDisplayReturn";
+import ImportCategory from "./components/product_component/Category/ImportCategory";
+import AddCategory from "./components/product_component/Category/AddCategory";
+import DisplayCapacity from "./components/product_component/Capacity/DisplayCapacity";
+import CapacityReturn from "./components/product_component/Capacity/CapacityReturn";
+import DisplayImportCapacity from "./components/product_component/Capacity/DisplayImportCapacity";
+import SaveOrUpdateCapacity from "./components/product_component/Capacity/SaveOrUpdateCapacity";
 function App() {
   return (
     // <div className="App">
@@ -32,6 +39,16 @@ function App() {
           <Route path="/ram/scan" exact component={ScanRam} />
           <Route path="/ram/displayDelete" exact component={ReturnDeleteRam} />
           <Route path="/ram/:id" exact component={RamCreateOrUpdate} />
+
+          <Route path = "/category/display" exact component={DisplayCategory} />
+          <Route path="/category/displayDelete" exact component={CategoryDisplayReturn} />
+          <Route path="/category/im" exact component={ImportCategory} />
+          <Route path="/category/:id" exact component={AddCategory} />
+
+          <Route path = "/capacity/display" exact component={DisplayCapacity} />
+          <Route path="/capacity/displayDelete" exact component={CapacityReturn} />
+          <Route path= "/capacity/im" exact component={DisplayImportCapacity} />
+          <Route path="/capacity/:id" exact component={SaveOrUpdateCapacity} />
 
           <Route path="/size/getAll" exact component={DisplaySize} />
           <Route path="/size/im" exact component={ImportSize} />

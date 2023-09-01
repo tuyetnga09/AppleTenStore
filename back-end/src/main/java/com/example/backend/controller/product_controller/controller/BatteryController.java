@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/battery/")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin("*")
 public class BatteryController {
 
     @Autowired
