@@ -1,5 +1,4 @@
 package com.example.backend.controller.product_controller.controller;
-
 import com.example.backend.controller.product_controller.service.impl.ColorServiceImpl;
 import com.example.backend.entity.Color;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -25,6 +25,10 @@ import DisplayCapacity from "./components/product_component/Capacity/DisplayCapa
 import CapacityReturn from "./components/product_component/Capacity/CapacityReturn";
 import DisplayImportCapacity from "./components/product_component/Capacity/DisplayImportCapacity";
 import SaveOrUpdateCapacity from "./components/product_component/Capacity/SaveOrUpdateCapacity";
+import DisplayManufacture from "./components/product_component/Manufacture/DisplayManufacture";
+import ReturnManufacture from "./components/product_component/Manufacture/ReturnManufacture";
+import ImportManufacture from "./components/product_component/Manufacture/ImportManufacture";
+import SaveOrUpdateManufacture from "./components/product_component/Manufacture/SaveOrUpdateManufacture";
 function App() {
   return (
     // <div className="App">
@@ -49,6 +53,12 @@ function App() {
           <Route path="/capacity/displayDelete" exact component={CapacityReturn} />
           <Route path= "/capacity/im" exact component={DisplayImportCapacity} />
           <Route path="/capacity/:id" exact component={SaveOrUpdateCapacity} />
+
+          <Route path = "/manufacture/display" exact component={DisplayManufacture} />
+          <Route path="/manufacture/displayDelete" exact component={ReturnManufacture} />
+          <Route path= "/manufacture/im" exact component={ImportManufacture} />
+          <Route path="/manufacture/:id" exact component={SaveOrUpdateManufacture} />
+
 
           <Route path="/size/getAll" exact component={DisplaySize} />
           <Route path="/size/im" exact component={ImportSize} />

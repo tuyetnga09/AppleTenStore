@@ -1,8 +1,8 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.CapacityRepository;
-import com.example.backend.controller.product_controller.service.impl.CapacityServiceImpl;
-import com.example.backend.entity.Capacity;
+import com.example.backend.controller.product_controller.repository.ManufactureRepository;
+import com.example.backend.controller.product_controller.service.impl.ManufactureServiceImpl;
+import com.example.backend.entity.Manufacture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,52 +21,52 @@ import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/capacity/")
-public class CapacityController {
+@RequestMapping("/manufacture/")
+public class ManufactureController {
     @Autowired
-    private CapacityServiceImpl capacityService;
+    private ManufactureServiceImpl manufactureService;
     @Autowired
-    private CapacityRepository capacityRepository;
+    private ManufactureRepository manufactureRepository;
 
     @GetMapping("display")
-    public Page<Capacity> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public Page<Manufacture> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,2);
-        return capacityService.getAll(pageable);
+        return manufactureService.getAll(pageable);
     }
 
     @PostMapping("save")
-    public void save(@RequestBody Capacity capacity) {
-        capacityService.insert(capacity);
+    public void save(@RequestBody Manufacture manufacture) {
+        manufactureService.insert(manufacture);
     }
 
     @PutMapping("update/{id}")
-    public void update(@RequestBody Capacity capacity,@PathVariable("id") Integer id) {
-        capacity.setId(id);
-        capacityService.update(capacity, id);
+    public void update(@RequestBody Manufacture manufacture,@PathVariable("id") Integer id) {
+        manufacture.setId(id);
+        manufactureService.update(manufacture, id);
     }
     @PutMapping("delete/{id}")
     public void delete(@PathVariable("id") Integer id) {
-        Capacity capacity = capacityRepository.findById(id).orElse(null);
-        capacityService.delete(capacity);
+        Manufacture manufacture = manufactureRepository.findById(id).orElse(null);
+        manufactureService.delete(manufacture);
     }
 
     @GetMapping("displayDelete")
-    public Page<Capacity> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public Page<Manufacture> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Capacity> listCapacity= capacityService.getDelete(pageable);
-        return listCapacity;
+        Page<Manufacture> listManufacture= manufactureService.getDelete(pageable);
+        return listManufacture;
     }
 
     @GetMapping("return/{id}")
     public void returnDelete(@PathVariable("id") Integer id) {
-        Capacity capacity = capacityRepository.findById(id).orElse(null);
-        capacityService.returnDelete(capacity);
+        Manufacture manufacture  = manufactureRepository.findById(id).orElse(null);
+        manufactureService.returnDelete(manufacture);
     }
 
     @PostMapping("import")
     public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file){
         try {
-            capacityService.importDataFromExcel(file);
+            manufactureService.importDataFromExcel(file);
             return ResponseEntity.ok("Import Thành Công");
         } catch (Exception e) {
             e.printStackTrace();
@@ -75,11 +75,11 @@ public class CapacityController {
     }
 
     @GetMapping("search")
-    public Page<Capacity> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
+    public Page<Manufacture> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
                                  @RequestParam(value = "search",required = false) String search) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Capacity> listCapacity = capacityService.search(search, pageable);
-        return listCapacity;
+        Page<Manufacture> listManufacture = manufactureService.search(search, pageable);
+        return listManufacture;
     }
 
 
