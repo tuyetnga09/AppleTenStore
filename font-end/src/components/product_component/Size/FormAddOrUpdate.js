@@ -3,6 +3,7 @@ import { add, update, detail } from "../../../service/size.service";
 import { Input } from "reactstrap";
 import "../../../css/form.css";
 import {
+  Link,
   useHistory,
   useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
@@ -97,9 +98,9 @@ const FormAddOrUpdate = () => {
                 <Input type="submit" value={"SUBMIT"}></Input>
               </div>
               <button class="btn btn-light" type="button">
-                <a href="/size/getAll">
+                <Link to="/size/getAll">
                   <FontAwesomeIcon icon={faTimesCircle} />
-                </a>
+                </Link>
               </button>
             </div>
           </div>

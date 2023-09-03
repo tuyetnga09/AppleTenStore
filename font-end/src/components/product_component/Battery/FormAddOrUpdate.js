@@ -5,6 +5,7 @@ import "../../../css/form.css";
 import {
   useHistory,
   useParams,
+  Link,
 } from "react-router-dom/cjs/react-router-dom.min";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
@@ -97,9 +98,9 @@ const FormAddOrUpdate = () => {
                 <Input type="submit" value={"SUBMIT"}></Input>
               </div>
               <button class="btn btn-light" type="button">
-                <a href="/battery/getAll">
+                <Link to="/battery/getAll">
                   <FontAwesomeIcon icon={faTimesCircle} />
-                </a>
+                </Link>
               </button>
             </div>
           </div>

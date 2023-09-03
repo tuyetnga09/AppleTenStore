@@ -9,7 +9,7 @@ import {
   faEdit,
   faFileExcel,
   faPlus,
-  faSearch,
+  faQrcode,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
@@ -82,7 +82,7 @@ const Display = () => {
 
   return (
     <section className="ftco-section">
-      <div className="container">
+      <div>
         <div className="row justify-content-center">
           <div className="col-md-6 text-center mb-4">
             <h2 className="heading-section">Battery</h2>
@@ -109,13 +109,14 @@ const Display = () => {
                 name="key"
                 onChange={handleChange}
               />
-              <button
-                className="btn btn-outline-success"
-                type="submit"
-                style={{ marginLeft: "15px" }}
-              >
-                <FontAwesomeIcon icon={faSearch} className="search-icon" />
-              </button>
+              <Link to="/battery/scan">
+                <button
+                  className="btn btn-outline-success"
+                  style={{ marginLeft: "15px" }}
+                >
+                  <FontAwesomeIcon icon={faQrcode} className="search-icon" />
+                </button>
+              </Link>
               <Link to="/battery/new">
                 <button
                   type="button"

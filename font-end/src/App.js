@@ -13,10 +13,12 @@ import DisplaySize from "./components/product_component/Size/Display";
 import FormAddOrUpdateSize from "./components/product_component/Size/FormAddOrUpdate";
 import ReturnDeleteSize from "./components/product_component/Size/ReturnDeleteSize";
 import ImportSize from "./components/product_component/Size/ImportSize";
+import ScanSize from "./components/product_component/Size/DisplayScanQR";
 import DisplayBattery from "./components/product_component/Battery/Display";
 import FormAddOrUpdateBattery from "./components/product_component/Battery/FormAddOrUpdate";
 import ReturnDeleteBattery from "./components/product_component/Battery/ReturnDeleteBattery";
 import ImportBattery from "./components/product_component/Battery/ImportBattery";
+import ScanBattery from "./components/product_component/Battery/DisplayScanQR";
 import DisplayCategory from "./components/product_component/Category/DisplayCategory";
 import CategoryDisplayReturn from "./components/product_component/Category/CategoryDisplayReturn";
 import ImportCategory from "./components/product_component/Category/ImportCategory";
@@ -44,24 +46,44 @@ function App() {
           <Route path="/ram/displayDelete" exact component={ReturnDeleteRam} />
           <Route path="/ram/:id" exact component={RamCreateOrUpdate} />
 
-          <Route path = "/category/display" exact component={DisplayCategory} />
-          <Route path="/category/displayDelete" exact component={CategoryDisplayReturn} />
+          <Route path="/category/display" exact component={DisplayCategory} />
+          <Route
+            path="/category/displayDelete"
+            exact
+            component={CategoryDisplayReturn}
+          />
           <Route path="/category/im" exact component={ImportCategory} />
           <Route path="/category/:id" exact component={AddCategory} />
 
-          <Route path = "/capacity/display" exact component={DisplayCapacity} />
-          <Route path="/capacity/displayDelete" exact component={CapacityReturn} />
-          <Route path= "/capacity/im" exact component={DisplayImportCapacity} />
+          <Route path="/capacity/display" exact component={DisplayCapacity} />
+          <Route
+            path="/capacity/displayDelete"
+            exact
+            component={CapacityReturn}
+          />
+          <Route path="/capacity/im" exact component={DisplayImportCapacity} />
           <Route path="/capacity/:id" exact component={SaveOrUpdateCapacity} />
 
-          <Route path = "/manufacture/display" exact component={DisplayManufacture} />
-          <Route path="/manufacture/displayDelete" exact component={ReturnManufacture} />
-          <Route path= "/manufacture/im" exact component={ImportManufacture} />
-          <Route path="/manufacture/:id" exact component={SaveOrUpdateManufacture} />
-
+          <Route
+            path="/manufacture/display"
+            exact
+            component={DisplayManufacture}
+          />
+          <Route
+            path="/manufacture/displayDelete"
+            exact
+            component={ReturnManufacture}
+          />
+          <Route path="/manufacture/im" exact component={ImportManufacture} />
+          <Route
+            path="/manufacture/:id"
+            exact
+            component={SaveOrUpdateManufacture}
+          />
 
           <Route path="/size/getAll" exact component={DisplaySize} />
           <Route path="/size/im" exact component={ImportSize} />
+          <Route path="/size/scan" exact component={ScanSize} />
           <Route
             path="/size/displayDelete"
             exact
@@ -71,6 +93,7 @@ function App() {
 
           <Route path="/battery/getAll" exact component={DisplayBattery} />
           <Route path="/battery/im" exact component={ImportBattery} />
+          <Route path="/battery/scan" exact component={ScanBattery} />
           <Route
             path="/battery/displayDelete"
             exact
