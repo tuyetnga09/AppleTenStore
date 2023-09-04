@@ -31,6 +31,12 @@ import DisplayManufacture from "./components/product_component/Manufacture/Displ
 import ReturnManufacture from "./components/product_component/Manufacture/ReturnManufacture";
 import ImportManufacture from "./components/product_component/Manufacture/ImportManufacture";
 import SaveOrUpdateManufacture from "./components/product_component/Manufacture/SaveOrUpdateManufacture";
+import DisplayChip from "./components/product_component/Chip/DisplayChip";
+import ImportChip from "./components/product_component/Chip/DisplayImportChip";
+import AddChip from "./components/product_component/Chip/DislayChipCreate";
+import ChipDisplayReturn from "./components/product_component/Chip/DisplayReturnDelete";
+import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
+
 function App() {
   return (
     // <div className="App">
@@ -108,6 +114,16 @@ function App() {
             component={ScreenDeleteScreen}
           />
           <Route path="/screen/:id" exact component={ScreenCreateOrUpdate} />
+
+          <Route path="/chip/getAll" exact component={DisplayChip} />
+          <Route
+            path="/chip/displayDelete"
+            exact
+            component={ChipDisplayReturn}
+          />
+          <Route path="/chip/im" exact component={ImportChip} />
+          <Route path="/chip/:id" exact component={AddChip} />
+          <Route path="/chip/scan" exact component={ScanChip} />
         </Switch>
         {/* </div> */}
       </Router>
