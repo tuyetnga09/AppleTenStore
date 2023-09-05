@@ -24,4 +24,5 @@ public class Battery extends DuplicateAttribute implements Identify {
     private String code;
 
     private String name;
+
 }

@@ -84,7 +84,7 @@ const FormAddOrUpdate = () => {
               value={sizeItem.name || ""}
               onChange={handleChange}
               id="name"
-              name="name"
+                name="name"
             ></Input>
             <div className="underline"></div>
             <label htmlFor="">Name</label>

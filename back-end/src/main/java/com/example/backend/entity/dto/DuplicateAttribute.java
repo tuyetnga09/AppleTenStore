@@ -15,11 +15,10 @@ import lombok.Setter;
 @MappedSuperclass
 //@EntityListeners(CreateDTOEntityListener.class)
 public abstract class DuplicateAttribute extends Auto_properties implements Identify {
+
     @Id
     @Column(length = 10, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-
 
 }

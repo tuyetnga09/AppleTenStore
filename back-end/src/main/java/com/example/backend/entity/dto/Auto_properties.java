@@ -13,12 +13,16 @@ import java.util.Date;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auto_properties {
+
     @Column(name = "person_create")
     private String  personCreate;
+
     @Column(name = "person_update")
     private String personUpdate;
+
     @Column(name = "date_create")
     private Date dateCreate;
+
     @Column(name = "date_update")
     private Date dateUpdate;
 

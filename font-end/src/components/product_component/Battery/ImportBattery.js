@@ -9,6 +9,7 @@ const ImportBattery = () => {
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
+    console.log(file);
   };
 
   const history = useHistory();

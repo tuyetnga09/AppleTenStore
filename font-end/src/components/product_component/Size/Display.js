@@ -10,7 +10,7 @@ import {
   faFileExcel,
   faPlus,
   faQrcode,
-  faTrash,
+    faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
 import Pagination from "../Size/Paging.js";
