@@ -60,7 +60,8 @@ const DisplayScreenCreateOrUpdate = () => {
 
 
     return (
-        <div className="container">
+      <div className="bodyform">
+      <div className="containerForm">
           {title}
           <form onSubmit={handleSubmit}>
             <div className="form-row">
@@ -108,6 +109,7 @@ const DisplayScreenCreateOrUpdate = () => {
               </div>
             </div>
           </form>
+        </div>
         </div>
       );
 };

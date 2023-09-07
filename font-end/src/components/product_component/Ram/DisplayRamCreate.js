@@ -60,53 +60,56 @@ const DisplayRamCreate = () => {
 
 
     return (
-        <div className="container">
-          {title}
-          <form onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="input-data">
-                <Input
-                  type="text"
-                  required
-                  value={RamItems.code || ""}
-                  onChange={handleChange}
-                  id="code"
-                  name="code"
-                ></Input>
-                <div className="underline"></div>
-                <label htmlFor="">Code</label>
-              </div>
-              <br />
-              <div className="input-data">
-                <Input
-                  type="text"
-                  required
-                  value={RamItems.name || ""}
-                  onChange={handleChange}
-                  id="name"
-                  name="name"
-                ></Input>
-                <div className="underline"></div>
-                <label htmlFor="">Name</label>
-              </div>
-            </div>
-            <div className="form-row">
-              <div className="input-data textarea">
-                <div className="form-row submit-btn">
+      <div className="bodyform">
+          <div className="containerForm">
+              {title}
+              <form onSubmit={handleSubmit}>
+                <div className="form-row">
                   <div className="input-data">
-                    <div className="inner"></div>
-                    <Input type="submit" value={"SUBMIT"}></Input>
+                    <Input
+                      type="text"
+                      required
+                      value={RamItems.code || ""}
+                      onChange={handleChange}
+                      id="code"
+                      name="code"
+                    ></Input>
+                    <div className="underline"></div>
+                    <label htmlFor="">Code</label>
                   </div>
-                  <button class="btn btn-light">
-                    <a href="/ram/display">
-                        <FontAwesomeIcon icon={faTimesCircle} />
-                    </a>
-                  </button>
+                  <br />
+                  <div className="input-data">
+                    <Input
+                      type="text"
+                      required
+                      value={RamItems.name || ""}
+                      onChange={handleChange}
+                      id="name"
+                      name="name"
+                    ></Input>
+                    <div className="underline"></div>
+                    <label htmlFor="">Name</label>
+                  </div>
                 </div>
-              </div>
+                <div className="form-row">
+                  <div className="input-data textarea">
+                    <div className="form-row submit-btn">
+                      <div className="input-data">
+                        <div className="inner"></div>
+                        <Input type="submit" value={"SUBMIT"}></Input>
+                      </div>
+                      <button class="btn btn-light">
+                        <a href="/ram/display">
+                            <FontAwesomeIcon icon={faTimesCircle} />
+                        </a>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
+      </div>
+       
       );
 };
 export default DisplayRamCreate;

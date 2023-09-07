@@ -56,8 +56,9 @@ const DisplayReturnDelete = () => {
  
 
   return (
-    <section class="ftco-section">
-      <div class="">
+    <div className="bodyform">
+       <section class="ftco-section">  
+      <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-6 text-center mb-4">
             <h2 class="heading-section">RAM DELETE</h2>
@@ -152,6 +153,7 @@ const DisplayReturnDelete = () => {
         <Pagination pagination={pagination} onPageChange={handlePageChange} />
       </div>
     </section>
+    </div>
   );
 };
 export default DisplayReturnDelete;

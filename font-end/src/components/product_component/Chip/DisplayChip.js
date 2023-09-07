@@ -81,8 +81,9 @@ const Display = () => {
   }
 
   return (
-    <section className="ftco-section">
-      <div>
+    <div className="bodyform">
+    <section class="ftco-section">  
+   <div class="container">
         <div className="row justify-content-center">
           <div className="col-md-6 text-center mb-4">
             <h2 className="heading-section">Chip</h2>
@@ -213,6 +214,7 @@ const Display = () => {
         <Pagination pagination={pagination} onPageChange={handlePageChange} />
       </div>
     </section>
+    </div>
   );
 };
 export default Display;

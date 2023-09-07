@@ -54,7 +54,9 @@ const DisplayCapacity = () => {
   }
  
   return (
-    <section style={{marginLeft: '50px'}}>  
+    <div className="bodyform">
+    <section class="ftco-section">  
+   <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-3 text-center mb-3">
             <h2 class="heading-section">Capacity</h2>
@@ -157,8 +159,9 @@ const DisplayCapacity = () => {
           </div>
         </div>
         <Pagination pagination={pagination} onPageChange={handlePageChange} />
-     
+        </div>
     </section>
+    </div>
   );
 };
 export default DisplayCapacity;

@@ -60,7 +60,8 @@ const SaveOrUpdateCapacity = () => {
 
 
     return (
-        <div className="container">
+      <div className="bodyform">
+      <div className="containerForm">
           {title}
           <form onSubmit={handleSubmit}>
             <div className="form-row">
@@ -106,6 +107,7 @@ const SaveOrUpdateCapacity = () => {
               </div>
             </div>
           </form>
+        </div>
         </div>
       );
 };

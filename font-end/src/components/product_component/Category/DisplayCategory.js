@@ -53,7 +53,9 @@ const DisplayCategory = () => {
   }
  
   return (
-    <section style={{ marginLeft: "50px" }}>
+    <div className="bodyform">
+    <section class="ftco-section">  
+   <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-3 text-center mb-3">
           <h2 class="heading-section">Category</h2>
@@ -82,7 +84,7 @@ const DisplayCategory = () => {
             >
               <FaSearch className="search-icon" />
             </button>
-            <Link to="/ram/new">
+            <Link to="/category/new">
                 <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px',  marginLeft: '15px'}}>
                 <FaPlus className="add-icon" />
               </button>
@@ -163,7 +165,9 @@ const DisplayCategory = () => {
         </div>
       </div>
       <Pagination pagination={pagination} onPageChange={handlePageChange} />
+      </div>
     </section>
+    </div>
   );
 };
 export default DisplayCategory;

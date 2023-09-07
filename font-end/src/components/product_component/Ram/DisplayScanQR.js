@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const DisplayScanQR = () => {
 
 //   const [showCamera, setShowCamera] = useState(true);
-  const [scannedData, setScannedData] = useState(null);
+  const [scannedData, setScannedData] = useState("");
 //   const [qrData, setQrData] = useState(null);
 
 //   const history = useHistory();
@@ -36,10 +36,10 @@ const DisplayScanQR = () => {
     //         console.error("Error saving data:", error);
     //       });
     //   }
-    }
+    };
 
   const handleError = (error) => {
-    console.log(error);
+    console.log("QR Code Scanner Error:", error);
   };
 
 //   const toggleCamera = () => {
@@ -85,7 +85,7 @@ const DisplayScanQR = () => {
                 delay={300}
                 onError={handleError}
                 onScan={handleScan}
-                style={{ width: '200px' }}
+                style={{ width: '100%' }}
               />
             {/* )} */}
             <h3>DATA SCAN: {scannedData}</h3>

@@ -38,6 +38,8 @@ import ChipDisplayReturn from "./components/product_component/Chip/DisplayReturn
 import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 
+import TrangChu from "./components/Page_Comeponet/TrangChu";
+
 function App() {
   return (
     // <div className="App">
@@ -47,6 +49,9 @@ function App() {
       <Router>
         {/* <div className="container"> */}
         <Switch>
+          
+          <Route path="/" exact component={TrangChu} />
+
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -127,6 +132,9 @@ function App() {
           <Route path="/chip/scan" exact component={ScanChip} />
 
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
+
+         
+
         </Switch>
         {/* </div> */}
       </Router>
