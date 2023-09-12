@@ -42,12 +42,8 @@ import TrangChu from "./components/Page_Comeponet/TrangChu";
 
 function App() {
   return (
-    // <div className="App">
-    //   <h1>Wellcome to React Project</h1>
-    // </div>
     <div>
       <Router>
-        {/* <div className="container"> */}
         <Switch>
           
           <Route path="/" exact component={TrangChu} />
@@ -136,7 +132,6 @@ function App() {
          
 
         </Switch>
-        {/* </div> */}
       </Router>
     </div>
   );
