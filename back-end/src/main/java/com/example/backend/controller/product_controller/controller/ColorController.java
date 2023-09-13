@@ -3,6 +3,7 @@ package com.example.backend.controller.product_controller.controller;
 import com.example.backend.controller.product_controller.repository.ColorRepository;
 import com.example.backend.controller.product_controller.service.impl.ColorServiceImpl;
 import com.example.backend.entity.Color;
+import com.example.backend.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -90,4 +91,7 @@ public class ColorController {
         Page<Color> listColor = colorService.getAll(pageable);
         return listColor;
     }
+
+
+
 }

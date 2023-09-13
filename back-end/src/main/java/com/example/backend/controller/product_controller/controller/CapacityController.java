@@ -3,10 +3,12 @@ package com.example.backend.controller.product_controller.controller;
 import com.example.backend.controller.product_controller.repository.CapacityRepository;
 import com.example.backend.controller.product_controller.service.impl.CapacityServiceImpl;
 import com.example.backend.entity.Capacity;
+import com.example.backend.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +32,11 @@ public class CapacityController {
 
     @GetMapping("display")
     public Page<Capacity> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,2);
-        return capacityService.getAll(pageable);
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<Capacity> listCapacity = capacityService.getAll(pageable);
+        return listCapacity;
     }
+
 
     @PostMapping("save")
     public void save(@RequestBody Capacity capacity) {
@@ -40,10 +44,11 @@ public class CapacityController {
     }
 
     @PutMapping("update/{id}")
-    public void update(@RequestBody Capacity capacity,@PathVariable("id") Integer id) {
+    public void update(@RequestBody Capacity capacity, @PathVariable("id") Integer id) {
         capacity.setId(id);
-        capacityService.update(capacity, id);
+        capacityService.insert(capacity);
     }
+
     @PutMapping("delete/{id}")
     public void delete(@PathVariable("id") Integer id) {
         Capacity capacity = capacityRepository.findById(id).orElse(null);
@@ -81,6 +86,11 @@ public class CapacityController {
         Page<Capacity> listCapacity = capacityService.search(search, pageable);
         return listCapacity;
     }
+    @GetMapping("{id}")
+    public ResponseEntity<Capacity> detail(@PathVariable("id") Integer id){
+        return new ResponseEntity<>(capacityRepository.findById(id).orElse(null), HttpStatus.OK);
+    }
+
 
 
 }

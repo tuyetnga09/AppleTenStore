@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends IProductRepository {
 
-    @Query(value = "select * from product", nativeQuery = true)
+    @Query(value = "select * from product ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Product> getAllPage(Pageable pageable);
 }
