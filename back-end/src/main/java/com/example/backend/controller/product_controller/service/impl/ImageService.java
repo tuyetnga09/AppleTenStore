@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 @Service
 public class ImageService implements Iservice<Image> {
 
-    private static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/font-end/src/imageUpload";
+    private static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/font-end/src/imageUpload";
 
     @Autowired
     private ImageRepository repository;
@@ -33,6 +33,11 @@ public class ImageService implements Iservice<Image> {
         // null
     }
 
+    @Override
+    public void update(Image image, Integer id) {
+        // null
+    }
+
 
     public void insert(MultipartFile imageFile) throws IOException {
         Path path = Paths.get(UPLOAD_DIRECTORY, imageFile.getOriginalFilename());
@@ -42,8 +47,12 @@ public class ImageService implements Iservice<Image> {
         this.repository.save(image);
     }
 
-    @Override
-    public void update(Image image, Integer id) {
+    public void update(MultipartFile imageFile, Integer id) throws IOException {
+        Path path = Paths.get(UPLOAD_DIRECTORY, imageFile.getOriginalFilename());
+        File fileImage = new File(path.toString());
+        Files.write(path, imageFile.getBytes());
+        Image image = new Image(imageFile.getOriginalFilename(), fileImage.getAbsolutePath());
+        this.repository.save(image);
         this.repository.save(image);
     }
 
