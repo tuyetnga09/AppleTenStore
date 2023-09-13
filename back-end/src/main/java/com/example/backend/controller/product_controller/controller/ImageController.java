@@ -10,7 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.print.attribute.standard.Media;
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @CrossOrigin("*")
@@ -32,7 +38,8 @@ public class ImageController {
     }
 
     @PutMapping("/update/{id}")
-    public void update(@RequestBody MultipartFile image, @PathVariable("id") Integer id) throws IOException {
+    public void update(@RequestBody Image image, @PathVariable("id") Integer id) {
+        image.setId(id);
         this.service.update(image, id);
     }
 

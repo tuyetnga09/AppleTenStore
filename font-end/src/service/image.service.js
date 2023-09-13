@@ -10,10 +10,6 @@ export const readAll = (page) => {
     return httpClient.get(`/image/getAll?${page}`);
 };
 
-export const getAll = () => {
-    return httpClient.get(`/image/getAll`);
-};
-
 export const returnDeleteAll = (page) => {
     return httpClient.get(`/image/displayDelete?${page}`);
 };
