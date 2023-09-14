@@ -37,6 +37,9 @@ import AddChip from "./components/product_component/Chip/DislayChipCreate";
 import ChipDisplayReturn from "./components/product_component/Chip/DisplayReturnDelete";
 import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
+import DisplayImei from "./components/product_component/Imei/Display";
+import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
+import ImportImei from "./components/product_component/Imei/ImportImei";
 
 import TrangChu from "./components/Page_Comeponet/TrangChu";
 
@@ -45,7 +48,6 @@ function App() {
     <div>
       <Router>
         <Switch>
-          
           <Route path="/" exact component={TrangChu} />
 
           <Route path="/ram/display" exact component={RamDisplay} />
@@ -129,8 +131,13 @@ function App() {
 
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
 
-         
-
+          <Route path="/imei/getAll" exact component={DisplayImei} />
+          <Route path="/imei/im" exact component={ImportImei} />
+          <Route
+            path="/imei/displayDelete"
+            exact
+            component={ReturnDeleteImei}
+          />
         </Switch>
       </Router>
     </div>
