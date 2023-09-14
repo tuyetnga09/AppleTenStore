@@ -2,12 +2,10 @@ package com.example.backend.controller.product_controller.controller;
 import com.example.backend.controller.product_controller.repository.CategoryRepository;
 import com.example.backend.controller.product_controller.service.impl.CategoryServiceImpl;
 import com.example.backend.entity.Category;
-import com.example.backend.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,8 +84,5 @@ public class CategoryController {
         return listCategory;
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Category> detail(@PathVariable("id") Integer id){
-        return new ResponseEntity<>(categoryRepository.findById(id).orElse(null), HttpStatus.OK);
-    }
+
 }

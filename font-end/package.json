@@ -20,6 +20,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "5.0.1",
     "reactstrap": "^9.2.0",
+    "src": "^1.1.2",
     "web-vitals": "^2.1.4",
     "xlsx": "^0.18.5"
   },
