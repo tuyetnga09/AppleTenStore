@@ -10,21 +10,6 @@ import {useHistory, useParams} from "react-router-dom";
 
 const ImageFormAddOrUpdate = () => {
     const [file, setFile] = useState(null);
-    // const {id} = useParams()
-    // const title = (
-    //     <div className="text">{id !== "new" ? "Edit Size" : "Add Size"}</div>
-    // );
-
-    // useEffect(() => {
-    //     if (id !== "new") {
-    //         detail(id).then((response) => {
-    //             setImageItem(response.data);
-    //             console.log(imageItem);
-    //         }).catch((error) => {
-    //             console.log(`${error}`)
-    //         })
-    //     }
-    // });
 
     function handleChange(event) {
         setFile(event.target.files[0]);

@@ -39,6 +39,7 @@ import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 
 import TrangChu from "./components/Page_Comeponet/TrangChu";
+import Display from "./components/product_component/image/Display";
 
 function App() {
   return (
@@ -127,9 +128,8 @@ function App() {
           <Route path="/chip/:id" exact component={AddChip} />
           <Route path="/chip/scan" exact component={ScanChip} />
 
+          <Route path="/image/display" exact component={Display} />
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
-
-         
 
         </Switch>
       </Router>
