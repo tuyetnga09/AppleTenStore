@@ -61,53 +61,53 @@ const FormAddOrUpdate = () => {
 
   return (
     <div className="bodyform">
-    <div className="containerForm">
-      {title}
-      <form onSubmit={handleSubmit}>
-        <div className="form-row">
-          <div className="input-data">
-            <Input
-              type="text"
-              required
-              value={colorItem.code || ""}
-              onChange={handleChange}
-              id="code"
-              name="code"
-            ></Input>
-            <div className="underline"></div>
-            <label htmlFor="">Code</label>
-          </div>
-          <br />
-          <div className="input-data">
-            <Input
-              type="text"
-              required
-              value={colorItem.name || ""}
-              onChange={handleChange}
-              id="name"
-              name="name"
-            ></Input>
-            <div className="underline"></div>
-            <label htmlFor="">Name</label>
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="input-data textarea">
-            <div className="form-row submit-btn">
-              <div className="input-data">
-                <div className="inner"></div>
-                <Input type="submit" value={"SUBMIT"}></Input>
-              </div>
-              <button class="btn btn-light" type="button">
-                <Link to="/color/getAll">
-                  <FontAwesomeIcon icon={faTimesCircle} />
-                </Link>
-              </button>
+      <div className="containerForm">
+        {title}
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={colorItem.code || ""}
+                onChange={handleChange}
+                id="code"
+                name="code"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Code</label>
+            </div>
+            <br />
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={colorItem.name || ""}
+                onChange={handleChange}
+                id="name"
+                name="name"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Name</label>
             </div>
           </div>
-        </div>
-      </form>
-    </div>
+          <div className="form-row">
+            <div className="input-data textarea">
+              <div className="form-row submit-btn">
+                <div className="input-data">
+                  <div className="inner"></div>
+                  <Input type="submit" value={"SUBMIT"}></Input>
+                </div>
+                <button class="btn btn-light" type="button">
+                  <Link to="/color/getAll">
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                  </Link>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

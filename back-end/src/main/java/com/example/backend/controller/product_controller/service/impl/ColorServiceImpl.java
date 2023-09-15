@@ -20,8 +20,6 @@ import java.util.Date;
 public class ColorServiceImpl implements Iservice<Color> {
     @Autowired
     private ColorRepository  colorRepository;
-
-
     @Override
     public Page<Color> getAll(Pageable pageable) {
         return colorRepository.findAll(pageable);
@@ -37,10 +35,10 @@ public class ColorServiceImpl implements Iservice<Color> {
     }
 
     @Override
-    public void update(Color color, Integer id) {
+    public void update(Color chip, Integer id) {
         Color colorUpdate = colorRepository.findById(id).orElse(null);
-        colorUpdate.setCode(color.getCode());
-        colorUpdate.setName(colorUpdate.getName());
+        colorUpdate.setCode(chip.getCode());
+        colorUpdate.setName(chip.getName());
         colorRepository.save(colorUpdate);
     }
 
@@ -76,10 +74,8 @@ public class ColorServiceImpl implements Iservice<Color> {
             if(row.getRowNum() == 0){
                 continue;
             }
-
             String code = row.getCell(0).getStringCellValue();
             Color existingColor = colorRepository.findByCode(code);
-
             if(existingColor != null){
                 //Đã tồn tại
                 existingColor.setName(row.getCell(1).getStringCellValue());

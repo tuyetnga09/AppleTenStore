@@ -1,7 +1,5 @@
 package com.example.backend.controller.product_controller.repository;
 
-import com.example.backend.entity.Battery;
-import com.example.backend.entity.Capacity;
 import com.example.backend.entity.Color;
 import com.example.backend.entity.Ram;
 import com.example.backend.repository.IColorRepository;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ColorRepository extends IColorRepository {
+
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
             " FROM Color WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Color> findAll(Pageable  pageable);
@@ -30,6 +29,4 @@ public interface ColorRepository extends IColorRepository {
     Page<Color> search(Pageable pageable, String key);
 
     Color findByCode(String code);
-
-    Color findByName(String name);
 }
