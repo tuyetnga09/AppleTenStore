@@ -37,9 +37,9 @@ import AddChip from "./components/product_component/Chip/DislayChipCreate";
 import ChipDisplayReturn from "./components/product_component/Chip/DisplayReturnDelete";
 import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
-
-import TrangChu from "./components/Page_Comeponet/TrangChu";
 import Display from "./components/product_component/image/Display";
+import TrangChu from "./components/Page_Comeponet/TrangChu";
+
 
 function App() {
   return (
