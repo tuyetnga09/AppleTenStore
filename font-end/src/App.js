@@ -36,6 +36,11 @@ import ImportChip from "./components/product_component/Chip/DisplayImportChip";
 import AddChip from "./components/product_component/Chip/DislayChipCreate";
 import ChipDisplayReturn from "./components/product_component/Chip/DisplayReturnDelete";
 import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
+import DisplayColor from "./components/product_component/Color/DisplayColor";
+import ImportColor from "./components/product_component/Color/DisplayImportColor";
+import AddColor from "./components/product_component/Color/DislayColorCreate";
+import ColorDisplayReturn from "./components/product_component/Color/DisplayReturnDelete";
+import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 
 import TrangChu from "./components/Page_Comeponet/TrangChu";
@@ -45,7 +50,6 @@ function App() {
     <div>
       <Router>
         <Switch>
-          
           <Route path="/" exact component={TrangChu} />
 
           <Route path="/ram/display" exact component={RamDisplay} />
@@ -127,10 +131,17 @@ function App() {
           <Route path="/chip/:id" exact component={AddChip} />
           <Route path="/chip/scan" exact component={ScanChip} />
 
+          <Route path="/color/getAll" exact component={DisplayColor} />
+          <Route
+            path="/color/displayDelete"
+            exact
+            component={ColorDisplayReturn}
+          />
+          <Route path="/color/im" exact component={ImportColor} />
+          <Route path="/color/:id" exact component={AddColor} />
+          <Route path="/color/scan" exact component={ScanColor} />
+
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
-
-         
-
         </Switch>
       </Router>
     </div>
