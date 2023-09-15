@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.repository;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.entity.Capacity;
 import com.example.backend.repository.ICapacityRepository;
 import org.springframework.data.domain.Page;
@@ -17,4 +18,6 @@ public interface CapacityRepository extends ICapacityRepository {
 
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  FROM Capacity WHERE Status = 1", nativeQuery = true)
     Page<Capacity> deleteCapacity(Pageable pageable);
+
+    Capacity findByName(String name);
 }

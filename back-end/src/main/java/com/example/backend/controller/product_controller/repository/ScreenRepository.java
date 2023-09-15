@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.repository;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.entity.Screen;
 import com.example.backend.repository.IScreenRepository;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,6 @@ public interface ScreenRepository extends IScreenRepository {
     Page<Screen> deleteScreen(Pageable pageable);
 
     Screen findByCode(String code);
-
+    Screen findByName(String name);
 
 }

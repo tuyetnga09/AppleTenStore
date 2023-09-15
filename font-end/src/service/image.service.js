@@ -7,7 +7,7 @@ const config = {
 };
 
 export const readAll = (page) => {
-    return httpClient.get(`/image/getAll?${page}`);
+    return httpClient.get(`/image/display?${page}`);
 };
 
 export const returnDeleteAll = (page) => {

@@ -3,12 +3,10 @@ package com.example.backend.controller.product_controller.controller;
 import com.example.backend.controller.product_controller.repository.ManufactureRepository;
 import com.example.backend.controller.product_controller.service.impl.ManufactureServiceImpl;
 import com.example.backend.entity.Manufacture;
-import com.example.backend.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,9 +82,5 @@ public class ManufactureController {
         return listManufacture;
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Manufacture> detail(@PathVariable("id") Integer id){
-        return new ResponseEntity<>(manufactureRepository.findById(id).orElse(null), HttpStatus.OK);
-    }
 
 }

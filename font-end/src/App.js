@@ -42,15 +42,21 @@ import AddColor from "./components/product_component/Color/DislayColorCreate";
 import ColorDisplayReturn from "./components/product_component/Color/DisplayReturnDelete";
 import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
+import Display from "./components/product_component/image/Display"
 
-import TrangChu from "./components/Page_Comeponet/TrangChu";
+import Home from "./components/Page_Comeponet/TrangChu";
 
 function App() {
   return (
     <div>
       <Router>
         <Switch>
+<<<<<<< HEAD
           <Route path="/" exact component={TrangChu} />
+=======
+          
+          <Route path="/" exact component={Home} />
+>>>>>>> d3a9ef4a2e917b54ffbab02b7afcc4b4c4352903
 
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
@@ -131,6 +137,7 @@ function App() {
           <Route path="/chip/:id" exact component={AddChip} />
           <Route path="/chip/scan" exact component={ScanChip} />
 
+<<<<<<< HEAD
           <Route path="/color/getAll" exact component={DisplayColor} />
           <Route
             path="/color/displayDelete"
@@ -140,6 +147,12 @@ function App() {
           <Route path="/color/im" exact component={ImportColor} />
           <Route path="/color/:id" exact component={AddColor} />
           <Route path="/color/scan" exact component={ScanColor} />
+=======
+          <Route path="/image/display" exact component={Display} />
+          <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
+
+         
+>>>>>>> d3a9ef4a2e917b54ffbab02b7afcc4b4c4352903
 
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
         </Switch>

@@ -85,4 +85,14 @@ public class ColorController {
             return ResponseEntity.ok("Import Thất bại");
         }
     }
+
+
+    @GetMapping("search")
+    public Page<Color> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
+                            @RequestParam(value = "search",required = false) String search) {
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<Color> listColor = colorService.getAll(pageable);
+        return listColor;
+    }
+
 }
