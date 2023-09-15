@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "product")
 @Getter
@@ -25,6 +27,7 @@ public class Product  extends DuplicateAttribute implements Identify {
     private String name;
     private String description;
     private Integer quantity;
+    private BigDecimal price;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_capacity")
     private Capacity idcapacity;
@@ -60,6 +63,9 @@ public class Product  extends DuplicateAttribute implements Identify {
     @JoinColumn(name = "id_size")
     private Size idsize;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_image")
+    private Image idimage;
 
 
 }

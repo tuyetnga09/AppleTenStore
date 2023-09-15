@@ -37,8 +37,9 @@ import AddChip from "./components/product_component/Chip/DislayChipCreate";
 import ChipDisplayReturn from "./components/product_component/Chip/DisplayReturnDelete";
 import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
+import Display from "./components/product_component/image/Display"
 
-import TrangChu from "./components/Page_Comeponet/TrangChu";
+import Home from "./components/Page_Comeponet/TrangChu";
 
 function App() {
   return (
@@ -46,7 +47,7 @@ function App() {
       <Router>
         <Switch>
           
-          <Route path="/" exact component={TrangChu} />
+          <Route path="/" exact component={Home} />
 
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
@@ -127,6 +128,7 @@ function App() {
           <Route path="/chip/:id" exact component={AddChip} />
           <Route path="/chip/scan" exact component={ScanChip} />
 
+          <Route path="/image/display" exact component={Display} />
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
 
          

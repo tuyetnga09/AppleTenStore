@@ -21,5 +21,4 @@ public interface ImeiRepository extends IImeiRepository {
     @Query(value = "SELECT * FROM imei WHERE (Code_Imei like %?1% or id_product like %?1%) and Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Imei> search(Pageable pageable, String key);
 
-//    code_imei, id_product, Status
 }

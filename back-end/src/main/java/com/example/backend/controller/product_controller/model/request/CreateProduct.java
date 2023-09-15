@@ -4,13 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @ToString
 public class CreateProduct {
     private String codeProduct;
     private String nameProduct;
-    private Float price;
+    private BigDecimal price;
     private String description;
     private String battery;
     private String capacity;

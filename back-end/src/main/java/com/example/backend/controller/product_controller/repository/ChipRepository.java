@@ -26,4 +26,6 @@ public interface ChipRepository extends IChipRepository {
             " ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Chip> search(Pageable pageable, String key);
 
+    Chip findByName(String name);
+
 }

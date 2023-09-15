@@ -107,7 +107,7 @@ const Display = () => {
                                           <td>{image.id}</td>
                                           <td>{image.code}</td>
                                           <td>
-                                              <img src={`/imageUpload/` + image.name} width="100px" height="100px" alt=""/>
+                                              <img src={`/imageUpload/` + image.name} width="100px" height="100px" alt={image.name} />
                                           </td>
                                           <td>{image.name}</td>
                                           <td>
