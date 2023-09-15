@@ -20,25 +20,35 @@ import java.util.Date;
 public class ColorServiceImpl implements Iservice<Color> {
     @Autowired
     private ColorRepository  colorRepository;
+
+
     @Override
     public Page<Color> getAll(Pageable pageable) {
         return colorRepository.findAll(pageable);
     }
 
+    public Page<Color> getDelete(Pageable pageable, String key) {
+        return colorRepository.deleteColor(pageable, key);
+    }
+
     @Override
     public void insert(Color color) {
         colorRepository.save(color);
-
     }
 
     @Override
     public void update(Color color, Integer id) {
-        colorRepository.save(color);
+        Color colorUpdate = colorRepository.findById(id).orElse(null);
+        colorUpdate.setCode(color.getCode());
+        colorUpdate.setName(colorUpdate.getName());
+        colorRepository.save(colorUpdate);
     }
 
     @Override
     public void delete(Integer id) {
-        colorRepository.deleteById(id);
+        if (colorRepository.existsById(id)){
+            colorRepository.deleteById(id);
+        }
     }
 
     @Override
@@ -56,7 +66,6 @@ public class ColorServiceImpl implements Iservice<Color> {
     public Color getOne(Integer id) {
         return colorRepository.findById(id).get();
     }
-
 
     public void importDataFromExcel(MultipartFile file) throws Exception{
         InputStream inputStream = file.getInputStream();
@@ -94,8 +103,8 @@ public class ColorServiceImpl implements Iservice<Color> {
         workbook.close();
     }
 
-    public Page<Color> search(String search,Pageable pageable) {
-        return colorRepository.search(search ,pageable);
+    public Page<Color> search(Pageable pageable, String key) {
+        return colorRepository.search(pageable, key);
     }
 
 }
