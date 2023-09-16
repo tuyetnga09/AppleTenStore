@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.controller.product_controller.repository.ColorRepository;
 import com.example.backend.controller.product_controller.service.impl.ColorServiceImpl;
 import com.example.backend.entity.Color;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ public class ColorController {
     @Autowired
     private ColorServiceImpl colorService;
 
-    //1
     @GetMapping("{id}")
     public ResponseEntity<Color> detail(@PathVariable("id") Integer id){
         return new ResponseEntity<>(colorService.getOne(id), HttpStatus.OK);
@@ -85,7 +85,7 @@ public class ColorController {
             return ResponseEntity.ok("Import Thất bại");
         }
     }
-
+<<<<<<<<< Temporary merge branch 1
 
     @GetMapping("search")
     public Page<Color> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
@@ -94,5 +94,6 @@ public class ColorController {
         Page<Color> listColor = colorService.getAll(pageable);
         return listColor;
     }
-
+=========
+>>>>>>>>> Temporary merge branch 2
 }
