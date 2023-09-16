@@ -43,12 +43,6 @@ import ColorDisplayReturn from "./components/product_component/Color/DisplayRetu
 import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
-import DisplayColor from "./components/product_component/Color/DisplayColor";
-import ImportColor from "./components/product_component/Color/DisplayImportColor";
-import AddColor from "./components/product_component/Color/DislayColorCreate";
-import ColorDisplayReturn from "./components/product_component/Color/DisplayReturnDelete";
-import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
-
 import Home from "./components/Page_Comeponet/TrangChu";
 
 function App() {
@@ -58,7 +52,7 @@ function App() {
         <Switch>
           <Route path="/" exact component={Home} />
 
-          <Route path="/" exact component={TrangChu} />
+          {/* <Route path="/" exact component={TrangChu} /> */}
 
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
