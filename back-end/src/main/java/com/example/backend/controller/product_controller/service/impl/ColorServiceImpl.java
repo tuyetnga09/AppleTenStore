@@ -2,6 +2,7 @@ package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.repository.ColorRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
+import com.example.backend.entity.Chip;
 import com.example.backend.entity.Color;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -25,28 +26,20 @@ public class ColorServiceImpl implements Iservice<Color> {
         return colorRepository.findAll(pageable);
     }
 
-    public Page<Color> getDelete(Pageable pageable, String key) {
-        return colorRepository.deleteColor(pageable, key);
+    @Override
+    public void insert(Color color) {
+        colorRepository.save(color);
+
     }
 
     @Override
-    public void insert(Color color) {
+    public void update(Color color, Integer id) {
         colorRepository.save(color);
     }
 
     @Override
-    public void update(Color chip, Integer id) {
-        Color colorUpdate = colorRepository.findById(id).orElse(null);
-        colorUpdate.setCode(chip.getCode());
-        colorUpdate.setName(chip.getName());
-        colorRepository.save(colorUpdate);
-    }
-
-    @Override
     public void delete(Integer id) {
-        if (colorRepository.existsById(id)){
-            colorRepository.deleteById(id);
-        }
+        colorRepository.deleteById(id);
     }
 
     @Override
@@ -65,6 +58,7 @@ public class ColorServiceImpl implements Iservice<Color> {
         return colorRepository.findById(id).get();
     }
 
+
     public void importDataFromExcel(MultipartFile file) throws Exception{
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
@@ -74,8 +68,10 @@ public class ColorServiceImpl implements Iservice<Color> {
             if(row.getRowNum() == 0){
                 continue;
             }
+
             String code = row.getCell(0).getStringCellValue();
             Color existingColor = colorRepository.findByCode(code);
+
             if(existingColor != null){
                 //Đã tồn tại
                 existingColor.setName(row.getCell(1).getStringCellValue());
@@ -102,5 +98,7 @@ public class ColorServiceImpl implements Iservice<Color> {
     public Page<Color> search(Pageable pageable, String key) {
         return colorRepository.search(pageable, key);
     }
-
+    public Page<Color> getDelete(Pageable pageable, String key) {
+        return colorRepository.deleteColor(pageable, key);
+    }
 }
