@@ -85,7 +85,6 @@ public class ColorController {
             return ResponseEntity.ok("Import Thất bại");
         }
     }
-<<<<<<<<< Temporary merge branch 1
 
     @GetMapping("search")
     public Page<Color> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
@@ -94,6 +93,5 @@ public class ColorController {
         Page<Color> listColor = colorService.getAll(pageable);
         return listColor;
     }
-=========
->>>>>>>>> Temporary merge branch 2
+
 }
