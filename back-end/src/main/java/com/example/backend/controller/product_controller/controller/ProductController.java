@@ -3,12 +3,15 @@ package com.example.backend.controller.product_controller.controller;
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
 import com.example.backend.controller.product_controller.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.impl.ProductServiceImpl;
+import com.example.backend.entity.Imei;
+import com.example.backend.entity.Manufacture;
 import com.example.backend.entity.Product;
-import com.example.backend.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,4 +60,10 @@ public class ProductController {
         Product product = productRepository.findById(id).orElse(null);
         productService.returnDelete(product);
     }
+    @PutMapping("update/{id}")
+    public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id){
+        productService.update(product, id);
+        return new ResponseEntity<>("Update ok", HttpStatus.OK);
+    }
+
 }
