@@ -141,15 +141,6 @@ function App() {
 
           <Route path="/image/display" exact component={Display} />
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
-          <Route path="/color/getAll" exact component={DisplayColor} />
-          <Route
-            path="/color/displayDelete"
-            exact
-            component={ColorDisplayReturn}
-          />
-          <Route path="/color/im" exact component={ImportColor} />
-          <Route path="/color/:id" exact component={AddColor} />
-          <Route path="/color/scan" exact component={ScanColor} />
 
           <Route path="/color/getAll" exact component={DisplayColor} />
           <Route
