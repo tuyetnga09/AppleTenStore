@@ -51,12 +51,11 @@ function App() {
     <div>
       <Router>
         <Switch>
-<<<<<<<<< Temporary merge branch 1
           
           <Route path="/" exact component={Home} />
-=========
+
           <Route path="/" exact component={TrangChu} />
->>>>>>>>> Temporary merge branch 2
+
 
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
@@ -137,12 +136,10 @@ function App() {
           <Route path="/chip/:id" exact component={AddChip} />
           <Route path="/chip/scan" exact component={ScanChip} />
 
-<<<<<<<<< Temporary merge branch 1
           <Route path="/image/display" exact component={Display} />
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
 
-         
-=========
+
           <Route path="/color/getAll" exact component={DisplayColor} />
           <Route
             path="/color/displayDelete"
@@ -152,7 +149,6 @@ function App() {
           <Route path="/color/im" exact component={ImportColor} />
           <Route path="/color/:id" exact component={AddColor} />
           <Route path="/color/scan" exact component={ScanColor} />
->>>>>>>>> Temporary merge branch 2
 
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
         </Switch>
