@@ -2,7 +2,6 @@ package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.repository.ColorRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
-import com.example.backend.entity.Chip;
 import com.example.backend.entity.Color;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -95,10 +94,8 @@ public class ColorServiceImpl implements Iservice<Color> {
         workbook.close();
     }
 
-    public Page<Color> search(Pageable pageable, String key) {
-        return colorRepository.search(pageable, key);
+    public Page<Color> search(String search,Pageable pageable) {
+        return colorRepository.search(search ,pageable);
     }
-    public Page<Color> getDelete(Pageable pageable, String key) {
-        return colorRepository.deleteColor(pageable, key);
-    }
+
 }
