@@ -44,6 +44,9 @@ import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
 import Home from "./components/Page_Comeponet/TrangChu";
+import DisplayImei from "./components/product_component/Imei/Display";
+import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
+import ImportImei from "./components/product_component/Imei/ImportImei";
 
 function App() {
   return (
@@ -145,17 +148,13 @@ function App() {
           <Route path="/color/:id" exact component={AddColor} />
           <Route path="/color/scan" exact component={ScanColor} />
 
-          <Route path="/color/getAll" exact component={DisplayColor} />
+          <Route path="/imei/getAll" exact component={DisplayImei} />
+          <Route path="/imei/im" exact component={ImportImei} />
           <Route
-            path="/color/displayDelete"
-            exact
-            component={ColorDisplayReturn}
+              path="/imei/displayDelete"
+              exact
+              component={ReturnDeleteImei}
           />
-          <Route path="/color/im" exact component={ImportColor} />
-          <Route path="/color/:id" exact component={AddColor} />
-          <Route path="/color/scan" exact component={ScanColor} />
-
-          <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
         </Switch>
       </Router>
     </div>
