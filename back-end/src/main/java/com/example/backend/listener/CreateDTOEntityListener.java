@@ -1,8 +1,7 @@
 package com.example.backend.listener;
 
 import com.example.backend.entity.dto.DuplicateAttribute;
-
-import javax.persistence.PrePersist;
+import jakarta.persistence.PrePersist;
 
 
 public class CreateDTOEntityListener {
