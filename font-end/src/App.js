@@ -47,16 +47,16 @@ import Home from "./components/Page_Comeponet/TrangChu";
 import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";
-
+import chat from "./components/custumer_componet/ChatRoom";
+import product from "./components/custumer_componet/product_detail";
 function App() {
   return (
     <div>
       <Router>
         <Switch>
           <Route path="/" exact component={Home} />
-
-          {/* <Route path="/" exact component={TrangChu} /> */}
-
+          <Route path="/chat" exact component={chat} />
+          <Route path="/product" exact component={product} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -151,9 +151,9 @@ function App() {
           <Route path="/imei/getAll" exact component={DisplayImei} />
           <Route path="/imei/im" exact component={ImportImei} />
           <Route
-              path="/imei/displayDelete"
-              exact
-              component={ReturnDeleteImei}
+            path="/imei/displayDelete"
+            exact
+            component={ReturnDeleteImei}
           />
         </Switch>
       </Router>

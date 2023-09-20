@@ -1,9 +1,9 @@
 package com.example.backend.listener;
 
 import com.example.backend.entity.dto.Auto_properties;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import java.util.Date;
 
 public class AuditingEntityListener {
