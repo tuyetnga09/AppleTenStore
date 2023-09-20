@@ -26,4 +26,6 @@ public interface ListCart {
     String getQuantity();
 
 
+    @Value("#{target['Total']}")
+    String getTotal();
 }
