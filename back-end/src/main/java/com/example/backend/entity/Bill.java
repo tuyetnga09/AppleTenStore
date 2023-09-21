@@ -1,12 +1,14 @@
 package com.example.backend.entity;
 
 import com.example.backend.entity.dto.DuplicateAttribute;
+import com.example.backend.entity.dto.Identify;
 import com.example.backend.untils.StatusBill;
 import com.example.backend.untils.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -26,7 +28,7 @@ import java.math.BigDecimal;
 @Table(name = "bill")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Bill extends DuplicateAttribute {
+public class Bill extends DuplicateAttribute implements Identify {
     @Column(name = "code")
     private String code;
 
@@ -80,4 +82,18 @@ public class Bill extends DuplicateAttribute {
     @ManyToOne
     @JoinColumn(name = "id_account",referencedColumnName = "id")
     private Account account;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_payment")
+    private Payments payments;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cart")
+    private Cart cart;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_voucher")
+    private Voucher voucher;
+
+
 }
