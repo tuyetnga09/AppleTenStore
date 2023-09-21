@@ -6,6 +6,7 @@ import com.example.backend.controller.voucher_managment.model.request.UpdateVouc
 import com.example.backend.controller.voucher_managment.model.response.VoucherResponse;
 import com.example.backend.entity.Voucher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface VoucherService {
 
@@ -19,6 +20,6 @@ public interface VoucherService {
 
     Boolean changeStatus(Integer id);
 
-    Page<Voucher> getAll(FindVoucherRequest request);
+    Page<Voucher> getAll(FindVoucherRequest request, Pageable pageable);
 
 }

@@ -4,6 +4,7 @@ import com.example.backend.controller.voucher_managment.model.request.FindVouche
 import com.example.backend.controller.voucher_managment.model.request.UpdateVoucherRequest;
 import com.example.backend.controller.voucher_managment.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -50,8 +51,8 @@ public class VoucherRestController {
     }
 
     @GetMapping("/vouchers")
-    public ResponseEntity hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
-        return new ResponseEntity(voucherService.getAll(request), HttpStatus.OK);
+    public ResponseEntity hienThiVoucher(@ModelAttribute FindVoucherRequest request, Pageable pageable) {
+        return new ResponseEntity(voucherService.getAll(request, pageable ), HttpStatus.OK);
     }
 
 }

@@ -39,7 +39,7 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
             Root<Voucher> root = criteriaQuery.from(Voucher.class);
             criteriaQuery.select(root);
 
-            Path<Object> sortByField = root.get("createdAt");
+            Path<Object> sortByField = root.get("personCreate");
             Order orderByAscending = criteriaBuilder.desc(sortByField);
             criteriaQuery.orderBy(orderByAscending);
 
@@ -50,11 +50,12 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
             List<Predicate> predicates = new ArrayList<>();
 
             List<Predicate> countPredicates = new ArrayList<>();
-            Predicate predicate = getPredicate(root, Voucher.class, criteriaBuilder, request.getKeyword());
-            Predicate countPredicate = getPredicate(countRoot, Voucher.class, criteriaBuilder, request.getKeyword());
-
-            predicates.add(predicate);
-            countPredicates.add(countPredicate);
+            //Khi nao tim kiem thi cho vao
+//            Predicate predicate = getPredicate(root, Voucher.class, criteriaBuilder, request.getKeyword());
+//            Predicate countPredicate = getPredicate(countRoot, Voucher.class, criteriaBuilder, request.getKeyword());
+//
+//            predicates.add(predicate);
+//            countPredicates.add(countPredicate);
 
             if (request.getStatus() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("status"), request.getStatus()));
@@ -67,9 +68,9 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
             }
 
             Expression<Date> expression2 = criteriaBuilder.function("DATE", Date.class, countRoot.get("dateStart"));
-            Expression<Date> expression3 = criteriaBuilder.function("DATE", Date.class, countRoot.get("endDate"));
+            Expression<Date> expression3 = criteriaBuilder.function("DATE", Date.class, countRoot.get("dateEnd"));
             Expression<Date> expression = criteriaBuilder.function("DATE", Date.class, root.get("dateStart"));
-            Expression<Date> expression1 = criteriaBuilder.function("DATE", Date.class, root.get("endDate"));
+            Expression<Date> expression1 = criteriaBuilder.function("DATE", Date.class, root.get("dateEnd"));
             if (request.getDateStart() != null && request.getEndDate() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getDateStart()));
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getEndDate()));

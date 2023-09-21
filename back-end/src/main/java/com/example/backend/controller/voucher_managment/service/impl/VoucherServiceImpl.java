@@ -7,8 +7,11 @@ import com.example.backend.controller.voucher_managment.model.response.VoucherRe
 import com.example.backend.controller.voucher_managment.repository.VoucherRepository;
 import com.example.backend.controller.voucher_managment.service.VoucherService;
 import com.example.backend.entity.Voucher;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -73,6 +76,7 @@ public class VoucherServiceImpl implements VoucherService {
                 .valueMinimum(request.getValueMinimum())
                 .valueMaximum(request.getValueMaximum())
                 .quantity(request.getQuantity())
+                .conditionsApply(request.getConditionsApply())
                 .build();
         return voucherRepository.save(voucher);
     }
@@ -91,6 +95,7 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setValueMinimum(request.getValueMinimum());
             voucher.setQuantity(request.getQuantity());
             voucher.setTypeVoucher(request.getTypeVoucher());
+            voucher.setConditionsApply(request.getConditionsApply());
             voucher.setStatus(request.getStatus());
             return voucherRepository.save(voucher);
         }
@@ -113,8 +118,18 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<Voucher> getAll(FindVoucherRequest request) {
-        return null;
+    public Page<Voucher> getAll(FindVoucherRequest request, Pageable pageable) {
+        Specification<Voucher> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (request.getCode() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("code"), request.getCode()));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<Voucher> voucherPage = voucherRepository.findAll(pageable, request);
+         return voucherPage;
     }
+
 
 }
