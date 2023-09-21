@@ -42,4 +42,6 @@ public class Voucher extends DuplicateAttribute implements Identify {
 
     private Integer quantity;
 
+
+
 }
