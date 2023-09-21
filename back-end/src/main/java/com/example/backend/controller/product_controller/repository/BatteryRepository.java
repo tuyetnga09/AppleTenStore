@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface BatteryRepository extends IBatteryRepository {
 
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  FROM Battery WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
@@ -21,4 +23,8 @@ public interface BatteryRepository extends IBatteryRepository {
     Page<Battery> search(Pageable pageable, String key);
 
     Battery findByName(String name);
+
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
+            " FROM Battery WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    List<Battery> getAll();
 }

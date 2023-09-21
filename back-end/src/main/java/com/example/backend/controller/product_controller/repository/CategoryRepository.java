@@ -1,13 +1,13 @@
 package com.example.backend.controller.product_controller.repository;
 
-import com.example.backend.entity.Battery;
-import com.example.backend.entity.Capacity;
 import com.example.backend.entity.Category;
 import com.example.backend.repository.ICategoeyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface CategoryRepository extends ICategoeyRepository {
@@ -19,4 +19,7 @@ public interface CategoryRepository extends ICategoeyRepository {
     Page<Category> search(String search ,Pageable pageable);
     Category findByName(String name);
 
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
+            " FROM Category WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    List<Category> getAll();
 }

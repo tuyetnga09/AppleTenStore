@@ -2,21 +2,20 @@ package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.repository.RamRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
-import com.example.backend.entity.Category;
 import com.example.backend.entity.Ram;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class RamServiceImpl implements Iservice<Ram> {
@@ -27,6 +26,10 @@ public class RamServiceImpl implements Iservice<Ram> {
     @Override
     public Page<Ram> getAll(Pageable pageable) {
         return ramRepository.findAll(pageable);
+    }
+
+    public List<Ram> getAll() {
+        return ramRepository.getAll();
     }
 
     public Page<Ram> getDelete(Pageable pageable) {
@@ -72,26 +75,26 @@ public class RamServiceImpl implements Iservice<Ram> {
         return ramRepository.findById(id).get();
     }
 
-    public void importDataFromExcel(MultipartFile file) throws Exception{
+    public void importDataFromExcel(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
 
-        for (Row row: sheet){
-            if(row.getRowNum() == 0){
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
                 continue;
             }
 
             String code = row.getCell(0).getStringCellValue();
             Ram existingRam = ramRepository.findByCode(code);
 
-            if(existingRam != null){
+            if (existingRam != null) {
                 //Đã tồn tại
                 existingRam.setName(row.getCell(1).getStringCellValue());
                 existingRam.setDateUpdate(new Date());
                 existingRam.setPersonUpdate(row.getCell(3).getStringCellValue());
                 ramRepository.save(existingRam);
-            }else {
+            } else {
                 //Chưa tồn tại thêm mới
                 Ram newRam = new Ram();
                 newRam.setCode(code);
@@ -108,8 +111,8 @@ public class RamServiceImpl implements Iservice<Ram> {
         workbook.close();
     }
 
-    public Page<Ram> search(String search,Pageable pageable) {
-        return ramRepository.search(search ,pageable);
+    public Page<Ram> search(String search, Pageable pageable) {
+        return ramRepository.search(search, pageable);
     }
 
 }
