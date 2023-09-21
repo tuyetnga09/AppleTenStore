@@ -41,7 +41,7 @@ const Display = () => {
       .then((response) => {
         console.log(response.data);
         setDisplay(response.data.content);
-        setPagination(response.data);
+        setPagination(response.data); 
       })
       .catch((error) => {
         console.log(`${error}`);
