@@ -1,6 +1,7 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.service.impl.SizeServiceImpl;
+import com.example.backend.entity.Screen;
 import com.example.backend.entity.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/size/")
 @CrossOrigin("*")
@@ -31,6 +34,11 @@ public class SizeController {
     @GetMapping("{id}")
     public ResponseEntity<Size> detail(@PathVariable("id") Integer id){
         return new ResponseEntity<>(service.getOne(id), HttpStatus.OK);
+    }
+
+    @GetMapping("get-all-size")
+    public ResponseEntity<List<Size>> getAllSize() {
+        return new ResponseEntity<>(service.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("getAll")

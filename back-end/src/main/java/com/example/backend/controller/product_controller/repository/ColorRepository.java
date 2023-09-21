@@ -7,12 +7,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ColorRepository extends IColorRepository {
 
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
             " FROM Color WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Color> findAll(Pageable  pageable);
+
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
+            " FROM Color WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    List<Color> getAll();
 
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status " +
             " FROM Color WHERE (code like %?1% or name like %?1% or date_create like %?1% or date_update " +

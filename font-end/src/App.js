@@ -44,6 +44,8 @@ import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
 import Home from "./components/Page_Comeponet/TrangChu";
+import product from "./components/product_component/Product/Display";
+import Cproduct from "./components/product_component/Product/crud/create";
 
 function App() {
   return (
@@ -147,9 +149,14 @@ function App() {
           <Route path="/color/scan" exact component={ScanColor} />
 
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
+
+          <Route path="/product/display" exact component={product} />
+
+          <Route path="/cproduct/display" exact component={Cproduct} />
         </Switch>
       </Router>
     </div>
+    // </QueryClientProvider>
   );
 }
 

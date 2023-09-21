@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class SizeServiceImpl implements Iservice<Size> {
@@ -25,6 +26,10 @@ public class SizeServiceImpl implements Iservice<Size> {
     @Override
     public Page<Size> getAll(Pageable pageable) {
         return sizeRepository.findAll(pageable);
+    }
+
+    public List<Size> getAll() {
+        return sizeRepository.getAll();
     }
 
     public Page<Size> getDelete(Pageable pageable, String key) {
@@ -46,10 +51,11 @@ public class SizeServiceImpl implements Iservice<Size> {
 
     @Override
     public void delete(Integer id) {
-        if (sizeRepository.existsById(id)){
+        if (sizeRepository.existsById(id)) {
             sizeRepository.deleteById(id);
         }
     }
+
     @Override
     public void delete(Size size) {
         size.setStatus(1);
@@ -66,26 +72,26 @@ public class SizeServiceImpl implements Iservice<Size> {
         return sizeRepository.findById(id).get();
     }
 
-    public void importDataFromExcel(MultipartFile file) throws Exception{
+    public void importDataFromExcel(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
 
-        for (Row row: sheet){
-            if(row.getRowNum() == 0){
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
                 continue;
             }
 
             String code = row.getCell(0).getStringCellValue();
             Size existingSize = sizeRepository.findByCode(code);
 
-            if(existingSize != null){
+            if (existingSize != null) {
                 //Đã tồn tại
                 existingSize.setName(row.getCell(1).getStringCellValue());
                 existingSize.setDateUpdate(new Date());
                 existingSize.setPersonUpdate(row.getCell(3).getStringCellValue());
                 sizeRepository.save(existingSize);
-            }else {
+            } else {
                 //Chưa tồn tại thêm mới
                 Size newSize = new Size();
                 newSize.setCode(code);
