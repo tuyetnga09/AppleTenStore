@@ -19,4 +19,6 @@ public interface ProductRepository extends IProductRepository {
 
     @Query(value = "select * from product where status = 1", nativeQuery = true)
     Page<Product> getAllPageDelete(Pageable pageable);
+
+    Product findProductById(Integer id);
 }

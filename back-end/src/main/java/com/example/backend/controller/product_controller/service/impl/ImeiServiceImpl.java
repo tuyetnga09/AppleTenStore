@@ -1,6 +1,7 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.repository.ImeiRepository;
+import com.example.backend.controller.product_controller.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
@@ -23,6 +24,9 @@ public class ImeiServiceImpl implements Iservice<Imei> {
 
     @Autowired
     private ImeiRepository imeiRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public Page getAll(Pageable pageable) {
@@ -83,24 +87,28 @@ public class ImeiServiceImpl implements Iservice<Imei> {
             String code = String.valueOf((int) row.getCell(0).getNumericCellValue());
             Imei existingImei = imeiRepository.findByCodeImei(code);
 
-            if(existingImei != null){
-                //Đã tồn tại
-                existingImei.setDateUpdate(new Date());
-                existingImei.setPersonUpdate(row.getCell(3).getStringCellValue());
-                imeiRepository.save(existingImei);
+            if (productRepository.findProductById((int) row.getCell(1).getNumericCellValue()) != null){
+                if(existingImei != null){
+                    //Đã tồn tại
+                    existingImei.setDateUpdate(new Date());
+                    existingImei.setPersonUpdate(row.getCell(3).getStringCellValue());
+                    imeiRepository.save(existingImei);
+                }else {
+                    //Chưa tồn tại thêm mới
+                    Imei newImei = new Imei();
+                    Product product = new Product();
+                    product.setId((int) row.getCell(1).getNumericCellValue());
+                    newImei.setCodeImei(code);
+                    newImei.setIdProduct(product);
+                    newImei.setDateCreate(new Date());
+                    newImei.setDateUpdate(new Date());
+                    newImei.setPersonCreate(row.getCell(2).getStringCellValue());
+                    newImei.setPersonUpdate(row.getCell(3).getStringCellValue());
+                    newImei.setStatus(0);
+                    imeiRepository.save(newImei);
+                }
             }else {
-                //Chưa tồn tại thêm mới
-                Imei newImei = new Imei();
-                Product product = new Product();
-                product.setId((int) row.getCell(1).getNumericCellValue());
-                newImei.setCodeImei(code);
-                newImei.setIdProduct(product);
-                newImei.setDateCreate(new Date());
-                newImei.setDateUpdate(new Date());
-                newImei.setPersonCreate(row.getCell(2).getStringCellValue());
-                newImei.setPersonUpdate(row.getCell(3).getStringCellValue());
-                newImei.setStatus(0);
-                imeiRepository.save(newImei);
+                System.out.println("Product not found");
             }
         }
 
