@@ -1,7 +1,7 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
 
 import i18n from "./components/translation/i18n";
 import { I18nextProvider } from "react-i18next";
@@ -14,3 +14,4 @@ root.render(
     </I18nextProvider>
   </React.StrictMode>
 );
+

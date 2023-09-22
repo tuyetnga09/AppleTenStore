@@ -15,30 +15,45 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ColorServiceImpl implements Iservice<Color> {
     @Autowired
-    private ColorRepository  colorRepository;
+    private ColorRepository colorRepository;
+
+
     @Override
     public Page<Color> getAll(Pageable pageable) {
         return colorRepository.findAll(pageable);
     }
 
+    public List<Color> getAll() {
+        return colorRepository.getAll();
+    }
+
+    public Page<Color> getDelete(Pageable pageable, String key) {
+        return colorRepository.deleteColor(pageable, key);
+    }
+
     @Override
     public void insert(Color color) {
         colorRepository.save(color);
-
     }
 
     @Override
     public void update(Color color, Integer id) {
-        colorRepository.save(color);
+        Color colorUpdate = colorRepository.findById(id).orElse(null);
+        colorUpdate.setCode(color.getCode());
+        colorUpdate.setName(colorUpdate.getName());
+        colorRepository.save(colorUpdate);
     }
 
     @Override
     public void delete(Integer id) {
-        colorRepository.deleteById(id);
+        if (colorRepository.existsById(id)) {
+            colorRepository.deleteById(id);
+        }
     }
 
     @Override
@@ -57,27 +72,26 @@ public class ColorServiceImpl implements Iservice<Color> {
         return colorRepository.findById(id).get();
     }
 
-
-    public void importDataFromExcel(MultipartFile file) throws Exception{
+    public void importDataFromExcel(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
 
-        for (Row row: sheet){
-            if(row.getRowNum() == 0){
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
                 continue;
             }
 
             String code = row.getCell(0).getStringCellValue();
             Color existingColor = colorRepository.findByCode(code);
 
-            if(existingColor != null){
+            if (existingColor != null) {
                 //Đã tồn tại
                 existingColor.setName(row.getCell(1).getStringCellValue());
                 existingColor.setDateUpdate(new Date());
                 existingColor.setPersonUpdate(row.getCell(3).getStringCellValue());
                 colorRepository.save(existingColor);
-            }else {
+            } else {
                 //Chưa tồn tại thêm mới
                 Color newColor = new Color();
                 newColor.setCode(code);
@@ -94,8 +108,7 @@ public class ColorServiceImpl implements Iservice<Color> {
         workbook.close();
     }
 
-    public Page<Color> search(String search,Pageable pageable) {
-        return colorRepository.search(search ,pageable);
+    public Page<Color> search(Pageable pageable, String key) {
+        return colorRepository.search(pageable, key);
     }
-
 }

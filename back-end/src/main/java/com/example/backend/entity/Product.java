@@ -2,17 +2,17 @@ package com.example.backend.entity;
 
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
-import jakarta.persistence.Entity;
+
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity

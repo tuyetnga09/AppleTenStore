@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/screen/")
@@ -31,19 +33,24 @@ public class ScreenController {
     private ScreenRepository screenRepository;
 
     @GetMapping("{id}")
-    public ResponseEntity<Screen> detail(@PathVariable("id") Integer id){
+    public ResponseEntity<Screen> detail(@PathVariable("id") Integer id) {
         return new ResponseEntity<>(screenRepository.findById(id).orElse(null), HttpStatus.OK);
     }
 
+    @GetMapping("get-all-screen")
+    public ResponseEntity<List<Screen>> getAllScreen() {
+        return new ResponseEntity<>(screenService.getAll(), HttpStatus.OK);
+    }
+
     @GetMapping("display")
-    public Page<Screen> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public Page<Screen> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Screen> listScreen = screenService.getAll(pageable);
         return listScreen;
     }
 
     @GetMapping("displayDelete")
-    public Page<Screen> viewDelete(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public Page<Screen> viewDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Screen> listScreen = screenService.getDelete(pageable);
         return listScreen;
@@ -55,7 +62,7 @@ public class ScreenController {
     }
 
     @PutMapping("update/{id}")
-    public void update(@RequestBody Screen screen,@PathVariable("id") Integer id) {
+    public void update(@RequestBody Screen screen, @PathVariable("id") Integer id) {
         screen.setId(id);
         screenService.insert(screen);
     }
@@ -73,7 +80,7 @@ public class ScreenController {
     }
 
     @PostMapping("import")
-    public ResponseEntity<String>  importRam(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file) {
         try {
             screenService.importDataFromExcel(file);
             return ResponseEntity.ok("Import Thành Công");

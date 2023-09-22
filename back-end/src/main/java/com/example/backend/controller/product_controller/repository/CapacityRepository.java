@@ -1,12 +1,13 @@
 package com.example.backend.controller.product_controller.repository;
 
-import com.example.backend.entity.Battery;
 import com.example.backend.entity.Capacity;
 import com.example.backend.repository.ICapacityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface CapacityRepository extends ICapacityRepository {
@@ -20,4 +21,8 @@ public interface CapacityRepository extends ICapacityRepository {
     Page<Capacity> deleteCapacity(Pageable pageable);
 
     Capacity findByName(String name);
+
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
+            " FROM Capacity WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    List<Capacity> getAll();
 }

@@ -36,21 +36,33 @@ import ImportChip from "./components/product_component/Chip/DisplayImportChip";
 import AddChip from "./components/product_component/Chip/DislayChipCreate";
 import ChipDisplayReturn from "./components/product_component/Chip/DisplayReturnDelete";
 import ScanChip from "./components/product_component/Chip/DisplayScanQRChip";
+import DisplayColor from "./components/product_component/Color/DisplayColor";
+import ImportColor from "./components/product_component/Color/DisplayImportColor";
+import AddColor from "./components/product_component/Color/DislayColorCreate";
+import ColorDisplayReturn from "./components/product_component/Color/DisplayReturnDelete";
+import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
+import Home from "./components/Page_Comeponet/TrangChu";
+<<<<<<< Updated upstream
 import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";
+import chat from "./components/custumer_componet/ChatRoom";
+import product from "./components/custumer_componet/product_detail";
+=======
+import product from "./components/product_component/Product/Display";
+import Cproduct from "./components/product_component/Product/crud/create";
 
-import Home from "./components/Page_Comeponet/TrangChu";
-
+>>>>>>> Stashed changes
 function App() {
   return (
     <div>
       <Router>
         <Switch>
           <Route path="/" exact component={Home} />
-
+          <Route path="/chat" exact component={chat} />
+          <Route path="/product" exact component={product} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -132,7 +144,17 @@ function App() {
 
           <Route path="/image/display" exact component={Display} />
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
+          <Route path="/color/getAll" exact component={DisplayColor} />
+          <Route
+            path="/color/displayDelete"
+            exact
+            component={ColorDisplayReturn}
+          />
+          <Route path="/color/im" exact component={ImportColor} />
+          <Route path="/color/:id" exact component={AddColor} />
+          <Route path="/color/scan" exact component={ScanColor} />
 
+<<<<<<< Updated upstream
           <Route path="/imei/getAll" exact component={DisplayImei} />
           <Route path="/imei/im" exact component={ImportImei} />
           <Route
@@ -140,9 +162,17 @@ function App() {
             exact
             component={ReturnDeleteImei}
           />
+=======
+          <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
+
+          <Route path="/product/display" exact component={product} />
+
+          <Route path="/cproduct/display" exact component={Cproduct} />
+>>>>>>> Stashed changes
         </Switch>
       </Router>
     </div>
+    // </QueryClientProvider>
   );
 }
 

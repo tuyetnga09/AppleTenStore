@@ -28,6 +28,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ProductServiceImpl {
     @Autowired
@@ -60,6 +62,7 @@ public class ProductServiceImpl {
     public Page<Product> getAll(Pageable pageable) {
         return productRepository.getAllPage(pageable);
     }
+
     public Product insert(CreateProduct product) {
         Chip chip = chipRepository.findByName(product.getChip());
         Battery battery = batteryRepository.findByName(product.getBattery());
@@ -107,5 +110,12 @@ public class ProductServiceImpl {
         return productRepository.getAllPageDelete(pageable);
     }
 
+    public void update(Product updatedProduct, Integer id) {
+    }
+
+
+    public Product getOne(Integer id) {
+        return this.productRepository.findById(id).get();
+    }
 
 }

@@ -2,7 +2,6 @@ package com.example.backend.entity;
 
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
