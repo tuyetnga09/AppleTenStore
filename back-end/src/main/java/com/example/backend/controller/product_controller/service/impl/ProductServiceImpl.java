@@ -62,6 +62,7 @@ public class ProductServiceImpl {
     public Page<Product> getAll(Pageable pageable) {
         return productRepository.getAllPage(pageable);
     }
+
     public Product insert(CreateProduct product) {
         Chip chip = chipRepository.findByName(product.getChip());
         Battery battery = batteryRepository.findByName(product.getBattery());

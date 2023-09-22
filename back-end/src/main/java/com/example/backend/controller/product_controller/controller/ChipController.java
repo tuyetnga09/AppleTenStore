@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.controller.product_controller.repository.ChipRepository;
 import com.example.backend.controller.product_controller.service.impl.ChipServiceIpml;
 import com.example.backend.entity.Chip;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/chip/")
@@ -27,9 +30,14 @@ public class ChipController {
     @Autowired
     private ChipServiceIpml chipServiceIpml;
 
+
     @GetMapping("{id}")
     public ResponseEntity<Chip> detail(@PathVariable("id") Integer id){
         return new ResponseEntity<>(chipServiceIpml.getOne(id), HttpStatus.OK);
+    }
+    @GetMapping("get-all-chip")
+    public ResponseEntity<List<Chip>> getAllChip(){
+        return new ResponseEntity<>(chipServiceIpml.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("getAll")

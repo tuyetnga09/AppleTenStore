@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -27,6 +28,9 @@ public class CategoryServiceImpl implements Iservice<Category> {
        return categoryRepository.findAll(pageable);
     }
 
+    public List<Category> getAll() {
+        return categoryRepository.getAll();
+    }
     @Override
     public void insert(Category category) {
         categoryRepository.save(category);

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class BatteryServiceImpl implements Iservice<Battery> {
@@ -27,6 +28,9 @@ public class BatteryServiceImpl implements Iservice<Battery> {
         return batteryRepository.findAll(pageable);
     }
 
+    public List<Battery> getAll(){
+        return batteryRepository.getAll();
+    }
     public Page<Battery> getDelete(Pageable pageable, String key) {
         return batteryRepository.deleteBattery(pageable, key);
     }

@@ -3,7 +3,6 @@ package com.example.backend.controller.product_controller.service.impl;
 import com.example.backend.controller.product_controller.repository.ManufactureRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Manufacture;
-import com.example.backend.entity.Ram;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ManufactureServiceImpl implements Iservice<Manufacture> {
@@ -26,6 +26,10 @@ public class ManufactureServiceImpl implements Iservice<Manufacture> {
     @Override
     public Page<Manufacture> getAll(Pageable pageable) {
         return manufactureRepository.findAll(pageable);
+    }
+
+    public List<Manufacture> getAll() {
+        return manufactureRepository.getAll();
     }
 
     public Page<Manufacture> getDelete(Pageable pageable) {
@@ -71,26 +75,26 @@ public class ManufactureServiceImpl implements Iservice<Manufacture> {
         return manufactureRepository.findById(id).get();
     }
 
-    public void importDataFromExcel(MultipartFile file) throws Exception{
+    public void importDataFromExcel(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
 
-        for (Row row: sheet){
-            if(row.getRowNum() == 0){
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
                 continue;
             }
 
             String code = row.getCell(0).getStringCellValue();
             Manufacture existingManufacture = manufactureRepository.findByCode(code);
 
-            if(existingManufacture != null){
+            if (existingManufacture != null) {
                 //Đã tồn tại
                 existingManufacture.setName(row.getCell(1).getStringCellValue());
                 existingManufacture.setDateUpdate(new Date());
                 existingManufacture.setPersonUpdate(row.getCell(3).getStringCellValue());
                 manufactureRepository.save(existingManufacture);
-            }else {
+            } else {
                 //Chưa tồn tại thêm mới
                 Manufacture newManufacture = new Manufacture();
                 newManufacture.setCode(code);
@@ -107,7 +111,7 @@ public class ManufactureServiceImpl implements Iservice<Manufacture> {
         workbook.close();
     }
 
-    public Page<Manufacture> search(String search,Pageable pageable) {
-        return manufactureRepository.search(search ,pageable);
+    public Page<Manufacture> search(String search, Pageable pageable) {
+        return manufactureRepository.search(search, pageable);
     }
 }

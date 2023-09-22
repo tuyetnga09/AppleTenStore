@@ -1,6 +1,5 @@
 package com.example.backend.controller.product_controller.repository;
 
-import com.example.backend.entity.Battery;
 import com.example.backend.entity.Ram;
 import com.example.backend.repository.IRamRepository;
 import org.springframework.data.domain.Page;
@@ -8,10 +7,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface RamRepository extends IRamRepository {
 
-    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  FROM RAM WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
+            " FROM RAM WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Ram> findAll(Pageable pageable);
 
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  FROM RAM WHERE Status = 1", nativeQuery = true)
@@ -24,4 +26,7 @@ public interface RamRepository extends IRamRepository {
 
     Ram findByName(String name);
 
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
+            " FROM RAM WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    List<Ram> getAll();
 }
