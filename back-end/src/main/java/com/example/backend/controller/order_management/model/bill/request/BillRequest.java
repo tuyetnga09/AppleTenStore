@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,4 +21,11 @@ public class BillRequest {
     private BigDecimal totalMoney;
     private String paymentMethod;
 
+    private List<BillAskClient> billDetail;
+
+    private BigDecimal afterPrice;
+
+    private Integer idVoucher;
+
+    private String wards;
 }

@@ -1,15 +1,16 @@
-import {useEffect, useState} from "react";
-import {add, update, detail} from "../../../service/image.service";
+import {useState} from "react";
+import {add} from "../../../service/image.service";
 import "../../../css/form.css";
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons";
 
 import React from 'react';
-import {useHistory, useParams} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 const ImageFormAddOrUpdate = () => {
     const [file, setFile] = useState(null);
+
 
     function handleChange(event) {
         setFile(event.target.files[0]);
