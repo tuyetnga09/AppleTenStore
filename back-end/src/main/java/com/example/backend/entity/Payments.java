@@ -1,8 +1,5 @@
 package com.example.backend.entity;
 
-import com.example.backend.entity.dto.DuplicateAttribute;
-import com.example.backend.entity.dto.Identify;
-import com.example.backend.untils.Status;
 import com.example.backend.untils.StatusPayment;
 import com.example.backend.untils.TypePayment;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,7 +51,6 @@ public class Payments {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_bill")
     private Bill bill;
-
     @Column(name = "person_create")
     private String  personCreate;
 

@@ -136,7 +136,7 @@ public class BillServiceImpl implements BillService {
                     .build();
             voucherDetailRepository.save(voucherDetail);
         } else {
-            // Xử lý khi không tìm thấy Voucher
+          return "Lỗi";
         }
 
         return "Finished";
