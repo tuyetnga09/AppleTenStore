@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 @Service
 public class ImageService implements Iservice<Image> {
 
-    private static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/font-end/src/imageUpload";
+    private static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/font-end/public/imageUpload";
 
     @Autowired
     private ImageRepository repository;

@@ -32,7 +32,7 @@ public class ImageController {
         return this.service.getAll(pageable);
     }
 
-    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/save")
     public @ResponseBody void save(@RequestParam("file") MultipartFile images) throws IOException {
         this.service.insert(images);
     }

@@ -1,11 +1,17 @@
 package com.example.backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,8 +21,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @Table(name = "image")
 @Getter
 @Setter
-@ToString
 @Builder
+@ToString
 public class Image extends DuplicateAttribute implements Identify{
 
     private String code;

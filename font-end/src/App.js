@@ -44,6 +44,10 @@ import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
 import Home from "./components/Page_Comeponet/TrangChu";
+import DisplayImei from "./components/product_component/Imei/Display";
+import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
+import ImportImei from "./components/product_component/Imei/ImportImei";
+import chat from "./components/custumer_componet/ChatRoom";
 import product from "./components/product_component/Product/Display";
 import Cproduct from "./components/product_component/Product/crud/create";
 
@@ -53,9 +57,7 @@ function App() {
       <Router>
         <Switch>
           <Route path="/" exact component={Home} />
-
-          {/* <Route path="/" exact component={TrangChu} /> */}
-
+          <Route path="/chat" exact component={chat} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -137,7 +139,6 @@ function App() {
 
           <Route path="/image/display" exact component={Display} />
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
-
           <Route path="/color/getAll" exact component={DisplayColor} />
           <Route
             path="/color/displayDelete"
@@ -148,6 +149,13 @@ function App() {
           <Route path="/color/:id" exact component={AddColor} />
           <Route path="/color/scan" exact component={ScanColor} />
 
+          <Route path="/imei/getAll" exact component={DisplayImei} />
+          <Route path="/imei/im" exact component={ImportImei} />
+          <Route
+            path="/imei/displayDelete"
+            exact
+            component={ReturnDeleteImei}
+          />
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
 
           <Route path="/product/display" exact component={product} />
