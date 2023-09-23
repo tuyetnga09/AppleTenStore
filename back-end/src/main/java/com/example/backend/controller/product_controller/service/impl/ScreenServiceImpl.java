@@ -2,7 +2,6 @@ package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.repository.ScreenRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
-import com.example.backend.entity.Ram;
 import com.example.backend.entity.Screen;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -16,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ScreenServiceImpl implements Iservice<Screen> {
@@ -26,6 +26,10 @@ public class ScreenServiceImpl implements Iservice<Screen> {
     @Override
     public Page<Screen> getAll(Pageable pageable) {
         return screenRepository.findAll(pageable);
+    }
+
+    public List<Screen> getAll() {
+        return screenRepository.getAll();
     }
 
     public Page<Screen> getDelete(Pageable pageable) {
@@ -66,30 +70,30 @@ public class ScreenServiceImpl implements Iservice<Screen> {
         screenRepository.save(screen);
     }
 
-    public Screen getOne(Integer id){
+    public Screen getOne(Integer id) {
         return screenRepository.findById(id).get();
     }
 
-    public void importDataFromExcel(MultipartFile file) throws Exception{
+    public void importDataFromExcel(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
 
-        for (Row row: sheet){
-            if(row.getRowNum() == 0){
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
                 continue;
             }
 
             String code = row.getCell(0).getStringCellValue();
             Screen existingScreen = screenRepository.findByCode(code);
 
-            if(existingScreen != null){
+            if (existingScreen != null) {
                 //Đã tồn tại
                 existingScreen.setName(row.getCell(1).getStringCellValue());
                 existingScreen.setDateUpdate(new Date());
                 existingScreen.setPersonUpdate(row.getCell(3).getStringCellValue());
                 screenRepository.save(existingScreen);
-            }else {
+            } else {
                 //Chưa tồn tại thêm mới
                 Screen newScreen = new Screen();
                 newScreen.setCode(code);

@@ -12,7 +12,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-//@EntityListeners(CreateDTOEntityListener.class)
 public abstract class DuplicateAttribute extends Auto_properties implements Identify {
 
     @Id

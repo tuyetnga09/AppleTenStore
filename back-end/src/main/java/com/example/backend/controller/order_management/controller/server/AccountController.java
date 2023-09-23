@@ -1,4 +1,4 @@
-package com.example.backend.controller.order_management.controller;
+package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.service.AccountService;

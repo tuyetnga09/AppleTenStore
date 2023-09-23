@@ -48,7 +48,9 @@ import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";
 import chat from "./components/custumer_componet/ChatRoom";
-import product from "./components/custumer_componet/product_detail";
+import product from "./components/product_component/Product/Display";
+import Cproduct from "./components/product_component/Product/crud/create";
+
 function App() {
   return (
     <div>
@@ -56,7 +58,6 @@ function App() {
         <Switch>
           <Route path="/" exact component={Home} />
           <Route path="/chat" exact component={chat} />
-          <Route path="/product" exact component={product} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -155,9 +156,15 @@ function App() {
             exact
             component={ReturnDeleteImei}
           />
+          <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
+
+          <Route path="/product/display" exact component={product} />
+
+          <Route path="/cproduct/display" exact component={Cproduct} />
         </Switch>
       </Router>
     </div>
+    // </QueryClientProvider>
   );
 }
 
