@@ -33,3 +33,7 @@ export const deleteImage = (id) => {
 export const returnImage = (id) => {
     return httpClient.put(`/image/return/${id}`);
 };
+
+export const selectProduct = () => {
+    return httpClient.get(`/product/get-all-product`);
+}

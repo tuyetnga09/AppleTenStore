@@ -18,14 +18,17 @@ import java.nio.file.Paths;
 @Service
 public class ImageService implements Iservice<Image> {
 
-    private static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/font-end/src/imageUpload";
+    private static final String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/font-end/public/imageUpload";
 
     @Autowired
-    private ImageRepository repository;
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private ProductServiceImpl productService;
 
     @Override
     public Page<Image> getAll(Pageable pageable) {
-        return this.repository.findAll(pageable);
+        return this.imageRepository.findAll(pageable);
     }
 
     @Override
@@ -34,34 +37,36 @@ public class ImageService implements Iservice<Image> {
     }
 
 
-    public void insert(MultipartFile imageFile) throws IOException {
-        Path path = Paths.get(UPLOAD_DIRECTORY, imageFile.getOriginalFilename());
-        File fileImage = new File(path.toString());
-        Files.write(path, imageFile.getBytes());
-        Image image = new Image(imageFile.getOriginalFilename(), fileImage.getAbsolutePath());
-        this.repository.save(image);
+    public void insert(MultipartFile[] imageFile, Integer idProduct) throws IOException {
+        for (MultipartFile file : imageFile) {
+            Path path = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
+            File fileImage = new File(path.toString());
+            Files.write(path, file.getBytes());
+            Image image = new Image(file.getOriginalFilename(), productService.getOne(idProduct));
+            this.imageRepository.save(image);
+        }
     }
 
     @Override
     public void update(Image image, Integer id) {
-        this.repository.save(image);
+        this.imageRepository.save(image);
     }
 
     @Override
     public void delete(Integer id) {
-        this.repository.deleteById(id);
+        this.imageRepository.deleteById(id);
     }
 
     @Override
     public void delete(Image image) {
         image.setStatus(1);
-        this.repository.delete(image);
+        this.imageRepository.delete(image);
     }
 
     @Override
     public void returnDelete(Image image) {
         image.setStatus(0);
-        this.repository.save(image);
+        this.imageRepository.save(image);
     }
 
 }

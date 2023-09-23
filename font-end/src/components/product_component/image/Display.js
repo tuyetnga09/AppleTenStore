@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import {add, update, detail, deleteImage, readAll} from "../../../service/image.service";
+import {deleteImage, readAll} from "../../../service/image.service";
 import "../../../css/form.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPencilAlt, faTimes, faTimesCircle, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faPencilAlt, faTimes, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {Link} from "react-router-dom";
 import {FaPlus, FaSearch} from "react-icons/fa";
 import queryString from "query-string";

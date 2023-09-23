@@ -6,17 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.print.attribute.standard.Media;
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RestController
 @CrossOrigin("*")
@@ -33,8 +26,8 @@ public class ImageController {
     }
 
     @PostMapping(value = "/save")
-    public @ResponseBody void save(@RequestParam("file") MultipartFile images) throws IOException {
-        this.service.insert(images);
+    public @ResponseBody void save(@RequestParam("file") MultipartFile[] images, @RequestParam("product") Integer id) throws IOException {
+        this.service.insert(images, id);
     }
 
     @PutMapping("/update/{id}")
