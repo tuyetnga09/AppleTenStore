@@ -91,18 +91,6 @@ public class Bill  {
     @ManyToOne
     @JoinColumn(name = "id_account",referencedColumnName = "id")
     private Account account;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_payment")
-    private Payments payments;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cart")
-    private Cart cart;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_voucher")
-    private Voucher voucher;
     @Column(name = "person_create")
     private String  personCreate;
 

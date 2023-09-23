@@ -1,6 +1,5 @@
 package com.example.backend.entity;
 
-import com.example.backend.entity.dto.DuplicateAttribute;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
