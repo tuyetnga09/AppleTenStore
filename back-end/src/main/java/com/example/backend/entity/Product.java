@@ -63,9 +63,4 @@ public class Product  extends DuplicateAttribute implements Identify {
     @JoinColumn(name = "id_size")
     private Size idsize;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_image")
-    private Image idimage;
-
-
 }

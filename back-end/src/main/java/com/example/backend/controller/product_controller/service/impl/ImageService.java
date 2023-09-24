@@ -1,6 +1,7 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.repository.ImageRepository;
+import com.example.backend.controller.product_controller.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Image;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ImageService implements Iservice<Image> {
     private ImageRepository imageRepository;
 
     @Autowired
-    private ProductServiceImpl productService;
+    private ProductRepository productRepository;
 
     @Override
     public Page<Image> getAll(Pageable pageable) {
@@ -37,12 +38,12 @@ public class ImageService implements Iservice<Image> {
     }
 
 
-    public void insert(MultipartFile[] imageFile, Integer idProduct) throws IOException {
+    public void insert(MultipartFile[] imageFile, String nameProduct) throws IOException {
         for (MultipartFile file : imageFile) {
             Path path = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
             File fileImage = new File(path.toString());
             Files.write(path, file.getBytes());
-            Image image = new Image(file.getOriginalFilename(), productService.getOne(idProduct));
+            Image image = new Image(file.getOriginalFilename(), productRepository.findByName(nameProduct));
             this.imageRepository.save(image);
         }
     }

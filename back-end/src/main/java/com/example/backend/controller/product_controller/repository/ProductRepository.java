@@ -26,6 +26,13 @@ public interface ProductRepository extends IProductRepository {
     @Query(value = "select pr from Product pr where pr.status = 0")
     List<Product> selectAll();
 
+    @Modifying
+    @Transactional
+    @Query(value = "select pr from Product pr where pr.name = ?1")
+    Product search(String name);
+
+    Product findByName(String nameProduct);
+
     // con serch and update
 
 }

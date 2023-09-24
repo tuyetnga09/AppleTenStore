@@ -26,8 +26,8 @@ public class ImageController {
     }
 
     @PostMapping(value = "/save")
-    public @ResponseBody void save(@RequestParam("file") MultipartFile[] images, @RequestParam("product") Integer id) throws IOException {
-        this.service.insert(images, id);
+    public @ResponseBody void save(@RequestParam("file") MultipartFile[] images, @RequestParam("name") String name) throws IOException {
+        this.service.insert(images, name);
     }
 
     @PutMapping("/update/{id}")

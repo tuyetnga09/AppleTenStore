@@ -28,6 +28,8 @@ public class Image extends DuplicateAttribute implements Identify{
 
     private String name;
 
+    private String link;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_product")
     private Product idProduct;

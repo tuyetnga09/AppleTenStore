@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {add, selectProduct} from "../../../service/image.service";
+import {addImage} from "../../../service/image.service";
 import "../../../css/form.css";
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -10,21 +10,13 @@ import {useHistory} from "react-router-dom";
 
 const ImageFormAddOrUpdate = () => {
     const formData = new FormData();
-    const [products, setProducts] = useState({});
-
-    useEffect(() => {
-        selectProduct().then((response) => {
-            setProducts(response.data);
-        })
-    }, []);
-
-
 
     function handleChangeFile(event) {
         const list = event.target.files;
         for (let i = 0; i < list.length; i++) {
             formData.append("file", list.item(i));
         }
+        console.log(event.target.files[0]);
     }
 
     function handleChangeProduct(event) {
@@ -36,7 +28,7 @@ const ImageFormAddOrUpdate = () => {
     const history = useHistory();
 
     function handleSubmit() {
-        add(formData).then(response => {
+        addImage(formData).then(response => {
             console.log(response.data)
         }).catch(err => {
             console.log(err)
@@ -55,17 +47,6 @@ const ImageFormAddOrUpdate = () => {
                     onChange={handleChangeFile}
                     multiple
                 />
-                <select
-                    name="product"
-                    id="product"
-                    onChange={handleChangeProduct}
-                >
-                    {
-                        products.map((product) => {
-                            return <option value={product.id}>{product.name}</option>
-                        })
-                    }
-                </select>
             </div>
         </div>
         <br></br>
