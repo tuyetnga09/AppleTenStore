@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/product/")
@@ -68,6 +70,11 @@ public class ProductController {
     public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
         productService.update(product, id);
         return new ResponseEntity<>("Update ok", HttpStatus.OK);
+    }
+
+    @GetMapping(value = "get-all-product")
+    public void selectAll(){
+        this.productRepository.selectAll();
     }
 
 }

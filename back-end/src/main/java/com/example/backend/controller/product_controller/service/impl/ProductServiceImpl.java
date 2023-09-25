@@ -27,7 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -64,17 +66,16 @@ public class ProductServiceImpl {
     }
 
     public Product insert(CreateProduct product) {
+        Product sanPham = new Product();
         Chip chip = chipRepository.findByName(product.getChip());
         Battery battery = batteryRepository.findByName(product.getBattery());
         Capacity capacity = capacityRepository.findByName(product.getCapacity());
         Color color = colorRepository.findByName(product.getColor());
-        Image image = imageRepository.findByLink(product.getImage());
         Manufacture manufacture = manufacturerRepository.findByName(product.getManufacturer());
         Ram ram = ramRepository.findByName(product.getRam());
         Screen screen = screenRepository.findByName(product.getScreen());
         Size size = sizeRepository.findByName(product.getSize());
         Category category = categoryRepository.findByName(product.getCategory());
-        Product sanPham = new Product();
         sanPham.setName(product.getNameProduct());
         sanPham.setCode(product.getCodeProduct());
         sanPham.setDescription(product.getDescription());
@@ -82,7 +83,6 @@ public class ProductServiceImpl {
         sanPham.setIdchip(chip);
         sanPham.setIdbattery(battery);
         sanPham.setIdcapacity(capacity);
-        sanPham.setIdimage(image);
         sanPham.setIdmanufacture(manufacture);
         sanPham.setIdcolor(color);
         sanPham.setIdscreen(screen);
@@ -115,7 +115,11 @@ public class ProductServiceImpl {
 
 
     public Product getOne(Integer id) {
-        return this.productRepository.findById(id).get();
+        return this.productRepository.findById(id).orElse(null);
+    }
+
+    public List<Product> selectAll(){
+        return this.productRepository.selectAll();
     }
 
 }

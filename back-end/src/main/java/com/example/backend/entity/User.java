@@ -2,8 +2,14 @@ package com.example.backend.entity;
 
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
+import com.example.backend.untils.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Date;
 
 @Entity
 @Getter
@@ -20,7 +28,11 @@ import lombok.ToString;
 @Table(name = "user")
 @AllArgsConstructor
 @NoArgsConstructor
-public class User  extends DuplicateAttribute implements Identify {
+public class User {
+    @Id
+    @Column(length = 10, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Column(name = "full_name")
     private String fullName;
 
@@ -41,4 +53,18 @@ public class User  extends DuplicateAttribute implements Identify {
 
     @Column(name = "points")
     private Integer points;
+
+    @Column(name = "person_create")
+    private String  personCreate;
+
+    @Column(name = "person_update")
+    private String personUpdate;
+
+    @Column(name = "date_create")
+    private Date dateCreate;
+
+    @Column(name = "date_update")
+    private Date dateUpdate;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }
