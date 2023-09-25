@@ -78,6 +78,9 @@ public class VoucherServiceImpl implements VoucherService {
                 .quantity(request.getQuantity())
                 .conditionsApply(request.getConditionsApply())
                 .build();
+        voucher.setDateCreate(new Date());
+        voucher.setDateUpdate(new Date());
+        voucher.setStatus(0);
         return voucherRepository.save(voucher);
     }
 
@@ -85,6 +88,7 @@ public class VoucherServiceImpl implements VoucherService {
     public Voucher updateVoucher(UpdateVoucherRequest request, Integer id) {
         Voucher voucher = voucherRepository.findById(id).get();
         System.out.println(voucher);
+        System.out.println("TTTTTT" + request);
         if (voucher != null) {
             voucher.setCode(request.getCode());
             voucher.setName(request.getName());
@@ -99,6 +103,7 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setStatus(request.getStatus());
             return voucherRepository.save(voucher);
         }
+
         return null;
     }
 
@@ -129,6 +134,11 @@ public class VoucherServiceImpl implements VoucherService {
 
         Page<Voucher> voucherPage = voucherRepository.findAll(pageable, request);
          return voucherPage;
+    }
+
+    @Override
+    public Voucher findByIdVoucher(Integer id) {
+        return voucherRepository.findById(id).orElse(null);
     }
 
 

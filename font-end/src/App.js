@@ -48,9 +48,8 @@ import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";
 import chat from "./components/custumer_componet/ChatRoom";
-import product from "./components/custumer_componet/product_detail";
+import product from "./components/product_component/Product/Display";
 import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay"
-import VoucherCreate from "./components/Page_Comeponet/Voucher/CreateVoucher"
 function App() {
   return (
     <div>
@@ -60,7 +59,6 @@ function App() {
           <Route path="/chat" exact component={chat} />
           <Route path="/product" exact component={product} />
           <Route path="/voucher" exact component={Voucher} />
-          <Route path="/voucher/create" exact component={VoucherCreate} />
           
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />

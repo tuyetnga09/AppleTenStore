@@ -14,21 +14,21 @@ export const readAll = () => {
 //   return httpClient.get(`/battery/displayDelete?${page}`);
 // };
 
-// export const add = (battery) => {
-//   return httpClient.post(`/battery/add`, battery);
-// };
+export const add = (voucher) => {
+  return httpClient.post(`/voucher/addVoucher`, voucher);
+};
 
-// export const update = (id, battery) => {
-//   return httpClient.put(`/battery/update/${id}`, battery);
-// };
+export const update = (id, voucher) => {
+  return httpClient.put(`/voucher/updateVoucher/${id}`, voucher);
+};
 
-// export const detail = (id) => {
-//   return httpClient.get(`/battery/${id}`);
-// };
+export const detail = (id) => {
+  return httpClient.get(`/voucher/detail/${id}`);
+};
 
-// export const deleteBattery = (id) => {
-//   return httpClient.delete(`/battery/delete/${id}`);
-// };
+export const deleteVoucher = (id) => {
+  return httpClient.delete(`/voucher/deleteVoucher/${id}`);
+};
 
 // export const returnBattery = (id) => {
 //   return httpClient.put(`/battery/return/${id}`);
