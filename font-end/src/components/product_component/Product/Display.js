@@ -26,8 +26,10 @@ import {
   MoreOutlined,
 } from "@ant-design/icons";
 import { StyledStoreProducts } from "./Interface/index";
-import { NumberField } from "@refinedev/antd";
+import { NumberField, useDrawerForm } from "@refinedev/antd";
 import CreateProduct from "./crud/create";
+import UpdateProduct from "./crud/edit";
+
 // import "../css/index.css";
 // import Container from "react-bootstrap/Container";
 // import Navbar from "react-bootstrap/Navbar";
@@ -47,15 +49,23 @@ const StoreProducts = ({}) => {
   // Hàm để ẩn Modal
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsModalVisibleUpdate(false);
+  };
+  const [isModalVisibleUpdate, setIsModalVisibleUpdate] = useState(false); // Trạng thái hiển thị Modal
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const openDetailModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalVisibleUpdate(true);
+    console.log(
+      "ahihi " + product.id + " " + product.name + " " + product.price
+    );
   };
 
-  // const [item, setItem] = useState({
-  //   id: 1,
-  //   name: "Iphone 11",
-  //   description: "Zin đét",
-  //   price: 99,
-  //   stock: 1,
-  // });
+  const closeDetailModal = () => {
+    setSelectedProduct(null);
+  };
 
   function updateStock() {
     return 1;
@@ -146,11 +156,11 @@ const StoreProducts = ({}) => {
                       renderItem={(item) => (
                         <ProductItem
                           item={item}
-                          // updateStock={updateStock}
-                          // editShow={showEdit}
+                          updateStock={updateStock}
+                          editShow={showEdit}
                         />
-                      )} */}
-                  {/* /> */}
+                      )}
+                   />  */}
                 </Col>
               </Row>
 
@@ -192,6 +202,7 @@ const StoreProducts = ({}) => {
                                     onClick={() => updateStock(0, item)}
                                   >
                                     {/* {t("stores.buttons.outOfStock")} */}
+                                    {"Delete"}
                                   </Menu.Item>
                                 )}
                                 <Menu.Item
@@ -206,9 +217,11 @@ const StoreProducts = ({}) => {
                                       }}
                                     />
                                   }
+                                  onClick={() => openDetailModal(item)}
                                   // onClick={() => editShow(item.id)}
                                 >
                                   {/* {t("stores.buttons.edit")} */}
+                                  {"Edit Product"}
                                 </Menu.Item>
                               </Menu>
                             }
@@ -324,6 +337,16 @@ const StoreProducts = ({}) => {
               bodyStyle={{ minHeight: "650px" }}
             >
               <CreateProduct />
+            </Modal>
+            <Modal
+              // {...modalProps}
+              visible={isModalVisibleUpdate}
+              onCancel={handleCancel}
+              width={700}
+              footer={null}
+              bodyStyle={{ minHeight: "450px" }}
+            >
+              <UpdateProduct product={selectedProduct} />
             </Modal>
           </section>
         </main>

@@ -46,13 +46,13 @@ export const add = (product) => {
   return httpClient.post(`/product/save`, product);
 };
 
-// export const update = (id, chip) => {
-//   return httpClient.put(`/chip/update/${id}`, chip);
-// };
+export const update = (id, product) => {
+  return httpClient.put(`/product/update/${id}`, product);
+};
 
-// export const detail = (id) => {
-//   return httpClient.get(`/chip/${id}`);
-// };
+export const detail = (id) => {
+  return httpClient.get(`/product/${id}`);
+};
 
 // export const deleteChip = (id) => {
 //   return httpClient.delete(`/chip/delete/${id}`);

@@ -1,8 +1,9 @@
+import React from "react";
 import { useEffect, useState } from "react";
-import { useTranslate, useApiUrl } from "@refinedev/core";
-import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
-import { add } from "../../../../service/product.service";
+import { detail, update } from "../../../../service/product.service";
 import { notification, Modal } from "antd";
+import { Option } from "antd/es/mentions";
+
 import {
   readAllColor,
   readAllChip,
@@ -14,148 +15,57 @@ import {
   readAllScreen,
   readAllSize,
 } from "../../../../service/product.service";
-// import queryString from "query-string";
-
-import {
-  Drawer,
-  DrawerProps,
-  Form,
-  FormProps,
-  Input,
-  InputNumber,
-  Radio,
-  Select,
-  Space,
-  ButtonProps,
-  Avatar,
-  Typography,
-  Upload,
-  Grid,
-} from "antd";
 import {
   Link,
   useHistory,
   useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
-import { Option } from "antd/es/mentions";
-import { display } from "@mui/system";
-import { Hidden } from "@mui/material";
+import {
+  Drawer,
+  Form,
+  Input,
+  InputNumber,
+  Radio,
+  Select,
+  Space,
+  Upload,
+  Avatar,
+  Typography,
+  Grid,
+} from "antd";
+import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
+import { useTranslate, useApiUrl, BaseKey } from "@refinedev/core";
+import { color } from "@mui/system";
 
-const Test = () => {
-  const { Text } = Typography;
-  const history = useHistory();
-  const t = useTranslate();
-  const apiUrl = useApiUrl();
+const { Text } = Typography;
 
+const EditProduct = ({
+  drawerProps,
+  formProps,
+  saveButtonProps,
+  editId,
+  product,
+  onRequestClose,
+}) => {
   const [productData, setProductData] = useState({});
 
-  const handleInputChangeCategory = (value) => {
-    setProductData({
-      ...productData,
-      category: value,
-    });
-  };
-  const handleInputChangeBattery = (value) => {
-    setProductData({
-      ...productData,
-      battery: value,
-    });
-  };
-
-  const handleInputChangeCapacity = (value) => {
-    setProductData({
-      ...productData,
-      capacity: value,
-    });
-  };
-  const handleInputChangeChip = (value) => {
-    setProductData({
-      ...productData,
-      chip: value,
-    });
-  };
-  const handleInputChangeColor = (value) => {
-    setProductData({
-      ...productData,
-      color: value,
-    });
-  };
-  const handleInputChangeManufacturer = (value) => {
-    setProductData({
-      ...productData,
-      manufacturer: value,
-    });
-  };
-  const handleInputChangeRam = (value) => {
-    setProductData({
-      ...productData,
-      ram: value,
-      // screen: value,
-      // screen: value,
-    });
-  };
-  const handleInputChangeScreen = (value) => {
-    setProductData({
-      ...productData,
-      screen: value,
-    });
-  };
-  const handleInputChangeSize = (value) => {
-    setProductData({
-      ...productData,
-      size: value,
-    });
-  };
-
-  // const [priceValue, setPriceValue] = useState();
-  // Hàm xử lý sự kiện khi giá trị thay đổi
-  const handleNumberChangePrice = (value) => {
-    // Giá trị mới sẽ được truyền vào hàm này
-    // Cập nhật giá trị trong state
-
-    setProductData({
-      ...productData,
-      price: value,
-    });
-  };
+  const t = useTranslate();
+  const apiUrl = useApiUrl();
+  const breakpoint = Grid.useBreakpoint();
 
   function handleChange(event) {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    let item = { ...productData, price: 0 };
+    // let item = { ...productData, price: 0 };
+    let item = { ...productData };
     item[name] = value;
     setProductData(item);
-  }
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
-
-  // Hàm để hiển thị Modal khi cần
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  // Hàm để ẩn Modal
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-    const items = { ...productData };
-
-    // Đây là nơi bạn có thể gửi dữ liệu sản phẩm (productData) lên máy chủ hoặc thực hiện bất kỳ xử lý nào bạn cần.
-    console.log("Dữ liệu sản phẩm:", items);
-    add(items);
-    notification.success({
-      message: "Updated Password",
-      description: "Password updated successfully",
-    });
-    history.push("/product/display");
-    return {
-      success: true,
-    };
+    console.log(value);
+    console.log(productData);
   }
 
+  const history = useHistory();
   const [displayColor, setDisplayColor] = useState([]);
   const [displayChip, setDisplayChip] = useState([]);
   const [displayBattery, setDisplayBattery] = useState([]);
@@ -167,6 +77,18 @@ const Test = () => {
   const [displaySize, setDisplaySize] = useState([]);
 
   useEffect(() => {
+    if (product.id !== "new") {
+      detail(product.id)
+        .then((response) => {
+          setProductData(response.data);
+          // console.log(productData);
+          // console.log(response.data);
+          // console.log("hihihi" + product.id + " hôhhohoho");
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
     //1
     readAllColor()
       .then((response) => {
@@ -250,18 +172,97 @@ const Test = () => {
       });
   }, []);
 
-  const test = () => {
-    const ok = document.getElementById("test");
-    ok.setAttribute("hidden", true);
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const items = { ...productData };
+    // const items = { ...product };
+
+    // Đây là nơi bạn có thể gửi dữ liệu sản phẩm (productData) lên máy chủ hoặc thực hiện bất kỳ xử lý nào bạn cần.
+    // console.log("Dữ liệu sản phẩm:", items);
+    update(product.id, items);
+    // history.push("/product/display", items);
+    window.location.reload();
+    notification.success({
+      message: "Updated",
+      description: "Updated successfully",
+    });
+    return {
+      success: true,
+    };
+  }
+  const handleInputChangeCategory = (value) => {
+    setProductData({
+      ...productData,
+      category: value,
+    });
+  };
+  const handleInputChangeBattery = (value) => {
+    setProductData({
+      ...productData,
+      battery: value,
+    });
+  };
+
+  const handleInputChangeCapacity = (value) => {
+    setProductData({
+      ...productData,
+      capacity: value,
+    });
+  };
+  const handleInputChangeChip = (value) => {
+    setProductData({
+      ...productData,
+      chip: value,
+    });
+  };
+  const handleInputChangeColor = (value) => {
+    setProductData({
+      ...productData,
+      color: value,
+    });
+    console.log("Giá trị hợp lệ " + value);
+  };
+
+  const handleInputChangeManufacturer = (value) => {
+    setProductData({
+      ...productData,
+      manufacturer: value,
+    });
+  };
+  const handleInputChangeRam = (value) => {
+    setProductData({
+      ...productData,
+      ram: value,
+    });
+  };
+  const handleInputChangeScreen = (value) => {
+    setProductData({
+      ...productData,
+      screen: value,
+    });
+  };
+  const handleInputChangeSize = (value) => {
+    setProductData({
+      ...productData,
+      size: value,
+    });
+  };
+  const handleNumberChangePrice = (value) => {
+    // Giá trị mới sẽ được truyền vào hàm này
+    // Cập nhật giá trị trong state
+
+    setProductData({
+      ...productData,
+      price: value,
+    });
   };
 
   return (
     // <Drawer
-    //   //   {...drawerProps}
-    //   //   width={breakpoint.sm ? "500px" : "100%"}
+    //   {...drawerProps}
+    //   width={breakpoint.sm ? "500px" : "100%"}
     //   zIndex={1001}
     // >
-
     <form onSubmit={handleSubmit}>
       <Create
         resource="products"
@@ -339,7 +340,6 @@ const Test = () => {
           <Form.Item
             // label={t("products.fields.name")}
             label={t("Name")}
-            name="nameProduct"
             rules={[
               {
                 required: true,
@@ -358,7 +358,6 @@ const Test = () => {
           <Form.Item
             // label={t("products.fields.description")}
             label={t("Description")}
-            name="description"
             rules={[
               {
                 required: true,
@@ -378,7 +377,6 @@ const Test = () => {
           <Form.Item
             // label={t("products.fields.price")}
             label={t("Price")}
-            name="price"
             rules={[
               {
                 required: true,
@@ -401,7 +399,7 @@ const Test = () => {
           <Form.Item
             // label={t("products.fields.category")}
             label={t("Category")}
-            name={["category", "id"]}
+            // name={["category", "id"]}
             rules={[
               {
                 required: true,
@@ -414,11 +412,20 @@ const Test = () => {
             }}
           >
             {/* <Select
-          //   {...categorySelectProps}
-          /> */}
-            <Select
               name="category"
               value={productData.category}
+              onChange={handleInputChangeCategory}
+            >
+              {displayCategory.map((categories) => {
+                <Option>{categories.name}</Option>;
+                return (
+                  <Option value={categories.name}>{categories.name}</Option>
+                );
+              })}
+            </Select> */}
+            <Select
+              defaultValue={product?.idcategory?.name}
+              name="idcategory"
               onChange={handleInputChangeCategory}
             >
               {displayCategory.map((categories) => {
@@ -430,7 +437,7 @@ const Test = () => {
           </Form.Item>
           <Form.Item
             label={t("Capacity")}
-            name={["capacity", "id"]}
+            // name={["capacity", "id"]}
             rules={[
               {
                 required: true,
@@ -442,8 +449,8 @@ const Test = () => {
             }}
           >
             <Select
-              name="capacity"
-              value={productData.capacity}
+              defaultValue={product?.idcapacity?.name}
+              name="idcapacity"
               onChange={handleInputChangeCapacity}
             >
               {displayCapacity.map((capacity) => {
@@ -466,8 +473,8 @@ const Test = () => {
             }}
           >
             <Select
-              name="battery"
-              value={productData.battery}
+              defaultValue={product?.idbattery?.name}
+              name="idbattery"
               onChange={handleInputChangeBattery}
             >
               {displayBattery.map((battery) => {
@@ -489,8 +496,8 @@ const Test = () => {
             }}
           >
             <Select
-              name="chip"
-              value={productData.chip}
+              defaultValue={product?.idchip?.name}
+              name="idchip"
               onChange={handleInputChangeChip}
             >
               {displayChip.map((chip) => {
@@ -500,7 +507,7 @@ const Test = () => {
           </Form.Item>
           <Form.Item
             label={t("Color")}
-            name={["color", "id"]}
+            // name={["color", "id"]}
             rules={[
               {
                 required: true,
@@ -513,12 +520,16 @@ const Test = () => {
             }}
           >
             <Select
-              name="color"
-              value={productData.color}
+              name="idcolor"
+              defaultValue={product?.idcolor?.name}
               onChange={handleInputChangeColor}
             >
               {displayColor.map((color) => {
-                return <Option value={color.name}>{color.name}</Option>;
+                return (
+                  <Option key={color.name} value={color.name}>
+                    {color.name}
+                  </Option>
+                );
               })}
             </Select>
           </Form.Item>
@@ -556,8 +567,8 @@ const Test = () => {
             }}
           >
             <Select
-              name="manufacture"
-              value={productData.manufacture}
+              defaultValue={product?.idmanufacture?.name}
+              name="idmanufacture"
               onChange={handleInputChangeManufacturer}
             >
               {displayManufacture.map((manufacture) => {
@@ -567,9 +578,10 @@ const Test = () => {
               })}
             </Select>
           </Form.Item>
+          {/* //ram */}
           <Form.Item
             label={t("Ram")}
-            name={["ram", "id"]}
+            // name={["color", "id"]}
             rules={[
               {
                 required: true,
@@ -578,15 +590,20 @@ const Test = () => {
             style={{
               width: "49%",
               float: "right",
+              // clear: "both",
             }}
           >
             <Select
-              name="ram"
-              value={productData.ram}
+              name="idram"
+              defaultValue={product?.idRam?.name}
               onChange={handleInputChangeRam}
             >
               {displayRam.map((ram) => {
-                return <Option value={ram.name}>{ram.name}</Option>;
+                return (
+                  <Option key={ram.name} value={ram.name}>
+                    {ram.name}
+                  </Option>
+                );
               })}
             </Select>
           </Form.Item>
@@ -605,8 +622,8 @@ const Test = () => {
             }}
           >
             <Select
-              name="screen"
-              value={productData.screen}
+              defaultValue={product?.idscreen?.name}
+              name="idscreen"
               onChange={handleInputChangeScreen}
             >
               {displayScreen.map((screen) => {
@@ -628,8 +645,8 @@ const Test = () => {
             }}
           >
             <Select
-              name="size"
-              value={productData.size}
+              defaultValue={product?.idsize?.name}
+              name="idsize"
               onChange={handleInputChangeSize}
             >
               {displaySize.map((size) => {
@@ -653,8 +670,9 @@ const Test = () => {
         </Form>
       </Create>
     </form>
-
+    //{" "}
     // </Drawer>
   );
 };
-export default Test;
+
+export default EditProduct;

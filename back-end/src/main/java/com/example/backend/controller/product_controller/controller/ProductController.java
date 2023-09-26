@@ -3,8 +3,6 @@ package com.example.backend.controller.product_controller.controller;
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
 import com.example.backend.controller.product_controller.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.impl.ProductServiceImpl;
-import com.example.backend.entity.Imei;
-import com.example.backend.entity.Manufacture;
 import com.example.backend.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +30,14 @@ public class ProductController {
     private ProductServiceImpl productService;
     @Autowired
     private ProductRepository productRepository;
+
+    @GetMapping("{id}")
+//    public ResponseEntity<Product> detail(@PathVariable("id") Integer id) {
+//        return new ResponseEntity<>(productService.getOne(id), HttpStatus.OK);
+//    }
+        public ResponseEntity<CreateProduct> detail(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(productService.getOneUpdateProduct(id), HttpStatus.OK);
+    }
 
     @GetMapping("display")
     public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
@@ -65,9 +71,13 @@ public class ProductController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
-        productService.update(product, id);
-        return new ResponseEntity<>("Update ok", HttpStatus.OK);
+//    public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
+//        productService.update(product, id);
+//        return new ResponseEntity<>("Update ok", HttpStatus.OK);
+//    }
+    public ResponseEntity<String> update(@RequestBody CreateProduct createProduct, @PathVariable("id") Integer id) {
+
+        return new ResponseEntity<>(productService.update(createProduct, id), HttpStatus.OK);
     }
 
 }

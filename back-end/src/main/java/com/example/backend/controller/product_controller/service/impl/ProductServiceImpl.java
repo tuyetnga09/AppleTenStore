@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -90,17 +91,21 @@ public class ProductServiceImpl {
         sanPham.setIdRam(ram);
         sanPham.setIdcategory(category);
         sanPham.setStatus(0);
-       return  productRepository.save(sanPham);
+        sanPham.setQuantity(0);
+        sanPham.setDateCreate(new Date());
+        return productRepository.save(sanPham);
     }
 
     public void delete(Integer id) {
         productRepository.deleteById(id);
     }
+
     public void delete(Product product) {
         product.setStatus(1);
         productRepository.save(product);
 
     }
+
     public void returnDelete(Product product) {
         product.setStatus(0);
         productRepository.save(product);
@@ -110,12 +115,73 @@ public class ProductServiceImpl {
         return productRepository.getAllPageDelete(pageable);
     }
 
-    public void update(Product updatedProduct, Integer id) {
-    }
+    public String update(CreateProduct productUpdate, Integer id) {
+        //  productUpdate là đối tượng được FE truyền vào để cập nhật lại
+        if (productRepository.existsById(id)) {
+            Color color = colorRepository.findByName(productUpdate.getColor()); // tìm kiếm đối tượng theo name
+            Chip chip = chipRepository.findByName(productUpdate.getChip());
+            Battery battery = batteryRepository.findByName(productUpdate.getBattery());
+            Capacity capacity = capacityRepository.findByName(productUpdate.getCapacity());
+            Manufacture manufacture = manufacturerRepository.findByName(productUpdate.getManufacturer());
+            Ram ram = ramRepository.findByName(productUpdate.getRam());
+            Screen screen = screenRepository.findByName(productUpdate.getScreen());
+            Size size = sizeRepository.findByName(productUpdate.getSize());
+            Category category = categoryRepository.findByName(productUpdate.getCategory());
+            //Image image = imageRepository.findByLink(productUpdate.getImage());
 
+            Product product = productRepository.findById(id).get(); // lấy sản phẩm theo id từ CSDL
+
+            product.setName(productUpdate.getNameProduct());
+            product.setDescription(productUpdate.getDescription());
+            product.setPrice(productUpdate.getPrice());
+            product.setIdchip(chip);
+            product.setIdbattery(battery);
+            product.setIdcapacity(capacity);
+            product.setIdmanufacture(manufacture);
+            product.setIdcolor(color);
+            product.setIdscreen(screen);
+            product.setIdsize(size);
+            product.setIdRam(ram);
+            product.setIdcategory(category);
+            product.setDateUpdate(new Date());
+
+//            product.setIdimage(image);
+
+            productRepository.save(product);
+            return "Cập Nhật Thành Công.";
+        } else {
+            return "Cập Nhật Thất Bại! - Sản Phẩm Không Tồn Tại.";
+        }
+    }
 
     public Product getOne(Integer id) {
         return this.productRepository.findById(id).get();
     }
 
+    public CreateProduct getOneUpdateProduct(Integer id) {
+        if (!productRepository.existsById(id)){
+            return null;
+        }
+
+        CreateProduct createProduct = new CreateProduct(); // tạo đối tượng để detail
+
+        Product product = productRepository.findById(id).get(); //lấy ra đối tượng theo id
+
+        //set lại giá trị vừa find ra cho đối tượng detail
+//        createProduct.setCodeProduct(product.getCode());
+        createProduct.setNameProduct(product.getName());
+        createProduct.setDescription(product.getDescription());
+        createProduct.setPrice(product.getPrice());
+        createProduct.setCategory(product.getIdcategory().getName());
+        createProduct.setCapacity(product.getIdcapacity().getName());
+        createProduct.setBattery(product.getIdbattery().getName());
+        createProduct.setChip(product.getIdchip().getName());
+        createProduct.setColor(product.getIdcolor().getName());
+        createProduct.setManufacturer(product.getIdmanufacture().getName());
+        createProduct.setRam(product.getIdRam().getName());
+        createProduct.setScreen(product.getIdscreen().getName());
+        createProduct.setSize(product.getIdsize().getName());
+
+        return createProduct;
+    }
 }
