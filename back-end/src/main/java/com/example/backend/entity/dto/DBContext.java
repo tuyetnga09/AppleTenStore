@@ -23,14 +23,14 @@ public class DBContext implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 
-        Color color = Color.builder().code("#800000").name("Maroon").build();
-        Color color1 = Color.builder().code("#800080").name("Purple").build();
-        Color color2 = Color.builder().code("#C0C0C0").name("Silver").build();
-        Color color3 = Color.builder().code("#FAFAD2").name("LightGoldenrodYellow").build();
-        Color color4 = Color.builder().code("#FDF5E6").name("OldLace").build();
-        Color color5 = Color.builder().code("#7B68EE").name("MediumSlateBlue").build();
-        Color color6 = Color.builder().code("#87CEEB").name("SkyBlue").build();
-        Color color7 = Color.builder().code("#8B814C").name("LightGoldenrod4").build();
+        Color color = Color.builder().code("CL01").name("Green").build();
+        Color color1 = Color.builder().code("CL02").name("Purple").build();
+        Color color2 = Color.builder().code("CL03").name("Silver").build();
+        Color color3 = Color.builder().code("CL04").name("Yellow").build();
+        Color color4 = Color.builder().code("CL05").name("Pink").build();
+        Color color5 = Color.builder().code("CL06").name("White").build();
+        Color color6 = Color.builder().code("CL07").name("Black").build();
+        Color color7 = Color.builder().code("CL08").name("Blue").build();
 
         colorRepository.save(color);
         colorRepository.save(color1);

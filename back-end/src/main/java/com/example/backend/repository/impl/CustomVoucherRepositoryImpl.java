@@ -1,8 +1,9 @@
-package com.example.backend.repository;
+package com.example.backend.repository.impl;
 
 
 import com.example.backend.controller.voucher_managment.model.request.FindVoucherRequest;
 import com.example.backend.entity.Voucher;
+import com.example.backend.repository.CustomVoucherRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
