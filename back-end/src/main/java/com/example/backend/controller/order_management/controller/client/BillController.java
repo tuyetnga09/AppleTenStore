@@ -1,7 +1,7 @@
 package com.example.backend.controller.order_management.controller.client;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
-import com.example.backend.controller.order_management.model.bill.request.BillRequest;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.service.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,7 +17,7 @@ public class BillController {
     @Autowired
     private BillService billService;
     @PostMapping("")
-    public ResponseObj create(@RequestBody BillRequest request)  {
+    public ResponseObj create(@RequestBody BillRequestOnline request)  {
         return new ResponseObj(billService.createBillCustomerOnlineRequest(request));
     }
 }

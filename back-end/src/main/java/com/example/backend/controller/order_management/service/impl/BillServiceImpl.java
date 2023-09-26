@@ -2,6 +2,8 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.bill.request.BillAskClient;
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
+import com.example.backend.controller.order_management.model.bill.response.BillResponse;
 import com.example.backend.controller.order_management.repository.AccountRepository;
 import com.example.backend.controller.order_management.repository.AddressRepository;
 import com.example.backend.controller.order_management.repository.BillDetailRepository;
@@ -32,6 +34,10 @@ import com.example.backend.untils.TypePayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -59,7 +65,7 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
     @Override
-    public String createBillCustomerOnlineRequest(BillRequest request) {
+    public String createBillCustomerOnlineRequest(BillRequestOnline request) {
         User user = User.builder()
                 .fullName(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
@@ -141,5 +147,28 @@ public class BillServiceImpl implements BillService {
 
         return "Finished";
 
+    }
+
+    @Override
+    public List<BillResponse> getAll(BillRequest request) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        request.setConvertStatus(Arrays.toString(request.getStatus()));
+        try {
+            if (!request.getStartTimeString().isEmpty()) {
+                request.setStartTime(simpleDateFormat.parse(request.getStartTimeString()).getTime());
+            }
+            if (!request.getEndTimeString().isEmpty()) {
+                request.setEndTime(simpleDateFormat.parse(request.getEndTimeString()).getTime());
+            }
+            if (!request.getStartDeliveryDateString().isEmpty()) {
+                request.setStartDeliveryDate(simpleDateFormat.parse(request.getStartDeliveryDateString()).getTime());
+            }
+            if (!request.getEndDeliveryDateString().isEmpty()) {
+                request.setEndDeliveryDate(simpleDateFormat.parse(request.getEndDeliveryDateString()).getTime());
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return billRepository.getAll(request);
     }
 }

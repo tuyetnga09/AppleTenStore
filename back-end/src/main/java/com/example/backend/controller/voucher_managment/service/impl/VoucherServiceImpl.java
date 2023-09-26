@@ -26,8 +26,6 @@ import java.util.List;
 @Component
 public class VoucherServiceImpl implements VoucherService {
 
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH = 10;
 
     @Autowired
     private VoucherRepository voucherRepository;

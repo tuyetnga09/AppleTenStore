@@ -1,6 +1,4 @@
 package com.example.backend.controller.order_management.model.cart;
-
-import com.example.backend.entity.Cart;
 import org.springframework.beans.factory.annotation.Value;
 
 public interface ListCart {
