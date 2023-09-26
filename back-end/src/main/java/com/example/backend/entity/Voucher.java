@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,9 +27,9 @@ public class Voucher extends DuplicateAttribute implements Identify {
 
     private String name;
 
-    private Date dateStart;
+    private Long dateStart;
 
-    private Date dateEnd;
+    private LocalDate dateEnd;
 
     private BigDecimal conditionsApply;
 

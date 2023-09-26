@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -26,9 +27,9 @@ public class CreateVoucherRequest {
 
     private Integer typeVoucher;
 
-    private Date dateStart;
+    private LocalDate dateStart;
 
-    private Date dateEnd;
+    private LocalDate dateEnd;
 
 
     private BigDecimal valueVoucher;
