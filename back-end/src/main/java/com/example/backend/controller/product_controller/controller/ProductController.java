@@ -1,10 +1,8 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.impl.ProductServiceImpl;
-import com.example.backend.entity.Imei;
-import com.example.backend.entity.Manufacture;
 import com.example.backend.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @CrossOrigin("*")
 @RestController

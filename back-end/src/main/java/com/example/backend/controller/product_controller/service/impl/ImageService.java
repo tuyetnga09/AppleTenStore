@@ -1,7 +1,7 @@
 package com.example.backend.controller.product_controller.service.impl;
 
-import com.example.backend.controller.product_controller.repository.ImageRepository;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
+import com.example.backend.repository.ImageRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Image;
 import org.springframework.beans.factory.annotation.Autowired;

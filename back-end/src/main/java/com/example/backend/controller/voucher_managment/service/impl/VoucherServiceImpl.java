@@ -4,7 +4,7 @@ import com.example.backend.controller.voucher_managment.model.request.CreateVouc
 import com.example.backend.controller.voucher_managment.model.request.FindVoucherRequest;
 import com.example.backend.controller.voucher_managment.model.request.UpdateVoucherRequest;
 import com.example.backend.controller.voucher_managment.model.response.VoucherResponse;
-import com.example.backend.controller.voucher_managment.repository.VoucherRepository;
+import com.example.backend.repository.VoucherRepository;
 import com.example.backend.controller.voucher_managment.service.VoucherService;
 import com.example.backend.entity.Voucher;
 import jakarta.persistence.criteria.Predicate;

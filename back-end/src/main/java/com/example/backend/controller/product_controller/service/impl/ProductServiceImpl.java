@@ -1,23 +1,22 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
-import com.example.backend.controller.product_controller.repository.BatteryRepository;
-import com.example.backend.controller.product_controller.repository.CapacityRepository;
-import com.example.backend.controller.product_controller.repository.CategoryRepository;
-import com.example.backend.controller.product_controller.repository.ChipRepository;
-import com.example.backend.controller.product_controller.repository.ColorRepository;
-import com.example.backend.controller.product_controller.repository.ImageRepository;
-import com.example.backend.controller.product_controller.repository.ManufactureRepository;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
-import com.example.backend.controller.product_controller.repository.RamRepository;
-import com.example.backend.controller.product_controller.repository.ScreenRepository;
-import com.example.backend.controller.product_controller.repository.SizeRepository;
+import com.example.backend.repository.BatteryRepository;
+import com.example.backend.repository.CapacityRepository;
+import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.ChipRepository;
+import com.example.backend.repository.ColorRepository;
+import com.example.backend.repository.ImageRepository;
+import com.example.backend.repository.ManufactureRepository;
+import com.example.backend.repository.ProductRepository;
+import com.example.backend.repository.RamRepository;
+import com.example.backend.repository.ScreenRepository;
+import com.example.backend.repository.SizeRepository;
 import com.example.backend.entity.Battery;
 import com.example.backend.entity.Capacity;
 import com.example.backend.entity.Category;
 import com.example.backend.entity.Chip;
 import com.example.backend.entity.Color;
-import com.example.backend.entity.Image;
 import com.example.backend.entity.Manufacture;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.Ram;
@@ -27,10 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductServiceImpl {

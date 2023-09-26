@@ -3,9 +3,9 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.cartDetail.ChangeQuantity;
 import com.example.backend.controller.order_management.model.cartDetail.ChangeSizeInCart;
-import com.example.backend.controller.order_management.repository.CartDetailRepository;
+import com.example.backend.repository.CartDetailRepository;
 import com.example.backend.controller.order_management.service.CartDetailService;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.entity.CartDetail;
 import com.example.backend.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
