@@ -247,6 +247,10 @@ export default function TrangChu(){
         <br />
         <div class="companyMenu group flexContain">
           <a href="index.html?company=Apple"><img src="img/company/Apple.jpg"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Samsung.jpg"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Oppo.jpg"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Xiaomi.png"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Huawei.jpg"/></a>
          </div>
         <div className="flexContain">
           <div className="pricesRangeFilter dropdown">

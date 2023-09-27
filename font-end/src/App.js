@@ -50,12 +50,16 @@ import ImportImei from "./components/product_component/Imei/ImportImei";
 import chat from "./components/custumer_componet/ChatRoom";
 import product from "./components/product_component/Product/Display";
 import Cproduct from "./components/product_component/Product/crud/create";
+import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay";
+import blog from "./components/Page_Comeponet/Blogs";
+import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
 
 function App() {
   return (
     <div>
       <Router>
         <Switch>
+          <Route path="/blog" exact component={blog} />
           <Route path="/" exact component={Home} />
           <Route path="/chat" exact component={chat} />
           <Route path="/ram/display" exact component={RamDisplay} />
@@ -161,6 +165,8 @@ function App() {
           <Route path="/product/display" exact component={product} />
 
           <Route path="/cproduct/display" exact component={Cproduct} />
+          <Route path="/voucher" exact component={Voucher} />
+          <Route path="/cart" exact component={Cart} />
         </Switch>
       </Router>
     </div>

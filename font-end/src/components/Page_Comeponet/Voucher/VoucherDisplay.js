@@ -87,6 +87,13 @@ const VoucherDisplay = ({}) => {
         });
     }
 
+   
+    // const dateStart = voucher.dateStart;
+    // const dateStartText = dateStart.toLocaleDateString();
+
+    // const dateEnd = voucher.dateEnd;
+    // const dateEndText = dateEnd.toLocaleDateString();
+    
     return(
         <>
         <Layout>
@@ -244,7 +251,7 @@ const VoucherDisplay = ({}) => {
                 </Link> */}
     
                 <CreateVoucher/>
-
+                
                 <List>
                     <Table
                         rowKey="id"

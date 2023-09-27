@@ -21,14 +21,14 @@ import {
   // useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
 
-// const { Text } = Typography;
+
 
 const CreateVoucher = ({}) => {
   const t = useTranslate();
   const history = useHistory();
 
   const [voucher, setVoucher] = useState([]);
-  // const [editedVoucher, setEditedVoucher] = useState(null);
+
 
   function handleChangeDatePicker(value, name) {
     setVoucher((prevVoucher) => ({
@@ -46,53 +46,19 @@ const CreateVoucher = ({}) => {
     setVoucher(item);
   }
 
-  // async function handleSubmit(event) {
-  //     event.preventDefault();
-
-  //     const items = { ...voucher };
-
-  //     if (id !== "new") {
-  //       update(id, items);
-  //     } else {
-  //         add(items);
-  //     }
-
-  //     console.log(items);
-
-  //     history.push("/voucher");
-  //   }
-
-//   async function handleSubmit(event) {
-//     event.preventDefault();
-//     const items = { ...voucher };
-//     add(items);
-//     history.push("/voucher");
-//   }
 
 const handleSubmit = (event) => {
     event.preventDefault();
     const items = { ...voucher };
-    // if (editedVoucher) {
-    //   // Thực hiện cập nhật nếu editedVoucher tồn tại
-    //   update(editedVoucher.id, items)
-    //     .then(() => {
-    //       // Cập nhật thành công, thực hiện các hành động cần thiết
-    //       console.log("Updated successfully");
-    //       history.push("/voucher");
-    //     })
-    //     .catch((error) => {
-    //       console.error(`Error updating voucher: ${error}`);
-    //     });
-    // } else {
-      // Thực hiện thêm mới nếu không có editedVoucher
       add(items)
         .then(() => {
           // Thêm mới thành công, thực hiện các hành động cần thiết
+          window.location.reload();
           notification.success({
             message: "SAVE VOUCHER",
             description: "Added Voucher successfully",
           });
-          history.push("/voucher");
+          history.push("/voucher", items);
           return {
             success: true,
           };
@@ -100,28 +66,8 @@ const handleSubmit = (event) => {
         .catch((error) => {
           console.error(`Error adding voucher: ${error}`);
         });
-    // }
   };
   
-
-  // const { id } = useParams();
-
-  // const title = (
-  //     <div className="text">{id !== "new" ? "Edit Voucher" : "Add Voucher"}</div>
-  //   );
-
-  //   useEffect(() => {
-  //     if (id !== "new") {
-  //       detail(id)
-  //         .then((response) => {
-  //             setVoucher(response.data);
-  //           console.log(voucher);
-  //         })
-  //         .catch((error) => {
-  //           console.log(`${error}`);
-  //         });
-  //     }
-  //   }, []);
 
   return (
     <form onSubmit={handleSubmit}>

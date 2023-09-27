@@ -27,7 +27,7 @@ public class Voucher extends DuplicateAttribute implements Identify {
 
     private String name;
 
-    private Long dateStart;
+    private LocalDate dateStart;
 
     private LocalDate dateEnd;
 

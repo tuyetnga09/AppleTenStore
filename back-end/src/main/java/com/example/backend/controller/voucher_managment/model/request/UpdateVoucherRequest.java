@@ -26,9 +26,9 @@ public class UpdateVoucherRequest {
 
     private BigDecimal conditionsApply;
 
-    private LocalDate dateStart;
+    private LocalDate  dateStart;
 
-    private LocalDate dateEnd;
+    private LocalDate  dateEnd;
 
     private BigDecimal valueVoucher;
 

@@ -1,7 +1,5 @@
 package com.example.backend.entity;
 
-import com.example.backend.entity.dto.DuplicateAttribute;
-import com.example.backend.entity.dto.Identify;
 import com.example.backend.untils.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +15,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -35,9 +35,7 @@ public class User {
     private Integer id;
     @Column(name = "full_name")
     private String fullName;
-
-    @Column(name = "date_of_birth")
-    private Long dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "phone_number")
     private String phoneNumber;
