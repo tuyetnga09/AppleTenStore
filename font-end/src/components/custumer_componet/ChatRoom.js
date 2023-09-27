@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Header from "../Page_Comeponet/layout/Header";
+import Footer from "../Page_Comeponet/layout/Footer";
 import {
   TextField,
   IconButton,
@@ -88,6 +90,7 @@ const ChatRoom = () => {
 
   return (
     <div>
+      <Header />
       <List>
         {messages.map((msg, index) => (
           <ListItem key={index}>
@@ -122,6 +125,7 @@ const ChatRoom = () => {
           send
         </IconButton>
       </div>
+      <Footer />
     </div>
   );
 };

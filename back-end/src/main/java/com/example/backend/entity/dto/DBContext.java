@@ -6,6 +6,7 @@ import com.example.backend.entity.Capacity;
 import com.example.backend.entity.Category;
 import com.example.backend.entity.Chip;
 import com.example.backend.entity.Manufacture;
+import com.example.backend.entity.Payments;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.Ram;
 import com.example.backend.entity.Screen;
@@ -20,6 +21,7 @@ import com.example.backend.repository.ChipRepository;
 import com.example.backend.repository.ColorRepository;
 import com.example.backend.entity.Color;
 import com.example.backend.repository.ManufactureRepository;
+import com.example.backend.repository.PaymentsRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.RamRepository;
 import com.example.backend.repository.ScreenRepository;
@@ -27,6 +29,8 @@ import com.example.backend.repository.SizeRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.VoucherRepository;
 import com.example.backend.untils.Status;
+import com.example.backend.untils.StatusPayment;
+import com.example.backend.untils.TypePayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -36,6 +40,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 
 
 @SpringBootApplication
@@ -71,6 +76,9 @@ public class DBContext implements CommandLineRunner {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private PaymentsRepository paymentsRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -288,6 +296,80 @@ public class DBContext implements CommandLineRunner {
         productRepository.save(product3 );
         Product product4 =Product.builder().code("PR5").name("Samsung S22 Utral").description("Màn hình tràn viền").quantity(0).price(new BigDecimal(25000000)).build();
         productRepository.save(product4 );
+
+        Payments payment1 = Payments.builder()
+                .code("PAY1")
+                .payments(1)
+                .moneyPayment(new BigDecimal("100.50"))
+                .note("Payment for order 1")
+                .confirmer("John Doe")
+                .personCreate("Admin")
+                .personUpdate("Admin")
+                .dateCreate(new Date())
+                .dateUpdate(new Date())
+                .method(TypePayment.TIEN_MAT)
+                .typePayment(StatusPayment.THANH_TOAN)
+                .build();
+
+        Payments payment2 = Payments.builder()
+                .code("PAY2")
+                .method(TypePayment.CHUYEN_KHOAN)
+                .payments(2)
+                .moneyPayment(new BigDecimal("75.25"))
+                .note("Payment for order 2")
+                .confirmer("Jane Smith")
+                .personCreate("Admin")
+                .personUpdate("Admin")
+                .dateCreate(new Date())
+                .dateUpdate(new Date())
+                .typePayment(StatusPayment.THANH_TOAN)
+                .build();
+
+        Payments payment3 = Payments.builder()
+                .code("PAY3")
+                .method(TypePayment.THE)
+                .payments(3)
+                .moneyPayment(new BigDecimal("50.00"))
+                .note("Payment for order 3")
+                .confirmer("Bob Johnson")
+                .personCreate("Admin")
+                .personUpdate("Admin")
+                .dateCreate(new Date())
+                .dateUpdate(new Date())
+                .typePayment(StatusPayment.THANH_TOAN)
+                .build();
+
+        Payments payment4 = Payments.builder()
+                .code("PAY4")
+                .method(TypePayment.CHUYEN_KHOAN)
+                .payments(4)
+                .moneyPayment(new BigDecimal("200.75"))
+                .note("Payment for order 4")
+                .confirmer("Alice Brown")
+                .personCreate("Admin")
+                .personUpdate("Admin")
+                .dateCreate(new Date())
+                .dateUpdate(new Date())
+                .build();
+
+        Payments payment5 = Payments.builder()
+                .code("PAY5")
+                .method(TypePayment.TIEN_MAT)
+                .payments(5)
+                .moneyPayment(new BigDecimal("150.25"))
+                .note("Payment for order 5")
+                .confirmer("Charlie Wilson")
+                .personCreate("Admin")
+                .personUpdate("Admin")
+                .dateCreate(new Date())
+                .dateUpdate(new Date())
+                .build();
+
+        paymentsRepository.save(payment1);
+        paymentsRepository.save(payment2);
+        paymentsRepository.save(payment3);
+        paymentsRepository.save(payment4);
+        paymentsRepository.save(payment5);
 
     }
     public static void main(String[] args) {
