@@ -119,4 +119,11 @@ public class ProductServiceImpl {
         return this.productRepository.selectAll();
     }
 
+    public Page<Product> search(Pageable pageable, String key) {
+        return productRepository.search(pageable, key);
+    }
+
+    public Page<Product> deleteProduct(Pageable pageable, String key) {
+        return productRepository.deleteProduct(pageable, key);
+    }
 }

@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { readAll, deleteProduct } from "../../../service/product.service";
+import {
+  returnDeleteAll,
+  returnProduct,
+} from "../../../service/product.service";
 import Pagination from "./Paging";
 import queryString from "query-string";
 import {
@@ -18,8 +21,6 @@ import {
   Dropdown,
   Menu,
   Button,
-  Select,
-  DatePicker,
 } from "antd";
 import {
   SearchOutlined,
@@ -34,20 +35,19 @@ import CreateProduct from "./crud/create";
 // import Container from "react-bootstrap/Container";
 // import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
 import "primereact/resources/primereact.css"; // core css
 import { Toast } from "primereact/toast";
-import { FaFileExcel } from "react-icons/fa";
+import { QueryClient, QueryClientProvider } from "react-query";
 const queryClient = new QueryClient();
 
 const { Text, Paragraph } = Typography;
 const StoreProducts = ({}) => {
   const toast = useRef(null);
 
-  const acceptDelete = (id) => {
-    remove(id);
+  const acceptReturn = (id) => {
+    handleDelete(id);
     toast.current.show({
       severity: "info",
       summary: "Confirmed",
@@ -65,23 +65,13 @@ const StoreProducts = ({}) => {
     });
   };
 
-  // const confirm1 = () => {
-  //   confirmDialog({
-  //     message: "Are you sure you want to proceed?",
-  //     header: "Confirmation",
-  //     icon: "pi pi-exclamation-triangle",
-  //     accept,
-  //     reject,
-  //   });
-  // };
-
   const confirm2 = (id) => {
     confirmDialog({
       message: "Do you want to delete this record?",
       header: "Delete Confirmation",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
-      accept: () => acceptDelete(id),
+      accept: () => acceptReturn(id),
       reject,
     });
   };
@@ -125,9 +115,10 @@ const StoreProducts = ({}) => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
+
   useEffect(() => {
     const paramsString = queryString.stringify(filters);
-    readAll(paramsString)
+    returnDeleteAll(paramsString)
       .then((response) => {
         console.log(response.data);
         setDisplay(response.data.content);
@@ -155,8 +146,8 @@ const StoreProducts = ({}) => {
     });
   }
 
-  async function remove(id) {
-    deleteProduct(id).then(() => {
+  async function handleDelete(id) {
+    returnProduct(id).then(() => {
       let newArr = [...display].filter((s) => s.id !== id);
       setDisplay(newArr);
     });
@@ -198,9 +189,8 @@ const StoreProducts = ({}) => {
                         name="key"
                       />
                     </Form.Item>
-                    <Button onClick={showModal}>AddProduct</Button>
-                    <Link to="/product/displayDelete">
-                      <Button>Deleted</Button>
+                    <Link to="/product/display">
+                      <Button>Back</Button>
                     </Link>
                   </StyledStoreProducts>
                   {/* <AntdList
@@ -267,25 +257,8 @@ const StoreProducts = ({}) => {
                                     />
                                   }
                                   onClick={() => confirm2(item.id)}
-                                  // onClick={() => remove(item.id)}
                                 >
-                                  Delete
-                                </Menu.Item>
-                                <Menu.Item
-                                  key="2"
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <FormOutlined
-                                      style={{
-                                        color: "green",
-                                      }}
-                                    />
-                                  }
-                                  // onClick={() => editShow(item.id)}
-                                >
-                                  Edit
+                                  Return
                                 </Menu.Item>
                               </Menu>
                             }
@@ -363,17 +336,6 @@ const StoreProducts = ({}) => {
                               />
                             </div>
                           )} */}
-                          <span>
-                            <b>Quantity:</b> {item.quantity}
-                            <Link to="/imei/getAll">
-                              <FaFileExcel
-                                style={{
-                                  float: "right",
-                                  color: "green",
-                                }}
-                              />
-                            </Link>
-                          </span>
                         </div>
                       </Card>
                     </Col>

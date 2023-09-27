@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { readAll, deleteImei } from "../../../service/imei.service";
+import { readAll, deleteImei, importImei } from "../../../service/imei.service";
 import { Link } from "react-router-dom";
 import "../../../css/style.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import {
   faClose,
   faDownload,
@@ -11,11 +12,14 @@ import {
   faPlus,
   faQrcode,
   faTrash,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
 import Pagination from "../Imei/Paging.js";
 import * as XLSX from "xlsx";
 import * as FileSaver from "file-saver";
+import ImportImei from "../Imei/ImportImei";
+import { notification } from "antd";
 
 const Display = () => {
   const [display, setDisplay] = useState([]);
@@ -84,6 +88,7 @@ const Display = () => {
     <div className="bodyform">
       <section class="ftco-section">
         <div class="container">
+          <ImportImei />
           <div className="row justify-content-center">
             <div className="col-md-6 text-center mb-4">
               <h2 className="heading-section">Imei</h2>
@@ -110,35 +115,14 @@ const Display = () => {
                   name="key"
                   onChange={handleChange}
                 />
-                {/* <Link to="/imei/scan">
-                  <button
-                    className="btn btn-outline-success"
-                    style={{ marginLeft: "15px" }}
-                  >
-                    <FontAwesomeIcon icon={faQrcode} className="search-icon" />
-                  </button>
-                </Link>
-                <Link to="/imei/new">
-                  <button
-                    type="button"
-                    className="btn btn-outline-success"
-                    style={{ marginRight: "15px", marginLeft: "15px" }}
-                  >
-                    <FontAwesomeIcon icon={faPlus} className="add-icon" />
-                  </button>
-                </Link> */}
-                <Link to="/imei/im">
-                  <button
-                    type="button"
-                    className="btn btn-outline-success"
-                    style={{ marginRight: "15px" }}
-                  >
-                    <FontAwesomeIcon
-                      icon={faFileExcel}
-                      className="excel-icon"
-                    />
-                  </button>
-                </Link>
+
+                {/* <button
+                  type="button"
+                  className="btn btn-outline-success"
+                  style={{ marginRight: "15px" }}
+                >
+                  <FontAwesomeIcon icon={faFileExcel} className="excel-icon" />
+                </button> */}
 
                 <button
                   type="button"

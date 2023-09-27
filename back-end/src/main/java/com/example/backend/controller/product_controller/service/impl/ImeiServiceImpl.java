@@ -1,9 +1,11 @@
 package com.example.backend.controller.product_controller.service.impl;
 
-import com.example.backend.repository.ImeiRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
+import com.example.backend.repository.ImeiRepository;
+import com.example.backend.repository.ProductRepository;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -16,12 +18,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class ImeiServiceImpl implements Iservice<Imei> {
 
     @Autowired
     private ImeiRepository imeiRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public Page getAll(Pageable pageable) {
@@ -73,7 +80,9 @@ public class ImeiServiceImpl implements Iservice<Imei> {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
-
+        Set<Integer> values = new HashSet<>();
+        int count = 1;
+        Product product = null;
         for (Row row: sheet){
             if(row.getRowNum() == 0){
                 continue;
@@ -81,28 +90,42 @@ public class ImeiServiceImpl implements Iservice<Imei> {
 
             String code = String.valueOf((int) row.getCell(0).getNumericCellValue());
             Imei existingImei = imeiRepository.findByCodeImei(code);
-
-            if(existingImei != null){
-                //Đã tồn tại
-                existingImei.setDateUpdate(new Date());
-                existingImei.setPersonUpdate(row.getCell(3).getStringCellValue());
-                imeiRepository.save(existingImei);
+            product = productRepository.findProductById((int) row.getCell(1).getNumericCellValue());
+            if (product != null){
+                if(existingImei != null){
+                    //Đã tồn tại
+                    count = 0;
+                    existingImei.setDateUpdate(new Date());
+                    existingImei.setPersonUpdate(row.getCell(3).getStringCellValue());
+                    imeiRepository.save(existingImei);
+                }else {
+                    //Chưa tồn tại thêm mới
+                    Imei newImei = new Imei();
+//                    Product product = new Product();
+//                    product.setId((int) row.getCell(1).getNumericCellValue());
+                    newImei.setCodeImei(code);
+                    newImei.setIdProduct(product);
+                    newImei.setDateCreate(new Date());
+                    newImei.setDateUpdate(new Date());
+                    newImei.setPersonCreate(row.getCell(2).getStringCellValue());
+                    newImei.setPersonUpdate(row.getCell(3).getStringCellValue());
+                    newImei.setStatus(0);
+                    if (!values.contains((int) row.getCell(1).getNumericCellValue())) {
+                        values.add((int) row.getCell(1).getNumericCellValue());
+                    } else {
+                        count++;
+                    }
+                    imeiRepository.save(newImei);
+                }
             }else {
-                //Chưa tồn tại thêm mới
-                Imei newImei = new Imei();
-                Product product = new Product();
-                product.setId((int) row.getCell(1).getNumericCellValue());
-                newImei.setCodeImei(code);
-                newImei.setIdProduct(product);
-                newImei.setDateCreate(new Date());
-                newImei.setDateUpdate(new Date());
-                newImei.setPersonCreate(row.getCell(2).getStringCellValue());
-                newImei.setPersonUpdate(row.getCell(3).getStringCellValue());
-                newImei.setStatus(0);
-                imeiRepository.save(newImei);
+                System.out.println("Product not found");
             }
         }
-
+        if (product.getQuantity() == null){
+            product.setQuantity(0);
+        }
+        product.setQuantity(product.getQuantity() + count);
+        productRepository.save(product);
         workbook.close();
     }
 }
