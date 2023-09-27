@@ -3,7 +3,9 @@ package com.example.backend.controller.voucher_managment.model.response;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public interface VoucherResponse {
     @Value("#{target.id}")
@@ -25,10 +27,10 @@ public interface VoucherResponse {
     Integer getLoaiVoucher();
 
     @Value("#{target.dateStart}")
-    LocalDateTime getNgayBatDau();
+    LocalDate getNgayBatDau();
 
     @Value("#{target.dateEnd}")
-    LocalDateTime getNgayKetThuc();
+    LocalDate getNgayKetThuc();
 
     @Value("#{target.valueVoucher}")
     BigDecimal getGiaTriVoucher();

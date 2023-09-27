@@ -1,14 +1,18 @@
 package com.example.backend.entity.dto;
 
+import com.example.backend.entity.Account;
 import com.example.backend.entity.Battery;
 import com.example.backend.entity.Capacity;
 import com.example.backend.entity.Category;
 import com.example.backend.entity.Chip;
 import com.example.backend.entity.Manufacture;
+import com.example.backend.entity.Product;
 import com.example.backend.entity.Ram;
 import com.example.backend.entity.Screen;
 import com.example.backend.entity.Size;
+import com.example.backend.entity.User;
 import com.example.backend.entity.Voucher;
+import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.BatteryRepository;
 import com.example.backend.repository.CapacityRepository;
 import com.example.backend.repository.CategoryRepository;
@@ -16,10 +20,13 @@ import com.example.backend.repository.ChipRepository;
 import com.example.backend.repository.ColorRepository;
 import com.example.backend.entity.Color;
 import com.example.backend.repository.ManufactureRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.RamRepository;
 import com.example.backend.repository.ScreenRepository;
 import com.example.backend.repository.SizeRepository;
+import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.VoucherRepository;
+import com.example.backend.untils.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -29,8 +36,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @SpringBootApplication
 @EnableJpaRepositories(
@@ -57,6 +63,14 @@ public class DBContext implements CommandLineRunner {
 
     @Autowired
     private VoucherRepository voucherRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -170,6 +184,110 @@ public class DBContext implements CommandLineRunner {
         Size size4= Size.builder().code("R5").name("51 mm").build();
         sizeRepository.save(size4);
 
+        Voucher voucher = Voucher.builder()
+                .code("V1")
+                .name("Giảm giá sốc cuối tháng")
+                .dateStart(LocalDate.of(2023, 10, 10))
+                .dateEnd(LocalDate.of(2023, 10, 20))
+                .conditionsApply(new BigDecimal("2000000"))
+                .valueVoucher(new BigDecimal("1000000"))
+                .valueMinimum(new BigDecimal("10000000"))
+                .valueMaximum(new BigDecimal("15000000"))
+                .typeVoucher(100)
+                .quantity(5)
+                .build();
+        voucherRepository.save(voucher);
+
+        Voucher voucher1 = Voucher.builder()
+                .code("V2")
+                .name("Giảm giá")
+                .dateStart(LocalDate.of(2023, 9, 25))
+                .dateEnd(LocalDate.of(2023, 9, 27))
+                .conditionsApply(new BigDecimal("2100000"))
+                .valueVoucher(new BigDecimal("1200000"))
+                .valueMinimum(new BigDecimal("30000000"))
+                .valueMaximum(new BigDecimal("15000000"))
+                .typeVoucher(100)
+                .quantity(3)
+                .build();
+        voucherRepository.save(voucher1);
+
+        Voucher voucher2 = Voucher.builder()
+                .code("V3")
+                .name("Sale sốc cuối năm")
+                .dateStart(LocalDate.of(2023, 9, 26))
+                .dateEnd(LocalDate.of(2023, 9, 28))
+                .conditionsApply(new BigDecimal("1100000"))
+                .valueVoucher(new BigDecimal("2300000"))
+                .valueMinimum(new BigDecimal("11000000"))
+                .valueMaximum(new BigDecimal("22000000"))
+                .typeVoucher(200)
+                .quantity(7)
+                .build();
+
+        voucherRepository.save(voucher2);
+
+        Voucher voucher3 = Voucher.builder()
+                .code("V4")
+                .name("Sale sập sàn")
+                .dateStart(LocalDate.of(2023, 9, 21))
+                .dateEnd(LocalDate.of(2023, 9, 30))
+                .conditionsApply(new BigDecimal("2200000"))
+                .valueVoucher(new BigDecimal("2500000"))
+                .valueMinimum(new BigDecimal("11000000"))
+                .valueMaximum(new BigDecimal("15000000"))
+                .typeVoucher(100)
+                .quantity(9)
+                .build();
+        voucherRepository.save(voucher3);
+
+        Voucher voucher4 = Voucher.builder()
+                .code("V5")
+                .name("Tưng bừng giảm giá")
+                .dateStart(LocalDate.of(2023, 9, 20))
+                .dateEnd(LocalDate.of(2023, 9, 21))
+                .conditionsApply(new BigDecimal("2600000"))
+                .valueVoucher(new BigDecimal("3000000"))
+                .valueMinimum(new BigDecimal("15000000"))
+                .valueMaximum(new BigDecimal("25000000"))
+                .typeVoucher(150)
+                .quantity(8)
+                .build();
+        voucherRepository.save(voucher4);
+
+        User user0=User .builder().fullName("Trung Hieu").dateOfBirth(LocalDate.of(2003, 12, 10)).phoneNumber("0355969499").email("trunghieunguyen673@gmail.com").gender(true).points(100000).status(Status.DANG_SU_DUNG).build();
+        userRepository.save(user0);
+        User user1=User .builder().fullName("Công Minh").dateOfBirth(LocalDate.of(2003, 07, 23)).phoneNumber("0355969888").email("congminh673@gmail.com").gender(true).points(200000).status(Status.DANG_SU_DUNG).build();
+        userRepository.save(user1);
+        User user2=User .builder().fullName("Hong Phong").dateOfBirth(LocalDate.of(1998, 10, 10)).phoneNumber("0355969555").email("hongphong673@gmail.com").gender(true).points(200000).status(Status.DANG_SU_DUNG).build();
+        userRepository.save(user2);
+        User user3=User .builder().fullName("Tuyet Nga").dateOfBirth(LocalDate.of(2003, 9, 14)).phoneNumber("0333369499").email("tuyetnga673@gmail.com").gender(false).points(500000).status(Status.DANG_SU_DUNG).build();
+        userRepository.save(user3);
+        User user4=User .builder().fullName("Van Hieu").dateOfBirth(LocalDate.of(2003, 9, 8)).phoneNumber("0355933499").email("vanhieu673@gmail.com").gender(true).points(50000).status(Status.DANG_SU_DUNG).build();
+        userRepository.save(user4);
+
+
+        Account account0=Account .builder().email("trunghieunguyen673@gmail.com").password("123456").status(Status.DANG_SU_DUNG).build();
+        accountRepository.save(account0);
+        Account account1=Account .builder().email("cong minh@gmail.com").password("123456").status(Status.DANG_SU_DUNG).build();
+        accountRepository.save(account1);
+        Account account2=Account .builder().email("hongphong@gmail.com").password("123456").status(Status.DANG_SU_DUNG).build();
+        accountRepository.save(account2);
+        Account account3=Account .builder().email("tuyetnga@gmail.com").password("123456").status(Status.DANG_SU_DUNG).build();
+        accountRepository.save(account3);
+        Account account4=Account .builder().email("hoanghieu@gmail.com").password("123456").status(Status.DANG_SU_DUNG).build();
+        accountRepository.save(account4);
+
+        Product product0 =Product.builder().code("PR1").name("Iphone 11 Pro Max").description("Khung viền thép").quantity(0).price(new BigDecimal(11000000)).build();
+        productRepository.save(product0);
+        Product product1=Product.builder().code("PR2").name("Iphone 12 Pro Max").description("Kính  cường lực").quantity(0).price(new BigDecimal(15500000)).build();
+        productRepository.save(product1);
+        Product product2 =Product.builder().code("PR3").name("Iphone 13 Pro Max").description("Khung viền thép").quantity(0).price(new BigDecimal(16600000)).build();
+        productRepository.save(product2 );
+        Product product3 =Product.builder().code("PR4").name("Iphone 14 Pro").description("Sạc nhanh 20W").quantity(0).price(new BigDecimal(11077000)).build();
+        productRepository.save(product3 );
+        Product product4 =Product.builder().code("PR5").name("Samsung S22 Utral").description("Màn hình tràn viền").quantity(0).price(new BigDecimal(25000000)).build();
+        productRepository.save(product4 );
 
     }
     public static void main(String[] args) {
