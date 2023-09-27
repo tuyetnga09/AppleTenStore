@@ -10,13 +10,12 @@ import {
   Image,
   Button,notification,
 } from "antd";
-
+import dayjs, { Dayjs } from "dayjs";
 import {
   // Link,
   useHistory,
   // useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
-
 
 const UpdateVoucher = ({editedVoucher}) => {
   const t = useTranslate();
@@ -27,8 +26,8 @@ const UpdateVoucher = ({editedVoucher}) => {
   useEffect(() => {
     detail(editedVoucher.id)
       .then((response) => {
-      setVoucher(response.data);
-      console.log(response.data);
+        setVoucher(response.data);
+        console.log(response.data);
     })
     .catch((error) => {
       console.log(`${error}`);
@@ -57,11 +56,12 @@ const handleSubmit = (event) => {
       update(editedVoucher.id, items)
         .then(() => {
           // Cập nhật thành công, thực hiện các hành động cần thiết
+          window.location.reload();
           notification.success({
             message: "UPDATE VOUCHER",
             description: "Update Voucher successfully",
           });
-          history.push("/voucher");
+          history.push("/voucher", items);
           return {
             success: true,
           };
@@ -70,9 +70,9 @@ const handleSubmit = (event) => {
           console.error(`Error updating voucher: ${error}`);
         });
   };
-  
 
-
+  const dateStart = dayjs(voucher.dateStart);
+  const dateEnd = dayjs(voucher.dateEnd);
   return (
     <form onSubmit={handleSubmit}>
                     <Form
@@ -113,16 +113,20 @@ const handleSubmit = (event) => {
                             <Form.Item
                             label={t("Date Start")}
                             name="dateStart"
+                            style={{
+                              paddingTop: "20px",
+                            }}
                             rules={[
                                 {
                                 required: true,
                                 },
                             ]}
                             >
+                            
                             <DatePicker
                                 type="text"
                                 required
-                                value={voucher.dateStart}
+                                defaultValue={dateStart.locale("vi-VN")}
                                 onChange={(date, dateString) =>
                                 handleChangeDatePicker(dateString, "dateStart")
                                 }
@@ -143,7 +147,7 @@ const handleSubmit = (event) => {
                             <DatePicker
                                 type="text"
                                 required
-                                value={voucher.dateEnd}
+                                defaultValue={dateEnd.locale("vi-VN")}
                                 onChange={(date, dateString) =>
                                 handleChangeDatePicker(dateString, "dateEnd")
                                 }
@@ -153,7 +157,7 @@ const handleSubmit = (event) => {
                             </Form.Item>
                             
                             <label style={{
-                                paddingTop: "20px",
+                                paddingTop: "5px",
                             }}>Value Maximum</label>
                             <Input
                                 type="number"
@@ -246,6 +250,9 @@ const handleSubmit = (event) => {
                         htmlType="submit"
                         type="primary"
                         size="large"
+                        style={{
+                          marginTop: "20px",
+                      }}
                         // block
                     >
                         {t("UPDATE")}

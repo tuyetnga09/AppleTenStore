@@ -93,7 +93,7 @@ const VoucherDisplay = ({}) => {
 
     // const dateEnd = voucher.dateEnd;
     // const dateEndText = dateEnd.toLocaleDateString();
-
+    
     return(
         <>
         <Layout>

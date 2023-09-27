@@ -30,7 +30,7 @@ export default function Header(){
 
     <div className="header group">
     <div className="logo">
-      <a href="index.html">
+      <a href="/">
         <img
           src="img/logo.jpg"
           alt="Trang chủ Smartphone Store"
@@ -83,7 +83,7 @@ export default function Header(){
         </div>{" "}
         {/* End Member */}
         <div className="cart">
-          <a href="giohang.html">
+          <a href="/cart">
             <i className="fa fa-shopping-cart" />
             <span>Giỏ hàng</span>
             <span className="cart-number" />
