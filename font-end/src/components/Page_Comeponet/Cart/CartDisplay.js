@@ -62,87 +62,78 @@ export default function CartDisplay(){
                   <div className="row">
                     {/* <div className="col-lg-6 px-5 py-4"> */}
                       <h3 className="mb-5 pt-2 text-center fw-bold text-uppercase">
-                        Your products
+                        Giỏ hàng
                       </h3>
+                      <table>
+                        <thead>
+                          <tr style={{textAlign: "center"}}>
+                            <th><h5 className="fw-bold mb-0 me-5 pe-3">Ảnh</h5></th>
+                            <th><h5 className="fw-bold mb-0 me-5 pe-3">Sản phẩm</h5></th>
+                            <th><h5 className="fw-bold mb-0 me-5 pe-3">Giá</h5></th>
+                            <th><h5 className="fw-bold mb-0 me-5 pe-3">SL</h5></th>
+                            <th><h5 className="fw-bold mb-0 me-5 pe-3">Thành tiền</h5></th>
+                            <th></th>
+                          </tr>
+                      </thead>
+                      <tbody>
                       {products.map((product) => (
-                      <div className="d-flex align-items-center mb-5">
-                        <div className="flex-shrink-0">
-                          <img
-                            src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/13.webp"
-                            className="img-fluid"
-                            style={{ width: 150 }}
-                            alt="Generic placeholder image"
-                          />
-                        </div>
-                        <div className="flex-grow-1 ms-3">
-                          <a href="#!" className="float-end text-black">
-                                <FontAwesomeIcon icon={faTimes} />
-                          </a>
-                          <div className="row">
-                        
-                          
-                            <div className="col-lg-6 px-5 py-4">
-                              <h5 className="text-primary">{product.name}</h5>
-                            </div>
-                            <div className="col-lg-4 px-5 py-4">
-                              <p className="fw-bold mb-0 me-5 pe-3">{product.price} VND</p>
-                            </div>
-                            <div className="col-lg-2 px-5 py-4">
-                              <div className="def-number-input number-input safari_only">
-                                  <button
-                                    onClick={() => handleDownQuantiy(product.id)}
-                                    className="minus"
-                                  />
-                                  <input
-                                    className="quantity fw-bold text-black"
-                                    min={0}
-                                    name="quantity"
-                                    value={product.quantity}
-                                    type="number"
-                                  />
-                                  <button
-                                    onClick={() => handleUpQuantiy(product.id)}
-                                    className="plus"
-                                  />
+                          <tr class="alert" role="alert" >
+                            <td>
+                              <div className="flex-shrink-0">
+                                <img
+                                  src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/13.webp"
+                                  className="img-fluid"
+                                  style={{ width: "170px" }}
+                                  alt="Generic placeholder image"
+                                />
+                              </div>
+                            </td>
+                            <td><h5 className="text-primary">{product.name}</h5></td>
+                            <td><p className="fw-bold mb-0 me-5 pe-3">{product.price} VND</p></td>
+                            <td>
+                              <div className="def-number-input number-input safari_only" style={{paddingRight: "10px"}}>
+                                        <button
+                                          onClick={() => handleDownQuantiy(product.id)}
+                                          className="minus"
+                                        />
+                                        <input
+                                          className="quantity fw-bold text-black"
+                                          min={0}
+                                          name="quantity"
+                                          value={product.quantity}
+                                          type="number"
+                                        />
+                                        <button
+                                          onClick={() => handleUpQuantiy(product.id)}
+                                          className="plus"
+                                        />
                                 </div>
-                            </div>
-                        </div>
-                          {/* <div className="d-flex align-items-center" >
-                            <p className="fw-bold mb-0 me-5 pe-3">{product.price} VND</p>
-                            <div className="def-number-input number-input safari_only">
-                              <button
-                                onClick={() => handleDownQuantiy(product.id)}
-                                className="minus"
-                              />
-                              <input
-                                className="quantity fw-bold text-black"
-                                min={0}
-                                name="quantity"
-                                value={product.quantity}
-                                type="number"
-                              />
-                              <button
-                                onClick={() => handleUpQuantiy(product.id)}
-                                className="plus"
-                              />
-                            </div>
-                          </div> */}
-                        </div>
-                      </div>
-                     ))}
+                            </td>
+                            <td><p className="fw-bold mb-0 me-5 pe-3">{product.price} VND</p></td>
+                            <td>
+                              <a href="#!" className="float-end text-black">
+                                      <FontAwesomeIcon icon={faTimes} />
+                                </a>
+                            </td>
+                          </tr>
+                      ))}
+                      </tbody>
+                    </table>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end" style={{marginTop: "10px"}}>
+                      <button class="btn btn-danger me-md-2" type="button">Xóa hết</button>
+                    </div>
                       <hr
                         className="mb-4"
-                        style={{ height: 2, backgroundColor: "#1266f1", opacity: 1, width: "98%" }}
+                        style={{ height: 2, backgroundColor: "#1266f1", opacity: 1, width: "98%" , marginTop: "20px"}}
                       />
-                      <h5
-                          className="fw-bold mb-5"
-                          style={{  bottom: 0 }}
-                        >
-                          <a href="/">
-                          <FontAwesomeIcon icon={faArrowLeft} />
-                            Tiếp tục mua hàng
-                          </a>
-                        </h5>
+                       <div
+                              className="d-flex justify-content-between p-2 mb-2"
+                              style={{ backgroundColor: "#e1f5fe" }}
+                            >
+                              <h5 className="fw-bold mb-0">Tồng tiền:</h5>
+                              <h5 className="fw-bold mb-0">2261$</h5>
+                            </div>
+                       
                         <div class="d-grid gap-2 col-6 mx-auto">
                           <button
                             type="button"
@@ -152,6 +143,15 @@ export default function CartDisplay(){
                             Buy now
                           </button>
                         </div>
+                        <h5
+                          className="fw-bold mb-5"
+                          style={{  bottom: 0 }}
+                        >
+                          <a href="/">
+                          <FontAwesomeIcon icon={faArrowLeft} />
+                            Tiếp tục mua hàng
+                          </a>
+                        </h5>
                     {/* </div> */}
                     {/* <div className="col-lg-6 px-5 py-4">
                       <h3 className="mb-5 pt-2 text-center fw-bold text-uppercase">
@@ -224,7 +224,7 @@ export default function CartDisplay(){
                         </p> */}
                          {/* </form> */}
                       {/* </div> */}
-                      <div className="row">
+                      {/* <div className="row">
                         <div className="col-lg-6 px-5 py-4">
 
                         </div>
@@ -263,7 +263,7 @@ export default function CartDisplay(){
                               <h5 className="fw-bold mb-0">2261$</h5>
                             </div>
                           </div>
-                      </div>
+                      </div> */}
                         
                      
                   </div>

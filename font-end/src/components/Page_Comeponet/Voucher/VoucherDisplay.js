@@ -3,9 +3,7 @@ import { readAll,deleteVoucher,add, detail, update } from "../../../service/Vouc
 import { useTranslate } from "@refinedev/core";
 import { SearchOutlined , MenuFoldOutlined,
     MenuUnfoldOutlined,
-    UploadOutlined,
-    UserOutlined,
-    VideoCameraOutlined,} from "@ant-design/icons";
+    UserOutlined,DashboardOutlined,AppstoreAddOutlined,GiftOutlined,LogoutOutlined,ShopOutlined} from "@ant-design/icons";
 import {
     Typography,
     Table,
@@ -102,22 +100,38 @@ const VoucherDisplay = ({}) => {
                 <Menu
                 theme="dark"
                 mode="inline"
-                defaultSelectedKeys={['2']}
+                defaultSelectedKeys={['5']}
                 items={[
                     {
                     key: '1',
-                    icon: <UserOutlined />,
-                    label: 'Home',
+                    icon: <DashboardOutlined />,
+                    label: 'Dashboard',
                     },
                     {
                     key: '2',
-                    icon: <VideoCameraOutlined />,
-                    label: 'Voucher',
+                    icon: <ShopOutlined />,
+                    label: 'Orders',
+                    
                     },
                     {
                     key: '3',
-                    icon: <UploadOutlined />,
+                    icon: <UserOutlined />,
+                    label: 'Users',
+                    },
+                    {
+                    key: '4',
+                    icon: <AppstoreAddOutlined />,
                     label: 'Product',
+                    },
+                    {
+                    key: '5',
+                    icon: <GiftOutlined />,
+                    label: 'Voucher',
+                    },
+                    {
+                    key: '6',
+                    icon: <LogoutOutlined />,
+                    label: 'Logout',
                     },
                 ]}
                 />
