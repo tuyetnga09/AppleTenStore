@@ -3,6 +3,7 @@ package com.example.backend.repository;
 
 
 import com.example.backend.entity.Product;
+import com.example.backend.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,4 +42,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Product search(String name);
 
     Product findByName(String nameProduct);
+    Product findByCode(String code);
 }

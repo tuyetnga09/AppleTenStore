@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.entity.Account;
+import com.example.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,5 +13,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email")
     Account getOneByEmail(@Param("email") String email);
 
-
+    Account findByEmail(String code);
 }
