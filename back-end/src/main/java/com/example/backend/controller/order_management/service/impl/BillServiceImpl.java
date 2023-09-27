@@ -4,17 +4,17 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.response.BillResponse;
-import com.example.backend.controller.order_management.repository.AccountRepository;
-import com.example.backend.controller.order_management.repository.AddressRepository;
-import com.example.backend.controller.order_management.repository.BillDetailRepository;
-import com.example.backend.controller.order_management.repository.BillHistoryRepository;
-import com.example.backend.controller.order_management.repository.BillRepository;
-import com.example.backend.controller.order_management.repository.PaymentsRepository;
-import com.example.backend.controller.order_management.repository.UserRepository;
-import com.example.backend.controller.order_management.repository.VoucherDetailRepository;
+import com.example.backend.repository.AccountRepository;
+import com.example.backend.repository.AddressRepository;
+import com.example.backend.repository.BillDetailRepository;
+import com.example.backend.repository.BillHistoryRepository;
+import com.example.backend.repository.BillRepository;
+import com.example.backend.repository.PaymentsRepository;
+import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.VoucherDetailRepository;
 import com.example.backend.controller.order_management.service.BillService;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
-import com.example.backend.controller.voucher_managment.repository.VoucherRepository;
+import com.example.backend.repository.ProductRepository;
+import com.example.backend.repository.VoucherRepository;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Address;
 import com.example.backend.entity.Bill;
@@ -170,5 +170,10 @@ public class BillServiceImpl implements BillService {
             throw new RuntimeException(e);
         }
         return billRepository.getAll(request);
+    }
+
+    @Override
+    public Bill detail(Integer id) {
+        return billRepository.findById(id).get();
     }
 }

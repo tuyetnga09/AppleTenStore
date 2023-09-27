@@ -48,11 +48,9 @@ import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";
 import chat from "./components/custumer_componet/ChatRoom";
-import productDetail from "./components/custumer_componet/product_detail";
 import product from "./components/product_component/Product/Display";
 import Cproduct from "./components/product_component/Product/crud/create";
 import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay";
-import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
 
 function App() {
   return (
@@ -61,9 +59,6 @@ function App() {
         <Switch>
           <Route path="/" exact component={Home} />
           <Route path="/chat" exact component={chat} />
-          <Route path="/product" exact component={productDetail} />
-          <Route path="/voucher" exact component={Voucher} />
-          <Route path="/cart" exact component={Cart} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -154,7 +149,6 @@ function App() {
           <Route path="/color/im" exact component={ImportColor} />
           <Route path="/color/:id" exact component={AddColor} />
           <Route path="/color/scan" exact component={ScanColor} />
-
 
           <Route path="/imei/getAll" exact component={DisplayImei} />
           <Route path="/imei/im" exact component={ImportImei} />

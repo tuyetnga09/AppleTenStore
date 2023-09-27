@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.ManufactureRepository;
+import com.example.backend.repository.ManufactureRepository;
 import com.example.backend.controller.product_controller.service.impl.ManufactureServiceImpl;
 import com.example.backend.entity.Manufacture;
 import org.springframework.beans.factory.annotation.Autowired;

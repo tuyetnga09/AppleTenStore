@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.CapacityRepository;
+import com.example.backend.repository.CapacityRepository;
 import com.example.backend.controller.product_controller.service.impl.CapacityServiceImpl;
 import com.example.backend.entity.Capacity;
 import org.springframework.beans.factory.annotation.Autowired;
