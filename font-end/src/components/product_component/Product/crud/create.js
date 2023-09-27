@@ -3,6 +3,11 @@ import { useTranslate, useApiUrl } from "@refinedev/core";
 import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
 import { add } from "../../../../service/product.service";
 import { notification, Modal } from "antd";
+// import { useEffect, useState } from "react";
+// import { useTranslate, useApiUrl } from "@refinedev/core";
+// import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
+// import { add } from "../../../../service/product.service";
+
 import {
   readAllColor,
   readAllChip,
@@ -40,14 +45,21 @@ import {
 import { Option } from "antd/es/mentions";
 import { display } from "@mui/system";
 import { Hidden } from "@mui/material";
+import { addImage } from "../../../../service/image.service";
+import QRScanner from "./QRScanner";
 
 const Test = () => {
   const { Text } = Typography;
   const history = useHistory();
   const t = useTranslate();
   const apiUrl = useApiUrl();
+  const form = new FormData();
+  const [list, setList] = useState({});
+  const [startScan, setStartScan] = useState(false);
 
   const [productData, setProductData] = useState({});
+
+  const [testData, setTestData] = useState({});
 
   const handleInputChangeCategory = (value) => {
     setProductData({
@@ -55,6 +67,7 @@ const Test = () => {
       category: value,
     });
   };
+
   const handleInputChangeBattery = (value) => {
     setProductData({
       ...productData,
@@ -80,12 +93,14 @@ const Test = () => {
       color: value,
     });
   };
+
   const handleInputChangeManufacturer = (value) => {
     setProductData({
       ...productData,
       manufacturer: value,
     });
   };
+
   const handleInputChangeRam = (value) => {
     setProductData({
       ...productData,
@@ -94,12 +109,14 @@ const Test = () => {
       // screen: value,
     });
   };
+
   const handleInputChangeScreen = (value) => {
     setProductData({
       ...productData,
       screen: value,
     });
   };
+
   const handleInputChangeSize = (value) => {
     setProductData({
       ...productData,
@@ -119,6 +136,10 @@ const Test = () => {
     });
   };
 
+  async function handleChangeImage(value) {
+    setList(value);
+  }
+
   function handleChange(event) {
     const target = event.target;
     const value = target.value;
@@ -127,6 +148,7 @@ const Test = () => {
     item[name] = value;
     setProductData(item);
   }
+
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
 
   // Hàm để hiển thị Modal khi cần
@@ -145,15 +167,13 @@ const Test = () => {
 
     // Đây là nơi bạn có thể gửi dữ liệu sản phẩm (productData) lên máy chủ hoặc thực hiện bất kỳ xử lý nào bạn cần.
     console.log("Dữ liệu sản phẩm:", items);
-    add(items);
-    notification.success({
-      message: "Updated Password",
-      description: "Password updated successfully",
-    });
+    await add(items);
+    for (let i = 0; i < list.fileList.length; i++) {
+      form.append("file", list.fileList[i].originFileObj);
+    }
+    form.append("name", items.nameProduct);
+    await addImage(form);
     history.push("/product/display");
-    return {
-      success: true,
-    };
   }
 
   const [displayColor, setDisplayColor] = useState([]);
@@ -261,398 +281,389 @@ const Test = () => {
     //   //   width={breakpoint.sm ? "500px" : "100%"}
     //   zIndex={1001}
     // >
-
-    <form onSubmit={handleSubmit}>
-      <Create
-        resource="products"
-        // saveButtonProps={saveButtonProps}
-
-        goBack={false}
-        contentProps={{
-          style: {
-            boxShadow: "none",
-          },
-          bodyStyle: {
-            padding: 0,
-          },
+    <>
+      <button
+        onClick={() => {
+          setStartScan(!startScan);
         }}
-        // saveButtonProps={(onclick = test)}
       >
-        <Form
-          //   {...formProps}
-          layout="vertical"
-          initialValues={{
-            isActive: true,
+        {!startScan ? "Start Scan" : "Stop Scan"}
+      </button>
+      {startScan && <QRScanner data={setProductData} />}
+      <form onSubmit={handleSubmit}>
+        <Create
+          resource="products"
+          // saveButtonProps={saveButtonProps}
+
+          goBack={false}
+          contentProps={{
+            style: {
+              boxShadow: "none",
+            },
+            bodyStyle: {
+              padding: 0,
+            },
           }}
-          // id="test"
         >
-          <Form.Item
-            // label={t("products.fields.images.label")}
-            label={t("Images")}
+          <Form
+            //   {...formProps}
+            layout="vertical"
+            initialValues={{
+              isActive: true,
+            }}
+            // id="test"
           >
             <Form.Item
-              name="images"
-              valuePropName="fileList"
-              getValueFromEvent={getValueFromEvent}
-              noStyle
+              // label={t("products.fields.images.label")}
+              label={t("Images")}
+            >
+              <Form.Item
+                name="images"
+                valuePropName="fileList"
+                getValueFromEvent={getValueFromEvent}
+                noStyle
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Upload.Dragger
+                  name="file"
+                  listType="picture"
+                  accept="image/*"
+                  onChange={handleChangeImage}
+                >
+                  <Space direction="vertical" size={2}>
+                    <Avatar
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        maxWidth: "256px",
+                      }}
+                      src="https://example.admin.refine.dev/images/product-default-img.png"
+                      alt="Store Location"
+                    />
+                    <Text
+                      style={{
+                        fontWeight: 800,
+                        fontSize: "16px",
+                        marginTop: "8px",
+                      }}
+                    >
+                      {/* {t("products.fields.images.description")} */}
+                      Add Product
+                    </Text>
+                    <Text style={{ fontSize: "12px" }}>
+                      {/* {t("products.fields.images.validation")} */}
+                      must be 1080x1080 px
+                    </Text>
+                  </Space>
+                </Upload.Dragger>
+              </Form.Item>
+            </Form.Item>
+            <Form.Item
+              // label={t("products.fields.name")}
+              label={t("Name")}
+              name="nameProduct"
               rules={[
                 {
                   required: true,
                 },
               ]}
             >
-              <Upload.Dragger
-                name="file"
-                action={`${apiUrl}/image/save`}
-                listType="picture"
-                maxCount={1}
-                accept=".png"
-              >
-                <Space direction="vertical" size={2}>
-                  <Avatar
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      maxWidth: "256px",
-                    }}
-                    src="https://example.admin.refine.dev/images/product-default-img.png"
-                    alt="Store Location"
-                  />
-                  <Text
-                    style={{
-                      fontWeight: 800,
-                      fontSize: "16px",
-                      marginTop: "8px",
-                    }}
-                  >
-                    {/* {t("products.fields.images.description")} */}
-                    Add Product
-                  </Text>
-                  <Text style={{ fontSize: "12px" }}>
-                    {/* {t("products.fields.images.validation")} */}
-                    must be 1080x1080 px
-                  </Text>
-                </Space>
-              </Upload.Dragger>
+              <Input
+                type="text"
+                required
+                value={productData.nameProduct || ""}
+                onChange={handleChange}
+                id="nameProduct"
+                name="nameProduct"
+              ></Input>
             </Form.Item>
-          </Form.Item>
-          <Form.Item
-            // label={t("products.fields.name")}
-            label={t("Name")}
-            name="nameProduct"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input
-              type="text"
-              required
-              value={productData.nameProduct || ""}
-              onChange={handleChange}
-              id="nameProduct"
-              name="nameProduct"
-            ></Input>
-          </Form.Item>
-          <Form.Item
-            // label={t("products.fields.description")}
-            label={t("Description")}
-            name="description"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input.TextArea
-              rows={6}
-              type="text"
-              required
-              value={productData.description || ""}
-              onChange={handleChange}
-              id="description"
+            <Form.Item
+              // label={t("products.fields.description")}
+              label={t("Description")}
               name="description"
-            />
-          </Form.Item>
-          <Form.Item
-            // label={t("products.fields.price")}
-            label={t("Price")}
-            name="price"
-            rules={[
-              {
-                required: true,
-                type: "number",
-              },
-            ]}
-          >
-            <InputNumber
-              //   formatter={(value) => `$ ${value}`}
-              style={{ width: "150px" }}
-              min={0}
-              type="number"
-              required
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input.TextArea
+                rows={6}
+                type="text"
+                required
+                value={productData.description || ""}
+                onChange={handleChange}
+                id="description"
+                name="description"
+              />
+            </Form.Item>
+            <Form.Item
+              // label={t("products.fields.price")}
+              label={t("Price")}
               name="price"
-              value={productData.price}
-              onChange={handleNumberChangePrice}
-              // id="price"
-            />
-          </Form.Item>
-          <Form.Item
-            // label={t("products.fields.category")}
-            label={t("Category")}
-            name={["category", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "left",
-              clear: "both",
-            }}
-          >
-            {/* <Select
+              rules={[
+                {
+                  required: true,
+                  type: "number",
+                },
+              ]}
+            >
+              <InputNumber
+                //   formatter={(value) => `$ ${value}`}
+                style={{ width: "150px" }}
+                min={0}
+                type="number"
+                required
+                name="price"
+                value={productData.price}
+                onChange={handleNumberChangePrice}
+                // id="price"
+              />
+            </Form.Item>
+            <Form.Item
+              // label={t("products.fields.category")}
+              label={t("Category")}
+              name={["category", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "left",
+                clear: "both",
+              }}
+            >
+              {/* <Select
+>>>>>>> d1813b975020ad9a9cfe672c3fb270c182af9073
           //   {...categorySelectProps}
           /> */}
-            <Select
-              name="category"
-              value={productData.category}
-              onChange={handleInputChangeCategory}
+              <Select
+                name="category"
+                value={productData.category}
+                onChange={handleInputChangeCategory}
+              >
+                {displayCategory.map((categories) => {
+                  return (
+                    <Option value={categories.name}>{categories.name}</Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Capacity")}
+              name={["capacity", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "right",
+              }}
             >
-              {displayCategory.map((categories) => {
-                return (
-                  <Option value={categories.name}>{categories.name}</Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Capacity")}
-            name={["capacity", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "right",
-            }}
-          >
-            <Select
-              name="capacity"
-              value={productData.capacity}
-              onChange={handleInputChangeCapacity}
+              <Select
+                name="capacity"
+                value={productData.capacity}
+                onChange={handleInputChangeCapacity}
+              >
+                {displayCapacity.map((capacity) => {
+                  return <Option value={capacity.name}>{capacity.name}</Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Battery")}
+              name={["battery", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "left",
+                clear: "both",
+              }}
             >
-              {displayCapacity.map((capacity) => {
-                return <Option value={capacity.name}>{capacity.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Battery")}
-            name={["battery", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "left",
-              clear: "both",
-            }}
-          >
-            <Select
-              name="battery"
-              value={productData.battery}
-              onChange={handleInputChangeBattery}
+              <Select
+                name="battery"
+                value={productData.battery}
+                onChange={handleInputChangeBattery}
+              >
+                {displayBattery.map((battery) => {
+                  return <Option value={battery.name}>{battery.name}</Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Chip")}
+              name={["chip", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "right",
+              }}
             >
-              {displayBattery.map((battery) => {
-                return <Option value={battery.name}>{battery.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Chip")}
-            name={["chip", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "right",
-            }}
-          >
-            <Select
-              name="chip"
-              value={productData.chip}
-              onChange={handleInputChangeChip}
+              <Select
+                name="chip"
+                value={productData.chip}
+                onChange={handleInputChangeChip}
+              >
+                {displayChip.map((chip) => {
+                  return <Option value={chip.name}>{chip.name}</Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Color")}
+              name={["color", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "left",
+                clear: "both",
+              }}
             >
-              {displayChip.map((chip) => {
-                return <Option value={chip.name}>{chip.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Color")}
-            name={["color", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "left",
-              clear: "both",
-            }}
-          >
-            <Select
-              name="color"
-              value={productData.color}
-              onChange={handleInputChangeColor}
+              <Select
+                name="color"
+                value={productData.color}
+                onChange={handleInputChangeColor}
+              >
+                {displayColor.map((color) => {
+                  return <Option value={color.name}>{color.name}</Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Manufacture")}
+              name={["manufacture", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "left",
+                clear: "both",
+              }}
             >
-              {displayColor.map((color) => {
-                return <Option value={color.name}>{color.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Image")}
-            name={["image", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "right",
-            }}
-          >
-            <Select>
-              <Option>123</Option>
-              <Option>123</Option>
-              <Option>123</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Manufacture")}
-            name={["manufacture", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "left",
-              clear: "both",
-            }}
-          >
-            <Select
-              name="manufacture"
-              value={productData.manufacture}
-              onChange={handleInputChangeManufacturer}
+              <Select
+                name="manufacture"
+                value={productData.manufacture}
+                onChange={handleInputChangeManufacturer}
+              >
+                {displayManufacture.map((manufacture) => {
+                  return (
+                    <Option value={manufacture.name}>{manufacture.name}</Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Ram")}
+              name={["ram", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "right",
+              }}
             >
-              {displayManufacture.map((manufacture) => {
-                return (
-                  <Option value={manufacture.name}>{manufacture.name}</Option>
-                );
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Ram")}
-            name={["ram", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "right",
-            }}
-          >
-            <Select
-              name="ram"
-              value={productData.ram}
-              onChange={handleInputChangeRam}
+              <Select
+                name="ram"
+                value={productData.ram}
+                onChange={handleInputChangeRam}
+              >
+                {displayRam.map((ram) => {
+                  return <Option value={ram.name}>{ram.name}</Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Screen")}
+              name={["screen", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "left",
+                clear: "both",
+              }}
             >
-              {displayRam.map((ram) => {
-                return <Option value={ram.name}>{ram.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Screen")}
-            name={["screen", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "left",
-              clear: "both",
-            }}
-          >
-            <Select
-              name="screen"
-              value={productData.screen}
-              onChange={handleInputChangeScreen}
+              <Select
+                name="screen"
+                value={productData.screen}
+                onChange={handleInputChangeScreen}
+              >
+                {displayScreen.map((screen) => {
+                  return <Option value={screen.name}>{screen.name}</Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label={t("Size")}
+              name={["size", "id"]}
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+              style={{
+                width: "49%",
+                float: "right",
+              }}
             >
-              {displayScreen.map((screen) => {
-                return <Option value={screen.name}>{screen.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label={t("Size")}
-            name={["size", "id"]}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-            style={{
-              width: "49%",
-              float: "right",
-            }}
-          >
-            <Select
-              name="size"
-              value={productData.size}
-              onChange={handleInputChangeSize}
+              <Select
+                name="size"
+                value={productData.size}
+                onChange={handleInputChangeSize}
+              >
+                {displaySize.map((size) => {
+                  return <Option value={size.name}>{size.name}</Option>;
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              //   label={t("products.fields.isActive")}
+              label={t("Active")}
+              name="isActive"
+              style={{
+                clear: "both",
+              }}
             >
-              {displaySize.map((size) => {
-                return <Option value={size.name}>{size.name}</Option>;
-              })}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            //   label={t("products.fields.isActive")}
-            label={t("Active")}
-            name="isActive"
-            style={{
-              clear: "both",
-            }}
-          >
-            <Radio.Group>
-              <Radio value={true}>{/* {t("status.enable")} */}Enable</Radio>
-              <Radio value={false}>{/* {t("status.disable")} */}Disable</Radio>
-            </Radio.Group>
-          </Form.Item>
-        </Form>
-      </Create>
-    </form>
+              <Radio.Group>
+                <Radio value={true}>{/* {t("status.enable")} */}Enable</Radio>
+                <Radio value={false}>
+                  {/* {t("status.disable")} */}Disable
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Form>
+        </Create>
+      </form>
+    </>
 
     // </Drawer>
   );

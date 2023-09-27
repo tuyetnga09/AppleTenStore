@@ -4,6 +4,7 @@ import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ import jakarta.persistence.Table;
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
 public class Ram extends DuplicateAttribute implements Identify {
 
     private String code;

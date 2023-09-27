@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.CategoryRepository;
+import com.example.backend.repository.CategoryRepository;
 import com.example.backend.controller.product_controller.service.impl.CategoryServiceImpl;
 import com.example.backend.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;

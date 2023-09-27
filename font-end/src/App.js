@@ -50,7 +50,6 @@ import ImportImei from "./components/product_component/Imei/ImportImei";
 import chat from "./components/custumer_componet/ChatRoom";
 import product from "./components/product_component/Product/Display";
 import Cproduct from "./components/product_component/Product/crud/create";
-import Eproduct from "./components/product_component/Product/crud/edit";
 
 function App() {
   return (
@@ -161,9 +160,7 @@ function App() {
 
           <Route path="/product/display" exact component={product} />
 
-          <Route path="/cproduct/:id" exact component={Cproduct} />
-
-          <Route path="/rproduct/:id" exact component={Eproduct} />
+          <Route path="/cproduct/display" exact component={Cproduct} />
         </Switch>
       </Router>
     </div>

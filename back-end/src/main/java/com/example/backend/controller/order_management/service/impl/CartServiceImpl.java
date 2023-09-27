@@ -2,11 +2,11 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.cart.AddCart;
 import com.example.backend.controller.order_management.model.cart.ListCart;
-import com.example.backend.controller.order_management.repository.AccountRepository;
-import com.example.backend.controller.order_management.repository.CartDetailRepository;
-import com.example.backend.controller.order_management.repository.CartRepository;
+import com.example.backend.repository.AccountRepository;
+import com.example.backend.repository.CartDetailRepository;
+import com.example.backend.repository.CartRepository;
 import com.example.backend.controller.order_management.service.CartService;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.entity.Cart;
 import com.example.backend.entity.CartDetail;
 import org.springframework.beans.factory.annotation.Autowired;

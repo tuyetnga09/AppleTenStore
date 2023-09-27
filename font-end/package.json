@@ -30,6 +30,7 @@
     "react-scripts": "5.0.1",
     "react-stomp": "^5.1.0",
     "react-use-websocket": "^3.0.0",
+    "react-zxing": "^2.0.0",
     "reactstrap": "^9.2.0",
     "sockjs-client": "^1.6.1",
     "src": "^1.1.2",

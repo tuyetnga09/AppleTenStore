@@ -2,17 +2,19 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.bill.request.BillAskClient;
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
-import com.example.backend.controller.order_management.repository.AccountRepository;
-import com.example.backend.controller.order_management.repository.AddressRepository;
-import com.example.backend.controller.order_management.repository.BillDetailRepository;
-import com.example.backend.controller.order_management.repository.BillHistoryRepository;
-import com.example.backend.controller.order_management.repository.BillRepository;
-import com.example.backend.controller.order_management.repository.PaymentsRepository;
-import com.example.backend.controller.order_management.repository.UserRepository;
-import com.example.backend.controller.order_management.repository.VoucherDetailRepository;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
+import com.example.backend.controller.order_management.model.bill.response.BillResponse;
+import com.example.backend.repository.AccountRepository;
+import com.example.backend.repository.AddressRepository;
+import com.example.backend.repository.BillDetailRepository;
+import com.example.backend.repository.BillHistoryRepository;
+import com.example.backend.repository.BillRepository;
+import com.example.backend.repository.PaymentsRepository;
+import com.example.backend.repository.UserRepository;
+import com.example.backend.repository.VoucherDetailRepository;
 import com.example.backend.controller.order_management.service.BillService;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
-import com.example.backend.controller.voucher_managment.repository.VoucherRepository;
+import com.example.backend.repository.ProductRepository;
+import com.example.backend.repository.VoucherRepository;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Address;
 import com.example.backend.entity.Bill;
@@ -32,6 +34,10 @@ import com.example.backend.untils.TypePayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -59,7 +65,7 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
     @Override
-    public String createBillCustomerOnlineRequest(BillRequest request) {
+    public String createBillCustomerOnlineRequest(BillRequestOnline request) {
         User user = User.builder()
                 .fullName(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
@@ -136,10 +142,38 @@ public class BillServiceImpl implements BillService {
                     .build();
             voucherDetailRepository.save(voucherDetail);
         } else {
-            // Xử lý khi không tìm thấy Voucher
+          return "Lỗi";
         }
 
         return "Finished";
 
+    }
+
+    @Override
+    public List<BillResponse> getAll(BillRequest request) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        request.setConvertStatus(Arrays.toString(request.getStatus()));
+        try {
+            if (!request.getStartTimeString().isEmpty()) {
+                request.setStartTime(simpleDateFormat.parse(request.getStartTimeString()).getTime());
+            }
+            if (!request.getEndTimeString().isEmpty()) {
+                request.setEndTime(simpleDateFormat.parse(request.getEndTimeString()).getTime());
+            }
+            if (!request.getStartDeliveryDateString().isEmpty()) {
+                request.setStartDeliveryDate(simpleDateFormat.parse(request.getStartDeliveryDateString()).getTime());
+            }
+            if (!request.getEndDeliveryDateString().isEmpty()) {
+                request.setEndDeliveryDate(simpleDateFormat.parse(request.getEndDeliveryDateString()).getTime());
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return billRepository.getAll(request);
+    }
+
+    @Override
+    public Bill detail(Integer id) {
+        return billRepository.findById(id).get();
     }
 }

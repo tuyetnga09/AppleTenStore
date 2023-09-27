@@ -1,14 +1,11 @@
 package com.example.backend.entity;
 
-import com.example.backend.entity.dto.DuplicateAttribute;
-import com.example.backend.entity.dto.Identify;
 import com.example.backend.untils.StatusBill;
 import com.example.backend.untils.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -91,18 +88,6 @@ public class Bill  {
     @ManyToOne
     @JoinColumn(name = "id_account",referencedColumnName = "id")
     private Account account;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_payment")
-    private Payments payments;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cart")
-    private Cart cart;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_voucher")
-    private Voucher voucher;
     @Column(name = "person_create")
     private String  personCreate;
 

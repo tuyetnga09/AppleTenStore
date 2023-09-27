@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
-import com.example.backend.controller.product_controller.repository.SizeRepository;
+import com.example.backend.repository.SizeRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Size;
 import org.apache.poi.ss.usermodel.Row;

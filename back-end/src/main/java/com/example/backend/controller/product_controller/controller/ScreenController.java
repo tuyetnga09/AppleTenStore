@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.ScreenRepository;
+import com.example.backend.repository.ScreenRepository;
 import com.example.backend.controller.product_controller.service.impl.ScreenServiceImpl;
 import com.example.backend.entity.Screen;
 import org.springframework.beans.factory.annotation.Autowired;

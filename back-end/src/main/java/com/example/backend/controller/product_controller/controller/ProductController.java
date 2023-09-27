@@ -1,7 +1,7 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.impl.ProductServiceImpl;
 import com.example.backend.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +78,11 @@ public class ProductController {
     public ResponseEntity<String> update(@RequestBody CreateProduct createProduct, @PathVariable("id") Integer id) {
 
         return new ResponseEntity<>(productService.update(createProduct, id), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "get-all-product")
+    public void selectAll(){
+        this.productRepository.selectAll();
     }
 
 }
