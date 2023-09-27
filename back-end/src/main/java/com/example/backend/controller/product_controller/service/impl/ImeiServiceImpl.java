@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class ImeiServiceImpl implements Iservice<Imei> {
@@ -78,7 +80,9 @@ public class ImeiServiceImpl implements Iservice<Imei> {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
-
+        Set<Integer> values = new HashSet<>();
+        int count = 1;
+        Product product = null;
         for (Row row: sheet){
             if(row.getRowNum() == 0){
                 continue;
@@ -86,18 +90,19 @@ public class ImeiServiceImpl implements Iservice<Imei> {
 
             String code = String.valueOf((int) row.getCell(0).getNumericCellValue());
             Imei existingImei = imeiRepository.findByCodeImei(code);
-
-            if (productRepository.findProductById((int) row.getCell(1).getNumericCellValue()) != null){
+            product = productRepository.findProductById((int) row.getCell(1).getNumericCellValue());
+            if (product != null){
                 if(existingImei != null){
                     //Đã tồn tại
+                    count = 0;
                     existingImei.setDateUpdate(new Date());
                     existingImei.setPersonUpdate(row.getCell(3).getStringCellValue());
                     imeiRepository.save(existingImei);
                 }else {
                     //Chưa tồn tại thêm mới
                     Imei newImei = new Imei();
-                    Product product = new Product();
-                    product.setId((int) row.getCell(1).getNumericCellValue());
+//                    Product product = new Product();
+//                    product.setId((int) row.getCell(1).getNumericCellValue());
                     newImei.setCodeImei(code);
                     newImei.setIdProduct(product);
                     newImei.setDateCreate(new Date());
@@ -105,13 +110,22 @@ public class ImeiServiceImpl implements Iservice<Imei> {
                     newImei.setPersonCreate(row.getCell(2).getStringCellValue());
                     newImei.setPersonUpdate(row.getCell(3).getStringCellValue());
                     newImei.setStatus(0);
+                    if (!values.contains((int) row.getCell(1).getNumericCellValue())) {
+                        values.add((int) row.getCell(1).getNumericCellValue());
+                    } else {
+                        count++;
+                    }
                     imeiRepository.save(newImei);
                 }
             }else {
                 System.out.println("Product not found");
             }
         }
-
+        if (product.getQuantity() == null){
+            product.setQuantity(0);
+        }
+        product.setQuantity(product.getQuantity() + count);
+        productRepository.save(product);
         workbook.close();
     }
 }

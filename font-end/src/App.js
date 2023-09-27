@@ -9,6 +9,7 @@ import ScanRam from "./components/product_component/Ram/DisplayScanQR";
 import ScreenDisplay from "./components/product_component/Screen/DisplayScreen";
 import ScreenCreateOrUpdate from "./components/product_component/Screen/DisplayScreenCreateOrUpdate";
 import ScreenDeleteScreen from "./components/product_component/Screen/DisplayReturnDeleteS";
+import ImportScreen from "./components/product_component/Screen/DisplayImportScreen";
 import DisplaySize from "./components/product_component/Size/Display";
 import FormAddOrUpdateSize from "./components/product_component/Size/FormAddOrUpdate";
 import ReturnDeleteSize from "./components/product_component/Size/ReturnDeleteSize";
@@ -44,24 +45,24 @@ import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
 import Home from "./components/Page_Comeponet/TrangChu";
-<<<<<<< Updated upstream
 import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";
-import chat from "./components/custumer_componet/ChatRoom";
-import product from "./components/custumer_componet/product_detail";
-=======
+// import chat from "./components/custumer_componet/ChatRoom";
+// import product from "./components/custumer_componet/product_detail";
 import product from "./components/product_component/Product/Display";
 import Cproduct from "./components/product_component/Product/crud/create";
+import ReturnDeleteProduct from "./components/product_component/Product/ReturnDeleteProduct";
 
->>>>>>> Stashed changes
+import Dashboard from "./components/Page_Comeponet/dashboard/index";
+
 function App() {
   return (
     <div>
       <Router>
         <Switch>
           <Route path="/" exact component={Home} />
-          <Route path="/chat" exact component={chat} />
+          {/* <Route path="/chat" exact component={chat} /> */}
           <Route path="/product" exact component={product} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
@@ -125,6 +126,7 @@ function App() {
           <Route path="/battery/:id" exact component={FormAddOrUpdateBattery} />
 
           <Route path="/screen/display" exact component={ScreenDisplay} />
+          <Route path="/screen/im" exact component={ImportScreen} />
           <Route
             path="/screen/displayDelete"
             exact
@@ -154,7 +156,6 @@ function App() {
           <Route path="/color/:id" exact component={AddColor} />
           <Route path="/color/scan" exact component={ScanColor} />
 
-<<<<<<< Updated upstream
           <Route path="/imei/getAll" exact component={DisplayImei} />
           <Route path="/imei/im" exact component={ImportImei} />
           <Route
@@ -162,13 +163,19 @@ function App() {
             exact
             component={ReturnDeleteImei}
           />
-=======
+
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
 
           <Route path="/product/display" exact component={product} />
 
           <Route path="/cproduct/display" exact component={Cproduct} />
->>>>>>> Stashed changes
+          <Route
+            path="/product/displayDelete"
+            exact
+            component={ReturnDeleteProduct}
+          />
+
+          <Route path="/dashboard" exact component={Dashboard} />
         </Switch>
       </Router>
     </div>

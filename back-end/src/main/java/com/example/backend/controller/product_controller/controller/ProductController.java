@@ -34,9 +34,10 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping("display")
-    public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Product> listProduct = productService.getAll(pageable);
+//        Page<Product> listProduct = productService.getAll(pageable);
+        Page<Product> listProduct = productService.search(pageable, key);
         return listProduct;
     }
 
@@ -46,9 +47,10 @@ public class ProductController {
     }
 
     @GetMapping("displayDelete")
-    public Page<Product> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public Page<Product> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Product> listProduct = productService.getDelete(pageable);
+//        Page<Product> listProduct = productService.getDelete(pageable);
+        Page<Product> listProduct = productService.deleteProduct(pageable, key);
         return listProduct;
     }
 

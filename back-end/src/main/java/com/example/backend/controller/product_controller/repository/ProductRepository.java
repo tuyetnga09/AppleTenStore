@@ -18,4 +18,10 @@ public interface ProductRepository extends IProductRepository {
     Page<Product> getAllPageDelete(Pageable pageable);
 
     Product findProductById(Integer id);
+
+    @Query(value = "select * from product where (id like %?1% or name like %?1% or description like %?1% or price like %?1%) and status = 0 ", nativeQuery = true)
+    Page<Product> search(Pageable pageable, String key);
+
+    @Query(value = "select * from product where (id like %?1% or name like %?1% or description like %?1% or price like %?1%) and status = 1 ", nativeQuery = true)
+    Page<Product> deleteProduct(Pageable pageable, String key);
 }

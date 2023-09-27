@@ -38,9 +38,9 @@ export const readAllScreen = () => {
 export const readAllSize = () => {
   return httpClient.get(`/size/get-all-size`);
 };
-// export const returnDeleteAll = (page) => {
-//   return httpClient.get(`/product/displayDelete?${page}`);
-// };
+export const returnDeleteAll = (page) => {
+  return httpClient.get(`/product/displayDelete?${page}`);
+};
 
 export const add = (product) => {
   return httpClient.post(`/product/save`, product);
@@ -54,13 +54,13 @@ export const add = (product) => {
 //   return httpClient.get(`/chip/${id}`);
 // };
 
-// export const deleteChip = (id) => {
-//   return httpClient.delete(`/chip/delete/${id}`);
-// };
+export const deleteProduct = (id) => {
+  return httpClient.delete(`/product/delete/${id}`);
+};
 
-// export const returnChip = (id) => {
-//   return httpClient.put(`/chip/return/${id}`);
-// };
+export const returnProduct = (id) => {
+  return httpClient.put(`/product/return/${id}`);
+};
 
 // export const importChip = (form) => {
 //   return httpClient.post("/chip/import", form, config);
