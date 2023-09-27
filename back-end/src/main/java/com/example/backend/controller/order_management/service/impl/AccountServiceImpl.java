@@ -2,7 +2,7 @@ package com.example.backend.controller.order_management.service.impl;
 
 
 import com.example.backend.controller.order_management.model.account.AccountResponse;
-import com.example.backend.controller.order_management.repository.AccountRepository;
+import com.example.backend.repository.AccountRepository;
 import com.example.backend.controller.order_management.service.AccountService;
 import com.example.backend.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;

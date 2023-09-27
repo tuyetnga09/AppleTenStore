@@ -1,10 +1,8 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
+import com.example.backend.repository.ProductRepository;
 import com.example.backend.controller.product_controller.service.impl.ProductServiceImpl;
-import com.example.backend.entity.Imei;
-import com.example.backend.entity.Manufacture;
 import com.example.backend.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -70,6 +68,11 @@ public class ProductController {
     public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
         productService.update(product, id);
         return new ResponseEntity<>("Update ok", HttpStatus.OK);
+    }
+
+    @GetMapping(value = "get-all-product")
+    public void selectAll(){
+        this.productRepository.selectAll();
     }
 
 }

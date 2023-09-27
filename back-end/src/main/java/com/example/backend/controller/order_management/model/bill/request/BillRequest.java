@@ -3,21 +3,22 @@ package com.example.backend.controller.order_management.model.bill.request;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
 public class BillRequest {
-    private String userName;
+    private long startTime;
+    private String startTimeString = new String("");
+    private long endTime;
+    private String endTimeString = new String("");
+    private String[] status = new String[]{};
+    private long endDeliveryDate;
+    private String endDeliveryDateString = new String("");
+    private long startDeliveryDate;
+    private String startDeliveryDateString = new String("");
+    private String convertStatus;
+    private String key;
+    private String employees;
+    private String user;
     private String phoneNumber;
-    private String email;
-    private String address;
-    private String province;
-    private String district;
-    private BigDecimal moneyShip;
-    private BigDecimal itemDiscount;
-
-    private BigDecimal totalMoney;
-    private String paymentMethod;
-
+    private String type ;
 }

@@ -1,23 +1,22 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
-import com.example.backend.controller.product_controller.repository.BatteryRepository;
-import com.example.backend.controller.product_controller.repository.CapacityRepository;
-import com.example.backend.controller.product_controller.repository.CategoryRepository;
-import com.example.backend.controller.product_controller.repository.ChipRepository;
-import com.example.backend.controller.product_controller.repository.ColorRepository;
-import com.example.backend.controller.product_controller.repository.ImageRepository;
-import com.example.backend.controller.product_controller.repository.ManufactureRepository;
-import com.example.backend.controller.product_controller.repository.ProductRepository;
-import com.example.backend.controller.product_controller.repository.RamRepository;
-import com.example.backend.controller.product_controller.repository.ScreenRepository;
-import com.example.backend.controller.product_controller.repository.SizeRepository;
+import com.example.backend.repository.BatteryRepository;
+import com.example.backend.repository.CapacityRepository;
+import com.example.backend.repository.CategoryRepository;
+import com.example.backend.repository.ChipRepository;
+import com.example.backend.repository.ColorRepository;
+import com.example.backend.repository.ImageRepository;
+import com.example.backend.repository.ManufactureRepository;
+import com.example.backend.repository.ProductRepository;
+import com.example.backend.repository.RamRepository;
+import com.example.backend.repository.ScreenRepository;
+import com.example.backend.repository.SizeRepository;
 import com.example.backend.entity.Battery;
 import com.example.backend.entity.Capacity;
 import com.example.backend.entity.Category;
 import com.example.backend.entity.Chip;
 import com.example.backend.entity.Color;
-import com.example.backend.entity.Image;
 import com.example.backend.entity.Manufacture;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.Ram;
@@ -28,7 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ProductServiceImpl {
@@ -64,17 +63,16 @@ public class ProductServiceImpl {
     }
 
     public Product insert(CreateProduct product) {
+        Product sanPham = new Product();
         Chip chip = chipRepository.findByName(product.getChip());
         Battery battery = batteryRepository.findByName(product.getBattery());
         Capacity capacity = capacityRepository.findByName(product.getCapacity());
         Color color = colorRepository.findByName(product.getColor());
-        Image image = imageRepository.findByLink(product.getImage());
         Manufacture manufacture = manufacturerRepository.findByName(product.getManufacturer());
         Ram ram = ramRepository.findByName(product.getRam());
         Screen screen = screenRepository.findByName(product.getScreen());
         Size size = sizeRepository.findByName(product.getSize());
         Category category = categoryRepository.findByName(product.getCategory());
-        Product sanPham = new Product();
         sanPham.setName(product.getNameProduct());
         sanPham.setCode(product.getCodeProduct());
         sanPham.setDescription(product.getDescription());
@@ -82,7 +80,6 @@ public class ProductServiceImpl {
         sanPham.setIdchip(chip);
         sanPham.setIdbattery(battery);
         sanPham.setIdcapacity(capacity);
-        sanPham.setIdimage(image);
         sanPham.setIdmanufacture(manufacture);
         sanPham.setIdcolor(color);
         sanPham.setIdscreen(screen);
@@ -115,7 +112,11 @@ public class ProductServiceImpl {
 
 
     public Product getOne(Integer id) {
-        return this.productRepository.findById(id).get();
+        return this.productRepository.findById(id).orElse(null);
+    }
+
+    public List<Product> selectAll(){
+        return this.productRepository.selectAll();
     }
 
     public Page<Product> search(Pageable pageable, String key) {

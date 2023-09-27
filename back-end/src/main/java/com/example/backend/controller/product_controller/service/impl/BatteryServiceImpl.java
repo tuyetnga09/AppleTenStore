@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
-import com.example.backend.controller.product_controller.repository.BatteryRepository;
+import com.example.backend.repository.BatteryRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Battery;
 import org.apache.poi.ss.usermodel.Row;

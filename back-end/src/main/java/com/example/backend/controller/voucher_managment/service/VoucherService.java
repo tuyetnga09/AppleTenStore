@@ -22,4 +22,6 @@ public interface VoucherService {
 
     Page<Voucher> getAll(FindVoucherRequest request, Pageable pageable);
 
+    Voucher findByIdVoucher(Integer id);
+
 }

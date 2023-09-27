@@ -14,7 +14,7 @@ export const returnDeleteAll = (page) => {
     return httpClient.get(`/image/displayDelete?${page}`);
 };
 
-export const add = (image) => {
+export const addImage = (image) => {
     return httpClient.post(`/image/save`, image, config);
 };
 
@@ -33,3 +33,7 @@ export const deleteImage = (id) => {
 export const returnImage = (id) => {
     return httpClient.put(`/image/return/${id}`);
 };
+
+export const selectProduct = () => {
+    return httpClient.get(`/product/get-all-product`);
+}

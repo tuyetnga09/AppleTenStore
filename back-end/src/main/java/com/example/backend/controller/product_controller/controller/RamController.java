@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.RamRepository;
+import com.example.backend.repository.RamRepository;
 import com.example.backend.controller.product_controller.service.impl.RamServiceImpl;
 import com.example.backend.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;

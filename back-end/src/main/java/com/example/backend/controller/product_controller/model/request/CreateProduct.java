@@ -19,7 +19,6 @@ public class CreateProduct {
     private String category;
     private String chip;
     private String color;
-    private String image;
     private String manufacturer;
     private String ram;
     private String screen;

@@ -1,6 +1,5 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.ChipRepository;
 import com.example.backend.controller.product_controller.service.impl.ChipServiceIpml;
 import com.example.backend.entity.Chip;
 import org.springframework.beans.factory.annotation.Autowired;
