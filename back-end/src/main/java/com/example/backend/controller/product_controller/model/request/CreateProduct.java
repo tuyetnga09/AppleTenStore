@@ -3,7 +3,6 @@ package com.example.backend.controller.product_controller.model.request;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 

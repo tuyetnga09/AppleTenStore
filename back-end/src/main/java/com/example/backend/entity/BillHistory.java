@@ -1,6 +1,5 @@
 package com.example.backend.entity;
 
-import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.untils.StatusBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

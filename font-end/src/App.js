@@ -52,6 +52,7 @@ import productDetail from "./components/custumer_componet/product_detail";
 import product from "./components/product_component/Product/Display";
 import Cproduct from "./components/product_component/Product/crud/create";
 import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay";
+import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
           <Route path="/chat" exact component={chat} />
           <Route path="/product" exact component={productDetail} />
           <Route path="/voucher" exact component={Voucher} />
+          <Route path="/cart" exact component={Cart} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -167,10 +169,10 @@ function App() {
 
           <Route path="/cproduct/display" exact component={Cproduct} />
 
+          <Route path="/voucher" exact component={Voucher} />
         </Switch>
       </Router>
     </div>
-    // </QueryClientProvider>
   );
 }
 
