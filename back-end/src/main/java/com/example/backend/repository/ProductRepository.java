@@ -4,6 +4,7 @@ package com.example.backend.repository;
 
 import com.example.backend.entity.Product;
 import com.example.backend.entity.Voucher;
+import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +16,6 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-
     @Query(value = "select * from product where status = 0 ", nativeQuery = true)
     Page<Product> getAllPage(Pageable pageable);
 
@@ -43,4 +43,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Product findByName(String nameProduct);
     Product findByCode(String code);
+
+    List<Product> findProductBySku(String sku);
 }

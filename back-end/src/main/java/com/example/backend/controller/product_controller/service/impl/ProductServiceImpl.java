@@ -1,12 +1,14 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
+import com.example.backend.entity.Imei;
 import com.example.backend.repository.BatteryRepository;
 import com.example.backend.repository.CapacityRepository;
 import com.example.backend.repository.CategoryRepository;
 import com.example.backend.repository.ChipRepository;
 import com.example.backend.repository.ColorRepository;
 import com.example.backend.repository.ImageRepository;
+import com.example.backend.repository.ImeiRepository;
 import com.example.backend.repository.ManufactureRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.RamRepository;
@@ -27,6 +29,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -57,6 +61,9 @@ public class ProductServiceImpl {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private ImeiRepository imeiRepository;
+
 
     public Page<Product> getAll(Pageable pageable) {
         return productRepository.getAllPage(pageable);
@@ -64,30 +71,91 @@ public class ProductServiceImpl {
 
     public Product insert(CreateProduct product) {
         Product sanPham = new Product();
+
+        // Lấy thông tin từ các repositories
         Chip chip = chipRepository.findByName(product.getChip());
         Battery battery = batteryRepository.findByName(product.getBattery());
-        Capacity capacity = capacityRepository.findByName(product.getCapacity());
-        Color color = colorRepository.findByName(product.getColor());
         Manufacture manufacture = manufacturerRepository.findByName(product.getManufacturer());
         Ram ram = ramRepository.findByName(product.getRam());
         Screen screen = screenRepository.findByName(product.getScreen());
         Size size = sizeRepository.findByName(product.getSize());
         Category category = categoryRepository.findByName(product.getCategory());
+
+        // Đặt các thuộc tính của sản phẩm
         sanPham.setName(product.getNameProduct());
         sanPham.setCode(product.getCodeProduct());
         sanPham.setDescription(product.getDescription());
         sanPham.setPrice(product.getPrice());
         sanPham.setIdchip(chip);
         sanPham.setIdbattery(battery);
-        sanPham.setIdcapacity(capacity);
         sanPham.setIdmanufacture(manufacture);
-        sanPham.setIdcolor(color);
         sanPham.setIdscreen(screen);
         sanPham.setIdsize(size);
         sanPham.setIdRam(ram);
         sanPham.setIdcategory(category);
         sanPham.setStatus(0);
-       return  productRepository.save(sanPham);
+
+        List<String> colorNames = product.getColor();
+        List<String> capacityNames = product.getCapacity();
+
+        List<Color> colors = new ArrayList<>();
+        if (colorNames != null) {
+            for (String colorName : colorNames) {
+                Color color = colorRepository.findByName(colorName);
+                if (color != null) {
+                    colors.add(color);
+                }
+            }
+        }
+        sanPham.setColors(colors);
+
+        List<Capacity> capacities = new ArrayList<>();
+        if (capacityNames != null) {
+            for (String capacityName : capacityNames) {
+                Capacity capacity = capacityRepository.findByName(capacityName);
+                if (capacity != null) {
+                    capacities.add(capacity);
+                }
+            }
+        }
+        sanPham.setCapacities(capacities);
+
+        String sku = "[" + String.join(", ", capacityNames) + "]-[" + String.join(", ", colorNames) + "]";
+        sanPham.setSku(sku);
+
+        int quantity = 0;
+        if (capacities != null && colors != null) {
+            quantity = capacities.size() * colors.size();
+        }
+        sanPham.setQuantity(quantity);
+
+        sanPham = productRepository.save(sanPham);
+
+        generateAndAssignImei(sanPham, quantity);
+
+        return sanPham;
+    }
+
+    private void generateAndAssignImei(Product product, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            Imei imei = new Imei();
+
+            String generatedImei = generateImei();
+
+            imei.setCodeImei(generatedImei);
+
+            imei.setIdProduct(product);
+
+            imeiRepository.save(imei);
+        }
+    }
+
+    private String generateImei() {
+        StringBuilder imei = new StringBuilder();
+        for (int i = 0; i < 15; i++) {
+            imei.append((int) (Math.random() * 10));
+        }
+        return imei.toString();
     }
 
     public void delete(Integer id) {

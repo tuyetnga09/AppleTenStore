@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,10 +16,10 @@ public class CreateProduct {
     private BigDecimal price;
     private String description;
     private String battery;
-    private String capacity;
+    private List<String>  capacity;
     private String category;
     private String chip;
-    private String color;
+    private List<String> color; // Sử dụng List<String> thay vì String
     private String manufacturer;
     private String ram;
     private String screen;
