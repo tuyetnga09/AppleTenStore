@@ -1,7 +1,9 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
+import com.example.backend.controller.product_controller.model.request.SKURequest;
 import com.example.backend.entity.Imei;
+import com.example.backend.entity.SKU;
 import com.example.backend.repository.BatteryRepository;
 import com.example.backend.repository.CapacityRepository;
 import com.example.backend.repository.CategoryRepository;
@@ -12,6 +14,7 @@ import com.example.backend.repository.ImeiRepository;
 import com.example.backend.repository.ManufactureRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.RamRepository;
+import com.example.backend.repository.SKURepositoty;
 import com.example.backend.repository.ScreenRepository;
 import com.example.backend.repository.SizeRepository;
 import com.example.backend.entity.Battery;
@@ -35,6 +38,8 @@ import java.util.List;
 
 @Service
 public class ProductServiceImpl {
+    @Autowired
+    private SKURepositoty skuRepositoty;
     @Autowired
     private ProductRepository productRepository;
 
@@ -120,35 +125,37 @@ public class ProductServiceImpl {
         }
         sanPham.setCapacities(capacities);
 
-        String sku = "[" + String.join(", ", capacityNames) + "]-[" + String.join(", ", colorNames) + "]";
-        sanPham.setSku(sku);
+        // Tạo danh sách SKU và thêm chúng vào sản phẩm
+        List<SKU> skus = new ArrayList<>();
 
-        int quantity = 0;
-        if (capacities != null && colors != null) {
-            quantity = capacities.size() * colors.size();
+        if (product.getSkus() != null) {
+            for (SKURequest skuRequest : product.getSkus()) {
+                Color color = colorRepository.findByName(skuRequest.getColor());
+                Capacity capacity = capacityRepository.findByName(skuRequest.getCapacity());
+
+                if (color != null && capacity != null) {
+                    SKU sku = new SKU();
+                    sku.setColor(color.getName());
+                    sku.setCapacity(capacity.getName());
+                    sku.setQuantity(skuRequest.getQuantity());
+                    sku.setProduct(sanPham);
+                    skus.add(sku);
+                }
+            }
         }
+
+        sanPham.setSkus(skus);
+
+        int quantity = skus.stream().mapToInt(SKU::getQuantity).sum();
         sanPham.setQuantity(quantity);
 
-        sanPham = productRepository.save(sanPham);
 
-        generateAndAssignImei(sanPham, quantity);
+        // Lưu sản phẩm vào cơ sở dữ liệu
+        sanPham = productRepository.save(sanPham);
 
         return sanPham;
     }
 
-    private void generateAndAssignImei(Product product, int quantity) {
-        for (int i = 0; i < quantity; i++) {
-            Imei imei = new Imei();
-
-            String generatedImei = generateImei();
-
-            imei.setCodeImei(generatedImei);
-
-            imei.setIdProduct(product);
-
-            imeiRepository.save(imei);
-        }
-    }
 
     private String generateImei() {
         StringBuilder imei = new StringBuilder();

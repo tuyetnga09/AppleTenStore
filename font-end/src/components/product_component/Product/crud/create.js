@@ -407,7 +407,6 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            // Trong hàm render return của bạn
             <Form.Item
                 label={t("Color")}
                 name="color"
