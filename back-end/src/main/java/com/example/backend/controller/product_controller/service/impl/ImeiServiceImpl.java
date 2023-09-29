@@ -89,27 +89,23 @@ public class ImeiServiceImpl implements Iservice<Imei> {
 
         for (Row row : sheet) {
             if (row.getRowNum() == 0) {
-                continue;
+                continue; // Bỏ qua hàng tiêu đề
             }
 
             String codeImei = row.getCell(0).getStringCellValue();
             int productId = (int) row.getCell(1).getNumericCellValue();
             int skuId = (int) row.getCell(2).getNumericCellValue();
 
+            // Tìm sản phẩm và SKU tương ứng
             Product product = productRepository.findById(productId).orElse(null);
             SKU sku = skuRepository.findById((long) skuId).orElse(null);
 
             if (product != null && sku != null) {
-                int excelQuantity = (int) row.getCell(3).getNumericCellValue(); // Số lượng từ tệp Excel
-                if (excelQuantity <= sku.getQuantity()) {
-                    Imei imei = new Imei();
-                    imei.setCodeImei(codeImei);
-                    imei.setIdProduct(product);
-                    imei.setIdSku(sku);
-                    imeiRepository.save(imei);
-                } else {
-                    System.out.println("Số luọng ko đung ");
-                }
+                Imei imei = new Imei();
+                imei.setCodeImei(codeImei);
+                imei.setIdProduct(product);
+                imei.setIdSku(sku);
+                imeiRepository.save(imei);
             }
         }
 
