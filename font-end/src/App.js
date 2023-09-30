@@ -55,8 +55,9 @@ import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay";
 import blog from "./components/Page_Comeponet/Blogs";
 import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
 import ReturnDeleteProduct from "./components/product_component/Product/ReturnDeleteProduct";
-
+import SingleProduct from "./components/custumer_componet/product_detail";
 import Dashboard from "./components/Page_Comeponet/dashboard/index";
+import OderDisplay from "./components/Page_Comeponet/OderManager/OderDisplay"
 
 function App() {
   return (
@@ -179,9 +180,10 @@ function App() {
           />
 
           <Route path="/dashboard" exact component={Dashboard} />
-
+          <Route path="/singleProduct" exact component={SingleProduct} />
           <Route path="/voucher" exact component={Voucher} />
           <Route path="/cart" exact component={Cart} />
+          <Route path="/orders" exact component={OderDisplay} />
         </Switch>
       </Router>
     </div>

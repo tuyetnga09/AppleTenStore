@@ -3,7 +3,7 @@ import { readAll,deleteVoucher,add, detail, update } from "../../../service/Vouc
 import { useTranslate } from "@refinedev/core";
 import { SearchOutlined , MenuFoldOutlined,
     MenuUnfoldOutlined,
-    UserOutlined,DashboardOutlined,AppstoreAddOutlined,GiftOutlined,LogoutOutlined,ShopOutlined} from "@ant-design/icons";
+    UserOutlined,DashboardOutlined,AppstoreAddOutlined,GiftOutlined,LogoutOutlined,ShopOutlined,CloseCircleOutlined,  FormOutlined,MoreOutlined,} from "@ant-design/icons";
 import {
     Typography,
     Table,
@@ -15,7 +15,7 @@ import {
     Select,
     Button,
     Row,
-    Col,Layout, Menu, theme,  Badge, notification , Modal,
+    Col,Layout, Menu, theme,  Badge, notification , Modal,Dropdown,
 } from "antd";
 import {
     List,
@@ -101,40 +101,26 @@ const VoucherDisplay = ({}) => {
                 theme="dark"
                 mode="inline"
                 defaultSelectedKeys={['5']}
-                items={[
-                    {
-                    key: '1',
-                    icon: <DashboardOutlined />,
-                    label: 'Dashboard',
-                    },
-                    {
-                    key: '2',
-                    icon: <ShopOutlined />,
-                    label: 'Orders',
-                    
-                    },
-                    {
-                    key: '3',
-                    icon: <UserOutlined />,
-                    label: 'Users',
-                    },
-                    {
-                    key: '4',
-                    icon: <AppstoreAddOutlined />,
-                    label: 'Product',
-                    },
-                    {
-                    key: '5',
-                    icon: <GiftOutlined />,
-                    label: 'Voucher',
-                    },
-                    {
-                    key: '6',
-                    icon: <LogoutOutlined />,
-                    label: 'Logout',
-                    },
-                ]}
-                />
+                >
+                <Menu.Item key="1" icon={<DashboardOutlined />}>
+                    <Link to="/dashboard">Dashboard</Link>
+                </Menu.Item>
+                <Menu.Item key="2" icon={<ShopOutlined />}>
+                    <Link to="/orders">Orders</Link>
+                </Menu.Item>
+                <Menu.Item key="3" icon={<UserOutlined />}>
+                    <Link to="/users">Users</Link>
+                </Menu.Item>
+                <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
+                    <Link to="/product">Product</Link>
+                </Menu.Item>
+                <Menu.Item key="5" icon={<GiftOutlined />}>
+                    <Link to="/voucher">Voucher</Link>
+                </Menu.Item>
+                <Menu.Item key="6" icon={<LogoutOutlined />}>
+                    <Link to="/logout">Logout</Link>
+                </Menu.Item>
+                </Menu>      
             </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>
@@ -382,19 +368,65 @@ const VoucherDisplay = ({}) => {
                                     align= "center"
                                     render={(text, record) => (
                                       <span>
-                                        <Button type="danger" onClick={() => remove(record.id)}>
+                                        {/* <Button type="danger" onClick={() => remove(record.id)}>
                                             <FontAwesomeIcon icon={faTimes} />
                                         </Button>
                                         {/* <Link to={"/voucher/" + record.id}> */}
-                                        <Button type="danger" onClick={() => handleEditClick(record)}>
+                                        {/* <Button type="danger" onClick={() => handleEditClick(record)}>
                                             <FontAwesomeIcon icon={faPencilAlt} />
-                                        </Button>
+                                        </Button> */} 
                                         {/* </Link> */}
                                         {/* <Link to={"/voucher/update/" + record.id}>
                                             <Button type="danger">
                                                 <FontAwesomeIcon icon={faPencilAlt} />
                                             </Button>
                                         </Link> */}
+                                        <Dropdown
+                                            overlay={
+                                            <Menu mode="vertical">
+                                                <Menu.Item
+                                                key="1"
+                                                disabled={record.stock <= 0}
+                                                style={{
+                                                    fontWeight: 500,
+                                                }}
+                                                icon={
+                                                    <CloseCircleOutlined
+                                                    style={{
+                                                        color: "red",
+                                                    }}
+                                                    />
+                                                }
+                                                onClick={() => remove(record.id)}
+                                                >
+                                                Delete
+                                                </Menu.Item>
+                                                <Menu.Item
+                                                key="2"
+                                                style={{
+                                                    fontWeight: 500,
+                                                }}
+                                                icon={
+                                                    <FormOutlined
+                                                    style={{
+                                                        color: "green",
+                                                    }}
+                                                    />
+                                                }
+                                                onClick={() => handleEditClick(record)}
+                                                >
+                                                Edit
+                                                </Menu.Item>
+                                            </Menu>
+                                            }
+                                            trigger={["click"]}
+                                        >
+                                            <MoreOutlined
+                                            style={{
+                                                fontSize: 24,
+                                            }}
+                                            />
+                                        </Dropdown>
                                       </span>
                                     )}
                                 />
