@@ -57,7 +57,7 @@ public class VoucherRestController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity detailVoucher(@PathVariable("id") Integer id) {
-        return new ResponseEntity(voucherService.findByIdVoucher(id), HttpStatus.OK);
+        return new ResponseEntity(voucherService.findByIdVoucher(id) , HttpStatus.OK);
     }
 
 }
