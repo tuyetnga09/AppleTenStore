@@ -57,13 +57,16 @@ import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
 import ReturnDeleteProduct from "./components/product_component/Product/ReturnDeleteProduct";
 
 import Dashboard from "./components/Page_Comeponet/dashboard/index";
-
+import Checkout from "./components/Page_Comeponet/Checkout/index";
+import Login from "./components/Page_Comeponet/Login/login";
+import SignUp from "./components/Page_Comeponet/Login/signup";
+import ForgotPassword from "./components/Page_Comeponet/Login/forgotpassword";
 function App() {
   return (
     <div>
       <Router>
         <Switch>
-        <Route path = "/blog" exact component = {blog} />
+          <Route path="/blog" exact component={blog} />
           <Route path="/" exact component={Home} />
           <Route path="/chat" exact component={chat} />
           <Route path="/product" exact component={product} />
@@ -182,6 +185,10 @@ function App() {
 
           <Route path="/voucher" exact component={Voucher} />
           <Route path="/cart" exact component={Cart} />
+          <Route path="/checkout" exact component={Checkout} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/signup" exact component={SignUp} />
+          <Route path="/forgotpassword" exact component={ForgotPassword} />
         </Switch>
       </Router>
     </div>
