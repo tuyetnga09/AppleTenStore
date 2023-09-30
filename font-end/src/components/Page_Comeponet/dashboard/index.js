@@ -10,15 +10,12 @@ import RecentOrders from "../dashboard/recentOrders/index";
 import TrendingMenu from "../dashboard/trendingMenu/index";
 import OffLayoutArea from "../offLayoutArea/index";
 import HeaderDashBoard from "../header/index";
-import {
-  SearchOutlined,
-  MenuFoldOutlined,
+import { SearchOutlined , MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
-
+  UserOutlined,DashboardOutlined,AppstoreAddOutlined,GiftOutlined,LogoutOutlined,ShopOutlined} from "@ant-design/icons";
+  import {
+    Link
+  } from "react-router-dom/cjs/react-router-dom.min";
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -33,28 +30,30 @@ const DashboardPage = () => {
     <>
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
-          <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={["2"]}
-            items={[
-              {
-                key: "1",
-                icon: <UserOutlined />,
-                label: "Home",
-              },
-              {
-                key: "2",
-                icon: <VideoCameraOutlined />,
-                label: "Voucher",
-              },
-              {
-                key: "3",
-                icon: <UploadOutlined />,
-                label: "Product",
-              },
-            ]}
-          />
+              <Menu
+                theme="dark"
+                mode="inline"
+                defaultSelectedKeys={['1']}
+                >
+                <Menu.Item key="1" icon={<DashboardOutlined />}>
+                    <Link to="/dashboard">Dashboard</Link>
+                </Menu.Item>
+                <Menu.Item key="2" icon={<ShopOutlined />}>
+                    <Link to="/orders">Orders</Link>
+                </Menu.Item>
+                <Menu.Item key="3" icon={<UserOutlined />}>
+                    <Link to="/users">Users</Link>
+                </Menu.Item>
+                <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
+                    <Link to="/product">Product</Link>
+                </Menu.Item>
+                <Menu.Item key="5" icon={<GiftOutlined />}>
+                    <Link to="/voucher">Voucher</Link>
+                </Menu.Item>
+                <Menu.Item key="6" icon={<LogoutOutlined />}>
+                    <Link to="/logout">Logout</Link>
+                </Menu.Item>
+                </Menu>      
         </Sider>
         <Layout>
           <Button

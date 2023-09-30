@@ -1,6 +1,8 @@
 import React from "react";
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { FloatButton } from 'antd';
 
-export default function TrangChu(){
+export default function Footer(){
   return(
     <React.Fragment>
        <>
@@ -23,7 +25,14 @@ export default function TrangChu(){
           </section>
         </div>
 
-      <i className="fa fa-arrow-up" id="goto-top-page" onclick="gotoTop()" />
+      {/* <i className="fa fa-arrow-up" id="goto-top-page" onclick="gotoTop()" /> */}
+      <FloatButton.Group shape="circle" style={{ right: 24 + 70 }}>
+        <FloatButton
+          href="https://ant.design/index-cn"
+          tooltip={<div>Thông báo</div>}
+          badge={{ count: 5, color: 'blue' }}
+        />
+      </FloatButton.Group>
 
       <div id="alert">
         <span id="closebtn">⊗</span>

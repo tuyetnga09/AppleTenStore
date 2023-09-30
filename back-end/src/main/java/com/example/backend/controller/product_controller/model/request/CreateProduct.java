@@ -24,5 +24,6 @@ public class CreateProduct {
     private String ram;
     private String screen;
     private String size;
+    private List<SKURequest> skus;
 
 }

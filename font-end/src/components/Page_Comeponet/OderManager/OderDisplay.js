@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { readAll,deleteVoucher,add, detail, update } from "../../../service/Voucher/voucher.service";
 import { useTranslate } from "@refinedev/core";
 import { SearchOutlined , MenuFoldOutlined,
     MenuUnfoldOutlined,
-    UserOutlined,DashboardOutlined,AppstoreAddOutlined,GiftOutlined,LogoutOutlined,ShopOutlined,CloseCircleOutlined,  FormOutlined,MoreOutlined,} from "@ant-design/icons";
+    UserOutlined,DashboardOutlined,AppstoreAddOutlined,GiftOutlined,LogoutOutlined,ShopOutlined,  CloseCircleOutlined,  FormOutlined,
+    MoreOutlined,} from "@ant-design/icons";
 import {
     Typography,
     Table,
@@ -15,7 +15,7 @@ import {
     Select,
     Button,
     Row,
-    Col,Layout, Menu, theme,  Badge, notification , Modal,Dropdown,
+    Col,Layout, Menu, theme,  Badge, notification , Modal,  Dropdown,
 } from "antd";
 import {
     List,
@@ -28,13 +28,12 @@ import {
   } from "react-router-dom/cjs/react-router-dom.min";
 import { faTimes, faPencilAlt} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CreateVoucher from "../Voucher/CreateVoucher";
-import UpdateVoucher from "../Voucher/UpdateVoucher";
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
-const VoucherDisplay = ({}) => {
+
+const OderDisplay = ({}) => {
     const t = useTranslate();
     const history = useHistory();
     const [collapsed, setCollapsed] = useState(false);
@@ -42,56 +41,19 @@ const VoucherDisplay = ({}) => {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    const [voucher, setVoucher] = useState([]);
-    const [editedVoucher, setEditedVoucher] = useState([]);
+    const [oder, setOder] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
 
     // Hàm để hiển thị Modal khi cần
     const handleEditClick = (record) => {
-        setEditedVoucher(record);
         setIsModalVisible(true);
-        console.log(editedVoucher);
       };
 
     // Hàm để ẩn Modal
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-
-    useEffect(() => {
-        readAll()
-          .then((response) => {
-            console.log(response.data);
-            setVoucher(response.data.content);
-            // setEditedVoucher(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-      }, []);
-    
-    async function remove(id) {
-        deleteVoucher(id).then(() => {
-          let newArr = [...voucher].filter((s) => s.id !== id);
-          setVoucher(newArr);
-          notification.success({
-            message: "DELETE VOUCHER",
-            description: "Delete Voucher successfully",
-          });
-          history.push("/voucher");
-          return {
-            success: true,
-          };
-        });
-    }
-
    
-    // const dateStart = voucher.dateStart;
-    // const dateStartText = dateStart.toLocaleDateString();
-
-    // const dateEnd = voucher.dateEnd;
-    // const dateEndText = dateEnd.toLocaleDateString();
-    
     return(
         <>
         <Layout>
@@ -100,7 +62,7 @@ const VoucherDisplay = ({}) => {
                 <Menu
                 theme="dark"
                 mode="inline"
-                defaultSelectedKeys={['5']}
+                defaultSelectedKeys={['2']}
                 >
                 <Menu.Item key="1" icon={<DashboardOutlined />}>
                     <Link to="/dashboard">Dashboard</Link>
@@ -144,23 +106,8 @@ const VoucherDisplay = ({}) => {
           }}
         >
         <Text style={{ fontSize: "24px" , color: "blue"}} strong>
-                  VOUCHER
+                  ODERS
         </Text>
-        {/* <Row gutter={[16, 16]}>
-        <Col
-                xl={6}
-                lg={24}
-                xs={24}
-                style={{
-                    marginTop: "52px",
-                }}
-            >
-
-        </Col>
-        <Col xl={18} xs={24}>
-
-        </Col>
-        </Row> */}
         <Row gutter={[16, 16]}>
             <Col
                 xl={6}
@@ -187,10 +134,8 @@ const VoucherDisplay = ({}) => {
                                     name="status"
                                 >
                                     <Select
-                                        // {...orderSelectProps}
                                         allowClear
                                         mode="multiple"
-                                        // placeholder={t("Status")}
                                     />
                                 </Form.Item>
                             </Col>
@@ -200,9 +145,7 @@ const VoucherDisplay = ({}) => {
                                     name="store"
                                 >
                                     <Select
-                                        // {...storeSelectProps}
                                         allowClear
-                                        // placeholder={t("orders.filter.store.placeholder")}
                                     />
                                 </Form.Item>
                             </Col>
@@ -212,9 +155,7 @@ const VoucherDisplay = ({}) => {
                                     name="user"
                                 >
                                     <Select
-                                        // {...userSelectProps}
                                         allowClear
-                                        // placeholder={t("orders.filter.user.placeholder")}
                                     />
                                 </Form.Item>
                             </Col>
@@ -243,19 +184,10 @@ const VoucherDisplay = ({}) => {
                 </Card>
             </Col>
             <Col xl={18} xs={24}>
-                
-                {/* <Link to="/voucher/new">
-                    <Button style={{ marginLeft: "1000px" }}> 
-                        <FaPlus className="add-icon" />
-                    </Button>
-                </Link> */}
-    
-                <CreateVoucher/>
-                
                 <List>
                     <Table
                         rowKey="id"
-                        dataSource={voucher}
+                        dataSource={oder}
                         scroll={{ x: 'max-content' }}
                     >
                                 <Table.Column
@@ -281,78 +213,14 @@ const VoucherDisplay = ({}) => {
                                     )}
                                 />
                                 <Table.Column
-                                    key="code"
-                                    dataIndex="code"
-                                    title={t("Code")}
+                                    key="product"
+                                    dataIndex="product"
+                                    title={t("Product")}
                                     render={(text, record) => (
-                                        <span>{record.code}</span>
+                                        <span>{record.product.name}</span>
                                     )}
                                 />
                                 <Table.Column
-                                    key="name"
-                                    dataIndex="name"
-                                    title={t("Name")}
-                                    render={(text, record) => (
-                                        <span>{record.name}</span>
-                                    )}
-                                />
-                                <Table.Column
-                                    key="dateStart"
-                                    dataIndex="dateStart"
-                                    title={t("DateStart")}
-                                    render={(text, record) => (
-                                        <span>{record.dateStart}</span>
-                                    )}
-                                />
-                                 <Table.Column
-                                    key="dateEnd"
-                                    dataIndex="dateEnd"
-                                    title={t("DateEnd")}
-                                    render={(text, record) => (
-                                        <span>{record.dateEnd}</span>
-                                    )}
-                                />
-                                 <Table.Column
-                                    key="conditionsApply"
-                                    dataIndex="conditionsApply"
-                                    title={t("ConditionsApply")}
-                                    render={(text, record) => (
-                                        <span>{record.conditionsApply}</span>
-                                    )}
-                                />
-                                 <Table.Column
-                                    key="valueVoucher"
-                                    dataIndex="valueVoucher"
-                                    title={t("ValueVoucher")}
-                                    render={(text, record) => (
-                                        <span>{record.valueVoucher}</span>
-                                    )}
-                                />
-                                 <Table.Column
-                                    key="valueMinimum"
-                                    dataIndex="valueMinimum"
-                                    title={t("ValueMinimum")}
-                                    render={(text, record) => (
-                                        <span>{record.valueMinimum}</span>
-                                    )}
-                                />
-                                 <Table.Column
-                                    key="valueMaximum"
-                                    dataIndex="valueMaximum"
-                                    title={t("ValueMaximum")}
-                                    render={(text, record) => (
-                                        <span>{record.valueMaximum}</span>
-                                    )}
-                                />
-                                 <Table.Column
-                                    key="typeVoucher"
-                                    dataIndex="typeVoucher"
-                                    title={t("TypeVoucher")}
-                                    render={(text, record) => (
-                                        <span>{record.typeVoucher}</span>
-                                    )}
-                                />
-                                 <Table.Column
                                     key="quantity"
                                     dataIndex="quantity"
                                     title={t("Quantity")}
@@ -360,6 +228,65 @@ const VoucherDisplay = ({}) => {
                                         <span>{record.quantity}</span>
                                     )}
                                 />
+                                
+                                <Table.Column
+                                    key="price"
+                                    dataIndex="price"
+                                    title={t("Price")}
+                                    render={(text, record) => (
+                                        <span>{record.price}</span>
+                                    )}
+                                />
+                                 <Table.Column
+                                    key="bill"
+                                    dataIndex="bill"
+                                    title={t("Address")}
+                                    render={(text, record) => (
+                                        <span>{record.bill.address}</span>
+                                    )}
+                                />
+                                <Table.Column
+                                    key="bill"
+                                    dataIndex="bill"
+                                    title={t("Total")}
+                                    render={(text, record) => (
+                                        <span>{record.bill.totalMoney}</span>
+                                    )}
+                                />
+                                 <Table.Column
+                                    key="personCreate"
+                                    dataIndex="personCreate"
+                                    title={t("PersonCreate")}
+                                    render={(text, record) => (
+                                        <span>{record.personCreate}</span>
+                                    )}
+                                />
+                                 <Table.Column
+                                    key="personUpdate"
+                                    dataIndex="personUpdate"
+                                    title={t("PersonUpdate")}
+                                    render={(text, record) => (
+                                        <span>{record.personUpdate}</span>
+                                    )}
+                                />
+                                 <Table.Column
+                                    key="dateCreate"
+                                    dataIndex="dateCreate"
+                                    title={t("DateCreate")}
+                                    render={(text, record) => (
+                                        <span>{record.dateCreate}</span>
+                                    )}
+                                />
+                                 <Table.Column
+                                    key="dateUpdate"
+                                    dataIndex="dateUpdate"
+                                    title={t("DateUpdate")}
+                                    render={(text, record) => (
+                                        <span>{record.dateUpdate}</span>
+                                    )}
+                                />
+                                 
+                                
                                 <Table.Column
                                     key="actions"
                                     dataIndex="actions"
@@ -368,20 +295,13 @@ const VoucherDisplay = ({}) => {
                                     align= "center"
                                     render={(text, record) => (
                                       <span>
-                                        {/* <Button type="danger" onClick={() => remove(record.id)}>
+                                        {/* <Button type="danger" >
                                             <FontAwesomeIcon icon={faTimes} />
                                         </Button>
-                                        {/* <Link to={"/voucher/" + record.id}> */}
-                                        {/* <Button type="danger" onClick={() => handleEditClick(record)}>
+                                        <Button type="danger" >
                                             <FontAwesomeIcon icon={faPencilAlt} />
-                                        </Button> */} 
-                                        {/* </Link> */}
-                                        {/* <Link to={"/voucher/update/" + record.id}>
-                                            <Button type="danger">
-                                                <FontAwesomeIcon icon={faPencilAlt} />
-                                            </Button>
-                                        </Link> */}
-                                        <Dropdown
+                                        </Button> */}
+                                         <Dropdown
                                             overlay={
                                             <Menu mode="vertical">
                                                 <Menu.Item
@@ -397,9 +317,9 @@ const VoucherDisplay = ({}) => {
                                                     }}
                                                     />
                                                 }
-                                                onClick={() => remove(record.id)}
+                                                // onClick={() => confirm2(record.id)}
                                                 >
-                                                Delete
+                                                Accept
                                                 </Menu.Item>
                                                 <Menu.Item
                                                 key="2"
@@ -413,7 +333,7 @@ const VoucherDisplay = ({}) => {
                                                     }}
                                                     />
                                                 }
-                                                onClick={() => handleEditClick(record)}
+                                                // onClick={() => editShow(item.id)}
                                                 >
                                                 Edit
                                                 </Menu.Item>
@@ -434,21 +354,10 @@ const VoucherDisplay = ({}) => {
                 </List>
             </Col>
         </Row>
-        <section>
-            <Modal
-              visible={isModalVisible}
-              onCancel={handleCancel}
-              width={1000}
-              footer={null}
-              bodyStyle={{ minHeight: "450px" }}
-            >
-                <UpdateVoucher editedVoucher={editedVoucher}/>
-            </Modal>
-          </section>
         </Content>
       </Layout>
     </Layout>
         </>
     );
 };
-export default VoucherDisplay;
+export default OderDisplay;

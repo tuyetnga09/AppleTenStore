@@ -3,27 +3,32 @@ import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import { faTimes, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { RightOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 export default function CartDisplay(){
 
   const duLieuTam = [
     {
       id: 1,
-      name: "Samsung Galaxy M11 64GB",
+      name: "Samsung Galaxy M11",
       price: 15000000,
       quantity: 2,
+      time: "2023/9/29:20:20:20",
     },
     {
       id: 2,
       name: "Headphones Bose 35 II",
       price: 25000000,
       quantity: 1,
+      time: "2023/9/29:20:20:20",
     },
     {
       id: 3,
-      name: "iPad 9.7 6-gen WiFi 32GB",
+      name: "iPad 9.7 6-gen",
       price: 35000000,
       quantity: 2,
+      time: "2023/9/29:20:20:20",
     },
   ];
 
@@ -53,7 +58,17 @@ export default function CartDisplay(){
     <React.Fragment>
        <>
        <Header/>
+       <div className="breadcrumbs_area">
+        <div className="row" style={{marginTop: "10px", marginLeft: "20px"}}>
+          <div id="detailPromo">
+            <Link to={"/"}>Home</Link> 
+            <RightOutlined />
+            <Link to={"/cart"}>Cart</Link>
+          </div>
+        </div>
+      </div>
        <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
+        
         <div className="container h-100 py-5">
           <div className="row d-flex justify-content-center align-items-center h-100">
             <div className="col">
@@ -72,6 +87,7 @@ export default function CartDisplay(){
                             <th><h5 className="fw-bold mb-0 me-5 pe-3">Giá</h5></th>
                             <th><h5 className="fw-bold mb-0 me-5 pe-3">SL</h5></th>
                             <th><h5 className="fw-bold mb-0 me-5 pe-3">Thành tiền</h5></th>
+                            <th><h5 className="fw-bold mb-0 me-5 pe-3">Thời gian</h5></th>
                             <th></th>
                           </tr>
                       </thead>
@@ -83,13 +99,13 @@ export default function CartDisplay(){
                                 <img
                                   src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/E-commerce/Products/13.webp"
                                   className="img-fluid"
-                                  style={{ width: "170px" }}
+                                  style={{ width: "130px" }}
                                   alt="Generic placeholder image"
                                 />
                               </div>
                             </td>
                             <td><h5 className="text-primary">{product.name}</h5></td>
-                            <td><p className="fw-bold mb-0 me-5 pe-3">{product.price} VND</p></td>
+                            <td><p className="fw-bold mb-0 me-5 pe-3">{product.price}</p></td>
                             <td>
                               <div className="def-number-input number-input safari_only" style={{paddingRight: "10px"}}>
                                         <button
@@ -109,7 +125,8 @@ export default function CartDisplay(){
                                         />
                                 </div>
                             </td>
-                            <td><p className="fw-bold mb-0 me-5 pe-3">{product.price} VND</p></td>
+                            <td><p className="fw-bold mb-0 me-5 pe-3">{product.price}</p></td>
+                            <td><p className="fw-bold mb-0 me-5 pe-3">{product.time}</p></td>
                             <td>
                               <a href="#!" className="float-end text-black">
                                       <FontAwesomeIcon icon={faTimes} />
@@ -119,8 +136,10 @@ export default function CartDisplay(){
                       ))}
                       </tbody>
                     </table>
+                    
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end" style={{marginTop: "10px"}}>
-                      <button class="btn btn-danger me-md-2" type="button">Xóa hết</button>
+                      <button class="btn btn-outline-primary me-md-2" type="button">Cập nhật giỏ hàng</button>
+                      <button class="btn btn-outline-primary me-md-2" type="button">Xóa hết</button>
                     </div>
                       <hr
                         className="mb-4"
@@ -140,7 +159,7 @@ export default function CartDisplay(){
                             className="btn btn-danger btn-block btn-lg"
                            
                           >
-                            Buy now
+                            TIẾN HÀNH ĐẶT HÀNG
                           </button>
                         </div>
                         <h5

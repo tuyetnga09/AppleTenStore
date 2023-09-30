@@ -35,4 +35,8 @@ public class Imei extends DuplicateAttribute implements Identify {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_product")
     private Product idProduct;
+
+    @ManyToOne
+    @JoinColumn(name = "sku_id")
+    private SKU idSku;
 }

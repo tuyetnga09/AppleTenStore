@@ -55,12 +55,14 @@ import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay";
 import blog from "./components/Page_Comeponet/Blogs";
 import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
 import ReturnDeleteProduct from "./components/product_component/Product/ReturnDeleteProduct";
-
+import SingleProduct from "./components/custumer_componet/product_detail";
 import Dashboard from "./components/Page_Comeponet/dashboard/index";
 import Checkout from "./components/Page_Comeponet/Checkout/index";
 import Login from "./components/Page_Comeponet/Login/login";
 import SignUp from "./components/Page_Comeponet/Login/signup";
 import ForgotPassword from "./components/Page_Comeponet/Login/forgotpassword";
+import OderDisplay from "./components/Page_Comeponet/OderManager/OderDisplay";
+
 function App() {
   return (
     <div>
@@ -182,13 +184,14 @@ function App() {
           />
 
           <Route path="/dashboard" exact component={Dashboard} />
-
+          <Route path="/singleProduct" exact component={SingleProduct} />
           <Route path="/voucher" exact component={Voucher} />
           <Route path="/cart" exact component={Cart} />
           <Route path="/checkout" exact component={Checkout} />
           <Route path="/login" exact component={Login} />
           <Route path="/signup" exact component={SignUp} />
           <Route path="/forgotpassword" exact component={ForgotPassword} />
+          <Route path="/orders" exact component={OderDisplay} />
         </Switch>
       </Router>
     </div>

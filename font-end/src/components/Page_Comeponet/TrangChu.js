@@ -337,7 +337,7 @@ export default function TrangChu(){
             </h3>
             <div className="listSpTrongKhung flexContain">
               <li className="sanPham">
-                <a href="chitietsanpham.html?Nokia-black-future">
+                <a href="/singleProduct">
                   <img
                     src="https://cdn.tgdd.vn/Products/Images/42/22701/dien-thoai-di-dong-Nokia-1280-dienmay.com-l.jpg"
                     alt=""
