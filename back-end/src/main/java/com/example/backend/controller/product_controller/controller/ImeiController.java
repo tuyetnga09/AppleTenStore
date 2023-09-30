@@ -76,7 +76,7 @@ public class ImeiController {
     @PostMapping("import")
     public ResponseEntity<String>  importSize(@RequestParam("file") MultipartFile file){
         try {
-            service.importDataFromExcel(file);
+            service.importImeiDataFromExcel(file);
             return ResponseEntity.ok("Import Thành Công");
         } catch (Exception e) {
             e.printStackTrace();

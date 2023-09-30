@@ -3,11 +3,13 @@ package com.example.backend.entity;
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -77,6 +79,6 @@ public class Product  extends DuplicateAttribute implements Identify {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "capacity_id"))
     private List<Capacity> capacities;
-
-    private String sku;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<SKU> skus;
 }
