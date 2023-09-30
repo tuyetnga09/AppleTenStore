@@ -61,7 +61,7 @@ export default function CartDisplay(){
        <div className="breadcrumbs_area">
         <div className="row" style={{marginTop: "10px", marginLeft: "20px"}}>
           <div id="detailPromo">
-            <Link to={"/"}>Home</Link>
+            <Link to={"/"}>Home</Link> 
             <RightOutlined />
             <Link to={"/cart"}>Cart</Link>
           </div>
