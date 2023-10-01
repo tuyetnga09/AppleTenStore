@@ -4,17 +4,24 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "font-awesome/css/font-awesome.min.css";
 import { useEffect } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import Header from "../../Page_Comeponet/layout/Header";
+import Footer from "../../Page_Comeponet/layout/Footer";
+import { useState } from "react";
 
 const Checkout = () => {
-  useEffect(() => {
-    // test();
-  }, []);
+  const [isLogin, setIsGLogin] = useState([false]);
+
+  useEffect(() => {}, [isLogin]);
 
   function giaoTanNoi() {
     const select = document.getElementById("floatingSelect1");
     select.hidden = true;
     const input = document.getElementById("floatingSelect2");
     input.hidden = false;
+    const divDcmd = document.getElementById("dcmd2");
+    divDcmd.hidden = true;
+    const notDcmd = document.getElementById("notDcmd");
+    notDcmd.hidden = false;
   }
 
   function nhanTaiCuaHang() {
@@ -22,10 +29,31 @@ const Checkout = () => {
     select.hidden = false;
     const input = document.getElementById("floatingSelect2");
     input.hidden = true;
+    const divDcmd = document.getElementById("dcmd2");
+    divDcmd.hidden = true;
+    const notDcmd = document.getElementById("notDcmd");
+    notDcmd.hidden = false;
+  }
+
+  function diaChiMacDinh() {
+    const divDcmd = document.getElementById("dcmd2");
+    divDcmd.hidden = false;
+    const notDcmd = document.getElementById("notDcmd");
+    notDcmd.hidden = true;
+  }
+
+  function test() {
+    setIsGLogin(true);
+    if (isLogin == true) {
+      const divDcmd = document.getElementById("dcmd");
+      divDcmd.hidden = false;
+    }
   }
 
   return (
     <>
+      <Header />
+      <button onClick={() => test()}>test</button>
       <main role="main">
         <div class="container mt-4">
           <form
@@ -171,8 +199,23 @@ const Checkout = () => {
                         Giao tận nơi
                       </label>
                     </div>
+                    <div class="custom-control custom-radio" id="dcmd" hidden>
+                      <input
+                        id="htnn_6"
+                        name="htnn_ma"
+                        type="radio"
+                        class="custom-control-input"
+                        required=""
+                        value="3"
+                        onClick={() => diaChiMacDinh()}
+                        hidden
+                      ></input>
+                      <label class="custom-control-label" for="htnn_6">
+                        Địa chỉ mặc định
+                      </label>
+                    </div>
                   </div>
-                  <div className="row">
+                  <div className="row" id="notDcmd">
                     <div class="col-md-6">
                       <br />
                       <label for="kh_cmnd">Tỉnh, thành phố:</label>
@@ -208,7 +251,7 @@ const Checkout = () => {
                         id="floatingSelect1"
                         aria-label="Floating label select example"
                       >
-                        <option selected></option>
+                        <option selected>Mời bạn chọn địa chỉ cửa hàng</option>
                         <option value="1">One</option>
                         <option value="2">Two</option>
                         <option value="3">Three</option>
@@ -224,6 +267,20 @@ const Checkout = () => {
                         aria-label="default input example"
                       />
                     </div>
+                  </div>
+                  <div id="dcmd2" hidden>
+                    <br />
+                    <label for="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
+                    <select
+                      class="form-select"
+                      id="floatingSelect"
+                      aria-label="Floating label select example"
+                    >
+                      <option selected>Chọn tỉnh, thành phố</option>
+                      <option value="1">One</option>
+                      <option value="2">Two</option>
+                      <option value="3">Three</option>
+                    </select>
                   </div>
                 </div>
                 <br />
@@ -256,19 +313,6 @@ const Checkout = () => {
                       VN Pay
                     </label>
                   </div>
-                  <div class="custom-control custom-radio">
-                    <input
-                      id="httt-3"
-                      name="httt_ma"
-                      type="radio"
-                      class="custom-control-input"
-                      required=""
-                      value="3"
-                    ></input>
-                    <label class="custom-control-label" for="httt-3">
-                      Ship COD
-                    </label>
-                  </div>
                   <hr class="mb-4" />
                   <button
                     class="btn btn-primary btn-lg btn-block"
@@ -283,6 +327,7 @@ const Checkout = () => {
           </form>
         </div>
       </main>
+      <Footer />
     </>
   );
 };
