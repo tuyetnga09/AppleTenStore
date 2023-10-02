@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslate, useApiUrl } from "@refinedev/core";
-import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
+import { Create, getValueFromEvent } from "@refinedev/antd";
 import { add } from "../../../../service/product.service";
-import { notification, Modal } from "antd";
-// import { useEffect, useState } from "react";
-// import { useTranslate, useApiUrl } from "@refinedev/core";
-// import { Create, getValueFromEvent, useSelect } from "@refinedev/antd";
-// import { add } from "../../../../service/product.service";
+import {addImage} from "../../../../service/image.service";
+import QRScanner from "./QRScanner";
+import { Option } from "antd/es/mentions";
+import { importImei } from "../../../../service/imei.service";
 
 import {
   readAllColor,
@@ -19,34 +18,23 @@ import {
   readAllScreen,
   readAllSize,
 } from "../../../../service/product.service";
-// import queryString from "query-string";
-
 import {
   Drawer,
-  DrawerProps,
   Form,
-  FormProps,
   Input,
   InputNumber,
   Radio,
   Select,
   Space,
-  ButtonProps,
   Avatar,
   Typography,
   Upload,
-  Grid,
 } from "antd";
 import {
   Link,
   useHistory,
-  useParams,
-} from "react-router-dom/cjs/react-router-dom.min";
-import { Option } from "antd/es/mentions";
-import { display } from "@mui/system";
-import { Hidden } from "@mui/material";
-import { addImage } from "../../../../service/image.service";
-import QRScanner from "./QRScanner";
+} from "react-router-dom";
+import {FaArrowLeft} from "react-icons/fa";
 
 const Test = () => {
   const { Text } = Typography;
@@ -57,9 +45,21 @@ const Test = () => {
   const [list, setList] = useState({});
   const [startScan, setStartScan] = useState(false);
 
-  const [productData, setProductData] = useState({});
-
-  const [testData, setTestData] = useState({});
+  const [productData, setProductData] = useState({
+    nameProduct: "",
+    description: "",
+    price: 0,
+    category: "",
+    battery: "",
+    chip: "",
+    color: [],
+    capacities: [],
+    manufacture: "",
+    ram: "",
+    screen: "",
+    size: "",
+    isActive: true,
+  });
 
   const handleInputChangeCategory = (value) => {
     setProductData({
@@ -75,16 +75,23 @@ const Test = () => {
     });
   };
 
-  const handleInputChangeCapacity = (value) => {
-    setProductData({
-      ...productData,
-      capacity: value,
-    });
-  };
   const handleInputChangeChip = (value) => {
     setProductData({
       ...productData,
       chip: value,
+    });
+  };
+
+  const handleInputChangeManufacturer = (value) => {
+    setProductData({
+      ...productData,
+      manufacture: value,
+    });
+  };
+  const handleInputChangeCapacity = (value) => {
+    setProductData({
+      ...productData,
+      capacity: value,
     });
   };
   const handleInputChangeColor = (value) => {
@@ -94,19 +101,10 @@ const Test = () => {
     });
   };
 
-  const handleInputChangeManufacturer = (value) => {
-    setProductData({
-      ...productData,
-      manufacturer: value,
-    });
-  };
-
   const handleInputChangeRam = (value) => {
     setProductData({
       ...productData,
       ram: value,
-      // screen: value,
-      // screen: value,
     });
   };
 
@@ -124,12 +122,7 @@ const Test = () => {
     });
   };
 
-  // const [priceValue, setPriceValue] = useState();
-  // Hàm xử lý sự kiện khi giá trị thay đổi
   const handleNumberChangePrice = (value) => {
-    // Giá trị mới sẽ được truyền vào hàm này
-    // Cập nhật giá trị trong state
-
     setProductData({
       ...productData,
       price: value,
@@ -140,32 +133,10 @@ const Test = () => {
     setList(value);
   }
 
-  function handleChange(event) {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    let item = { ...productData, price: 0 };
-    item[name] = value;
-    setProductData(item);
-  }
-
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
-
-  // Hàm để hiển thị Modal khi cần
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  // Hàm để ẩn Modal
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
   async function handleSubmit(event) {
     event.preventDefault();
     const items = { ...productData };
 
-    // Đây là nơi bạn có thể gửi dữ liệu sản phẩm (productData) lên máy chủ hoặc thực hiện bất kỳ xử lý nào bạn cần.
     console.log("Dữ liệu sản phẩm:", items);
     await add(items);
     for (let i = 0; i < list.fileList.length; i++) {
@@ -177,110 +148,114 @@ const Test = () => {
   }
 
   const [displayColor, setDisplayColor] = useState([]);
-  const [displayChip, setDisplayChip] = useState([]);
   const [displayBattery, setDisplayBattery] = useState([]);
-  const [displayCapacity, setDisplayCapacity] = useState([]);
   const [displayCategory, setDisplayCategory] = useState([]);
+  const [displayChip, setDisplayChip] = useState([]);
   const [displayManufacture, setDisplayManufacture] = useState([]);
   const [displayRam, setDisplayRam] = useState([]);
   const [displayScreen, setDisplayScreen] = useState([]);
   const [displaySize, setDisplaySize] = useState([]);
+  const [displayCapacity, setDisplayCapacity] = useState([]);
 
   useEffect(() => {
-    //1
     readAllColor()
       .then((response) => {
-        console.log(response.data);
         setDisplayColor(response.data);
       })
       .catch((error) => {
-        console.log(`${error}`);
+        console.log(error);
       });
-    //2
-    readAllChip()
-      .then((response) => {
-        console.log(response.data);
-        setDisplayChip(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //3
+
     readAllBattery()
       .then((response) => {
-        console.log(response.data);
         setDisplayBattery(response.data);
       })
       .catch((error) => {
-        console.log(`${error}`);
+        console.log(error);
       });
-    //4
-    readAllCapacity()
-      .then((response) => {
-        console.log(response.data);
-        setDisplayCapacity(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //5
+
     readAllCategory()
       .then((response) => {
-        console.log(response.data);
         setDisplayCategory(response.data);
       })
       .catch((error) => {
-        console.log(`${error}`);
+        console.log(error);
       });
-    //6
+
+    readAllChip()
+      .then((response) => {
+        setDisplayChip(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     readAllManufacture()
       .then((response) => {
-        console.log(response.data);
         setDisplayManufacture(response.data);
       })
       .catch((error) => {
-        console.log(`${error}`);
+        console.log(error);
       });
-    //7
+
     readAllRam()
       .then((response) => {
-        console.log(response.data);
         setDisplayRam(response.data);
       })
       .catch((error) => {
-        console.log(`${error}`);
+        console.log(error);
       });
-    //8
+
     readAllScreen()
       .then((response) => {
-        console.log(response.data);
         setDisplayScreen(response.data);
       })
       .catch((error) => {
-        console.log(`${error}`);
+        console.log(error);
       });
-    //9
+    readAllCapacity()
+        .then((response) => {
+          setDisplayCapacity(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     readAllSize()
       .then((response) => {
-        console.log(response.data);
         setDisplaySize(response.data);
       })
       .catch((error) => {
-        console.log(`${error}`);
+        console.log(error);
       });
   }, []);
 
-  const test = () => {
-    const ok = document.getElementById("test");
-    ok.setAttribute("hidden", true);
+  //import imei -----------------
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleUpload = () => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    importImei(formData)
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    // history.push("/imei/getAll");
+    history.push("/product/display", file);
+  };
+
+  const handleClick = () => {
+    history.push("/product/display", file);
   };
 
   return (
-    // <Drawer
-    //   //   {...drawerProps}
-    //   //   width={breakpoint.sm ? "500px" : "100%"}
-    //   zIndex={1001}
-    // >
     <>
       <button
         onClick={() => {
@@ -293,8 +268,6 @@ const Test = () => {
       <form onSubmit={handleSubmit}>
         <Create
           resource="products"
-          // saveButtonProps={saveButtonProps}
-
           goBack={false}
           contentProps={{
             style: {
@@ -306,17 +279,12 @@ const Test = () => {
           }}
         >
           <Form
-            //   {...formProps}
             layout="vertical"
             initialValues={{
               isActive: true,
             }}
-            // id="test"
           >
-            <Form.Item
-              // label={t("products.fields.images.label")}
-              label={t("Images")}
-            >
+            <Form.Item label={t("Images")}>
               <Form.Item
                 name="images"
                 valuePropName="fileList"
@@ -351,38 +319,25 @@ const Test = () => {
                         marginTop: "8px",
                       }}
                     >
-                      {/* {t("products.fields.images.description")} */}
-                      Add Product
-                    </Text>
-                    <Text style={{ fontSize: "12px" }}>
-                      {/* {t("products.fields.images.validation")} */}
-                      must be 1080x1080 px
+                      Add product description
                     </Text>
                   </Space>
                 </Upload.Dragger>
               </Form.Item>
             </Form.Item>
-            <Form.Item
-              // label={t("products.fields.name")}
-              label={t("Name")}
-              name="nameProduct"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
+            <Form.Item label={t("Name")} name="nameProduct" rules={[{ required: true }]}>
               <Input
                 type="text"
                 required
                 value={productData.nameProduct || ""}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setProductData({ ...productData, nameProduct: e.target.value })
+                }
                 id="nameProduct"
                 name="nameProduct"
-              ></Input>
+              />
             </Form.Item>
             <Form.Item
-              // label={t("products.fields.description")}
               label={t("Description")}
               name="description"
               rules={[
@@ -396,24 +351,15 @@ const Test = () => {
                 type="text"
                 required
                 value={productData.description || ""}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setProductData({ ...productData, description: e.target.value })
+                }
                 id="description"
                 name="description"
               />
             </Form.Item>
-            <Form.Item
-              // label={t("products.fields.price")}
-              label={t("Price")}
-              name="price"
-              rules={[
-                {
-                  required: true,
-                  type: "number",
-                },
-              ]}
-            >
+            <Form.Item label={t("Price")} name="price" rules={[{ required: true, type: "number" }]}>
               <InputNumber
-                //   formatter={(value) => `$ ${value}`}
                 style={{ width: "150px" }}
                 min={0}
                 type="number"
@@ -421,11 +367,9 @@ const Test = () => {
                 name="price"
                 value={productData.price}
                 onChange={handleNumberChangePrice}
-                // id="price"
               />
             </Form.Item>
             <Form.Item
-              // label={t("products.fields.category")}
               label={t("Category")}
               name={["category", "id"]}
               rules={[
@@ -433,16 +377,7 @@ const Test = () => {
                   required: true,
                 },
               ]}
-              style={{
-                width: "49%",
-                float: "left",
-                clear: "both",
-              }}
             >
-              {/* <Select
->>>>>>> d1813b975020ad9a9cfe672c3fb270c182af9073
-          //   {...categorySelectProps}
-          /> */}
               <Select
                 name="category"
                 value={productData.category}
@@ -450,48 +385,39 @@ const Test = () => {
               >
                 {displayCategory.map((categories) => {
                   return (
-                    <Option value={categories.name}>{categories.name}</Option>
+                    <Select.Option key={categories.id} value={categories.name}>
+                      {categories.name}
+                    </Select.Option>
                   );
                 })}
               </Select>
             </Form.Item>
             <Form.Item
-              label={t("Capacity")}
-              name={["capacity", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              style={{
-                width: "49%",
-                float: "right",
-              }}
+                label="Chọn Dung Lượng"
+                name="capacity"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ít nhất một dung lượng",
+                  },
+                ]}
             >
               <Select
-                name="capacity"
-                value={productData.capacity}
-                onChange={handleInputChangeCapacity}
+                  mode="multiple"
+                  style={{ width: "100%" }}
+                  placeholder="Chọn dung lượng"
+                  value={productData.capacity}
+                  onChange={handleInputChangeCapacity}
               >
-                {displayCapacity.map((capacity) => {
-                  return <Option value={capacity.name}>{capacity.name}</Option>;
-                })}
+                {displayCapacity.map((cap) => (
+                    <Select.Option key={cap.id} value={cap.name}>
+                      {cap.name}
+                    </Select.Option>
+                ))}
               </Select>
             </Form.Item>
-            <Form.Item
-              label={t("Battery")}
-              name={["battery", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              style={{
-                width: "49%",
-                float: "left",
-                clear: "both",
-              }}
-            >
+
+            <Form.Item label={t("Battery")} name={["battery", "id"]} rules={[{ required: true }]}>
               <Select
                 name="battery"
                 value={productData.battery}
@@ -502,53 +428,38 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item
-              label={t("Chip")}
-              name={["chip", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              style={{
-                width: "49%",
-                float: "right",
-              }}
-            >
-              <Select
-                name="chip"
-                value={productData.chip}
-                onChange={handleInputChangeChip}
-              >
+            <Form.Item label={t("Chip")} name={["chip", "id"]} rules={[{ required: true }]}>
+              <Select name="chip" value={productData.chip} onChange={handleInputChangeChip}>
                 {displayChip.map((chip) => {
                   return <Option value={chip.name}>{chip.name}</Option>;
                 })}
               </Select>
             </Form.Item>
             <Form.Item
-              label={t("Color")}
-              name={["color", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              style={{
-                width: "49%",
-                float: "left",
-                clear: "both",
-              }}
+                label={t("Color")}
+                name="color"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn ít nhất một màu sắc",
+                  },
+                ]}
             >
               <Select
-                name="color"
-                value={productData.color}
-                onChange={handleInputChangeColor}
+                  mode="multiple"
+                  style={{ width: "100%" }}
+                  placeholder="Chọn màu sắc"
+                  value={productData.color}
+                  onChange={handleInputChangeColor}
               >
-                {displayColor.map((color) => {
-                  return <Option value={color.name}>{color.name}</Option>;
-                })}
+                {displayColor.map((color) => (
+                    <Select.Option key={color.id} value={color.name}>
+                      {color.name}
+                    </Select.Option>
+                ))}
               </Select>
             </Form.Item>
+
             <Form.Item
               label={t("Manufacture")}
               name={["manufacture", "id"]}
@@ -557,11 +468,6 @@ const Test = () => {
                   required: true,
                 },
               ]}
-              style={{
-                width: "49%",
-                float: "left",
-                clear: "both",
-              }}
             >
               <Select
                 name="manufacture"
@@ -575,43 +481,14 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item
-              label={t("Ram")}
-              name={["ram", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              style={{
-                width: "49%",
-                float: "right",
-              }}
-            >
-              <Select
-                name="ram"
-                value={productData.ram}
-                onChange={handleInputChangeRam}
-              >
+            <Form.Item label={t("Ram")} name={["ram", "id"]} rules={[{ required: true }]}>
+              <Select name="ram" value={productData.ram} onChange={handleInputChangeRam}>
                 {displayRam.map((ram) => {
                   return <Option value={ram.name}>{ram.name}</Option>;
                 })}
               </Select>
             </Form.Item>
-            <Form.Item
-              label={t("Screen")}
-              name={["screen", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              style={{
-                width: "49%",
-                float: "left",
-                clear: "both",
-              }}
-            >
+            <Form.Item label={t("Screen")} name={["screen", "id"]} rules={[{ required: true }]}>
               <Select
                 name="screen"
                 value={productData.screen}
@@ -622,50 +499,57 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item
-              label={t("Size")}
-              name={["size", "id"]}
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-              style={{
-                width: "49%",
-                float: "right",
-              }}
-            >
-              <Select
-                name="size"
-                value={productData.size}
-                onChange={handleInputChangeSize}
-              >
+            <Form.Item label={t("Size")} name={["size", "id"]} rules={[{ required: true }]}>
+              <Select name="size" value={productData.size} onChange={handleInputChangeSize}>
                 {displaySize.map((size) => {
                   return <Option value={size.name}>{size.name}</Option>;
                 })}
               </Select>
             </Form.Item>
-            <Form.Item
-              //   label={t("products.fields.isActive")}
-              label={t("Active")}
-              name="isActive"
-              style={{
-                clear: "both",
-              }}
-            >
+            <Form.Item label={t("Active")} name="isActive">
               <Radio.Group>
-                <Radio value={true}>{/* {t("status.enable")} */}Enable</Radio>
-                <Radio value={false}>
-                  {/* {t("status.disable")} */}Disable
-                </Radio>
+                <Radio value={true}>Enable</Radio>
+                <Radio value={false}>Disable</Radio>
               </Radio.Group>
             </Form.Item>
           </Form>
+
+        {/* import  imei   -----------------------------------*/}
+        {/*  <button onClick={handleClick} className="btn btn-outline-secondary">*/}
+        {/*    <FaArrowLeft/> Back*/}
+        {/*  </button>*/}
+          <form onSubmit={handleUpload} encType="multipart/form-data">
+            <div className="form-row">
+              <div className="input-data">
+                <input
+                    type="file"
+                    className="form-control"
+                    name="file"
+                    accept=".xlsx, .xls"
+                    onChange={handleFileChange}
+                />
+              </div>
+            </div>
+            <br></br>
+            <div className="form-row">
+              <div className="input-data textarea">
+                <div className="form-row submit-btn">
+                  <button type="submit" className="btn btn-outline-secondary">
+                    Upload
+                  </button>
+                  {/* <button class="btn btn-light" style={{ marginLeft: "15px" }}>
+              <a href="/imei/getAll">
+                <FontAwesomeIcon icon={faTimesCircle} />
+              </a>
+            </button> */}
+                </div>
+              </div>
+            </div>
+          </form>
         </Create>
       </form>
     </>
-
-    // </Drawer>
   );
 };
+
 export default Test;

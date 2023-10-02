@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { readAll } from "../../../service/product.service";
-import Pagination from "./PageNext";
+import React, { useEffect, useState, useRef } from "react";
+import { readAll, deleteProduct } from "../../../service/product.service";
+import Pagination from "./Paging";
 import queryString from "query-string";
 import {
   Typography,
@@ -18,6 +18,8 @@ import {
   Dropdown,
   Menu,
   Button,
+  Select,
+  DatePicker,
 } from "antd";
 import {
   SearchOutlined,
@@ -26,19 +28,63 @@ import {
   MoreOutlined,
 } from "@ant-design/icons";
 import { StyledStoreProducts } from "./Interface/index";
-import { NumberField, useDrawerForm } from "@refinedev/antd";
+import { NumberField } from "@refinedev/antd";
 import CreateProduct from "./crud/create";
-import UpdateProduct from "./crud/edit";
-
 // import "../css/index.css";
 // import Container from "react-bootstrap/Container";
 // import Navbar from "react-bootstrap/Navbar";
-
+import { Link } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
+import "primereact/resources/primereact.css"; // core css
+import { Toast } from "primereact/toast";
+import { FaFileExcel } from "react-icons/fa";
 const queryClient = new QueryClient();
 
 const { Text, Paragraph } = Typography;
 const StoreProducts = ({}) => {
+  const toast = useRef(null);
+
+  const acceptDelete = (id) => {
+    remove(id);
+    toast.current.show({
+      severity: "info",
+      summary: "Confirmed",
+      detail: "You have accepted",
+      life: 3000,
+    });
+  };
+
+  const reject = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "Rejected",
+      detail: "You have rejected",
+      life: 3000,
+    });
+  };
+
+  // const confirm1 = () => {
+  //   confirmDialog({
+  //     message: "Are you sure you want to proceed?",
+  //     header: "Confirmation",
+  //     icon: "pi pi-exclamation-triangle",
+  //     accept,
+  //     reject,
+  //   });
+  // };
+
+  const confirm2 = (id) => {
+    confirmDialog({
+      message: "Do you want to delete this record?",
+      header: "Delete Confirmation",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => acceptDelete(id),
+      reject,
+    });
+  };
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
 
   // Hàm để hiển thị Modal khi cần
@@ -49,23 +95,15 @@ const StoreProducts = ({}) => {
   // Hàm để ẩn Modal
   const handleCancel = () => {
     setIsModalVisible(false);
-    setIsModalVisibleUpdate(false);
-  };
-  const [isModalVisibleUpdate, setIsModalVisibleUpdate] = useState(false); // Trạng thái hiển thị Modal
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const openDetailModal = (product) => {
-    setSelectedProduct(product);
-    setIsModalVisibleUpdate(true);
-    console.log(
-      "ahihi " + product.id + " " + product.name + " " + product.price
-    );
   };
 
-  const closeDetailModal = () => {
-    setSelectedProduct(null);
-  };
+  // const [item, setItem] = useState({
+  //   id: 1,
+  //   name: "Iphone 11",
+  //   description: "Zin đét",
+  //   price: 99,
+  //   stock: 1,
+  // });
 
   function updateStock() {
     return 1;
@@ -87,7 +125,6 @@ const StoreProducts = ({}) => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
-
   useEffect(() => {
     const paramsString = queryString.stringify(filters);
     readAll(paramsString)
@@ -101,8 +138,34 @@ const StoreProducts = ({}) => {
       });
   }, [filters]);
 
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
+
+  function handlePageChange(newPage) {
+    console.log("New Page: " + newPage);
+    setFilters({
+      ...filters,
+      page: newPage,
+    });
+  }
+
+  async function remove(id) {
+    deleteProduct(id).then(() => {
+      let newArr = [...display].filter((s) => s.id !== id);
+      setDisplay(newArr);
+    });
+  }
+
   return (
     <>
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <QueryClientProvider client={queryClient}>
         <main>
           {/* <aside>
@@ -129,11 +192,16 @@ const StoreProducts = ({}) => {
                     <Form.Item name="name" noStyle>
                       <Input
                         style={{ width: "300px" }}
-                        // placeholder={t("stores.productSearch")}
+                        placeholder={"Product Search"}
                         suffix={<SearchOutlined />}
+                        onChange={handleChange}
+                        name="key"
                       />
                     </Form.Item>
                     <Button onClick={showModal}>AddProduct</Button>
+                    <Link to="/product/displayDelete">
+                      <Button>Deleted</Button>
+                    </Link>
                   </StyledStoreProducts>
                   {/* <AntdList
                       grid={{
@@ -156,11 +224,11 @@ const StoreProducts = ({}) => {
                       renderItem={(item) => (
                         <ProductItem
                           item={item}
-                          updateStock={updateStock}
-                          editShow={showEdit}
+                          // updateStock={updateStock}
+                          // editShow={showEdit}
                         />
-                      )}
-                   />  */}
+                      )} */}
+                  {/* /> */}
                 </Col>
               </Row>
 
@@ -185,26 +253,24 @@ const StoreProducts = ({}) => {
                           <Dropdown
                             overlay={
                               <Menu mode="vertical">
-                                {updateStock && (
-                                  <Menu.Item
-                                    key="1"
-                                    disabled={item.stock <= 0}
-                                    style={{
-                                      fontWeight: 500,
-                                    }}
-                                    icon={
-                                      <CloseCircleOutlined
-                                        style={{
-                                          color: "red",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() => updateStock(0, item)}
-                                  >
-                                    {/* {t("stores.buttons.outOfStock")} */}
-                                    {"Delete"}
-                                  </Menu.Item>
-                                )}
+                                <Menu.Item
+                                  key="1"
+                                  disabled={item.stock <= 0}
+                                  style={{
+                                    fontWeight: 500,
+                                  }}
+                                  icon={
+                                    <CloseCircleOutlined
+                                      style={{
+                                        color: "red",
+                                      }}
+                                    />
+                                  }
+                                  onClick={() => confirm2(item.id)}
+                                  // onClick={() => remove(item.id)}
+                                >
+                                  Delete
+                                </Menu.Item>
                                 <Menu.Item
                                   key="2"
                                   style={{
@@ -217,11 +283,9 @@ const StoreProducts = ({}) => {
                                       }}
                                     />
                                   }
-                                  onClick={() => openDetailModal(item)}
                                   // onClick={() => editShow(item.id)}
                                 >
-                                  {/* {t("stores.buttons.edit")} */}
-                                  {"Edit Product"}
+                                  Edit
                                 </Menu.Item>
                               </Menu>
                             }
@@ -245,7 +309,7 @@ const StoreProducts = ({}) => {
                           <div style={{ textAlign: "center" }}>
                             <Avatar
                               size={128}
-                              src="https://lh3.googleusercontent.com/a/ACg8ocIBM8sUau1de7i4zCqfSWxOzR6NcEsoischk9lDBTeo=s64-mo"
+                              src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
                             />
                           </div>
                           <Divider />
@@ -282,12 +346,12 @@ const StoreProducts = ({}) => {
                               marginBottom: "8px",
                             }}
                             options={{
-                              currency: "USD",
+                              currency: "VND",
                               style: "currency",
                             }}
                             value={item.price}
                           />
-                          {updateStock && (
+                          {/* {updateStock && (
                             <div id="stock-number">
                               <InputNumber
                                 size="large"
@@ -298,7 +362,18 @@ const StoreProducts = ({}) => {
                                 style={{ width: "100%" }}
                               />
                             </div>
-                          )}
+                          )} */}
+                          <span>
+                            <b>Quantity:</b> {item.quantity}
+                            <Link to="/imei/getAll">
+                              <FaFileExcel
+                                style={{
+                                  float: "right",
+                                  color: "green",
+                                }}
+                              />
+                            </Link>
+                          </span>
                         </div>
                       </Card>
                     </Col>
@@ -338,16 +413,10 @@ const StoreProducts = ({}) => {
             >
               <CreateProduct />
             </Modal>
-            <Modal
-              // {...modalProps}
-              visible={isModalVisibleUpdate}
-              onCancel={handleCancel}
-              width={700}
-              footer={null}
-              bodyStyle={{ minHeight: "450px" }}
-            >
-              <UpdateProduct product={selectedProduct} />
-            </Modal>
+            <Pagination
+              pagination={pagination}
+              onPageChange={handlePageChange}
+            />
           </section>
         </main>
       </QueryClientProvider>

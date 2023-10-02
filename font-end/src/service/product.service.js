@@ -38,29 +38,29 @@ export const readAllScreen = () => {
 export const readAllSize = () => {
   return httpClient.get(`/size/get-all-size`);
 };
-// export const returnDeleteAll = (page) => {
-//   return httpClient.get(`/product/displayDelete?${page}`);
-// };
+export const returnDeleteAll = (page) => {
+  return httpClient.get(`/product/displayDelete?${page}`);
+};
 
 export const add = (product) => {
   return httpClient.post(`/product/save`, product);
 };
 
-export const update = (id, product) => {
-  return httpClient.put(`/product/update/${id}`, product);
-};
-
-export const detail = (id) => {
-  return httpClient.get(`/product/${id}`);
-};
-
-// export const deleteChip = (id) => {
-//   return httpClient.delete(`/chip/delete/${id}`);
+// export const update = (id, chip) => {
+//   return httpClient.put(`/chip/update/${id}`, chip);
 // };
 
-// export const returnChip = (id) => {
-//   return httpClient.put(`/chip/return/${id}`);
+// export const detail = (id) => {
+//   return httpClient.get(`/chip/${id}`);
 // };
+
+export const deleteProduct = (id) => {
+  return httpClient.delete(`/product/delete/${id}`);
+};
+
+export const returnProduct = (id) => {
+  return httpClient.put(`/product/return/${id}`);
+};
 
 // export const importChip = (form) => {
 //   return httpClient.post("/chip/import", form, config);

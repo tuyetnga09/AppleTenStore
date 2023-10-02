@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.controller.voucher_managment.model.response.VoucherResponse;
+import com.example.backend.entity.User;
 import com.example.backend.entity.Voucher;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,4 +38,5 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
     @Query(value = "SELECT v FROM Voucher v WHERE v.date_start > ?1 AND v.status <> ?2", nativeQuery = true)
     List<Voucher> checkToStartAfterAndStatus(@Param("dateTime") Date dateTime, Integer status);
 
+    Voucher findByCode(String code);
 }

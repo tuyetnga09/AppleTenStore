@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useState } from 'react';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import { FloatButton } from 'antd';
+import ChatModal from '../Chat/ChatPopUp';
+import {
+  Modal,
+} from "antd";
+export default function Footer(){
 
-export default function TrangChu(){
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+
+  const openChatModal = () => {
+    setIsChatModalOpen(true);
+  };
+
+  const closeChatModal = () => {
+    setIsChatModalOpen(false);
+  };
+
   return(
     <React.Fragment>
        <>
@@ -23,7 +39,26 @@ export default function TrangChu(){
           </section>
         </div>
 
-      <i className="fa fa-arrow-up" id="goto-top-page" onclick="gotoTop()" />
+      {/* <i className="fa fa-arrow-up" id="goto-top-page" onclick="gotoTop()" /> */}
+      <FloatButton.Group shape="circle" style={{ right: 24 + 70 }}>
+        <FloatButton
+          // href="https://ant.design/index-cn"
+          tooltip={<div>Thông báo</div>}
+          badge={{ count: 5, color: 'blue' }}
+          onClick={openChatModal} // Khi ấn vào biểu tượng chat, mở Modal
+        />
+      </FloatButton.Group>
+
+      <Modal
+        visible={isChatModalOpen}
+        onCancel={closeChatModal}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "500px" }}
+    >
+        <ChatModal/>
+    </Modal>
+      
 
       <div id="alert">
         <span id="closebtn">⊗</span>

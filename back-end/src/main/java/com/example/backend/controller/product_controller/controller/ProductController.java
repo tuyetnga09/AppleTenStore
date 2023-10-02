@@ -31,18 +31,11 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    @GetMapping("{id}")
-//    public ResponseEntity<Product> detail(@PathVariable("id") Integer id) {
-//        return new ResponseEntity<>(productService.getOne(id), HttpStatus.OK);
-//    }
-        public ResponseEntity<CreateProduct> detail(@PathVariable("id") Integer id) {
-        return new ResponseEntity<>(productService.getOneUpdateProduct(id), HttpStatus.OK);
-    }
-
     @GetMapping("display")
-    public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Product> listProduct = productService.getAll(pageable);
+//        Page<Product> listProduct = productService.getAll(pageable);
+        Page<Product> listProduct = productService.search(pageable, key);
         return listProduct;
     }
 
@@ -52,9 +45,10 @@ public class ProductController {
     }
 
     @GetMapping("displayDelete")
-    public Page<Product> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public Page<Product> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Product> listProduct = productService.getDelete(pageable);
+//        Page<Product> listProduct = productService.getDelete(pageable);
+        Page<Product> listProduct = productService.deleteProduct(pageable, key);
         return listProduct;
     }
 
@@ -71,13 +65,9 @@ public class ProductController {
     }
 
     @PutMapping("update/{id}")
-//    public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
-//        productService.update(product, id);
-//        return new ResponseEntity<>("Update ok", HttpStatus.OK);
-//    }
-    public ResponseEntity<String> update(@RequestBody CreateProduct createProduct, @PathVariable("id") Integer id) {
-
-        return new ResponseEntity<>(productService.update(createProduct, id), HttpStatus.OK);
+    public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
+        productService.update(product, id);
+        return new ResponseEntity<>("Update ok", HttpStatus.OK);
     }
 
     @GetMapping(value = "get-all-product")

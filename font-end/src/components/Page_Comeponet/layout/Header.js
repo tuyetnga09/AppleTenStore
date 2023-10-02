@@ -84,17 +84,17 @@ export default function Header(){
       </div>{" "}
       {/* End Search header */}
       <div className="tools-member">
-        <div className="member">
+        <div className="cart">
           <a onclick="checkTaiKhoan()">
             <i className="fa fa-user" />
             Tài khoản
           </a>
-          <div className="menuMember hide">
+          {/* <div className="menuMember hide">
             <a href="nguoidung.html">Trang người dùng</a>
             <a onclick="if(window.confirm('Xác nhận đăng xuất ?')) logOut();">
               Đăng xuất
             </a>
-          </div>
+          </div> */}
         </div>{" "}
         {/* End Member */}
         <div className="cart">

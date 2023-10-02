@@ -9,6 +9,7 @@ import ScanRam from "./components/product_component/Ram/DisplayScanQR";
 import ScreenDisplay from "./components/product_component/Screen/DisplayScreen";
 import ScreenCreateOrUpdate from "./components/product_component/Screen/DisplayScreenCreateOrUpdate";
 import ScreenDeleteScreen from "./components/product_component/Screen/DisplayReturnDeleteS";
+import ImportScreen from "./components/product_component/Screen/DisplayImportScreen";
 import DisplaySize from "./components/product_component/Size/Display";
 import FormAddOrUpdateSize from "./components/product_component/Size/FormAddOrUpdate";
 import ReturnDeleteSize from "./components/product_component/Size/ReturnDeleteSize";
@@ -53,6 +54,16 @@ import Cproduct from "./components/product_component/Product/crud/create";
 import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay";
 import blog from "./components/Page_Comeponet/Blogs";
 import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
+import ReturnDeleteProduct from "./components/product_component/Product/ReturnDeleteProduct";
+import SingleProduct from "./components/custumer_componet/product_detail";
+import Dashboard from "./components/Page_Comeponet/dashboard/index";
+import Checkout from "./components/Page_Comeponet/Checkout/index";
+import Login from "./components/Page_Comeponet/Login/login";
+import SignUp from "./components/Page_Comeponet/Login/signup";
+import ForgotPassword from "./components/Page_Comeponet/Login/forgotpassword";
+import OderDisplay from "./components/Page_Comeponet/OderManager/OderDisplay";
+import ChatManager from "./components/Page_Comeponet/Chat/ChatManger"
+import SkuDisplay from "./components/product_component/SKU/SkuDisplay";
 
 function App() {
   return (
@@ -62,6 +73,7 @@ function App() {
           <Route path="/blog" exact component={blog} />
           <Route path="/" exact component={Home} />
           <Route path="/chat" exact component={chat} />
+          <Route path="/product" exact component={product} />
           <Route path="/ram/display" exact component={RamDisplay} />
           <Route path="/ram/im" exact component={ImportRam} />
           <Route path="/ram/scan" exact component={ScanRam} />
@@ -124,6 +136,7 @@ function App() {
           <Route path="/battery/:id" exact component={FormAddOrUpdateBattery} />
 
           <Route path="/screen/display" exact component={ScreenDisplay} />
+          <Route path="/screen/im" exact component={ImportScreen} />
           <Route
             path="/screen/displayDelete"
             exact
@@ -160,13 +173,29 @@ function App() {
             exact
             component={ReturnDeleteImei}
           />
+
           <Route path="/image/:id" exact component={ImageFormAddOrUpdate} />
 
           <Route path="/product/display" exact component={product} />
 
           <Route path="/cproduct/display" exact component={Cproduct} />
+          <Route
+            path="/product/displayDelete"
+            exact
+            component={ReturnDeleteProduct}
+          />
+
+          <Route path="/dashboard" exact component={Dashboard} />
+          <Route path="/singleProduct" exact component={SingleProduct} />
           <Route path="/voucher" exact component={Voucher} />
           <Route path="/cart" exact component={Cart} />
+          <Route path="/checkout" exact component={Checkout} />
+          <Route path="/login" exact component={Login} />
+          <Route path="/signup" exact component={SignUp} />
+          <Route path="/forgotpassword" exact component={ForgotPassword} />
+          <Route path="/orders" exact component={OderDisplay} />
+          <Route path="/chats" exact component={ChatManager} />
+          <Route path="/sku/display" exact component={SkuDisplay} />
         </Switch>
       </Router>
     </div>

@@ -1,15 +1,18 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
+import com.example.backend.entity.SKU;
 import com.example.backend.repository.BatteryRepository;
 import com.example.backend.repository.CapacityRepository;
 import com.example.backend.repository.CategoryRepository;
 import com.example.backend.repository.ChipRepository;
 import com.example.backend.repository.ColorRepository;
 import com.example.backend.repository.ImageRepository;
+import com.example.backend.repository.ImeiRepository;
 import com.example.backend.repository.ManufactureRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.RamRepository;
+import com.example.backend.repository.SKURepositoty;
 import com.example.backend.repository.ScreenRepository;
 import com.example.backend.repository.SizeRepository;
 import com.example.backend.entity.Battery;
@@ -27,15 +30,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
-import java.util.Date;
-import java.util.Optional;
-
+import java.util.ArrayList;
 import java.util.List;
-
 
 @Service
 public class ProductServiceImpl {
+    @Autowired
+    private SKURepositoty skuRepositoty;
     @Autowired
     private ProductRepository productRepository;
 
@@ -62,6 +63,9 @@ public class ProductServiceImpl {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private ImeiRepository imeiRepository;
+
 
     public Page<Product> getAll(Pageable pageable) {
         return productRepository.getAllPage(pageable);
@@ -69,44 +73,105 @@ public class ProductServiceImpl {
 
     public Product insert(CreateProduct product) {
         Product sanPham = new Product();
+
+        // Lấy thông tin từ các repositories
         Chip chip = chipRepository.findByName(product.getChip());
         Battery battery = batteryRepository.findByName(product.getBattery());
-        Capacity capacity = capacityRepository.findByName(product.getCapacity());
-        Color color = colorRepository.findByName(product.getColor());
         Manufacture manufacture = manufacturerRepository.findByName(product.getManufacturer());
         Ram ram = ramRepository.findByName(product.getRam());
         Screen screen = screenRepository.findByName(product.getScreen());
         Size size = sizeRepository.findByName(product.getSize());
         Category category = categoryRepository.findByName(product.getCategory());
+
+        // Đặt các thuộc tính của sản phẩm
         sanPham.setName(product.getNameProduct());
         sanPham.setCode(product.getCodeProduct());
         sanPham.setDescription(product.getDescription());
         sanPham.setPrice(product.getPrice());
         sanPham.setIdchip(chip);
         sanPham.setIdbattery(battery);
-        sanPham.setIdcapacity(capacity);
         sanPham.setIdmanufacture(manufacture);
-        sanPham.setIdcolor(color);
         sanPham.setIdscreen(screen);
         sanPham.setIdsize(size);
         sanPham.setIdRam(ram);
         sanPham.setIdcategory(category);
         sanPham.setStatus(0);
-        sanPham.setQuantity(0);
-        sanPham.setDateCreate(new Date());
-        return productRepository.save(sanPham);
+
+        List<String> colorNames = product.getColor();
+        List<String> capacityNames = product.getCapacity();
+
+        List<Color> colors = new ArrayList<>();
+        if (colorNames != null) {
+            for (String colorName : colorNames) {
+                Color color = colorRepository.findByName(colorName);
+                if (color != null) {
+                    colors.add(color);
+                }
+            }
+        }
+        sanPham.setColors(colors);
+
+        List<Capacity> capacities = new ArrayList<>();
+        if (capacityNames != null) {
+            for (String capacityName : capacityNames) {
+                Capacity capacity = capacityRepository.findByName(capacityName);
+                if (capacity != null) {
+                    capacities.add(capacity);
+                }
+            }
+        }
+        sanPham.setCapacities(capacities);
+
+        // Tạo danh sách SKU và thêm chúng vào sản phẩm
+        List<SKU> skus = new ArrayList<>();
+
+        if (colorNames != null && capacityNames != null) {
+            for (String colorName : colorNames) {
+                for (String capacityName : capacityNames) {
+                    Color color = colorRepository.findByName(colorName);
+                    Capacity capacity = capacityRepository.findByName(capacityName);
+
+                    if (color != null && capacity != null) {
+                        SKU sku = new SKU();
+                        sku.setColor(color.getName());
+                        sku.setCapacity(capacity.getName());
+                        sku.setQuantity(0); // Khởi tạo số lượng là 0
+                        sku.setProduct(sanPham);
+                        skus.add(sku);
+                    }
+                }
+            }
+        }
+
+        sanPham.setSkus(skus);
+
+        int quantity = skus.size();
+        sanPham.setQuantity(quantity);
+
+        sanPham = productRepository.save(sanPham);
+
+        long totalRecords = productRepository.count();
+        System.out.println("Tổng số bản ghi lưu trữ là: " + totalRecords);
+
+        return sanPham;
+    }
+
+    private String generateImei() {
+        StringBuilder imei = new StringBuilder();
+        for (int i = 0; i < 15; i++) {
+            imei.append((int) (Math.random() * 10));
+        }
+        return imei.toString();
     }
 
     public void delete(Integer id) {
         productRepository.deleteById(id);
     }
-
     public void delete(Product product) {
         product.setStatus(1);
         productRepository.save(product);
 
     }
-
     public void returnDelete(Product product) {
         product.setStatus(0);
         productRepository.save(product);
@@ -116,44 +181,9 @@ public class ProductServiceImpl {
         return productRepository.getAllPageDelete(pageable);
     }
 
-    public String update(CreateProduct productUpdate, Integer id) {
-        //  productUpdate là đối tượng được FE truyền vào để cập nhật lại
-        if (productRepository.existsById(id)) {
-            Color color = colorRepository.findByName(productUpdate.getColor()); // tìm kiếm đối tượng theo name
-            Chip chip = chipRepository.findByName(productUpdate.getChip());
-            Battery battery = batteryRepository.findByName(productUpdate.getBattery());
-            Capacity capacity = capacityRepository.findByName(productUpdate.getCapacity());
-            Manufacture manufacture = manufacturerRepository.findByName(productUpdate.getManufacturer());
-            Ram ram = ramRepository.findByName(productUpdate.getRam());
-            Screen screen = screenRepository.findByName(productUpdate.getScreen());
-            Size size = sizeRepository.findByName(productUpdate.getSize());
-            Category category = categoryRepository.findByName(productUpdate.getCategory());
-            //Image image = imageRepository.findByLink(productUpdate.getImage());
-
-            Product product = productRepository.findById(id).get(); // lấy sản phẩm theo id từ CSDL
-
-            product.setName(productUpdate.getNameProduct());
-            product.setDescription(productUpdate.getDescription());
-            product.setPrice(productUpdate.getPrice());
-            product.setIdchip(chip);
-            product.setIdbattery(battery);
-            product.setIdcapacity(capacity);
-            product.setIdmanufacture(manufacture);
-            product.setIdcolor(color);
-            product.setIdscreen(screen);
-            product.setIdsize(size);
-            product.setIdRam(ram);
-            product.setIdcategory(category);
-            product.setDateUpdate(new Date());
-
-//            product.setIdimage(image);
-
-            productRepository.save(product);
-            return "Cập Nhật Thành Công.";
-        } else {
-            return "Cập Nhật Thất Bại! - Sản Phẩm Không Tồn Tại.";
-        }
+    public void update(Product updatedProduct, Integer id) {
     }
+
 
     public Product getOne(Integer id) {
         return this.productRepository.findById(id).orElse(null);
@@ -163,30 +193,12 @@ public class ProductServiceImpl {
         return this.productRepository.selectAll();
     }
 
-    public CreateProduct getOneUpdateProduct(Integer id) {
-        if (!productRepository.existsById(id)){
-            return null;
-        }
-
-        CreateProduct createProduct = new CreateProduct(); // tạo đối tượng để detail
-
-        Product product = productRepository.findById(id).get(); //lấy ra đối tượng theo id
-
-        //set lại giá trị vừa find ra cho đối tượng detail
-//        createProduct.setCodeProduct(product.getCode());
-        createProduct.setNameProduct(product.getName());
-        createProduct.setDescription(product.getDescription());
-        createProduct.setPrice(product.getPrice());
-        createProduct.setCategory(product.getIdcategory().getName());
-        createProduct.setCapacity(product.getIdcapacity().getName());
-        createProduct.setBattery(product.getIdbattery().getName());
-        createProduct.setChip(product.getIdchip().getName());
-        createProduct.setColor(product.getIdcolor().getName());
-        createProduct.setManufacturer(product.getIdmanufacture().getName());
-        createProduct.setRam(product.getIdRam().getName());
-        createProduct.setScreen(product.getIdscreen().getName());
-        createProduct.setSize(product.getIdsize().getName());
-
-        return createProduct;
+    public Page<Product> search(Pageable pageable, String key) {
+        return productRepository.search(pageable, key);
     }
+
+    public Page<Product> deleteProduct(Pageable pageable, String key) {
+        return productRepository.deleteProduct(pageable, key);
+    }
+
 }
