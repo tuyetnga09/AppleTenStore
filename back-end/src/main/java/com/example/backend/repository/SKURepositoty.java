@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SKURepositoty extends JpaRepository<SKU, Long> {
+    // viết hàm hiển thị ở đây
 }
