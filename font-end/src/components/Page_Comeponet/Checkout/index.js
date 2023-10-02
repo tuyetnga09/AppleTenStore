@@ -1,7 +1,7 @@
 import * as React from "react";
 import "../Checkout/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "font-awesome/css/font-awesome.min.css";
+// import "font-awesome/css/font-awesome.min.css";
 import { useEffect } from "react";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
