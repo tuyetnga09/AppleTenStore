@@ -32,7 +32,7 @@ public class SKU {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonBackReference // Đánh dấu đây là phần tham chiếu ngược của mối quan hệ
+    @JsonBackReference
     private Product product;
 
     private String capacity;
