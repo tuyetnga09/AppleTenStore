@@ -63,6 +63,7 @@ import SignUp from "./components/Page_Comeponet/Login/signup";
 import ForgotPassword from "./components/Page_Comeponet/Login/forgotpassword";
 import OderDisplay from "./components/Page_Comeponet/OderManager/OderDisplay";
 import ChatManager from "./components/Page_Comeponet/Chat/ChatManger"
+import SkuDisplay from "./components/product_component/SKU/SkuDisplay";
 
 function App() {
   return (
@@ -194,6 +195,7 @@ function App() {
           <Route path="/forgotpassword" exact component={ForgotPassword} />
           <Route path="/orders" exact component={OderDisplay} />
           <Route path="/chats" exact component={ChatManager} />
+          <Route path="/sku/display" exact component={SkuDisplay} />
         </Switch>
       </Router>
     </div>
