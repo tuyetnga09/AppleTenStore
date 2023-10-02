@@ -40,5 +40,6 @@ public class SKU {
     private Integer quantity;
 
     private BigDecimal price;
+    private String name;
 
 }
