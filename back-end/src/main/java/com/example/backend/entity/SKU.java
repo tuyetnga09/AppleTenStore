@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -36,5 +38,7 @@ public class SKU {
     private String capacity;
     private String color;
     private Integer quantity;
+
+    private BigDecimal price;
 
 }

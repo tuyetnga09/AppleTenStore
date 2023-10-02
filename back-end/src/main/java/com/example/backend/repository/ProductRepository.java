@@ -43,4 +43,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Product findByName(String nameProduct);
     Product findByCode(String code);
+
 }
