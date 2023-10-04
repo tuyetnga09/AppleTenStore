@@ -9,6 +9,5 @@ import java.util.List;
 
 public interface BillService {
     String createBillCustomerOnlineRequest( BillRequestOnline request) ;
-    List<BillResponse> getAll(BillRequest request);
     Bill detail(Integer id);
 }

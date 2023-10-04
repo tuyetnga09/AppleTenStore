@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +41,11 @@ public class ImageController {
     @DeleteMapping("/delete")
     public void delete(@RequestParam("id") Integer id) {
         this.service.delete(id);
+    }
+
+    @GetMapping(value = "/search/{id}")
+    public Image searchImage(@PathVariable int id){
+        return this.service.searchImageByIdProduct(id);
     }
 
 }

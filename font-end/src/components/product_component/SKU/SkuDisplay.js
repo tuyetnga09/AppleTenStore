@@ -29,7 +29,7 @@ const SkuDisplay = () => {
     readAll(paramsString)
       .then((response) => {
         console.log(response.data);
-        
+
         setSKu(response.data.content);
         setPagination(response.data);
       })
@@ -56,7 +56,7 @@ const SkuDisplay = () => {
 
   return (
     <div className="bodyform">
-       <section class="ftco-section">  
+       <section class="ftco-section">
       <div class="container">
         <div class="row justify-content-center">
                   <div class="col-md-3 text-center mb-3">
@@ -65,8 +65,8 @@ const SkuDisplay = () => {
                 </div>
                 <div class="row">
                   <div class="row">
-                    
-                  </div>        
+
+                  </div>
                   <div class="col-md-12">
 
                     <form class="d-flex" role="search">
@@ -76,7 +76,7 @@ const SkuDisplay = () => {
                             <FontAwesomeIcon icon={faTrash} />
                       </button>
                     </Link>
-                    
+
                     <input
                         className="form-control me-2"
                         type="search"
@@ -97,7 +97,7 @@ const SkuDisplay = () => {
                         <FaPlus className="add-icon" />
                       </button>
                     </Link>
-                      
+
                     <Link to="/ram/im">
                     <button type="button" class="btn btn-outline-success" style={{ marginRight: '15px'}}>
                       <FaFileExcel className="excel-icon" />
@@ -114,6 +114,7 @@ const SkuDisplay = () => {
                         <thead class="thead-dark">
                           <tr>
                             <th>ID</th>
+                              <th>NAME</th>
                             <th>CAPACITY</th>
                             <th>COLOR</th>
                             <th>QUANTITY</th>
@@ -124,7 +125,8 @@ const SkuDisplay = () => {
                         <tbody>
                           {sku.map((skuD) => (
                             <tr class="alert" role="alert" key={skuD.id}>
-                              <td>{skuD.id}</td>
+                                <td>{skuD.id}</td>
+                                <td>{skuD.product.name}</td>
                               <td>{skuD.capacity}</td>
                               <td>{skuD.color}</td>
                               <td>{skuD.quantity}</td>
@@ -135,7 +137,6 @@ const SkuDisplay = () => {
                                   class="close"
                                   data-dismiss="alert"
                                   aria-label="Close"
-                                //   onClick={() => handleDelete(ramD.id)}
                                 >
                                   <span aria-hidden="true">
                                     <FontAwesomeIcon icon={faTimes} />
@@ -163,11 +164,11 @@ const SkuDisplay = () => {
                 </div>
                 <Pagination pagination={pagination} onPageChange={handlePageChange} />
       </div>
-       
-     
+
+
     </section>
     </div>
-   
+
   );
 };
 export default SkuDisplay;

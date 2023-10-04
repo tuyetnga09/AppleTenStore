@@ -158,12 +158,12 @@ const Test = () => {
       // Sau khi thêm sản phẩm, lấy lại danh sách sản phẩm mới nhất
       const response = await readAllProductNew();
       setDisplaySku(response.data);
-      // console.log("Dữ liệu sản phẩm:", items);
-      // for (let i = 0; i < list.fileList.length; i++) {
-      //   form.append("file", list.fileList[i].originFileObj);
-      // }
-      // form.append("name", items.nameProduct);
-      // await addImage(form);
+      console.log("Dữ liệu sản phẩm:", items);
+      for (let i = 0; i < list.fileList.length; i++) {
+        form.append("file", list.fileList[i].originFileObj);
+      }
+      form.append("name", items.nameProduct);
+      await addImage(form);
     } catch (error) {
       console.log(error);
     }
@@ -713,7 +713,6 @@ const Test = () => {
                 </div>
               </div>
             </form>
-
             {excelData ? (
               <div className="table-wrap">
                 <table class="table">

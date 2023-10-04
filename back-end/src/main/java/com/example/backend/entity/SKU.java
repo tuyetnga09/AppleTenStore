@@ -1,6 +1,7 @@
 package com.example.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,7 +33,7 @@ public class SKU {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonBackReference
+    @JsonIgnore
     private Product product;
 
     private String capacity;
