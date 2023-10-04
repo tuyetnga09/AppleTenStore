@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.controller.product_controller.model.request.ImportImei;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
@@ -20,10 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashSet;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ImeiServiceImpl implements Iservice<Imei> {
@@ -36,6 +36,7 @@ public class ImeiServiceImpl implements Iservice<Imei> {
 
     @Autowired
     private SKURepositoty skuRepository;
+
     @Override
     public Page getAll(Pageable pageable) {
         return imeiRepository.findAll(pageable);
@@ -57,7 +58,7 @@ public class ImeiServiceImpl implements Iservice<Imei> {
 
     @Override
     public void delete(Integer id) {
-        if (imeiRepository.existsById(id)){
+        if (imeiRepository.existsById(id)) {
             imeiRepository.deleteById(id);
         }
     }
@@ -83,68 +84,74 @@ public class ImeiServiceImpl implements Iservice<Imei> {
     }
 
 
-    public void importImeiDataFromExcel(MultipartFile file) throws IOException {
+    public void importImeiDataFromExcel(MultipartFile file, Long idSku) throws IOException {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // Sheet cần đọc
-
+        List<String> listCodeImei = new ArrayList<>();
+        SKU sku = skuRepository.findById(idSku).get(); //lấy ra đối tượng SKU
+        Integer countImei = 0;
         for (Row row : sheet) {
             if (row.getRowNum() == 0) {
                 continue; // Bỏ qua hàng tiêu đề
             }
-
-            String codeImei = row.getCell(0).getStringCellValue();
-            int productId = (int) row.getCell(1).getNumericCellValue();
-            int skuId = (int) row.getCell(2).getNumericCellValue();
-
-            // Tìm sản phẩm và SKU tương ứng
-            Product product = productRepository.findById(productId).orElse(null);
-            SKU sku = skuRepository.findById((long) skuId).orElse(null);
-
-            if (product != null && sku != null) {
-                Imei imei = new Imei();
-                imei.setCodeImei(codeImei);
-                imei.setIdProduct(product);
-                imei.setIdSku(sku);
-                imeiRepository.save(imei);
+            if (row.getCell(1).getStringCellValue().trim().isEmpty()) {
+                continue;
             }
+            String codeImei = row.getCell(1).getStringCellValue();
+
+            Imei imei = new Imei();
+            imei.setCodeImei(codeImei);
+            imei.setIdSku(sku);
+            imei.setIdProduct(sku.getProduct());
+
+            imeiRepository.save(imei);
+            countImei++;
+            System.out.println("hihih ------: " + imei.getCodeImei() + "hihih ------: " + imei.getIdSku() +
+                    "hihih ------: "  + imei.getIdProduct().getId());
         }
+        System.out.println("--------------------- countImei: "+countImei);
+        sku.setQuantity(countImei);
+        skuRepository.save(sku);
 
         workbook.close();
     }
 
-    // đọc file imei ----------
-    public void readImportFile(MultipartFile file) throws IOException {
-        InputStream inputStream = file.getInputStream();
-        Workbook workbook = new XSSFWorkbook(inputStream);
-        Sheet sheet = workbook.getSheetAt(0); // Sheet cần đọc
-
-        for (Row row : sheet) {
-            if (row.getRowNum() == 0) {
-                continue; // Bỏ qua hàng tiêu đề
-            }
-//            if(){
+//    // đọc file imei ----------
+//    public List<ImportImei> readImportFile(MultipartFile file) throws IOException {
+//        InputStream inputStream = file.getInputStream();
+//        Workbook workbook = new XSSFWorkbook(inputStream);
+//        Sheet sheet = workbook.getSheetAt(0); // Sheet cần đọc
 //
+//        List<ImportImei> importImeiList = new ArrayList<>(); // danh sách imei hợp lệ
+//
+////        List<ImportImei> wrongList = new ArrayList<>(); // danh sách imei lỗi - tạm thời chưa làm
+//        for (Row row : sheet) {
+//            if (row.getRowNum() == 0) {
+//                continue; // Bỏ qua hàng tiêu đề
 //            }
-
-            String codeImei = row.getCell(0).getStringCellValue();
-            int productId = (int) row.getCell(1).getNumericCellValue();
-            int skuId = (int) row.getCell(2).getNumericCellValue();
-
-            // Tìm sản phẩm và SKU tương ứng
-            Product product = productRepository.findById(productId).orElse(null);
-            SKU sku = skuRepository.findById((long) skuId).orElse(null);
-
-            if (product != null && sku != null) {
-                Imei imei = new Imei();
-                imei.setCodeImei(codeImei);
-                imei.setIdProduct(product);
-                imei.setIdSku(sku);
-                imeiRepository.save(imei);
-            }
-        }
-
-        workbook.close();
-    }
+//            if (row.getCell(1).getStringCellValue().trim() == null || row.getCell(2).getStringCellValue().trim() == null
+//                    || row.getCell(3).getStringCellValue().trim() == null || row.getCell(4).getStringCellValue().trim() == null) {
+////                wrongList.add(row); //tạm thời chưa làm
+//                continue; // bỏ qua các hàng có imei rỗng
+//            }
+//
+//            String codeImei = row.getCell(1).getStringCellValue().trim();
+////            String color = row.getCell(3).getStringCellValue().trim();
+////            String capacity = row.getCell(4).getStringCellValue().trim();
+//            BigDecimal price = BigDecimal.valueOf(Long.parseLong(row.getCell(2).getStringCellValue().trim()));
+//
+//            ImportImei importImei = new ImportImei();
+//            importImei.setCodeImei(codeImei);
+////            importImei.setColor(color);
+////            importImei.setCapacity(capacity);
+//            importImei.setPrice(price);
+//
+//            importImeiList.add(importImei);
+//        }
+//        workbook.close();
+//        System.out.println("Danh sach imei: " + importImeiList.size() + "------------------------------------");
+//        return importImeiList;
+//    }
 
 }
