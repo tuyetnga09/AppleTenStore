@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BillServerController {
     @Autowired
     private BillService billService;
-    @GetMapping("/getAll")
-    public ResponseObj getAll(BillRequest request){
-        return  new ResponseObj(billService.getAll(request));
-    }
+
     @GetMapping("/detail/{id}")
     public ResponseObj detail(@PathVariable("id") Integer id){
         return  new ResponseObj(billService.detail(id));
