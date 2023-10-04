@@ -1,0 +1,41 @@
+[{
+  "code": "VOUCHER123",
+  "status": 1,
+  "name": "Voucher Test",
+  "valueMinimum": 50.0,
+  "valueMaximum": 100.0,
+  "quantity": 10,
+  "conditionsApply": 200.0,
+  "typeVoucher": 1,
+  "dateStart": "2023-09-25T00:00:00Z",
+  "dateEnd": "2023-10-25T00:00:00Z",
+  "valueVoucher": 20.0
+},
+{
+  "code": "VOUCHER456",
+  "status": 1,
+  "name": "Summer Sale",
+  "valueMinimum": 30.0,
+  "valueMaximum": 150.0,
+  "quantity": 20,
+  "conditionsApply": 100.0,
+  "typeVoucher": 2,
+  "dateStart": "2023-07-01T00:00:00Z",
+  "dateEnd": "2023-08-31T00:00:00Z",
+  "valueVoucher": 15.0
+},
+  {
+    "code": "DISCOUNT10",
+    "status": 1,
+    "name": "10% Discount",
+    "valueMinimum": 0.0,
+    "valueMaximum": 1000.0,
+    "quantity": 100,
+    "conditionsApply": 50.0,
+    "typeVoucher": 3,
+    "dateStart": "2023-10-01T00:00:00Z",
+    "dateEnd": "2023-12-31T00:00:00Z",
+    "valueVoucher": 10.0
+  }
+
+]

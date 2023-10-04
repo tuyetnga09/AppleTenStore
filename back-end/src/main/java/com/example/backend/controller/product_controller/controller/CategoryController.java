@@ -1,11 +1,13 @@
 package com.example.backend.controller.product_controller.controller;
-import com.example.backend.controller.product_controller.repository.CategoryRepository;
+
+import com.example.backend.repository.CategoryRepository;
 import com.example.backend.controller.product_controller.service.impl.CategoryServiceImpl;
 import com.example.backend.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @CrossOrigin("*")
@@ -33,6 +37,11 @@ public class CategoryController {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Category> listCategory = categoryService.getAll(pageable);
         return listCategory;
+    }
+
+    @GetMapping("get-all-category")
+    public ResponseEntity<List<Category>> getAllCategory() {
+        return new ResponseEntity<>(categoryService.getAll(), HttpStatus.OK);
     }
 
     @PostMapping("save")
@@ -66,7 +75,7 @@ public class CategoryController {
     }
 
     @PostMapping("import")
-    public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file) {
         try {
             categoryService.importDataFromExcel(file);
             return ResponseEntity.ok("Import Thành Công");
@@ -77,8 +86,8 @@ public class CategoryController {
     }
 
     @GetMapping("search")
-    public Page<Category> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
-                            @RequestParam(value = "search",required = false) String search) {
+    public Page<Category> search(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                 @RequestParam(value = "search", required = false) String search) {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Category> listCategory = categoryService.search(search, pageable);
         return listCategory;

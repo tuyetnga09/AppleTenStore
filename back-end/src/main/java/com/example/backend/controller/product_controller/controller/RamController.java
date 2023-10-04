@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.RamRepository;
+import com.example.backend.repository.RamRepository;
 import com.example.backend.controller.product_controller.service.impl.RamServiceImpl;
 import com.example.backend.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/ram/")
@@ -31,19 +33,24 @@ public class RamController {
     private RamRepository ramRepository;
 
     @GetMapping("{id}")
-    public ResponseEntity<Ram> detail(@PathVariable("id") Integer id){
+    public ResponseEntity<Ram> detail(@PathVariable("id") Integer id) {
         return new ResponseEntity<>(ramRepository.findById(id).orElse(null), HttpStatus.OK);
     }
 
+    @GetMapping("get-all-ram")
+    public ResponseEntity<List<Ram>> getAllRam() {
+        return new ResponseEntity<>(ramService.getAll(), HttpStatus.OK);
+    }
+
     @GetMapping("display")
-    public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public Page<Ram> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Ram> listRam = ramService.getAll(pageable);
         return listRam;
     }
 
     @GetMapping("displayDelete")
-    public Page<Ram> viewAllDelete(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public Page<Ram> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Ram> listRam = ramService.getDelete(pageable);
         return listRam;
@@ -55,25 +62,25 @@ public class RamController {
     }
 
     @PutMapping("update/{id}")
-    public void update(@RequestBody Ram ram,@PathVariable("id") Integer id) {
+    public void update(@RequestBody Ram ram, @PathVariable("id") Integer id) {
         ram.setId(id);
         ramService.insert(ram);
     }
 
     @PutMapping("delete/{id}")
-    public void delete(@PathVariable("id")  Integer id) {
+    public void delete(@PathVariable("id") Integer id) {
         Ram ram = ramRepository.findById(id).orElse(null);
         ramService.delete(ram);
     }
 
     @PutMapping("return/{id}")
-    public void returnDelete(@PathVariable("id")  Integer id) {
+    public void returnDelete(@PathVariable("id") Integer id) {
         Ram ram = ramRepository.findById(id).orElse(null);
         ramService.returnDelete(ram);
     }
 
     @PostMapping("import")
-    public ResponseEntity<String>  importRam(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file) {
         try {
             ramService.importDataFromExcel(file);
             return ResponseEntity.ok("Import Thành Công");
@@ -84,8 +91,8 @@ public class RamController {
     }
 
     @GetMapping("search")
-    public Page<Ram> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
-                            @RequestParam(value = "search",required = false) String search) {
+    public Page<Ram> search(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                            @RequestParam(value = "search", required = false) String search) {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Ram> listRam = ramService.search(search, pageable);
         return listRam;

@@ -1,12 +1,13 @@
 package com.example.backend.controller.product_controller.controller;
 
-import com.example.backend.controller.product_controller.repository.ManufactureRepository;
+import com.example.backend.repository.ManufactureRepository;
 import com.example.backend.controller.product_controller.service.impl.ManufactureServiceImpl;
 import com.example.backend.entity.Manufacture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/manufacture/")
@@ -29,9 +32,14 @@ public class ManufactureController {
     private ManufactureRepository manufactureRepository;
 
     @GetMapping("display")
-    public Page<Manufacture> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,2);
+    public Page<Manufacture> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page, 2);
         return manufactureService.getAll(pageable);
+    }
+
+    @GetMapping("get-all-manufacture")
+    public ResponseEntity<List<Manufacture>> getAllManufacture() {
+        return new ResponseEntity<>(manufactureService.getAll(), HttpStatus.OK);
     }
 
     @PostMapping("save")
@@ -40,10 +48,11 @@ public class ManufactureController {
     }
 
     @PutMapping("update/{id}")
-    public void update(@RequestBody Manufacture manufacture,@PathVariable("id") Integer id) {
+    public void update(@RequestBody Manufacture manufacture, @PathVariable("id") Integer id) {
         manufacture.setId(id);
         manufactureService.update(manufacture, id);
     }
+
     @PutMapping("delete/{id}")
     public void delete(@PathVariable("id") Integer id) {
         Manufacture manufacture = manufactureRepository.findById(id).orElse(null);
@@ -53,18 +62,18 @@ public class ManufactureController {
     @GetMapping("displayDelete")
     public Page<Manufacture> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Manufacture> listManufacture= manufactureService.getDelete(pageable);
+        Page<Manufacture> listManufacture = manufactureService.getDelete(pageable);
         return listManufacture;
     }
 
     @GetMapping("return/{id}")
     public void returnDelete(@PathVariable("id") Integer id) {
-        Manufacture manufacture  = manufactureRepository.findById(id).orElse(null);
+        Manufacture manufacture = manufactureRepository.findById(id).orElse(null);
         manufactureService.returnDelete(manufacture);
     }
 
     @PostMapping("import")
-    public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<String> importRam(@RequestParam("file") MultipartFile file) {
         try {
             manufactureService.importDataFromExcel(file);
             return ResponseEntity.ok("Import Thành Công");
@@ -75,8 +84,8 @@ public class ManufactureController {
     }
 
     @GetMapping("search")
-    public Page<Manufacture> search(@RequestParam(value = "page",defaultValue = "0") Integer page,
-                                 @RequestParam(value = "search",required = false) String search) {
+    public Page<Manufacture> search(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                    @RequestParam(value = "search", required = false) String search) {
         Pageable pageable = PageRequest.of(page, 5);
         Page<Manufacture> listManufacture = manufactureService.search(search, pageable);
         return listManufacture;

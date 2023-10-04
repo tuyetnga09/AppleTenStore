@@ -1,664 +1,1398 @@
 import React from "react";
+import Header from "../Page_Comeponet/layout/Header";
+import Footer from "../Page_Comeponet/layout/Footer";
 
 export default function TrangChu(){
   return(
     <React.Fragment>
-        {/* top-header*/}
-        <div className="top-header">
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-8 col-md-7 col-sm-6 hidden-xs">
-                  <p className="top-text">Flexible Delivery, Fast Delivery.</p>
-                </div>
-                <div className="col-lg-4 col-md-5 col-sm-6 col-xs-12">
-                  <ul>
-                    <li>+084 123 4567</li>
-                    <li>nhom21@laptrinhweb.com</li>
-                  </ul>
-                </div>
-              </div>
-              {/* /.top-header*/}
-            </div>
-          </div>
-          {/* header-section*/}
-          <div className="header-wrapper">
-            <div className="container">
-              <div className="row">
-                {/* logo */}
-                <div className="col-lg-3 col-md-3 col-sm-3 col-xs-8">
-                  <div className="logo">
-                    <a href="index.html"><img src="images/logo.png" alt="" /> </a>
-                  </div>
-                </div>
-                {/* /.logo */}
-                {/* search */}
-                <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                  <div className="search-bg">
-                    <input type="text" className="form-control" placeholder="Search Here" />
-                    <button type="Submit"><i className="fa fa-search" /></button>
-                  </div>
-                </div>
-                {/* /.search */}
-                {/* account */}
-                <div className="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                  <div className="account-section">
-                    <ul>
-                      <li><a href="account.html" className="title hidden-xs">Tài khoản</a></li>
-                      <li className="hidden-xs">|</li>
-                      <li><a href="login-form.html" className="title hidden-xs">Đăng nhập</a></li>
-                      <li><a href="favorite-list.html"><i className="fa fa-heart" /></a></li>
-                      <li><a href="cart.html" className="title"><i className="fa fa-shopping-cart" />   <sup className="cart-quantity">1</sup></a>
-                      </li>
-                    </ul>
-                  </div>
-                  {/* /.account */}
-                </div>
-                {/* search */}
-              </div>
-            </div>
-            {/* navigation */}
-            <div className="navigation">
-              <div className="container">
-                <div className="row">
-                  <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    {/* navigations*/}
-                    <div id="navigation">
-                      <ul>
-                        <li className="active"><a href="index.html">Trang chủ</a></li>
-                        <li><a href="product-list.html">Điện thoại</a>
-                        </li>
-                        <li><a href="about.html">Thông tin</a>
-                        </li>
-                        <li><a href="blog-default.html">Bài viết</a> </li>
-                        <li><a href="contact-us.html">Liên hệ, hỗ trợ</a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  {/* /.navigations*/}
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* /. header-section*/}
-          {/* slider */}
-          <div className="slider">
-            <div className="owl-carousel owl-one owl-theme">
-              <div className="item">
-                <div className="slider-img">
-                  <img src="images/slider_1.jpg" alt="" /></div>
-                <div className="container">
-                  <div className="row">
-                    <div className="col-lg-5 col-md-8 col-sm-6 col-xs-12">
-                      <div className="slider-captions">
-                        <div className="brand-img">
-                          <img src="images/mi_logo.png" alt="" />
-                        </div>
-                        <h1 className="slider-title">Red Mi <span>Y1</span></h1>
-                        <p className="hidden-xs">LED Selfie-light | Fingerprint sensor | Dedicated microSD card slot Snapdragon 435 octa-core processor </p>
-                        <p className="slider-price">$138.99 </p>
-                        <a href="cart.html" className="btn btn-primary btn-lg hidden-xs">Buy Now</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="item">
-                <div className="slider-img"><img src="images/slider_2.jpg" alt="" /></div>
-                <div className="container">
-                  <div className="row">
-                    <div className="col-lg-5 col-md-8 col-sm-6 col-xs-12">
-                      <div className="slider-captions">
-                        <div className="brand-img">
-                          <img src="images/google_logo.png" alt="" />
-                        </div>
-                        <h1 className="slider-title">Google Pixel 2</h1>
-                        <p className="hidden-xs">The latest Qualcomm Snapdragon 835 processor | Water-resistant metal unibody | Up to 7 hours of battery.</p>
-                        <p className="slider-price">$ 938.10</p>
-                        <a href="cart.html" className="btn btn-primary btn-lg hidden-xs">Buy Now</a>                          </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="item">
-                <div className="slider-img"><img src="images/slider_3.jpg" alt="" /></div>
-                <div className="container">
-                  <div className="row">
-                    <div className="col-lg-5 col-md-8 col-sm-6 col-xs-12">
-                      <div className="slider-captions">
-                        <div className="brand-img">
-                          <img src="images/apple_logo.png" alt="" />
-                        </div>
-                        <h1 className="slider-title">iphone 8 plus</h1>
-                        <p className="hidden-xs">5.5 inch Retina HD Display | 12MP wide-angle cameras
-                          <br /> | 64 GB &amp; 256 GB ROM Memory</p>
-                        <p className="slider-price">$759.64</p>
-                        <a href="cart.html" className="btn btn-primary btn-lg hidden-xs">Buy Now</a>                          </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* /.slider */}
-          {/* mobile showcase */}
-          <div className="space-medium">
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                  <div className="showcase-block">
-                    <div className="display-logo ">
-                      <a href="#"> <img src="images/nexus.png" alt="" /></a>
-                    </div>
-                    <div className="showcase-img">
-                      <a href="#"> <img src="images/display_img_1.png" alt="" /></a>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                  <div className="showcase-block active">
-                    <div className="display-logo alignleft">
-                      <a href="#">  <img src="images/iphone.png" alt="" />
+       <>
+       <Header/>
+
+      <section>
+      {/* Start Banner */}
+      <div className="banner">
+            <div className="owl-carousel owl-theme owl-loaded owl-drag">
+              <div className="owl-stage-outer">
+                <div
+                  className="owl-stage"
+                  style={{
+                    transition: "all 0.45s ease 0s",
+                    width: 17400,
+                    transform: "translate3d(-4132px, 0px, 0px)"
+                  }}
+                >
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner5.png">
+                        <img src="img/banners/banner5.png" />
                       </a>
                     </div>
-                    <div className="showcase-img">
-                      <a href="#"> <img src="images/display_img_2.png" alt="" style={{paddingLeft: '80px'}} /></a>
-                    </div>
                   </div>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                  <div className="showcase-block ">
-                    <div className="display-logo ">
-                      <a href="#"> <img src="images/samsung.png" alt="" />
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner6.png">
+                        <img src="img/banners/banner6.png" />
                       </a>
                     </div>
-                    <div className="showcase-img">
-                      <a href="#"><img src="images/display_img_3.png" alt="" />                  </a>
+                  </div>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner7.png">
+                        <img src="img/banners/banner7.png" />
+                      </a>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="showcase-block">
-                    <div className="display-logo ">
-                      <a href="#"><img src="images/htc.png" alt="" /></a>
-                    </div>
-                    <div className="showcase-img">
-                      <a href="#"><img src="images/display_img_4.png" alt="" /></a>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner8.png">
+                        <img src="img/banners/banner8.png" />
+                      </a>
                     </div>
                   </div>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="showcase-block">
-                    <div className="display-logo">
-                      <a href="#">  <img src="images/alcatel.png" alt="" /></a>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner9.png">
+                        <img src="img/banners/banner9.png" />
+                      </a>
                     </div>
-                    <div className="showcase-img">
-                      <a href="#"> <img src="images/display_img_5.png" alt="" />
+                  </div>
+                  <div
+                    className="owl-item active center"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner0.gif">
+                        <img src="img/banners/banner0.gif" />
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    className="owl-item active"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner1.png">
+                        <img src="img/banners/banner1.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner2.png">
+                        <img src="img/banners/banner2.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner3.png">
+                        <img src="img/banners/banner3.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner4.png">
+                        <img src="img/banners/banner4.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner5.png">
+                        <img src="img/banners/banner5.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner6.png">
+                        <img src="img/banners/banner6.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner7.png">
+                        <img src="img/banners/banner7.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner8.png">
+                        <img src="img/banners/banner8.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div className="owl-item" style={{ width: 770, marginRight: 100 }}>
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner9.png">
+                        <img src="img/banners/banner9.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner0.gif">
+                        <img src="img/banners/banner0.gif" />
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner1.png">
+                        <img src="img/banners/banner1.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner2.png">
+                        <img src="img/banners/banner2.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner3.png">
+                        <img src="img/banners/banner3.png" />
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    className="owl-item cloned"
+                    style={{ width: 770, marginRight: 100 }}
+                  >
+                    <div className="item">
+                      <a target="_blank" href="img/banners/banner4.png">
+                        <img src="img/banners/banner4.png" />
                       </a>
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="showcase-block">
-                    <div className="display-logo ">
-                      <a href="#"><img src="images/pixel.png" alt="" /></a>
-                    </div>
-                    <div className="showcase-img">
-                      <a href="#">    <img src="images/display_img_6.png" alt="" /></a>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="showcase-block">
-                    <div className="display-logo ">
-                      <a href="#">  <img src="images/vivo.png" alt="" /></a>
-                    </div>
-                    <div className="showcase-img">
-                      <a href="#"><img src="images/display_img_7.png" alt="" /></a>
-                    </div>
-                  </div>
-                </div>
               </div>
+              <div className="owl-nav disabled">
+                <button type="button" role="presentation" className="owl-prev">
+                  <span aria-label="Previous">‹</span>
+                </button>
+                <button type="button" role="presentation" className="owl-next">
+                  <span aria-label="Next">›</span>
+                </button>
+              </div>
+              <div className="owl-dots">
+                <button role="button" className="owl-dot active">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+                <button role="button" className="owl-dot">
+                  <span />
+                </button>
+              </div>
+            </div>
+      </div>
+          {" "}
+        {/* End Banner */}
+        <img src="img/banners/blackFriday.gif" alt="" style={{ width: "100%" }} />
+        <br />
+        <div class="companyMenu group flexContain">
+          <a href="index.html?company=Apple"><img src="img/company/Apple.jpg"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Samsung.jpg"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Oppo.jpg"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Xiaomi.png"/></a>
+          <a href="index.html?company=Samsung"><img src="img/company/Huawei.jpg"/></a>
+         </div>
+        <div className="flexContain">
+          <div className="pricesRangeFilter dropdown">
+            <button className="dropbtn">Giá tiền</button>
+            <div class="dropdown-content">
+              <a href="index.html?price=0-2000000">Dưới 2 triệu</a>
+              <a href="index.html?price=2000000-4000000">Từ 2 - 4 triệu</a>
+              <a href="index.html?price=4000000-7000000">Từ 4 - 7 triệu</a>
+              <a href="index.html?price=7000000-13000000">Từ 7 - 13 triệu</a>
+              <a href="index.html?price=13000000-0">Trên 13 triệu</a>
             </div>
           </div>
-          {/* /.mobile showcase */}
-          {/* latest products */}
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div className="box">
-                  <div className="box-head">
-                    <h3 className="head-title">Sản phẩm mới nhất</h3>
-                  </div>
-                  <div className="box-body">
-                    <div className="row">
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_1.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Google Pixel <strong>(128GB, Black)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1100</a>
-                              <a href="#" className="discounted-price">$1400</a>
-                              <span className="offer-price">20%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_2.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">HTC U Ultra <strong>(64GB, Blue)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1200</a>
-                              <a href="#" className="discounted-price">$1700</a>
-                              <span className="offer-price">10%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_3.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Samsung Galaxy Note 8</a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1500</a>
-                              <a href="#" className="discounted-price">$2000</a>
-                              <span className="offer-price">40%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_4.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Vivo V5 Plus <strong>(Matte Black)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1500</a>
-                              <a href="#" className="discounted-price">$2000</a>
-                              <span className="offer-price">15%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like">
-                                <i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="promosFilter dropdown">
+            <button className="dropbtn">Khuyến mãi</button>
+            <div class="dropdown-content">
+              <a href="index.html?promo=giamgia">Giảm giá</a>
+              <a href="index.html?promo=tragop">Trả góp</a>
+              <a href="index.html?promo=moiramat">Mới ra mắt</a>
+              <a href="index.html?promo=giareonline">Giá rẻ online</a>
             </div>
           </div>
-          {/* /.latest products */}
-          {/* seller products */}
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div className="box">
-                  <div className="box-head">
-                    <h3 className="head-title">Bán chạy nhất</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="product-carousel">
-              <div className="box-body">
-                <div className="row">
-                  <div className="owl-carousel owl-two owl-theme">
-                    {/* product */}
-                    <div className="item">
-                      <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_5.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Apple iPhone 6 <strong>(32 GB, Gold)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1700</a>
-                              <a href="#" className="discounted-price">$2000</a>
-                              <span className="offer-price">20%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                    </div>
-                    {/* product */}
-                    <div className="item">
-                      <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_6.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Apple iPhone 7 <strong>(256 GB, Black)</strong> </a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1400</a>
-                              <a href="#" className="discounted-price"><strike>$1800</strike></a>
-                              <span className="offer-price">20%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {/* /.product */}
-                    {/* product */}
-                    <div className="item">
-                      <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_7.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Apple iPhone 6S <strong>(32GB, Gold)</strong> </a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1300</a>
-                              <a href="#" className="discounted-price"><strike>$2000</strike></a>
-                              <span className="offer-price">20%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {/* /.product */}
-                    {/* product */}
-                    <div className="item">
-                      <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_8.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Apple iPhone X <strong>(64 GB, Grey)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1200</a>
-                              <a href="#" className="discounted-price"><strike>$2000</strike></a>
-                              <span className="offer-price">20%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="starFilter dropdown">
+            <button className="dropbtn">Số lượng sao</button>
+            <div class="dropdown-content">
+              <a href="index.html?star=3">Trên 2 sao</a>
+              <a href="index.html?star=4">Trên 3 sao</a>
+              <a href="index.html?star=5">Trên 4 sao</a>
             </div>
           </div>
-          {/* /.seller products */}
-          {/* featured products */}
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div className="box">
-                  <div className="box-head">
-                    <h3 className="head-title">Đang khuyến mãi</h3>
-                  </div>
-                  <div className="box-body">
-                    <div className="row">
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_3.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Samsung Galaxy Note 8</a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1500</a>
-                              <a href="#" className="discounted-price"><strike>$2000</strike></a>
-                              <span className="offer-price">40%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_4.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Vivo V5 Plus <strong>(Matte Black)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1500</a>
-                              <a href="#" className="discounted-price"><strike>$2000</strike></a>
-                              <span className="offer-price">15%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like">
-                                <i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_1.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">Google Pixel <strong>(128GB, Black)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1100</a>
-                              <a href="#" className="discounted-price"><strike>$1400</strike></a>
-                              <span className="offer-price">20%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                      {/* product */}
-                      <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <div className="product-block">
-                          <div className="product-img"><img src="images/product_img_2.png" alt="" /></div>
-                          <div className="product-content">
-                            <h5><a href="#" className="product-title">HTC U Ultra <strong>(64GB, Blue)</strong></a></h5>
-                            <div className="product-meta"><a href="#" className="product-price">$1200</a>
-                              <a href="#" className="discounted-price"><strike>$1700</strike></a>
-                              <span className="offer-price">10%off</span>
-                            </div>
-                            <div className="shopping-btn">
-                              <a href="#" className="product-btn btn-like"><i className="fa fa-heart" /></a>
-                              <a href="#" className="product-btn btn-cart"><i className="fa fa-shopping-cart" /></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* /.product */}
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="sortFilter dropdown">
+            <button className="dropbtn">Sắp xếp</button>
+            <div class="dropdown-content">
+              <a href="index.html?sort=price-ascending">Giá tăng dần</a>
+              <a href="index.html?sort=price-decrease">Giá giảm dần</a>
+              <a href="index.html?sort=star-ascending">Sao tăng dần</a>
+              <a href="index.html?sort=star-decrease">Sao giảm dần</a>
+              <a href="index.html?sort=rateCount-ascending">Đánh giá tăng dần</a>
+              <a href="index.html?sort=rateCount-decrease">Đánh giá giảm dần</a>
+              <a href="index.html?sort=name-ascending">Tên A-Z</a>
+              <a href="index.html?sort=name-decrease">Tên Z-A</a>
             </div>
           </div>
-          {/* /.featured products */}
-          {/* cta */}
-          {/* /.cta */}
-          {/* features */}
-          <div className="bg-default pdt40 pdb40">
-            <div className="container">
-              <div className="row">
-                {/* features */}
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="feature-left">
-                    <div className="feature-outline-icon">
-                      <i className="fa fa-credit-card" />
-                    </div>
-                    <div className="feature-content">
-                      <h3 className="text-white">Thanh toán an toàn</h3>
-                      <p>Mang đến dịch vụ trải nghiệm thoải mái nhất, an toàn, tiện dụng, Mobistore! </p>
-                    </div>
+        </div>{" "}
+        {/* End khung chọn bộ lọc */}
+        <div className="choosedFilter flexContain">
+          <a id="deleteAllFilter" style={{ display: "none" }}>
+            <h3>Xóa bộ lọc</h3>
+          </a>
+        </div>{" "}
+        {/* Những bộ lọc đã chọn */}
+        <hr />
+        {/* Mặc định mới vào trang sẽ ẩn đi, nế có filter thì mới hiện lên */}
+        <div className="contain-products" style={{ display: "none" }}>
+          <div className="filterName">
+            <input
+              type="text"
+              placeholder="Lọc trong trang theo tên..."
+              onkeyup="filterProductsName(this)"
+            />
+          </div>{" "}
+          {/* End FilterName */}
+          <ul id="products" className="homeproduct group flexContain">
+            <div id="khongCoSanPham">
+              <i className="fa fa-times-circle" />
+              Không có sản phẩm nào
+            </div>{" "}
+            {/* End Khong co san pham */}
+          </ul>
+          {/* End products */}
+          <div className="pagination" />
+        </div>
+
+        {/* Div hiển thị khung san pham hot, khuyến mãi, mới ra mắt ... */}
+        <div className="contain-khungSanPham">
+          <div className="khungSanPham" style={{ borderColor: "#ff9c00" }}>
+            <h3
+              className="tenKhung"
+              style={{
+                backgroundImage:
+                  "linear-gradient(120deg, #ff9c00 0%, #ec1f1f 50%, #ff9c00 100%)"
+              }}
+            >
+              * NỔI BẬT NHẤT *
+            </h3>
+            <div className="listSpTrongKhung flexContain">
+              <li className="sanPham">
+                <a href="/singleProduct">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/22701/dien-thoai-di-dong-Nokia-1280-dienmay.com-l.jpg"
+                    alt=""
+                  />
+                  <h3>Nokia black future</h3>
+                  <div className="price">
+                    <strong>999.999.000₫</strong>
                   </div>
-                </div>
-                {/* features */}
-                {/* features */}
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="feature-left">
-                    <div className="feature-outline-icon">
-                      <i className="fa fa-users" />
-                    </div>
-                    <div className="feature-content">
-                      <h3 className="text-white">Phản hồi 24/7</h3>
-                      <p>Trợ giúp liên lạc, tham khảo , tra cứu 24/7!</p>
-                    </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>9999 đánh giá</span>
                   </div>
-                </div>
-                {/* features */}
-                {/* features */}
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="feature-left feature-circle">
-                    <div className="feature-outline-icon">
-                      <i className="fa fa-rotate-left " />
-                    </div>
-                    <div className="feature-content">
-                      <h3 className="text-white">Đổi trả miễn phí</h3>
-                      <p>Miễn phí bảo hành đổi trả lên đến 365 ngày!</p>
-                    </div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 1.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Nok1', 'Nokia black future'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
                   </div>
-                </div>
-                {/* features */}
-                {/* features */}
-                <div className="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                  <div className="feature-left">
-                    <div className="feature-outline-icon">
-                      <i className="fa fa-dollar" />
-                    </div>
-                    <div className="feature-content">
-                      <h3 className="text-white">Giá tốt nhất</h3>
-                      <p>Giá thành tốt nhất trong thị trường. Cập nhật sản phẩm 24/7!</p>
-                    </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Huawei-Nova-2i">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/157031/samsung-galaxy-a6-2018-2-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Huawei Nova 2i</h3>
+                  <div className="price">
+                    <strong>3.990.000₫</strong>
+                    <span>4.490.000₫</span>
                   </div>
-                </div>
-                {/* features */}
-              </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>804 đánh giá</span>
+                  </div>
+                  <label className="giareonline">Giá rẻ online</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Hua3', 'Huawei Nova 2i'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Xiaomi-Redmi-Note-5">
+                  <img src="img/products/xiaomi-redmi-note-5-pro-600x600.jpg" alt="" />
+                  <h3>Xiaomi Redmi Note 5</h3>
+                  <div className="price">
+                    <strong>5.690.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>372 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Xia2', 'Xiaomi Redmi Note 5'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Xiaomi-Redmi-5-Plus-4GB">
+                  <img src="img/products/xiaomi-redmi-5-plus-600x600.jpg" alt="" />
+                  <h3>Xiaomi Redmi 5 Plus 4GB</h3>
+                  <div className="price">
+                    <strong>4.790.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>347 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Xia3', 'Xiaomi Redmi 5 Plus 4GB'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Itel-it2123">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>Itel it2123</h3>
+                  <div className="price">
+                    <strong>160.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>302 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>{" "}
             </div>
-          </div>
-          {/* /.features */}
-          {/* footer */}
-          <div className="footer">
-            <div className="container">
-              <div className="row">
-                {/* footer-company-links */}
-                {/* footer-contact links */}
-                <div className=" col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                  <div className="footer-widget">
-                    <h3 className="footer-title">Thông tin hỗ trợ</h3>
-                    <div className="contact-info">
-                      <span className="contact-icon"><i className="fa fa-map-marker" /></span>
-                      <span className="contact-text">Phường Linh Trung, Thủ Đức<br />Thành phố Hồ Chí Minh, Việt Nam - 1955</span>
-                    </div>
-                    <div className="contact-info">
-                      <span className="contact-icon"><i className="fa fa-phone" /></span>
-                      <span className="contact-text">+084-123-4567 / 89</span>
-                    </div>
-                    <div className="contact-info">
-                      <span className="contact-icon"><i className="fa fa-envelope" /></span>
-                      <span className="contact-text">nhom21@ltweb.com</span>
-                    </div>
+            <a
+              className="xemTatCa"
+              href="index.html?star=3&sort=rateCount-decrease"
+              style={{
+                borderLeft: "2px solid #ff9c00",
+                borderRight: "2px solid #ff9c00"
+              }}
+            >
+              Xem tất cả 39 sản phẩm
+            </a>
+          </div>{" "}
+          <hr />
+          <div className="khungSanPham" style={{ borderColor: "#42bcf4" }}>
+            <h3
+              className="tenKhung"
+              style={{
+                backgroundImage:
+                  "linear-gradient(120deg, #42bcf4 0%, #004c70 50%, #42bcf4 100%)"
+              }}
+            >
+              * SẢN PHẨM MỚI *
+            </h3>
+            <div className="listSpTrongKhung flexContain">
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Xiaomi-Redmi-Note-5">
+                  <img src="img/products/xiaomi-redmi-note-5-pro-600x600.jpg" alt="" />
+                  <h3>Xiaomi Redmi Note 5</h3>
+                  <div className="price">
+                    <strong>5.690.000₫</strong>
                   </div>
-                </div>
-                {/* /.footer-useful-links */}
-                <div className=" col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                  <div className="footer-widget">
-                    <h3 className="footer-title">Tiện ích</h3>
-                    <ul className="arrow">
-                      <li><a href="index.html">Home </a></li>
-                      <li><a href="product-list.html">Mobie</a></li>
-                      <li><a href="about.html">About</a></li>
-                      <li><a href="blog-default.html">Blog</a></li>
-                      <li><a href="contact-us.html">Contact</a></li>
-                    </ul>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>372 đánh giá</span>
                   </div>
-                </div>
-                {/* /.footer-useful-links */}
-                {/* footer-policy-list-links */}
-                <div className=" col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                  <div className="footer-widget">
-                    <h3 className="footer-title">Chính sách</h3>
-                    <ul className="arrow">
-                      <li><a href="#">Thanh toán</a></li>
-                      <li><a href="#">Hủy, trả hàng</a></li>
-                      <li><a href="#">Giao hàng và vận chuyển</a></li>
-                      <li><a href="#">Chính sách bảo mật</a></li>
-                    </ul>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Xia2', 'Xiaomi Redmi Note 5'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
                   </div>
-                </div>
-                {/* /.footer-policy-list-links */}
-                {/* footer-social links */}
-                <div className=" col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                  <div className="footer-widget">
-                    <h3 className="footer-title">Liên lạc với chúng tôi</h3>
-                    <div className="ft-social">
-                      <span><a href="#" className="btn-social btn-facebook"><i className="fa fa-facebook" /></a></span>
-                      <span><a href="#" className="btn-social btn-twitter"><i className="fa fa-twitter" /></a></span>
-                      <span><a href="#" className="btn-social btn-googleplus"><i className="fa fa-google-plus" /></a></span>
-                      <span><a href="#" className=" btn-social btn-linkedin"><i className="fa fa-linkedin" /></a></span>
-                      <span><a href="#" className=" btn-social btn-pinterest"><i className="fa fa-pinterest-p" /></a></span>
-                      <span><a href="#" className=" btn-social btn-instagram"><i className="fa fa-instagram" /></a></span>
-                    </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Mobiistar-Zumbo-S2-Dual">
+                  <img src="img/products/mobiistar-zumbo-s2-dual-300x300.jpg" alt="" />
+                  <h3>Mobiistar Zumbo S2 Dual</h3>
+                  <div className="price">
+                    <strong>2.850.000₫</strong>
                   </div>
-                </div>
-                {/* /.footer-social links */}
-              </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>104 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Mob1', 'Mobiistar Zumbo S2 Dual'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Mobiistar-B310">
+                  <img src="img/products/mobiistar-b310-orange-600x600.jpg" alt="" />
+                  <h3>Mobiistar B310</h3>
+                  <div className="price">
+                    <strong>260.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>87 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Mob3', 'Mobiistar B310'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Itel-it2161">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/193989/itel-it2161-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Itel it2161</h3>
+                  <div className="price">
+                    <strong>170.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>33 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite3', 'Itel it2161'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Realme-2-Pro-8GB/128GB">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/192002/oppo-realme-2-pro-black-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Realme 2 Pro 8GB/128GB</h3>
+                  <div className="price">
+                    <strong>6.990.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>16 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Rea0', 'Realme 2 Pro 8GB/128GB'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>{" "}
             </div>
-            {/* tiny-footer */}
-            <div className="tiny-footer">
-              <div className="container">
-                <div className="row">
-                  <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div className="payment-method alignleft">
-                      <ul>
-                        <li><a href="#"><i className="fa fa-cc-paypal fa-2x" /></a></li>
-                        <li><a href="#"><i className="fa fa-cc-mastercard  fa-2x" /></a></li>
-                        <li><a href="#"><i className="fa fa-cc-visa fa-2x" /></a></li>
-                        <li><a href="#"><i className="fa fa-cc-discover fa-2x" /></a></li>
-                      </ul>
-                    </div>
-                    <p className="alignright">Copyright © All Rights Reserved 2020 Template Design by
-                      <a href="https://easetemplate.com/" target="_blank" className="copyrightlink">Nhom 21</a></p>
+            <a
+              className="xemTatCa"
+              href="index.html?promo=moiramat&sort=rateCount-decrease"
+              style={{
+                borderLeft: "2px solid #42bcf4",
+                borderRight: "2px solid #42bcf4"
+              }}
+            >
+              Xem tất cả 14 sản phẩm
+            </a>
+          </div>{" "}
+          <hr />
+          <div className="khungSanPham" style={{ borderColor: "#ff9c00" }}>
+            <h3
+              className="tenKhung"
+              style={{
+                backgroundImage:
+                  "linear-gradient(120deg, #ff9c00 0%, #ec1f1f 50%, #ff9c00 100%)"
+              }}
+            >
+              * TRẢ GÓP 0% *
+            </h3>
+            <div className="listSpTrongKhung flexContain">
+              <li className="sanPham">
+                <a href="chitietsanpham.html?iPhone-8-Plus-64GB">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/114110/iphone-8-plus-hh-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>iPhone 8 Plus 64GB</h3>
+                  <div className="price">
+                    <strong>20.990.000₫</strong>
                   </div>
-                </div>
-              </div>
-              {/* /. tiny-footer */}
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>230 đánh giá</span>
+                  </div>
+                  <label className="tragop">Trả góp 0%</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('App4', 'iPhone 8 Plus 64GB'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Vivo-Y71">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/158585/vivo-y71-docquyen-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Vivo Y71</h3>
+                  <div className="price">
+                    <strong>3.290.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>60 đánh giá</span>
+                  </div>
+                  <label className="tragop">Trả góp 0%</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Viv3', 'Vivo Y71'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?SamSung-Galaxy-J4+">
+                  <img
+                    src="img/products/samsung-galaxy-j4-plus-pink-400x400.jpg"
+                    alt=""
+                  />
+                  <h3>SamSung Galaxy J4+</h3>
+                  <div className="price">
+                    <strong>3.490.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <i className="fa fa-star-o" />
+                    <span>26 đánh giá</span>
+                  </div>
+                  <label className="tragop">Trả góp 0%</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Sam0', 'SamSung Galaxy J4+'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Samsung-Galaxy-A7-(2018)">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/194327/samsung-galaxy-a7-2018-128gb-black-400x400.jpg"
+                    alt=""
+                  />
+                  <h3>Samsung Galaxy A7 (2018)</h3>
+                  <div className="price">
+                    <strong>8.990.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>22 đánh giá</span>
+                  </div>
+                  <label className="tragop">Trả góp 0%</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Sam3', 'Samsung Galaxy A7 (2018)'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Huawei-Nova-3">
+                  <img src="img/products/huawei-nova-3-2-600x600.jpg" alt="" />
+                  <h3>Huawei Nova 3</h3>
+                  <div className="price">
+                    <strong>9.990.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>22 đánh giá</span>
+                  </div>
+                  <label className="tragop">Trả góp 0%</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Hua1', 'Huawei Nova 3'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>{" "}
             </div>
-          </div>
-          {/* /.footer */}
-          {/* jQuery (necessary for Bootstrap's JavaScript plugins) */}
-          {/* Include all compiled plugins (below), or include individual files as needed */}
-          {/* Mirrored from easetemplate.com/free-website-templates/mobistore/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 19 Nov 2021 09:40:40 GMT */}
+            <a
+              className="xemTatCa"
+              href="index.html?promo=tragop&sort=rateCount-decrease"
+              style={{
+                borderLeft: "2px solid #ff9c00",
+                borderRight: "2px solid #ff9c00"
+              }}
+            >
+              Xem tất cả 11 sản phẩm
+            </a>
+          </div>{" "}
+          <hr />
+          <div className="khungSanPham" style={{ borderColor: "#5de272" }}>
+            <h3
+              className="tenKhung"
+              style={{
+                backgroundImage:
+                  "linear-gradient(120deg, #5de272 0%, #007012 50%, #5de272 100%)"
+              }}
+            >
+              * GIÁ SỐC ONLINE *
+            </h3>
+            <div className="listSpTrongKhung flexContain">
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Huawei-Nova-2i">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/157031/samsung-galaxy-a6-2018-2-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Huawei Nova 2i</h3>
+                  <div className="price">
+                    <strong>3.990.000₫</strong>
+                    <span>4.490.000₫</span>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>804 đánh giá</span>
+                  </div>
+                  <label className="giareonline">Giá rẻ online</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Hua3', 'Huawei Nova 2i'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?iPhone-X-256GB-Silver">
+                  <img src="img/products/iphone-x-256gb-silver-400x400.jpg" alt="" />
+                  <h3>iPhone X 256GB Silver</h3>
+                  <div className="price">
+                    <strong>27.990.000₫</strong>
+                    <span>31.990.000₫</span>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>10 đánh giá</span>
+                  </div>
+                  <label className="giareonline">Giá rẻ online</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('App0', 'iPhone X 256GB Silver'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?iPhone-Xr-64GB">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/190325/iphone-xr-black-400x460.png"
+                    alt=""
+                  />
+                  <h3>iPhone Xr 64GB</h3>
+                  <div className="price">
+                    <strong>19.990.000₫</strong>
+                    <span>22.990.000₫</span>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>5 đánh giá</span>
+                  </div>
+                  <label className="giareonline">Giá rẻ online</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('App6', 'iPhone Xr 64GB'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?iPhone-Xr-128GB">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/191483/iphone-xr-128gb-red-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>iPhone Xr 128GB</h3>
+                  <div className="price">
+                    <strong>22.990.000₫</strong>
+                    <span>24.990.000₫</span>
+                  </div>
+                  <div className="ratingresult"></div>
+                  <label className="giareonline">Giá rẻ online</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('App3', 'iPhone Xr 128GB'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?iPhone-7-Plus-32GB">
+                  <img src="img/products/iphone-7-plus-32gb-hh-600x600.jpg" alt="" />
+                  <h3>iPhone 7 Plus 32GB</h3>
+                  <div className="price">
+                    <strong>16.990.000₫</strong>
+                    <span>17.000.000₫</span>
+                  </div>
+                  <div className="ratingresult"></div>
+                  <label className="giareonline">Giá rẻ online</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('App2', 'iPhone 7 Plus 32GB'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>{" "}
+            </div>
+            <a
+              className="xemTatCa"
+              href="index.html?promo=giareonline&sort=rateCount-decrease"
+              style={{
+                borderLeft: "2px solid #5de272",
+                borderRight: "2px solid #5de272"
+              }}
+            >
+              Xem tất cả 5 sản phẩm
+            </a>
+          </div>{" "}
+          <hr />
+          <div className="khungSanPham" style={{ borderColor: "#ff9c00" }}>
+            <h3
+              className="tenKhung"
+              style={{
+                backgroundImage:
+                  "linear-gradient(120deg, #ff9c00 0%, #ec1f1f 50%, #ff9c00 100%)"
+              }}
+            >
+              * GIẢM GIÁ LỚN *
+            </h3>
+            <div className="listSpTrongKhung flexContain">
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Oppo-F9">
+                  <img src="img/products/oppo-f9-red-600x600.jpg" alt="" />
+                  <h3>Oppo F9</h3>
+                  <div className="price">
+                    <strong>7.690.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>188 đánh giá</span>
+                  </div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 500.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Opp0', 'Oppo F9'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Nokia-5.1-Plus">
+                  <img
+                    src="img/products/nokia-51-plus-black-18thangbh-400x400.jpg"
+                    alt=""
+                  />
+                  <h3>Nokia 5.1 Plus</h3>
+                  <div className="price">
+                    <strong>4.790.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>7 đánh giá</span>
+                  </div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 250.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Nok0', 'Nokia 5.1 Plus'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Samsung-Galaxy-A8+-(2018)">
+                  <img
+                    src="img/products/samsung-galaxy-a8-plus-2018-gold-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Samsung Galaxy A8+ (2018)</h3>
+                  <div className="price">
+                    <strong>11.990.000₫</strong>
+                  </div>
+                  <div className="ratingresult"></div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 1.500.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Sam1', 'Samsung Galaxy A8+ (2018)'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Samsung-Galaxy-J8">
+                  <img
+                    src="img/products/samsung-galaxy-j8-600x600-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Samsung Galaxy J8</h3>
+                  <div className="price">
+                    <strong>6.290.000₫</strong>
+                  </div>
+                  <div className="ratingresult"></div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 500.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Sam2', 'Samsung Galaxy J8'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Nokia-black-future">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/22701/dien-thoai-di-dong-Nokia-1280-dienmay.com-l.jpg"
+                    alt=""
+                  />
+                  <h3>Nokia black future</h3>
+                  <div className="price">
+                    <strong>999.999.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>9999 đánh giá</span>
+                  </div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 1.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Nok1', 'Nokia black future'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>{" "}
+            </div>
+            <a
+              className="xemTatCa"
+              href="index.html?promo=giamgia"
+              style={{
+                borderLeft: "2px solid #ff9c00",
+                borderRight: "2px solid #ff9c00"
+              }}
+            >
+              Xem tất cả 8 sản phẩm
+            </a>
+          </div>{" "}
+          <hr />
+          <div className="khungSanPham" style={{ borderColor: "#5de272" }}>
+            <h3
+              className="tenKhung"
+              style={{
+                backgroundImage:
+                  "linear-gradient(120deg, #5de272 0%, #007012 50%, #5de272 100%)"
+              }}
+            >
+              * GIÁ RẺ CHO MỌI NHÀ *
+            </h3>
+            <div className="listSpTrongKhung flexContain">
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Itel-it2123">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>Itel it2123</h3>
+                  <div className="price">
+                    <strong>160.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>302 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Itel-it2161">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/193989/itel-it2161-600x600.jpg"
+                    alt=""
+                  />
+                  <h3>Itel it2161</h3>
+                  <div className="price">
+                    <strong>170.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>33 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite3', 'Itel it2161'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Mobiistar-B310">
+                  <img src="img/products/mobiistar-b310-orange-600x600.jpg" alt="" />
+                  <h3>Mobiistar B310</h3>
+                  <div className="price">
+                    <strong>260.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>87 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Mob3', 'Mobiistar B310'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Philips-E103">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/73727/philips-e103-9-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>Philips E103</h3>
+                  <div className="price">
+                    <strong>260.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>126 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Phi2', 'Philips E103'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>
+              <li className="sanPham">
+                <a href="chitietsanpham.html?Mobell-M789">
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/92016/mobell-m789-8-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>Mobell M789</h3>
+                  <div className="price">
+                    <strong>550.000₫</strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>37 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Mobe0', 'Mobell M789'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </a>
+              </li>{" "}
+            </div>
+            <a
+              className="xemTatCa"
+              href="index.html?price=0-3000000&sort=price"
+              style={{
+                borderLeft: "2px solid #5de272",
+                borderRight: "2px solid #5de272"
+              }}
+            >
+              Xem tất cả 19 sản phẩm
+            </a>
+          </div>{" "}
+          <hr />
+        </div>
+
+      </section>{" "}
+
+      <i className="fa fa-arrow-up" id="goto-top-page" onclick="gotoTop()" />
+
+      <Footer/>
+
+    </>
     </React.Fragment>
   )
 }

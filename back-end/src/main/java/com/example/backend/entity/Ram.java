@@ -2,13 +2,15 @@ package com.example.backend.entity;
 
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ram")
@@ -16,6 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
 public class Ram extends DuplicateAttribute implements Identify {
 
     private String code;

@@ -1,6 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
-import com.example.backend.controller.product_controller.repository.ChipRepository;
+import com.example.backend.repository.ChipRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Chip;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ChipServiceIpml implements Iservice<Chip> {
@@ -24,6 +25,10 @@ public class ChipServiceIpml implements Iservice<Chip> {
     @Override
     public Page<Chip> getAll(Pageable pageable) {
         return chipRepository.findAll(pageable);
+    }
+
+    public List<Chip> getAll() {
+        return chipRepository.getAll();
     }
 
     public Page<Chip> getDelete(Pageable pageable, String key) {
@@ -45,7 +50,7 @@ public class ChipServiceIpml implements Iservice<Chip> {
 
     @Override
     public void delete(Integer id) {
-        if (chipRepository.existsById(id)){
+        if (chipRepository.existsById(id)) {
             chipRepository.deleteById(id);
         }
     }
@@ -66,26 +71,26 @@ public class ChipServiceIpml implements Iservice<Chip> {
         return chipRepository.findById(id).get();
     }
 
-    public void importDataFromExcel(MultipartFile file) throws Exception{
+    public void importDataFromExcel(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         Workbook workbook = new XSSFWorkbook(inputStream);
         Sheet sheet = workbook.getSheetAt(0); // dữ liệu lấy ở sheet đầu tiên
 
-        for (Row row: sheet){
-            if(row.getRowNum() == 0){
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
                 continue;
             }
 
             String code = row.getCell(0).getStringCellValue();
             Chip existingChip = chipRepository.findByCode(code);
 
-            if(existingChip != null){
+            if (existingChip != null) {
                 //Đã tồn tại
                 existingChip.setName(row.getCell(1).getStringCellValue());
                 existingChip.setDateUpdate(new Date());
                 existingChip.setPersonUpdate(row.getCell(3).getStringCellValue());
                 chipRepository.save(existingChip);
-            }else {
+            } else {
                 //Chưa tồn tại thêm mới
                 Chip newChip = new Chip();
                 newChip.setCode(code);

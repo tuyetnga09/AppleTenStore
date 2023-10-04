@@ -1,0 +1,27 @@
+{
+  "userName": "John Doe",
+  "phoneNumber": "1234567890",
+  "email": "john@example.com",
+  "address": "123 Main Street",
+  "province": "Your Province",
+  "district": "Your District",
+  "moneyShip": 10.0,
+  "itemDiscount": 5.0,
+  "totalMoney": 100.0,
+  "paymentMethod": "TIEN_MAT",
+  "billDetail": [
+    {
+      "idProductDetail": 1,
+      "price": 50.0,
+      "quantity": 2
+    },
+    {
+      "idProductDetail": 2,
+      "price": 25.0,
+      "quantity": 3
+    }
+  ],
+  "afterPrice": 95.0,
+  "idVoucher": 1,
+  "wards": "Your Ward"
+}
