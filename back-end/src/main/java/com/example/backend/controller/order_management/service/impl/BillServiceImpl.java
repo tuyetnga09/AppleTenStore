@@ -64,8 +64,11 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
+
+    // CLIENT
     @Override
     public String createBillCustomerOnlineRequest(BillRequestOnline request) {
+        // tạo người dùng
         User user = User.builder()
                 .fullName(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
@@ -73,7 +76,7 @@ public class BillServiceImpl implements BillService {
                 .status(Status.DANG_SU_DUNG)
                 .points(0).build();
         userRepository.save(user);
-
+        // account khách hàng
         Account account = Account.builder()
                 .user(user)
                 .email(request.getEmail())
@@ -83,6 +86,7 @@ public class BillServiceImpl implements BillService {
                 .build();
         acountRepository.save(account);
 
+        // địa chỉ giao hàng của khách hàng mua hàng
         Address address = Address.builder()
                 .status(Status.DANG_SU_DUNG)
                 .user(user)
@@ -92,6 +96,7 @@ public class BillServiceImpl implements BillService {
                 .xaPhuong(request.getWards()).build();
         addressRepository.save(address);
 
+        // thông tin hoá đơn
         Bill bill = Bill.builder()
                 .code(new Random().randomToString("Bill"))
                 .phoneNumber(request.getPhoneNumber())
@@ -105,6 +110,7 @@ public class BillServiceImpl implements BillService {
                 .account(account).build();
         billRepository.save(bill);
 
+        // lịch sử thông tin hoá đơn
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -122,6 +128,7 @@ public class BillServiceImpl implements BillService {
             billDetailRepository.save(billDetail);
         }
 
+        // hình thức thanh toán của hoá đơn
         Payments payments = Payments.builder()
                 .method(request.getPaymentMethod().equals("paymentReceive") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                 .bill(bill)
@@ -129,6 +136,7 @@ public class BillServiceImpl implements BillService {
                 .typePayment(StatusPayment.THANH_TOAN).build();
         paymentsRepository.save(payments);
 
+        // thông tin voucher
         Optional<Voucher> optionalVoucher = voucherRepository.findById(request.getIdVoucher());
         if (optionalVoucher.isPresent()) {
             Voucher voucher = optionalVoucher.get();
@@ -147,29 +155,6 @@ public class BillServiceImpl implements BillService {
 
         return "Finished";
 
-    }
-
-    @Override
-    public List<BillResponse> getAll(BillRequest request) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        request.setConvertStatus(Arrays.toString(request.getStatus()));
-        try {
-            if (!request.getStartTimeString().isEmpty()) {
-                request.setStartTime(simpleDateFormat.parse(request.getStartTimeString()).getTime());
-            }
-            if (!request.getEndTimeString().isEmpty()) {
-                request.setEndTime(simpleDateFormat.parse(request.getEndTimeString()).getTime());
-            }
-            if (!request.getStartDeliveryDateString().isEmpty()) {
-                request.setStartDeliveryDate(simpleDateFormat.parse(request.getStartDeliveryDateString()).getTime());
-            }
-            if (!request.getEndDeliveryDateString().isEmpty()) {
-                request.setEndDeliveryDate(simpleDateFormat.parse(request.getEndDeliveryDateString()).getTime());
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return billRepository.getAll(request);
     }
 
     @Override

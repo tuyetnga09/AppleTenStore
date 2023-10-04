@@ -1,8 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.model.request.CreateProduct;
-import com.example.backend.controller.product_controller.model.request.SKURequest;
-import com.example.backend.entity.Imei;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.BatteryRepository;
 import com.example.backend.repository.CapacityRepository;
@@ -33,7 +31,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -128,34 +125,36 @@ public class ProductServiceImpl {
         // Tạo danh sách SKU và thêm chúng vào sản phẩm
         List<SKU> skus = new ArrayList<>();
 
-        if (product.getSkus() != null) {
-            for (SKURequest skuRequest : product.getSkus()) {
-                Color color = colorRepository.findByName(skuRequest.getColor());
-                Capacity capacity = capacityRepository.findByName(skuRequest.getCapacity());
+        if (colorNames != null && capacityNames != null) {
+            for (String colorName : colorNames) {
+                for (String capacityName : capacityNames) {
+                    Color color = colorRepository.findByName(colorName);
+                    Capacity capacity = capacityRepository.findByName(capacityName);
 
-                if (color != null && capacity != null) {
-                    SKU sku = new SKU();
-                    sku.setColor(color.getName());
-                    sku.setCapacity(capacity.getName());
-                    sku.setQuantity(skuRequest.getQuantity());
-                    sku.setProduct(sanPham);
-                    skus.add(sku);
+                    if (color != null && capacity != null) {
+                        SKU sku = new SKU();
+                        sku.setColor(color.getName());
+                        sku.setCapacity(capacity.getName());
+                        sku.setQuantity(0); // Khởi tạo số lượng là 0
+                        sku.setProduct(sanPham);
+                        skus.add(sku);
+                    }
                 }
             }
         }
 
         sanPham.setSkus(skus);
 
-        int quantity = skus.stream().mapToInt(SKU::getQuantity).sum();
+        int quantity = skus.size();
         sanPham.setQuantity(quantity);
 
-
-        // Lưu sản phẩm vào cơ sở dữ liệu
         sanPham = productRepository.save(sanPham);
+
+        long totalRecords = productRepository.count();
+        System.out.println("Tổng số bản ghi lưu trữ là: " + totalRecords);
 
         return sanPham;
     }
-
 
     private String generateImei() {
         StringBuilder imei = new StringBuilder();
@@ -201,4 +200,5 @@ public class ProductServiceImpl {
     public Page<Product> deleteProduct(Pageable pageable, String key) {
         return productRepository.deleteProduct(pageable, key);
     }
+
 }

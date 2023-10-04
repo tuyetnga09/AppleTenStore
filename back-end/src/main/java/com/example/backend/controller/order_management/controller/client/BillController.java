@@ -20,4 +20,5 @@ public class BillController {
     public ResponseObj create(@RequestBody BillRequestOnline request)  {
         return new ResponseObj(billService.createBillCustomerOnlineRequest(request));
     }
+
 }
