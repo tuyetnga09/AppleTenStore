@@ -1,19 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import Header from "../Page_Comeponet/layout/Header";
 import Footer from "../Page_Comeponet/layout/Footer";
-import { Button,Tag  } from 'antd';
+import { Button, Tag } from "antd";
 import { RightOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useParams } from "react-router-dom/cjs/react-router-dom.min";
+import { detail } from "../../service/product.service";
 
 export default function ProductDetail() {
+  const { id } = useParams();
+
+  const [item, setItem] = useState({});
+
+  useEffect(() => {
+    detail(id)
+      .then((response) => {
+        setItem(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
 
   const [selectedDungLuong, setSelectedDungLuong] = useState(null);
 
-  const dungLuong = [
-    '4GB',
-    '256GB',
-    '512GB',
-  ];
+  const dungLuong = item.capacities ? item.capacities.map((cp) => cp.name) : [];
 
   const handleDungLuongClick = (dungLuong) => {
     setSelectedDungLuong(dungLuong);
@@ -21,11 +32,7 @@ export default function ProductDetail() {
 
   const [selectedMauSac, setSelectedMauSac] = useState(null);
 
-  const MauSac = [
-    'Đen',
-    'Đỏ',
-    'Trắng',
-  ];
+  const MauSac = item.colors ? item.colors.map((cl) => cl.name) : [];
 
   const handleMauSacClick = (MauSac) => {
     setSelectedMauSac(MauSac);
@@ -35,17 +42,17 @@ export default function ProductDetail() {
     <React.Fragment>
       <Header />
       <section>
-      <div className="breadcrumbs_area">
-        <div className="row" style={{marginTop: "10px"}}>
-          <div id="detailPromo">
-            <Link to={"/"}>Home</Link>
-            <RightOutlined />
-            <Link to={"/singleProduct"}>Singer Product</Link>
+        <div className="breadcrumbs_area">
+          <div className="row" style={{ marginTop: "10px" }}>
+            <div id="detailPromo">
+              <Link to={"/"}>Home</Link>
+              <RightOutlined />
+              <Link to={`/product/${item.id}`}>Singer Product</Link>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="chitietSanpham" style={{ marginBottom: 100 }}>
-          <h1>Điện thoại Xiaomi Redmi Note 5</h1>
+        <div className="chitietSanpham" style={{ marginBottom: 100 }}>
+          <h1>{item.name && item.name}</h1>
           <div className="rating">
             <i className="fa fa-star" />
             <i className="fa fa-star" />
@@ -57,7 +64,7 @@ export default function ProductDetail() {
           <div className="rowdetail group">
             <div className="picture">
               <img
-                src="img/products/xiaomi-redmi-note-5-pro-600x600.jpg"
+                src="https://zpsocial-f56-org.zadn.vn/3c1ad68c5c9ebdc0e48f.jpg"
                 onclick="opencertain()"
               />
               {/* <div className="slick slideshow picture-thumbs slick-initialized slick-slider">
@@ -137,48 +144,61 @@ export default function ProductDetail() {
             </div>
             <div className="price_sale">
               <div className="area_price">
-                <strong>5.690.000₫</strong>
+                <strong>{item.price}₫</strong>
                 <label className="moiramat">Mới ra mắt</label>
+                <label className="giamgia">
+                  Số lượng: {item.quantity && item.quantity}
+                </label>
               </div>
               {/* <div className="ship" style={{ display: "none" }}>
                 <img src="img/chitietsanpham/clock-152067_960_720.png" />
                 <div>NHẬN HÀNG TRONG 1 GIỜ</div>
               </div> */}
               {/* <div className="area_promo"> */}
-                <strong style={{marginLeft: "10px"}}>DUNG LƯỢNG</strong>
-                  <div className="button-container">
-                    {dungLuong.map((dungLuong, index) => (
-                      <Button
-                        key={index}
-                        type={selectedDungLuong === dungLuong ? 'primary' : 'default'}
-                        onClick={() => handleDungLuongClick(dungLuong)}
-                        style={{marginLeft: "5px", marginBottom: "10px", marginRight: "5px"}}
-                      >
-                        {dungLuong}
-                      </Button>
-                    ))}
-                  </div>
-                <strong style={{marginLeft: "10px"}}>MÀU SẮC</strong>
-                  <div className="button-container">
-                    {MauSac.map((MauSac, index) => (
-                      <Button
-                        key={index}
-                        type={selectedMauSac === MauSac ? 'primary' : 'default'}
-                        onClick={() => handleMauSacClick(MauSac)}
-                        style={{marginLeft: "5px", marginBottom: "10px", marginRight: "5px"}}
-                      >
-                        {MauSac}
-                      </Button>
-                    ))}
-                  </div>
-                {/* </div> */}
+              <strong style={{ marginLeft: "10px" }}>DUNG LƯỢNG</strong>
+              <div className="button-container">
+                {dungLuong.map((dungLuong, index) => (
+                  <Button
+                    key={index}
+                    type={
+                      selectedDungLuong === dungLuong ? "primary" : "default"
+                    }
+                    onClick={() => handleDungLuongClick(dungLuong)}
+                    style={{
+                      marginLeft: "5px",
+                      marginBottom: "10px",
+                      marginRight: "5px",
+                    }}
+                  >
+                    {dungLuong}
+                  </Button>
+                ))}
+              </div>
+              <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
+              <div className="button-container">
+                {MauSac.map((MauSac, index) => (
+                  <Button
+                    key={index}
+                    type={selectedMauSac === MauSac ? "primary" : "default"}
+                    onClick={() => handleMauSacClick(MauSac)}
+                    style={{
+                      marginLeft: "5px",
+                      marginBottom: "10px",
+                      marginRight: "5px",
+                    }}
+                  >
+                    {MauSac}
+                  </Button>
+                ))}
+              </div>
+              {/* </div> */}
               <div className="area_promo">
                 <strong>khuyến mãi</strong>
                 <div className="promo">
                   <img src="img/chitietsanpham/icon-tick.png" />
                   <div id="detailPromo">
-                    Khách hàng sẽ được thử máy miễn phí tại cửa hàng. Có thể đổi trả lỗi
-                    trong vòng 2 tháng.
+                    Khách hàng sẽ được thử máy miễn phí tại cửa hàng. Có thể đổi
+                    trả lỗi trong vòng 2 tháng.
                   </div>
                 </div>
               </div>
@@ -186,7 +206,8 @@ export default function ProductDetail() {
                 <div>
                   <img src="img/chitietsanpham/box.png" />
                   <p>
-                    Trong hộp có: Sạc, Tai nghe, Sách hướng dẫn, Cây lấy sim, Ốp lưng{" "}
+                    Trong hộp có: Sạc, Tai nghe, Sách hướng dẫn, Cây lấy sim, Ốp
+                    lưng{" "}
                   </p>
                 </div>
                 <div>
@@ -196,7 +217,8 @@ export default function ProductDetail() {
                 <div className="last">
                   <img src="img/chitietsanpham/1-1.jpg" />
                   <p>
-                    1 đổi 1 trong 1 tháng nếu lỗi, đổi sản phẩm tại nhà trong 1 ngày.
+                    1 đổi 1 trong 1 tháng nếu lỗi, đổi sản phẩm tại nhà trong 1
+                    ngày.
                   </p>
                 </div>
               </div>
@@ -218,9 +240,9 @@ export default function ProductDetail() {
               <ul className="info">
                 <li>
                   <p>Màn hình</p>
-                  <div>IPS LCD, 5.99', Full HD+</div>
+                  <div>{item.idscreen && item.idscreen.name}</div>
                 </li>
-                <li>
+                {/* <li>
                   <p>Hệ điều hành</p>
                   <div>Android 8.1 (Oreo)</div>
                 </li>
@@ -231,26 +253,26 @@ export default function ProductDetail() {
                 <li>
                   <p>Camara trước</p>
                   <div>13 MP</div>
-                </li>
+                </li> */}
                 <li>
                   <p>CPU</p>
-                  <div>Qualcomm Snapdragon 636 8 nhân</div>
+                  <div>{item.idchip && item.idchip.name}</div>
                 </li>
                 <li>
                   <p>RAM</p>
-                  <div>4 GB</div>
+                  <div>{item.idRam && item.idRam.name}</div>
                 </li>
                 <li>
                   <p>Bộ nhớ trong</p>
-                  <div>64 GB</div>
+                  <div>{dungLuong[0]}</div>
                 </li>
-                <li>
+                {/* <li>
                   <p>Thẻ nhớ</p>
                   <div>MicroSD, hỗ trợ tối đa 128 GB</div>
-                </li>
+                </li> */}
                 <li>
                   <p>Dung lượng pin</p>
-                  <div>4000 mAh, có sạc nhanh</div>
+                  <div>{item.idbattery && item.idbattery.name}</div>
                 </li>
               </ul>
             </div>
@@ -275,7 +297,7 @@ export default function ProductDetail() {
                     style={{
                       transition: "all 0s ease 0s",
                       width: 2135,
-                      transform: "translate3d(610px, 0px, 0px)"
+                      transform: "translate3d(610px, 0px, 0px)",
                     }}
                   >
                     <div
@@ -291,7 +313,10 @@ export default function ProductDetail() {
                         </a>
                       </div>
                     </div>
-                    <div className="owl-item active" style={{ width: "304.96px" }}>
+                    <div
+                      className="owl-item active"
+                      style={{ width: "304.96px" }}
+                    >
                       <div className="item">
                         <a>
                           <img
@@ -301,7 +326,10 @@ export default function ProductDetail() {
                         </a>
                       </div>
                     </div>
-                    <div className="owl-item active" style={{ width: "304.96px" }}>
+                    <div
+                      className="owl-item active"
+                      style={{ width: "304.96px" }}
+                    >
                       <div className="item">
                         <a>
                           <img
@@ -354,10 +382,18 @@ export default function ProductDetail() {
                   </div>
                 </div>
                 <div className="owl-nav disabled">
-                  <button type="button" role="presentation" className="owl-prev">
+                  <button
+                    type="button"
+                    role="presentation"
+                    className="owl-prev"
+                  >
                     <span aria-label="Previous">‹</span>
                   </button>
-                  <button type="button" role="presentation" className="owl-next">
+                  <button
+                    type="button"
+                    role="presentation"
+                    className="owl-next"
+                  >
                     <span aria-label="Next">›</span>
                   </button>
                 </div>
@@ -389,14 +425,14 @@ export default function ProductDetail() {
           </div>
         </div>
 
-           {/* hien thi san pham           */}
+        {/* hien thi san pham           */}
         <div id="goiYSanPham">
           <div className="khungSanPham" style={{ borderColor: "#434aa8" }}>
             <h3
               className="tenKhung"
               style={{
                 backgroundImage:
-                  "linear-gradient(120deg, #434aa8 0%, #ec1f1f 50%, #434aa8 100%)"
+                  "linear-gradient(120deg, #434aa8 0%, #ec1f1f 50%, #434aa8 100%)",
               }}
             >
               * Bạn có thể thích *
@@ -404,7 +440,10 @@ export default function ProductDetail() {
             <div className="listSpTrongKhung flexContain">
               <li className="sanPham">
                 <a href="chitietsanpham.html?Xiaomi-Redmi-5-Plus-4GB">
-                  <img src="img/products/xiaomi-redmi-5-plus-600x600.jpg" alt="" />
+                  <img
+                    src="img/products/xiaomi-redmi-5-plus-600x600.jpg"
+                    alt=""
+                  />
                   <h3>Xiaomi Redmi 5 Plus 4GB</h3>
                   <div className="price">
                     <strong>4.790.000₫</strong>
@@ -591,7 +630,10 @@ export default function ProductDetail() {
               </li>
               <li className="sanPham">
                 <a href="chitietsanpham.html?Xiaomi-Mi-8-Lite">
-                  <img src="img/products/xiaomi-mi-8-lite-black-1-600x600.jpg" alt="" />
+                  <img
+                    src="img/products/xiaomi-mi-8-lite-black-1-600x600.jpg"
+                    alt=""
+                  />
                   <h3>Xiaomi Mi 8 Lite</h3>
                   <div className="price">
                     <strong>6.690.000₫</strong>
@@ -666,7 +708,10 @@ export default function ProductDetail() {
               </li>
               <li className="sanPham">
                 <a href="chitietsanpham.html?Mobiistar-Zumbo-S2-Dual">
-                  <img src="img/products/mobiistar-zumbo-s2-dual-300x300.jpg" alt="" />
+                  <img
+                    src="img/products/mobiistar-zumbo-s2-dual-300x300.jpg"
+                    alt=""
+                  />
                   <h3>Mobiistar Zumbo S2 Dual</h3>
                   <div className="price">
                     <strong>2.850.000₫</strong>
@@ -696,7 +741,6 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
-
       </section>
       <Footer />
     </React.Fragment>
