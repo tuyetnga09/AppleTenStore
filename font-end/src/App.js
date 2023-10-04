@@ -62,7 +62,7 @@ import Login from "./components/Page_Comeponet/Login/login";
 import SignUp from "./components/Page_Comeponet/Login/signup";
 import ForgotPassword from "./components/Page_Comeponet/Login/forgotpassword";
 import OderDisplay from "./components/Page_Comeponet/OderManager/OderDisplay";
-import ChatManager from "./components/Page_Comeponet/Chat/ChatManger"
+import ChatManager from "./components/Page_Comeponet/Chat/ChatManger";
 import SkuDisplay from "./components/product_component/SKU/SkuDisplay";
 
 function App() {
@@ -186,7 +186,7 @@ function App() {
           />
 
           <Route path="/dashboard" exact component={Dashboard} />
-          <Route path="/singleProduct" exact component={SingleProduct} />
+          <Route path="/product/:id" exact component={SingleProduct} />
           <Route path="/voucher" exact component={Voucher} />
           <Route path="/cart" exact component={Cart} />
           <Route path="/checkout" exact component={Checkout} />

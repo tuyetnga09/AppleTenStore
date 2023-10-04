@@ -50,9 +50,9 @@ export const add = (product) => {
 //   return httpClient.put(`/chip/update/${id}`, chip);
 // };
 
-// export const detail = (id) => {
-//   return httpClient.get(`/chip/${id}`);
-// };
+export const detail = (id) => {
+  return httpClient.get(`/product/${id}`);
+};
 
 export const deleteProduct = (id) => {
   return httpClient.delete(`/product/delete/${id}`);
@@ -65,3 +65,31 @@ export const returnProduct = (id) => {
 // export const importChip = (form) => {
 //   return httpClient.post("/chip/import", form, config);
 // };
+
+export const readProductNew = (page) => {
+  return httpClient.get(`/product/display/productNew?${page}`);
+};
+
+export const readProductCheap = (page) => {
+  return httpClient.get(`/product/display/productCheap?${page}`);
+};
+
+export const readFilterProductByPrice = (page) => {
+  return httpClient.get(`/product/display/filterProductbyPrice?${page}`);
+};
+
+export const readFilterProductByCategory = (page) => {
+  return httpClient.get(`/product/display/filterProductbyCategory?${page}`);
+};
+
+export const readFilterProductByAscendingPrice = (page) => {
+  return httpClient.get(
+    `/product/display/filterProductByAscendingPrice?${page}`
+  );
+};
+
+export const readFilterProductByDecreasePrice = (page) => {
+  return httpClient.get(
+    `/product/display/filterProductByDecreasePrice?${page}`
+  );
+};
