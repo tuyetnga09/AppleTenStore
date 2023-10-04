@@ -37,3 +37,7 @@ export const returnImage = (id) => {
 export const selectProduct = () => {
     return httpClient.get(`/product/get-all-product`);
 }
+
+export const searchImage = (id) => {
+    return httpClient.get(`/image/search/${id}`);
+}

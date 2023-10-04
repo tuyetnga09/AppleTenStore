@@ -40,6 +40,7 @@ import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
 import "primereact/resources/primereact.css"; // core css
 import { Toast } from "primereact/toast";
 import { FaFileExcel } from "react-icons/fa";
+import AvatarProduct from "./AvatarProduct";
 const queryClient = new QueryClient();
 
 const { Text, Paragraph } = Typography;
@@ -306,12 +307,7 @@ const StoreProducts = ({}) => {
                             height: "100%",
                           }}
                         >
-                          <div style={{ textAlign: "center" }}>
-                            <Avatar
-                              size={128}
-                              src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                            />
-                          </div>
+                          <AvatarProduct product={item.id}></AvatarProduct>
                           <Divider />
                           <Paragraph
                             ellipsis={{ rows: 2, tooltip: true }}

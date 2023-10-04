@@ -70,4 +70,8 @@ public class ImageService implements Iservice<Image> {
         this.imageRepository.save(image);
     }
 
+    public Image searchImageByIdProduct(int id){
+        return this.imageRepository.searchImageByIdProduct(id);
+    }
+
 }
