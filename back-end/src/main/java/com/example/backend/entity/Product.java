@@ -79,6 +79,7 @@ public class Product  extends DuplicateAttribute implements Identify {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "capacity_id"))
     private List<Capacity> capacities;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<SKU> skus;
 }

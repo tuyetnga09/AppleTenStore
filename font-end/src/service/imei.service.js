@@ -37,3 +37,7 @@ export const returnImei = (id) => {
 export const importImei = (form) => {
   return httpClient.post("/imei/import", form, config);
 };
+
+export const readImportImei = (form, idSku) => {
+  return httpClient.post(`/imei/importimei?idSku=${idSku}`, form, config);
+};

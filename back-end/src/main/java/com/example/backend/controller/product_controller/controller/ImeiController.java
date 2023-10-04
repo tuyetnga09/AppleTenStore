@@ -1,6 +1,8 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.controller.product_controller.model.request.ImportImei;
 import com.example.backend.controller.product_controller.service.impl.ImeiServiceImpl;
+import com.example.backend.controller.product_controller.service.impl.SKUServiceImpl;
 import com.example.backend.entity.Imei;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
+
 @RestController
 @RequestMapping("/imei/")
 @CrossOrigin("*")
@@ -27,6 +32,9 @@ public class ImeiController {
 
     @Autowired
     private ImeiServiceImpl service;
+
+    @Autowired
+    private SKUServiceImpl skuService;
 
     @GetMapping("{id}")
     public ResponseEntity<Imei> detail(@PathVariable("id") Integer id){
@@ -73,10 +81,24 @@ public class ImeiController {
         return new ResponseEntity<>("Return ok", HttpStatus.OK);
     }
 
-    @PostMapping("import")
-    public ResponseEntity<String>  importSize(@RequestParam("file") MultipartFile file){
+//    @PostMapping("import")
+//    public ResponseEntity<String>  importSize(@RequestParam("file") MultipartFile file){
+//        try {
+//            service.importImeiDataFromExcel(file);
+//            return ResponseEntity.ok("Import Thành Công");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.ok("Import Thất bại");
+//        }
+//    }
+    //đọc imei trong file excel
+    @PostMapping("importimei")
+    public ResponseEntity<String> importImeiExcel(@RequestParam("file") MultipartFile file,@RequestParam("idSku") Long idSku){
+        System.out.println("oooooo ------------------- :" + file);
+        System.out.println("oooooo ------------------- :" + idSku);
+
         try {
-            service.importImeiDataFromExcel(file);
+            service.importImeiDataFromExcel(file, idSku);
             return ResponseEntity.ok("Import Thành Công");
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,8 +3,13 @@ import { useTranslate, useApiUrl } from "@refinedev/core";
 import { Create, getValueFromEvent } from "@refinedev/antd";
 import { add } from "../../../../service/product.service";
 import { addImage } from "../../../../service/image.service";
+import { readImportImei } from "../../../../service/imei.service";
 import QRScanner from "./QRScanner";
 import { Option } from "antd/es/mentions";
+import { importImei } from "../../../../service/imei.service";
+import { readAllProductNew } from "../../../../service/sku.service";
+import ExportImei from "./ExportImei";
+import * as XLSX from "xlsx";
 
 import {
   readAllColor,
@@ -28,11 +33,19 @@ import {
   Avatar,
   Typography,
   Upload,
+  Button,
+  Modal,
 } from "antd";
+import { Link, useHistory } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Link,
-  useHistory,
-} from "react-router-dom";
+  faClose,
+  faEdit,
+  faFileExcel,
+  faDownload,
+} from "@fortawesome/free-solid-svg-icons";
+import queryString from "query-string";
 
 const Test = () => {
   const { Text } = Typography;
@@ -42,6 +55,9 @@ const Test = () => {
   const form = new FormData();
   const [list, setList] = useState({});
   const [startScan, setStartScan] = useState(false);
+
+  const [displayfile, setFile] = useState(null);
+  const [displaySku, setDisplaySku] = useState([]);
 
   const [productData, setProductData] = useState({
     nameProduct: "",
@@ -135,14 +151,30 @@ const Test = () => {
     event.preventDefault();
     const items = { ...productData };
 
-    console.log("Dữ liệu sản phẩm:", items);
-    await add(items);
-    for (let i = 0; i < list.fileList.length; i++) {
-      form.append("file", list.fileList[i].originFileObj);
+    try {
+      // Thực hiện thêm sản phẩm
+      await add(items);
+
+      // Sau khi thêm sản phẩm, lấy lại danh sách sản phẩm mới nhất
+      const response = await readAllProductNew();
+      setDisplaySku(response.data);
+      // console.log("Dữ liệu sản phẩm:", items);
+      // for (let i = 0; i < list.fileList.length; i++) {
+      //   form.append("file", list.fileList[i].originFileObj);
+      // }
+      // form.append("name", items.nameProduct);
+      // await addImage(form);
+    } catch (error) {
+      console.log(error);
     }
-    form.append("name", items.nameProduct);
-    await addImage(form);
-    history.push("/product/display");
+
+    // for (let i = 0; i < list.fileList.length; i++) {
+    //   form.append("file", list.fileList[i].originFileObj);
+    // }
+    // form.append("name", items.nameProduct);
+    // // await
+    // addImage(form);
+    // history.push("/product/display");
   }
 
   const [displayColor, setDisplayColor] = useState([]);
@@ -156,6 +188,7 @@ const Test = () => {
   const [displayCapacity, setDisplayCapacity] = useState([]);
 
   useEffect(() => {
+    // handleSubmit();
     readAllColor()
       .then((response) => {
         setDisplayColor(response.data);
@@ -212,12 +245,12 @@ const Test = () => {
         console.log(error);
       });
     readAllCapacity()
-        .then((response) => {
-          setDisplayCapacity(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      .then((response) => {
+        setDisplayCapacity(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     readAllSize()
       .then((response) => {
         setDisplaySize(response.data);
@@ -226,6 +259,78 @@ const Test = () => {
         console.log(error);
       });
   }, []);
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  //set id SKU
+  const [displayIdSku, setIdSku] = useState(null); // Khởi tạo là null
+
+  // mở modal để import imei
+  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+
+  // Hàm để hiển thị Modal khi cần
+  const showModal = (sku) => {
+    setIdSku(sku.id);
+    setIsModalVisible(true);
+  };
+
+  // Hàm để ẩn Modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setExcelData([]);
+    setIdSku([]);
+  };
+
+  const [excelData, setExcelData] = useState(null); // Khởi tạo là null
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    setFile(event.target.files[0]);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        setExcelData(jsonData); // Cập nhật dữ liệu khi tệp đã được chọn
+        console.log("hihhiiihi ------------------- " + jsonData);
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
+  const handleImportImei = async (event) => {
+    event.preventDefault();
+    if (!displayfile) {
+      console.error("Vui lòng chọn một file trước khi import.");
+      return;
+    }
+    console.log(displayfile);
+    console.log(displayIdSku);
+    const formData = new FormData();
+    formData.append("file", displayfile);
+    await readImportImei(formData, displayIdSku)
+      .then((response) => {
+        console.log("hihihihi ------------- " + response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+    // Load lại bảng SKU
+    try {
+      const response = await readAllProductNew();
+      setDisplaySku(response.data);
+      console.log("hihihihi 222 ------------- " + response.data);
+      setIsModalVisible(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -272,6 +377,7 @@ const Test = () => {
                   name="file"
                   listType="picture"
                   accept="image/*"
+                  multiple={true}
                   onChange={handleChangeImage}
                 >
                   <Space direction="vertical" size={2}>
@@ -297,13 +403,20 @@ const Test = () => {
                 </Upload.Dragger>
               </Form.Item>
             </Form.Item>
-            <Form.Item label={t("Name")} name="nameProduct" rules={[{ required: true }]}>
+            <Form.Item
+              label={t("Name")}
+              name="nameProduct"
+              rules={[{ required: true }]}
+            >
               <Input
                 type="text"
                 required
                 value={productData.nameProduct || ""}
                 onChange={(e) =>
-                  setProductData({ ...productData, nameProduct: e.target.value })
+                  setProductData({
+                    ...productData,
+                    nameProduct: e.target.value,
+                  })
                 }
                 id="nameProduct"
                 name="nameProduct"
@@ -324,13 +437,20 @@ const Test = () => {
                 required
                 value={productData.description || ""}
                 onChange={(e) =>
-                  setProductData({ ...productData, description: e.target.value })
+                  setProductData({
+                    ...productData,
+                    description: e.target.value,
+                  })
                 }
                 id="description"
                 name="description"
               />
             </Form.Item>
-            <Form.Item label={t("Price")} name="price" rules={[{ required: true, type: "number" }]}>
+            <Form.Item
+              label={t("Price")}
+              name="price"
+              rules={[{ required: true, type: "number" }]}
+            >
               <InputNumber
                 style={{ width: "150px" }}
                 min={0}
@@ -365,31 +485,35 @@ const Test = () => {
               </Select>
             </Form.Item>
             <Form.Item
-                label="Chọn Dung Lượng"
-                name="capacity"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ít nhất một dung lượng",
-                  },
-                ]}
+              label="Chọn Dung Lượng"
+              name="capacity"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn ít nhất một dung lượng",
+                },
+              ]}
             >
               <Select
-                  mode="multiple"
-                  style={{ width: "100%" }}
-                  placeholder="Chọn dung lượng"
-                  value={productData.capacity}
-                  onChange={handleInputChangeCapacity}
+                mode="multiple"
+                style={{ width: "100%" }}
+                placeholder="Chọn dung lượng"
+                value={productData.capacity}
+                onChange={handleInputChangeCapacity}
               >
                 {displayCapacity.map((cap) => (
-                    <Select.Option key={cap.id} value={cap.name}>
-                      {cap.name}
-                    </Select.Option>
+                  <Select.Option key={cap.id} value={cap.name}>
+                    {cap.name}
+                  </Select.Option>
                 ))}
               </Select>
             </Form.Item>
 
-            <Form.Item label={t("Battery")} name={["battery", "id"]} rules={[{ required: true }]}>
+            <Form.Item
+              label={t("Battery")}
+              name={["battery", "id"]}
+              rules={[{ required: true }]}
+            >
               <Select
                 name="battery"
                 value={productData.battery}
@@ -400,34 +524,42 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item label={t("Chip")} name={["chip", "id"]} rules={[{ required: true }]}>
-              <Select name="chip" value={productData.chip} onChange={handleInputChangeChip}>
+            <Form.Item
+              label={t("Chip")}
+              name={["chip", "id"]}
+              rules={[{ required: true }]}
+            >
+              <Select
+                name="chip"
+                value={productData.chip}
+                onChange={handleInputChangeChip}
+              >
                 {displayChip.map((chip) => {
                   return <Option value={chip.name}>{chip.name}</Option>;
                 })}
               </Select>
             </Form.Item>
             <Form.Item
-                label={t("Color")}
-                name="color"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn ít nhất một màu sắc",
-                  },
-                ]}
+              label={t("Color")}
+              name="color"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn ít nhất một màu sắc",
+                },
+              ]}
             >
               <Select
-                  mode="multiple"
-                  style={{ width: "100%" }}
-                  placeholder="Chọn màu sắc"
-                  value={productData.color}
-                  onChange={handleInputChangeColor}
+                mode="multiple"
+                style={{ width: "100%" }}
+                placeholder="Chọn màu sắc"
+                value={productData.color}
+                onChange={handleInputChangeColor}
               >
                 {displayColor.map((color) => (
-                    <Select.Option key={color.id} value={color.name}>
-                      {color.name}
-                    </Select.Option>
+                  <Select.Option key={color.id} value={color.name}>
+                    {color.name}
+                  </Select.Option>
                 ))}
               </Select>
             </Form.Item>
@@ -453,14 +585,26 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item label={t("Ram")} name={["ram", "id"]} rules={[{ required: true }]}>
-              <Select name="ram" value={productData.ram} onChange={handleInputChangeRam}>
+            <Form.Item
+              label={t("Ram")}
+              name={["ram", "id"]}
+              rules={[{ required: true }]}
+            >
+              <Select
+                name="ram"
+                value={productData.ram}
+                onChange={handleInputChangeRam}
+              >
                 {displayRam.map((ram) => {
                   return <Option value={ram.name}>{ram.name}</Option>;
                 })}
               </Select>
             </Form.Item>
-            <Form.Item label={t("Screen")} name={["screen", "id"]} rules={[{ required: true }]}>
+            <Form.Item
+              label={t("Screen")}
+              name={["screen", "id"]}
+              rules={[{ required: true }]}
+            >
               <Select
                 name="screen"
                 value={productData.screen}
@@ -471,22 +615,129 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            <Form.Item label={t("Size")} name={["size", "id"]} rules={[{ required: true }]}>
-              <Select name="size" value={productData.size} onChange={handleInputChangeSize}>
+            <Form.Item
+              label={t("Size")}
+              name={["size", "id"]}
+              rules={[{ required: true }]}
+            >
+              <Select
+                name="size"
+                value={productData.size}
+                onChange={handleInputChangeSize}
+              >
                 {displaySize.map((size) => {
                   return <Option value={size.name}>{size.name}</Option>;
                 })}
               </Select>
             </Form.Item>
-            <Form.Item label={t("Active")} name="isActive">
-              <Radio.Group>
-                <Radio value={true}>Enable</Radio>
-                <Radio value={false}>Disable</Radio>
-              </Radio.Group>
-            </Form.Item>
+            {/*<Form.Item label={t("Active")} name="isActive">*/}
+            {/*  <Radio.Group>*/}
+            {/*    <Radio value={true}>Enable</Radio>*/}
+            {/*    <Radio value={false}>Disable</Radio>*/}
+            {/*  </Radio.Group>*/}
+            {/*</Form.Item>*/}
           </Form>
         </Create>
       </form>
+      <section>
+        {/* import  imei   -----------------------------------*/}
+        <div className="table-wrap">
+          <table class="table">
+            <thead class="table-dark">
+              <th>STT</th>
+              <th>COLOR</th>
+              <th>CAPACITY</th>
+              <th>QUANTITY</th>
+              <th>PRICE</th>
+              <th>IMPORT IMEI</th>
+            </thead>
+            <tbody>
+              {displaySku.map((s, index) => {
+                return (
+                  <tr className="alert" role="alert" key={s.id}>
+                    <td>{index + 1}</td>
+                    <td>{s.color}</td>
+                    <td>{s.capacity}</td>
+                    <td>{s.quantity}</td>
+                    <td>{s.price}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="imports"
+                        data-dismiss="alert"
+                        aria-label="Import"
+                        onClick={() => showModal(s)}
+                      >
+                        <span aria-hidden="true">
+                          <FontAwesomeIcon icon={faFileExcel} />
+                        </span>
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section>
+        <Modal
+          // {...modalProps}
+          visible={isModalVisible}
+          onCancel={handleCancel}
+          width={1000}
+          footer={null}
+          bodyStyle={{ minHeight: "650px" }}
+        >
+          {/* <ExportImei ImportImeiExcel={excelData} /> */}
+          <div>
+            <form onSubmit={handleImportImei} enctype="multipart/form-data">
+              <div className="form-row">
+                <div className="input-data">
+                  <Input
+                    type="file"
+                    accept=".xls,.xlsx"
+                    onChange={handleFileUpload}
+                  />
+                </div>
+              </div>
+              <br></br>
+
+              <div className="form-row">
+                <div className="input-data textarea">
+                  <div className="form-row submit-btn">
+                    <button type="submit" class="btn btn-outline-secondary">
+                      Save Import Imei
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            {excelData ? (
+              <div className="table-wrap">
+                <table class="table">
+                  <thead>
+                    <tr>Kiểm Tra Lại Imei</tr>
+                  </thead>
+                  <tbody>
+                    {excelData.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {row.map((cell, cellIndex) => (
+                          <td key={cellIndex}>{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p>Chọn tệp Excel để hiển thị dữ liệu.</p>
+            )}
+          </div>
+        </Modal>
+        {/* <Pagination pagination={pagination} onPageChange={handlePageChange} /> */}
+      </section>
     </>
   );
 };
