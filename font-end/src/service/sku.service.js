@@ -9,4 +9,6 @@ const config = {
 export const readAll = (page) => {
   return httpClient.get(`/sku/display?${page}`);
 };
-
+export const readAllProductNew = () => {
+  return httpClient.get(`/sku/get-all`);
+};

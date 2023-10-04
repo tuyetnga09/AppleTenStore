@@ -1,12 +1,15 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.service.Iservice;
+import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.SKURepositoty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SKUServiceImpl implements Iservice<SKU> {
@@ -43,5 +46,8 @@ public class SKUServiceImpl implements Iservice<SKU> {
 
     }
 
+    public List<SKU> getAllListSkuFindByProduct(){
+        return skuRepositoty.skuFindByProduct();
+    }
 // viet ham hien thi o day
 }
