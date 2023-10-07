@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Page_Comeponet/layout/Header";
 import Footer from "../Page_Comeponet/layout/Footer";
-import { Button, Tag } from "antd";
+import { Button, Tag, notification  } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { detail } from "../../service/product.service";
+import { addToCart } from "../../service/cart.service";
+import { getSKUProduct } from "../../service/sku.service";
+import queryString from "query-string";
 
 export default function ProductDetail() {
   const { id } = useParams();
 
   const [item, setItem] = useState({});
+
+  const [item2, setItem2] = useState({});
+
+  const [filtersNoDate, setFiltersNoDate] = useState({
+    capacity: "",
+    color: "",
+    idProduct: "",
+  });
 
   useEffect(() => {
     detail(id)
@@ -20,7 +31,17 @@ export default function ProductDetail() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, []);
+
+      const paramsString = queryString.stringify(filtersNoDate);
+      getSKUProduct(paramsString)
+      .then((response) => {
+        setItem2(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, [filtersNoDate]);
 
   const [selectedDungLuong, setSelectedDungLuong] = useState(null);
 
@@ -28,6 +49,9 @@ export default function ProductDetail() {
 
   const handleDungLuongClick = (dungLuong) => {
     setSelectedDungLuong(dungLuong);
+    let item = { ...filtersNoDate };
+    item['capacity'] = dungLuong;
+    setFiltersNoDate(item);
   };
 
   const [selectedMauSac, setSelectedMauSac] = useState(null);
@@ -36,7 +60,50 @@ export default function ProductDetail() {
 
   const handleMauSacClick = (MauSac) => {
     setSelectedMauSac(MauSac);
+    let itemS = { ...filtersNoDate };
+    itemS['color'] = MauSac;
+    itemS['idProduct'] = item.id;
+    setFiltersNoDate(itemS);
+    console.log("ttt" + filtersNoDate);
   };
+
+
+  const handleAddToCart = () => {
+    if (selectedDungLuong && selectedMauSac) {
+      // Tạo một đối tượng AddCart để gửi lên API
+      const addToCartData = {
+        idAccount: 1, 
+        idSKU: item2.id, 
+        price: item2.price, 
+        quantity: 1,
+      };
+      addToCart(addToCartData)
+        .then((response) => {
+          console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
+          // window.location.href = "/cart"; 
+          if(item2.quantity <= 0){
+            notification.error({
+              message: "ADD TO CART",
+              description: "Sản phẩm đang tạm thời hết hàng",
+            });
+          }else{
+            notification.success({
+              message: "ADD TO CART",
+              description: "Thêm giỏ hàng thành công",
+            });
+          }
+        })
+        .catch((error) => {
+          console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+        });
+    } else {
+      notification.warning({
+        message: "ADD TO CART",
+        description: "Vui lòng chọn Dung Lương và Màu sắc",
+      });
+    }
+  };
+  
 
   return (
     <React.Fragment>
@@ -51,8 +118,9 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+        {/* <span>tttt {item2[0].quantity}</span> */}
         <div className="chitietSanpham" style={{ marginBottom: 100 }}>
-          <h1>{item.name && item.name}</h1>
+          <h1>{item.name && item.name}  {item2.capacity}  {item2.color}</h1>
           <div className="rating">
             <i className="fa fa-star" />
             <i className="fa fa-star" />
@@ -191,6 +259,11 @@ export default function ProductDetail() {
                   </Button>
                 ))}
               </div>
+              <div className="area_price">
+                <label className="giamgia">
+                  Số lượng phân loại: {item2.quantity && item2.quantity}
+                </label>
+              </div>
               {/* </div> */}
               <div className="area_promo">
                 <strong>khuyến mãi</strong>
@@ -226,7 +299,7 @@ export default function ProductDetail() {
                 {/* nameProduct là biến toàn cục được khởi tạo giá trị trong phanTich_URL_chiTietSanPham */}
                 <a
                   className="buy_now"
-                  onclick="themVaoGioHang(maProduct, nameProduct);"
+                  onClick={() => handleAddToCart()}
                 >
                   <b>
                     <i className="fa fa-cart-plus" /> Thêm vào giỏ hàng

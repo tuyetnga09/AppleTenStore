@@ -16,4 +16,7 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
             " FROM sku join product on sku.product_Id = product.id\n" +
             " where product.id = (select  id from product ORDER BY id DESC limit 1) ;", nativeQuery = true)
     List<SKU> skuFindByProduct();
+
+    @Query(value = "select product_id, quantity, id, capacity, color, price from sku where capacity like %?1% and color like %?2% and product_id like %?3%", nativeQuery = true)
+    SKU skuProduct(String capacity, String color, Integer idProduct);
 }
