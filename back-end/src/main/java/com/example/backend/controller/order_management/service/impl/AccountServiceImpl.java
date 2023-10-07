@@ -33,4 +33,18 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+    @Override
+    public Integer numberOfCustomersLastMonth() {
+        return accountRepository.numberOfCustomersLastMonth();
+    }
+
+    @Override
+    public Integer numberOfCustomersThisMonth() {
+        return accountRepository.numberOfCustomersThisMonth();
+    }
+
+//    @Override
+//    public Integer numberOfCustomers() {
+//        return accountRepository.numberOfCustomers();
+//    }
 }
