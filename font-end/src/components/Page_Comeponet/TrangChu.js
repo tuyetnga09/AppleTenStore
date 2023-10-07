@@ -1110,6 +1110,14 @@ export default function TrangChu() {
                 ) : (
                   productFilter
                 )}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <Pagination
                   pagination={pagination}
                   onPageChange={handlePageChange}
