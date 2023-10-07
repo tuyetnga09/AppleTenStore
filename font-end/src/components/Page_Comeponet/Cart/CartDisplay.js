@@ -10,7 +10,6 @@ import { Link ,useHistory,
 import { notification  } from "antd";
 import { getOneSKU } from "../../../service/sku.service";
 
-
 export default function CartDisplay(){
   const history = useHistory();
   const [products, setProducts] = useState([]);
@@ -218,13 +217,16 @@ export default function CartDisplay(){
                             </div>
                        
                         <div class="d-grid gap-2 col-6 mx-auto">
-                          <button
+                          <Link to={"/checkout"}>
+                              <button
                             type="button"
                             className="btn btn-danger btn-block btn-lg"
                            
                           >
                             TIẾN HÀNH ĐẶT HÀNG
                           </button>
+                          </Link>
+                         
                         </div>
                         <h5
                           className="fw-bold mb-5"

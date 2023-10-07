@@ -602,7 +602,7 @@ export default function TrangChu() {
     setFiltersCheap(item);
   }
   function duoi2Trieu() {
-    let item = { page: 0, key: "", minPrice: 0, maxPrice: 2000001 };
+    let item = { page: 0, key: "", minPrice: 0, maxPrice: 2000000 };
     setFiltersPrice(item);
     setFiltersCategory(null);
     setFilters(null);

@@ -91,7 +91,7 @@ export default function ProductDetail() {
         .then((response) => {
           console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
 
-          const paramsString = queryString.stringify(filtersNoDate);
+          const paramsString = queryString.stringify(filtersSKU);
             getSKUProduct(paramsString)
             .then((response) => {
               console.log(response.data);
