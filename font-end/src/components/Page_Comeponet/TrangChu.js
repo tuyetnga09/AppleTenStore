@@ -225,12 +225,6 @@ export default function TrangChu() {
   }
 
   function handlePageChange(newPage) {
-    // console.log("New Page: " + newPage);
-    // setFiltersDecreasePrice({
-    //   ...filtersDecreasePrice,
-    //   page: newPage,
-    // });
-
     if (filtersPrice != null) {
       setFiltersPrice({
         ...filtersPrice,

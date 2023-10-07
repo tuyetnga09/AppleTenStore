@@ -16,7 +16,7 @@ export default function ProductDetail() {
 
   const [item2, setItem2] = useState({});
 
-  const [filtersNoDate, setFiltersNoDate] = useState({
+  const [filtersSKU, setFiltersSKU] = useState({
     capacity: "",
     color: "",
     idProduct: "",
@@ -32,7 +32,7 @@ export default function ProductDetail() {
         console.log(`${error}`);
       });
 
-    const paramsString = queryString.stringify(filtersNoDate);
+    const paramsString = queryString.stringify(filtersSKU);
     getSKUProduct(paramsString)
       .then((response) => {
         setItem2(response.data);
@@ -41,7 +41,7 @@ export default function ProductDetail() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, [filtersNoDate]);
+  }, [filtersSKU]);
 
   const [selectedDungLuong, setSelectedDungLuong] = useState(null);
 
@@ -60,9 +60,9 @@ export default function ProductDetail() {
 
   const handleDungLuongClick = (dungLuong) => {
     setSelectedDungLuong(dungLuong);
-    let item = { ...filtersNoDate };
+    let item = { ...filtersSKU };
     item["capacity"] = dungLuong;
-    setFiltersNoDate(item);
+    setFiltersSKU(item);
   };
 
   const [selectedMauSac, setSelectedMauSac] = useState(null);
@@ -71,11 +71,11 @@ export default function ProductDetail() {
 
   const handleMauSacClick = (MauSac) => {
     setSelectedMauSac(MauSac);
-    let itemS = { ...filtersNoDate };
+    let itemS = { ...filtersSKU };
     itemS["color"] = MauSac;
     itemS["idProduct"] = item.id;
-    setFiltersNoDate(itemS);
-    console.log("ttt" + filtersNoDate);
+    setFiltersSKU(itemS);
+    console.log("ttt" + filtersSKU);
   };
 
   const handleAddToCart = () => {
@@ -276,23 +276,6 @@ export default function ProductDetail() {
                   ))}
                 </div>
               </div>
-              <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
-              <div className="button-container">
-                {MauSac.map((MauSac, index) => (
-                  <Button
-                    key={index}
-                    type={selectedMauSac === MauSac ? "primary" : "default"}
-                    onClick={() => handleMauSacClick(MauSac)}
-                    style={{
-                      marginLeft: "5px",
-                      marginBottom: "10px",
-                      marginRight: "5px",
-                    }}
-                  >
-                    {MauSac}
-                  </Button>
-                ))}
-              </div>
               <div className="area_price">
                 <label className="giamgia">
                   Số lượng phân loại: {item2.quantity && item2.quantity}
@@ -346,18 +329,6 @@ export default function ProductDetail() {
                   <p>Màn hình</p>
                   <div>{item.idscreen && item.idscreen.name}</div>
                 </li>
-                {/* <li>
-                  <p>Hệ điều hành</p>
-                  <div>Android 8.1 (Oreo)</div>
-                </li>
-                <li>
-                  <p>Camara sau</p>
-                  <div>12 MP và 5 MP (2 camera)</div>
-                </li>
-                <li>
-                  <p>Camara trước</p>
-                  <div>13 MP</div>
-                </li> */}
                 <li>
                   <p>CPU</p>
                   <div>{item.idchip && item.idchip.name}</div>
