@@ -4,13 +4,17 @@ import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.model.cartDetail.ChangeQuantity;
 import com.example.backend.controller.order_management.model.cartDetail.ChangeSizeInCart;
 import com.example.backend.controller.order_management.service.CartDetailService;
+import com.example.backend.entity.CartDetail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,5 +34,10 @@ public class CartDetailController {
     @PostMapping("/change-quantity")
     public ResponseObj changeQuantity(@RequestBody ChangeQuantity changeQuantity) {
         return new ResponseObj(cartDetailService.changeQuantity(changeQuantity));
+    }
+
+    @PutMapping("/update-quantity/{id}")
+    public void changeQuantity(@PathVariable("id") Integer id, @RequestParam("quantity") Integer newQuantity) {
+        cartDetailService.updateQuantity(id, newQuantity);
     }
 }

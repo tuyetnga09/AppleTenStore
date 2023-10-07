@@ -97,7 +97,7 @@ export default function TrangChu() {
         setDisplay(response.data.content);
         setProductFilter(outstandingProducts);
         setQuantityNoiBat(response.data.totalElements);
-        // setPagination(response.data);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -107,7 +107,7 @@ export default function TrangChu() {
         setProductNew(response.data.content);
         setProductFilter(listProductNew);
         setQuantityMoi(response.data.totalElements);
-        // setPagination(response.data);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -117,7 +117,7 @@ export default function TrangChu() {
         setProductCheap(response.data.content);
         setProductFilter(listProductCheap);
         setQuantityGiaRe(response.data.totalElements);
-        // setPagination(response.data);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -126,7 +126,7 @@ export default function TrangChu() {
       .then((response) => {
         setProductByPrice(response.data.content);
         setProductFilter(listProductByPrice);
-        // setPagination(response.data);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -135,7 +135,7 @@ export default function TrangChu() {
       .then((response) => {
         setProductByCategory(response.data.content);
         setProductFilter(listProductByCategory);
-        // setPagination(response.data);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -144,7 +144,7 @@ export default function TrangChu() {
       .then((response) => {
         setProductByAscendingPrice(response.data.content);
         setProductFilter(listProductByAscendingPrice);
-        // setPagination(response.data);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -153,7 +153,7 @@ export default function TrangChu() {
       .then((response) => {
         setProductByDecreasePrice(response.data.content);
         setProductFilter(listProductByDecreasePrice);
-        // setPagination(response.data);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -225,11 +225,60 @@ export default function TrangChu() {
   }
 
   function handlePageChange(newPage) {
-    console.log("New Page: " + newPage);
-    setFiltersDecreasePrice({
-      ...filtersDecreasePrice,
-      page: newPage,
-    });
+    // console.log("New Page: " + newPage);
+    // setFiltersDecreasePrice({
+    //   ...filtersDecreasePrice,
+    //   page: newPage,
+    // });
+
+    if (filtersPrice != null) {
+      setFiltersPrice({
+        ...filtersPrice,
+        page: newPage,
+      });
+    }
+
+    if (filtersCategory != null) {
+      setFiltersCategory({
+        ...filtersCategory,
+        page: newPage,
+      });
+    }
+
+    if (filtersAcendingPrice != null) {
+      setFiltersAcendingPrice({
+        ...filtersAcendingPrice,
+        page: newPage,
+      });
+    }
+
+    if (filtersDecreasePrice != null) {
+      setFiltersDecreasePrice({
+        ...filtersDecreasePrice,
+        page: newPage,
+      });
+    }
+
+    if (filtersNew != null) {
+      setFiltersNew({
+        ...filtersNew,
+        page: newPage,
+      });
+    }
+
+    if (filtersCheap != null) {
+      setFiltersCheap({
+        ...filtersCheap,
+        page: newPage,
+      });
+    }
+
+    if (filters != null) {
+      setFilters({
+        ...filters,
+        page: newPage,
+      });
+    }
   }
 
   const outstandingProducts = display.map((dl) => {
@@ -242,7 +291,12 @@ export default function TrangChu() {
           />
           <h3>{dl.name}</h3>
           <div className="price">
-            <strong>{}₫</strong>
+            <strong>
+              {dl.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
           </div>
           <div className="ratingresult">
             <i className="fa fa-star" />
@@ -281,7 +335,12 @@ export default function TrangChu() {
           />
           <h3>{prn.name}</h3>
           <div className="price">
-            <strong>{prn.price}₫</strong>
+            <strong>
+              {prn.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
           </div>
           <div className="ratingresult">
             <i className="fa fa-star" />
@@ -318,7 +377,12 @@ export default function TrangChu() {
           />
           <h3>{prc.name}</h3>
           <div className="price">
-            <strong>{prc.price}₫</strong>
+            <strong>
+              {prc.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
           </div>
           <div className="ratingresult">
             <i className="fa fa-star" />
@@ -355,7 +419,12 @@ export default function TrangChu() {
           />
           <h3>{prp.name}</h3>
           <div className="price">
-            <strong>{prp.price}₫</strong>
+            <strong>
+              {prp.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
           </div>
           <div className="ratingresult">
             <i className="fa fa-star" />
@@ -391,7 +460,12 @@ export default function TrangChu() {
           />
           <h3>{prcg.name}</h3>
           <div className="price">
-            <strong>{prcg.price}₫</strong>
+            <strong>
+              {prcg.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
           </div>
           <div className="ratingresult">
             <i className="fa fa-star" />
@@ -427,7 +501,12 @@ export default function TrangChu() {
           />
           <h3>{prap.name}</h3>
           <div className="price">
-            <strong>{prap.price}₫</strong>
+            <strong>
+              {prap.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
           </div>
           <div className="ratingresult">
             <i className="fa fa-star" />
@@ -463,7 +542,12 @@ export default function TrangChu() {
           />
           <h3>{prdp.name}</h3>
           <div className="price">
-            <strong>{prdp.price}₫</strong>
+            <strong>
+              {prdp.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
           </div>
           <div className="ratingresult">
             <i className="fa fa-star" />
@@ -500,6 +584,7 @@ export default function TrangChu() {
     setFiltersNew(null);
     setFiltersCheap(null);
   }
+
   function moi() {
     showContainProducts();
     let item = { page: 0, key: "" };
@@ -949,12 +1034,7 @@ export default function TrangChu() {
           </div>
           <div className="flexContain">
             <div className="pricesRangeFilter dropdown">
-              <button
-                className="dropbtn"
-                // onClick={() => giaTien()}
-              >
-                Giá tiền
-              </button>
+              <button className="dropbtn">Giá tiền</button>
               <div
                 class="dropdown-content"
                 onClick={() => showContainProducts()}
@@ -976,29 +1056,6 @@ export default function TrangChu() {
                 </Link>
               </div>
             </div>
-            {/* <div className="promosFilter dropdown">
-              <button className="dropbtn">Khuyến mãi</button>
-              <div
-                class="dropdown-content"
-                onClick={() => showContainProducts()}
-              >
-                <Link to={`/`}>Giảm giá</Link>
-                <Link to={`/`}>Trả góp</Link>
-                <Link to={`/`}>Mới ra mắt</Link>
-                <Link to={`/`}>Giá rẻ online</Link>
-              </div>
-            </div> */}
-            {/* <div className="starFilter dropdown">
-              <button className="dropbtn">Số lượng sao</button>
-              <div
-                class="dropdown-content"
-                onClick={() => showContainProducts()}
-              >
-                <Link to={`/`}>Trên 2 sao</Link>
-                <Link to={`/`}>Trên 3 sao</Link>
-                <Link to={`/`}>Trên 4 sao</Link>
-              </div>
-            </div> */}
             <div className="sortFilter dropdown">
               <button className="dropbtn">Sắp xếp</button>
               <div
@@ -1011,12 +1068,6 @@ export default function TrangChu() {
                 <Link to={`/`} onClick={() => decreasePrice()}>
                   Giá giảm dần
                 </Link>
-                {/* <Link to={`/`}>Sao tăng dần</Link>
-                <Link to={`/`}>Sao giảm dần</Link>
-                <Link to={`/`}>Đánh giá tăng dần</Link>
-                <Link to={`/`}>Đánh giá giảm dần</Link>
-                <Link to={`/`}>Tên A-Z</Link>
-                <Link to={`/`}>Tên Z-A</Link> */}
               </div>
             </div>
           </div>{" "}
@@ -1048,11 +1099,27 @@ export default function TrangChu() {
                 onChange={handleChange}
               />
               <div className="listSpTrongKhung flexContain">
-                {productFilter}
-                {/* <Pagination
+                {productFilter == "" ? (
+                  <div
+                    style={{
+                      opacity: 1,
+                      width: "auto",
+                      color: "red",
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      height: "310px",
+                    }}
+                  >
+                    <i class="fa fa-times-circle"></i>
+                    Không có sản phẩm nào...
+                  </div>
+                ) : (
+                  productFilter
+                )}
+                <Pagination
                   pagination={pagination}
                   onPageChange={handlePageChange}
-                /> */}
+                />
               </div>
             </div>{" "}
             {/* End FilterName */}
@@ -1120,542 +1187,6 @@ export default function TrangChu() {
               </Link>
             </div>{" "}
             <hr />
-            {/* <div className="khungSanPham" style={{ borderColor: "#ff9c00" }}>
-              <h3
-                className="tenKhung"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(120deg, #ff9c00 0%, #ec1f1f 50%, #ff9c00 100%)",
-                }}
-              >
-                * TRẢ GÓP 0% *
-              </h3>
-              <div className="listSpTrongKhung flexContain">
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?iPhone-8-Plus-64GB">
-                    <img
-                      src="https://cdn.tgdd.vn/Products/Images/42/114110/iphone-8-plus-hh-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>iPhone 8 Plus 64GB</h3>
-                    <div className="price">
-                      <strong>20.990.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <span>230 đánh giá</span>
-                    </div>
-                    <label className="tragop">Trả góp 0%</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('App4', 'iPhone 8 Plus 64GB'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Vivo-Y71">
-                    <img
-                      src="https://cdn.tgdd.vn/Products/Images/42/158585/vivo-y71-docquyen-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>Vivo Y71</h3>
-                    <div className="price">
-                      <strong>3.290.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star-o" />
-                      <span>60 đánh giá</span>
-                    </div>
-                    <label className="tragop">Trả góp 0%</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Viv3', 'Vivo Y71'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?SamSung-Galaxy-J4+">
-                    <img
-                      src="img/products/samsung-galaxy-j4-plus-pink-400x400.jpg"
-                      alt=""
-                    />
-                    <h3>SamSung Galaxy J4+</h3>
-                    <div className="price">
-                      <strong>3.490.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star-o" />
-                      <i className="fa fa-star-o" />
-                      <span>26 đánh giá</span>
-                    </div>
-                    <label className="tragop">Trả góp 0%</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Sam0', 'SamSung Galaxy J4+'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Samsung-Galaxy-A7-(2018)">
-                    <img
-                      src="https://cdn.tgdd.vn/Products/Images/42/194327/samsung-galaxy-a7-2018-128gb-black-400x400.jpg"
-                      alt=""
-                    />
-                    <h3>Samsung Galaxy A7 (2018)</h3>
-                    <div className="price">
-                      <strong>8.990.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star-o" />
-                      <span>22 đánh giá</span>
-                    </div>
-                    <label className="tragop">Trả góp 0%</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Sam3', 'Samsung Galaxy A7 (2018)'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Huawei-Nova-3">
-                    <img
-                      src="img/products/huawei-nova-3-2-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>Huawei Nova 3</h3>
-                    <div className="price">
-                      <strong>9.990.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star-o" />
-                      <span>22 đánh giá</span>
-                    </div>
-                    <label className="tragop">Trả góp 0%</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Hua1', 'Huawei Nova 3'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>{" "}
-              </div>
-              <a
-                className="xemTatCa"
-                href="index.html?promo=tragop&sort=rateCount-decrease"
-                style={{
-                  borderLeft: "2px solid #ff9c00",
-                  borderRight: "2px solid #ff9c00",
-                }}
-              >
-                Xem tất cả 11 sản phẩm
-              </a>
-            </div>{" "}
-            <hr />
-            <div className="khungSanPham" style={{ borderColor: "#5de272" }}>
-              <h3
-                className="tenKhung"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(120deg, #5de272 0%, #007012 50%, #5de272 100%)",
-                }}
-              >
-                * GIÁ SỐC ONLINE *
-              </h3>
-              <div className="listSpTrongKhung flexContain">
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Huawei-Nova-2i">
-                    <img
-                      src="https://cdn.tgdd.vn/Products/Images/42/157031/samsung-galaxy-a6-2018-2-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>Huawei Nova 2i</h3>
-                    <div className="price">
-                      <strong>3.990.000₫</strong>
-                      <span>4.490.000₫</span>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star-o" />
-                      <span>804 đánh giá</span>
-                    </div>
-                    <label className="giareonline">Giá rẻ online</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Hua3', 'Huawei Nova 2i'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?iPhone-X-256GB-Silver">
-                    <img
-                      src="img/products/iphone-x-256gb-silver-400x400.jpg"
-                      alt=""
-                    />
-                    <h3>iPhone X 256GB Silver</h3>
-                    <div className="price">
-                      <strong>27.990.000₫</strong>
-                      <span>31.990.000₫</span>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star-o" />
-                      <span>10 đánh giá</span>
-                    </div>
-                    <label className="giareonline">Giá rẻ online</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('App0', 'iPhone X 256GB Silver'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?iPhone-Xr-64GB">
-                    <img
-                      src="https://cdn.tgdd.vn/Products/Images/42/190325/iphone-xr-black-400x460.png"
-                      alt=""
-                    />
-                    <h3>iPhone Xr 64GB</h3>
-                    <div className="price">
-                      <strong>19.990.000₫</strong>
-                      <span>22.990.000₫</span>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star-o" />
-                      <span>5 đánh giá</span>
-                    </div>
-                    <label className="giareonline">Giá rẻ online</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('App6', 'iPhone Xr 64GB'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?iPhone-Xr-128GB">
-                    <img
-                      src="https://cdn.tgdd.vn/Products/Images/42/191483/iphone-xr-128gb-red-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>iPhone Xr 128GB</h3>
-                    <div className="price">
-                      <strong>22.990.000₫</strong>
-                      <span>24.990.000₫</span>
-                    </div>
-                    <div className="ratingresult"></div>
-                    <label className="giareonline">Giá rẻ online</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('App3', 'iPhone Xr 128GB'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?iPhone-7-Plus-32GB">
-                    <img
-                      src="img/products/iphone-7-plus-32gb-hh-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>iPhone 7 Plus 32GB</h3>
-                    <div className="price">
-                      <strong>16.990.000₫</strong>
-                      <span>17.000.000₫</span>
-                    </div>
-                    <div className="ratingresult"></div>
-                    <label className="giareonline">Giá rẻ online</label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('App2', 'iPhone 7 Plus 32GB'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>{" "}
-              </div>
-              <a
-                className="xemTatCa"
-                href="index.html?promo=giareonline&sort=rateCount-decrease"
-                style={{
-                  borderLeft: "2px solid #5de272",
-                  borderRight: "2px solid #5de272",
-                }}
-              >
-                Xem tất cả 5 sản phẩm
-              </a>
-            </div>{" "}
-            <hr />
-            <div className="khungSanPham" style={{ borderColor: "#ff9c00" }}>
-              <h3
-                className="tenKhung"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(120deg, #ff9c00 0%, #ec1f1f 50%, #ff9c00 100%)",
-                }}
-              >
-                * GIẢM GIÁ LỚN *
-              </h3>
-              <div className="listSpTrongKhung flexContain">
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Oppo-F9">
-                    <img src="img/products/oppo-f9-red-600x600.jpg" alt="" />
-                    <h3>Oppo F9</h3>
-                    <div className="price">
-                      <strong>7.690.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <span>188 đánh giá</span>
-                    </div>
-                    <label className="giamgia">
-                      <i className="fa fa-bolt" /> Giảm 500.000₫
-                    </label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Opp0', 'Oppo F9'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Nokia-5.1-Plus">
-                    <img
-                      src="img/products/nokia-51-plus-black-18thangbh-400x400.jpg"
-                      alt=""
-                    />
-                    <h3>Nokia 5.1 Plus</h3>
-                    <div className="price">
-                      <strong>4.790.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <span>7 đánh giá</span>
-                    </div>
-                    <label className="giamgia">
-                      <i className="fa fa-bolt" /> Giảm 250.000₫
-                    </label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Nok0', 'Nokia 5.1 Plus'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Samsung-Galaxy-A8+-(2018)">
-                    <img
-                      src="img/products/samsung-galaxy-a8-plus-2018-gold-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>Samsung Galaxy A8+ (2018)</h3>
-                    <div className="price">
-                      <strong>11.990.000₫</strong>
-                    </div>
-                    <div className="ratingresult"></div>
-                    <label className="giamgia">
-                      <i className="fa fa-bolt" /> Giảm 1.500.000₫
-                    </label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Sam1', 'Samsung Galaxy A8+ (2018)'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Samsung-Galaxy-J8">
-                    <img
-                      src="img/products/samsung-galaxy-j8-600x600-600x600.jpg"
-                      alt=""
-                    />
-                    <h3>Samsung Galaxy J8</h3>
-                    <div className="price">
-                      <strong>6.290.000₫</strong>
-                    </div>
-                    <div className="ratingresult"></div>
-                    <label className="giamgia">
-                      <i className="fa fa-bolt" /> Giảm 500.000₫
-                    </label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Sam2', 'Samsung Galaxy J8'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>
-                <li className="sanPham">
-                  <a href="chitietsanpham.html?Nokia-black-future">
-                    <img
-                      src="https://cdn.tgdd.vn/Products/Images/42/22701/dien-thoai-di-dong-Nokia-1280-dienmay.com-l.jpg"
-                      alt=""
-                    />
-                    <h3>Nokia black future</h3>
-                    <div className="price">
-                      <strong>999.999.000₫</strong>
-                    </div>
-                    <div className="ratingresult">
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <i className="fa fa-star" />
-                      <span>9999 đánh giá</span>
-                    </div>
-                    <label className="giamgia">
-                      <i className="fa fa-bolt" /> Giảm 1.000₫
-                    </label>
-                    <div className="tooltip">
-                      <button
-                        className="themvaogio"
-                        onclick="themVaoGioHang('Nok1', 'Nokia black future'); return false;"
-                      >
-                        <span className="tooltiptext" style={{ fontSize: 15 }}>
-                          Thêm vào giỏ
-                        </span>
-                        +
-                      </button>
-                    </div>
-                  </a>
-                </li>{" "}
-              </div>
-              <a
-                className="xemTatCa"
-                href="index.html?promo=giamgia"
-                style={{
-                  borderLeft: "2px solid #ff9c00",
-                  borderRight: "2px solid #ff9c00",
-                }}
-              >
-                Xem tất cả 8 sản phẩm
-              </a>
-            </div>{" "}
-            <hr /> */}
             <div className="khungSanPham" style={{ borderColor: "#5de272" }}>
               <h3
                 className="tenKhung"
