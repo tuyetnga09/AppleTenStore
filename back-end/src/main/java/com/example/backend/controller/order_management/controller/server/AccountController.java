@@ -25,4 +25,14 @@ public class AccountController {
     public ResponseObj getOneByEmail(@RequestParam("email") String email) {
         return new ResponseObj(accountService.getOneByEmail(email));
     }
+
+    @GetMapping("/numberOfCustomersLastMonth")
+    public Integer numberOfCustomersLastMonth(){
+        return accountService.numberOfCustomersLastMonth();
+    }
+
+    @GetMapping("/numberOfCustomersThisMonth")
+    public Integer numberOfCustomersThisMonth(){
+        return accountService.numberOfCustomersThisMonth();
+    }
 }

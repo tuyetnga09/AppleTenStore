@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Page_Comeponet/layout/Header";
 import Footer from "../Page_Comeponet/layout/Footer";
-import { Button, Tag, notification  } from "antd";
+import { Button, Tag, notification } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { detail } from "../../service/product.service";
@@ -16,7 +16,7 @@ export default function ProductDetail() {
 
   const [item2, setItem2] = useState({});
 
-  const [filtersNoDate, setFiltersNoDate] = useState({
+  const [filtersSKU, setFiltersSKU] = useState({
     capacity: "",
     color: "",
     idProduct: "",
@@ -32,8 +32,8 @@ export default function ProductDetail() {
         console.log(`${error}`);
       });
 
-      const paramsString = queryString.stringify(filtersNoDate);
-      getSKUProduct(paramsString)
+    const paramsString = queryString.stringify(filtersSKU);
+    getSKUProduct(paramsString)
       .then((response) => {
         setItem2(response.data);
         console.log(response.data);
@@ -41,17 +41,28 @@ export default function ProductDetail() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, [filtersNoDate]);
+  }, [filtersSKU]);
 
   const [selectedDungLuong, setSelectedDungLuong] = useState(null);
 
-  const dungLuong = item.capacities ? item.capacities.map((cp) => cp.name) : [];
+  const dungLuong = item.capacities
+    ? item.capacities
+        .map((cp) => cp.name)
+        .sort((a, b) => {
+          // Trích xuất giá trị số từ chuỗi, ví dụ: '512GB' -> 512
+          const aGB = parseInt(a);
+          const bGB = parseInt(b);
+
+          // So sánh dựa trên giá trị số
+          return aGB - bGB;
+        })
+    : [];
 
   const handleDungLuongClick = (dungLuong) => {
     setSelectedDungLuong(dungLuong);
-    let item = { ...filtersNoDate };
-    item['capacity'] = dungLuong;
-    setFiltersNoDate(item);
+    let item = { ...filtersSKU };
+    item["capacity"] = dungLuong;
+    setFiltersSKU(item);
   };
 
   const [selectedMauSac, setSelectedMauSac] = useState(null);
@@ -60,20 +71,20 @@ export default function ProductDetail() {
 
   const handleMauSacClick = (MauSac) => {
     setSelectedMauSac(MauSac);
-    let itemS = { ...filtersNoDate };
-    itemS['color'] = MauSac;
-    itemS['idProduct'] = item.id;
-    setFiltersNoDate(itemS);
-    console.log("ttt" + filtersNoDate);
+    let itemS = { ...filtersSKU };
+    itemS["color"] = MauSac;
+    itemS["idProduct"] = item.id;
+    setFiltersSKU(itemS);
+    console.log("ttt" + filtersSKU);
   };
 
   const handleAddToCart = () => {
     if (selectedDungLuong && selectedMauSac) {
       // Tạo một đối tượng AddCart để gửi lên API
       const addToCartData = {
-        idAccount: 1, 
-        idSKU: item2.id, 
-        price: item2.price, 
+        idAccount: 1,
+        idSKU: item2.id,
+        price: item2.price,
         quantity: 1,
       };
       addToCart(addToCartData)
@@ -100,12 +111,11 @@ export default function ProductDetail() {
             .catch((error) => {
               console.log(`${error}`);
             });
-          
+
         })
         .catch((error) => {
           console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
         });
-   
     } else {
       notification.warning({
         message: "ADD TO CART",
@@ -130,7 +140,9 @@ export default function ProductDetail() {
         </div>
         {/* <span>tttt {item2[0].quantity}</span> */}
         <div className="chitietSanpham" style={{ marginBottom: 100 }}>
-          <h1>{item.name && item.name}  {item2.capacity}  {item2.color}</h1>
+          <h1>
+            {item.name && item.name} {item2.capacity} {item2.color}
+          </h1>
           <div className="rating">
             <i className="fa fa-star" />
             <i className="fa fa-star" />
@@ -222,7 +234,12 @@ export default function ProductDetail() {
             </div>
             <div className="price_sale">
               <div className="area_price">
-                <strong>{item.price}₫</strong>
+                <strong>
+                  {item?.price?.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </strong>
                 <label className="moiramat">Mới ra mắt</label>
                 <label className="giamgia">
                   Số lượng: {item.quantity && item.quantity}
@@ -232,42 +249,43 @@ export default function ProductDetail() {
                 <img src="img/chitietsanpham/clock-152067_960_720.png" />
                 <div>NHẬN HÀNG TRONG 1 GIỜ</div>
               </div> */}
-              {/* <div className="area_promo"> */}
-              <strong style={{ marginLeft: "10px" }}>DUNG LƯỢNG</strong>
-              <div className="button-container">
-                {dungLuong.map((dungLuong, index) => (
-                  <Button
-                    key={index}
-                    type={
-                      selectedDungLuong === dungLuong ? "primary" : "default"
-                    }
-                    onClick={() => handleDungLuongClick(dungLuong)}
-                    style={{
-                      marginLeft: "5px",
-                      marginBottom: "10px",
-                      marginRight: "5px",
-                    }}
-                  >
-                    {dungLuong}
-                  </Button>
-                ))}
-              </div>
-              <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
-              <div className="button-container">
-                {MauSac.map((MauSac, index) => (
-                  <Button
-                    key={index}
-                    type={selectedMauSac === MauSac ? "primary" : "default"}
-                    onClick={() => handleMauSacClick(MauSac)}
-                    style={{
-                      marginLeft: "5px",
-                      marginBottom: "10px",
-                      marginRight: "5px",
-                    }}
-                  >
-                    {MauSac}
-                  </Button>
-                ))}
+              <div className="area_promo">
+                <strong style={{ marginLeft: "10px" }}>DUNG LƯỢNG</strong>
+                <div className="button-container">
+                  {dungLuong.map((dungLuong, index) => (
+                    <Button
+                      key={index}
+                      type={
+                        selectedDungLuong === dungLuong ? "primary" : "default"
+                      }
+                      onClick={() => handleDungLuongClick(dungLuong)}
+                      style={{
+                        marginLeft: "5px",
+                        marginBottom: "10px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {dungLuong}
+                    </Button>
+                  ))}
+                </div>
+                <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
+                <div className="button-container">
+                  {MauSac.map((MauSac, index) => (
+                    <Button
+                      key={index}
+                      type={selectedMauSac === MauSac ? "primary" : "default"}
+                      onClick={() => handleMauSacClick(MauSac)}
+                      style={{
+                        marginLeft: "5px",
+                        marginBottom: "10px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {MauSac}
+                    </Button>
+                  ))}
+                </div>
               </div>
               <div className="area_price">
                 <label className="giamgia">
@@ -307,10 +325,7 @@ export default function ProductDetail() {
               </div>
               <div className="area_order">
                 {/* nameProduct là biến toàn cục được khởi tạo giá trị trong phanTich_URL_chiTietSanPham */}
-                <a
-                  className="buy_now"
-                  onClick={() => handleAddToCart()}
-                >
+                <a className="buy_now" onClick={() => handleAddToCart()}>
                   <b>
                     <i className="fa fa-cart-plus" /> Thêm vào giỏ hàng
                   </b>
