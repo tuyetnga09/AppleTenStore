@@ -24,7 +24,18 @@ export default function ProductDetail() {
 
   const [selectedDungLuong, setSelectedDungLuong] = useState(null);
 
-  const dungLuong = item.capacities ? item.capacities.map((cp) => cp.name) : [];
+  const dungLuong = item.capacities
+    ? item.capacities
+        .map((cp) => cp.name)
+        .sort((a, b) => {
+          // Trích xuất giá trị số từ chuỗi, ví dụ: '512GB' -> 512
+          const aGB = parseInt(a);
+          const bGB = parseInt(b);
+
+          // So sánh dựa trên giá trị số
+          return aGB - bGB;
+        })
+    : [];
 
   const handleDungLuongClick = (dungLuong) => {
     setSelectedDungLuong(dungLuong);
@@ -144,7 +155,12 @@ export default function ProductDetail() {
             </div>
             <div className="price_sale">
               <div className="area_price">
-                <strong>{item.price}₫</strong>
+                <strong>
+                  {item?.price?.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </strong>
                 <label className="moiramat">Mới ra mắt</label>
                 <label className="giamgia">
                   Số lượng: {item.quantity && item.quantity}
@@ -154,44 +170,44 @@ export default function ProductDetail() {
                 <img src="img/chitietsanpham/clock-152067_960_720.png" />
                 <div>NHẬN HÀNG TRONG 1 GIỜ</div>
               </div> */}
-              {/* <div className="area_promo"> */}
-              <strong style={{ marginLeft: "10px" }}>DUNG LƯỢNG</strong>
-              <div className="button-container">
-                {dungLuong.map((dungLuong, index) => (
-                  <Button
-                    key={index}
-                    type={
-                      selectedDungLuong === dungLuong ? "primary" : "default"
-                    }
-                    onClick={() => handleDungLuongClick(dungLuong)}
-                    style={{
-                      marginLeft: "5px",
-                      marginBottom: "10px",
-                      marginRight: "5px",
-                    }}
-                  >
-                    {dungLuong}
-                  </Button>
-                ))}
+              <div className="area_promo">
+                <strong style={{ marginLeft: "10px" }}>DUNG LƯỢNG</strong>
+                <div className="button-container">
+                  {dungLuong.map((dungLuong, index) => (
+                    <Button
+                      key={index}
+                      type={
+                        selectedDungLuong === dungLuong ? "primary" : "default"
+                      }
+                      onClick={() => handleDungLuongClick(dungLuong)}
+                      style={{
+                        marginLeft: "5px",
+                        marginBottom: "10px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {dungLuong}
+                    </Button>
+                  ))}
+                </div>
+                <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
+                <div className="button-container">
+                  {MauSac.map((MauSac, index) => (
+                    <Button
+                      key={index}
+                      type={selectedMauSac === MauSac ? "primary" : "default"}
+                      onClick={() => handleMauSacClick(MauSac)}
+                      style={{
+                        marginLeft: "5px",
+                        marginBottom: "10px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {MauSac}
+                    </Button>
+                  ))}
+                </div>
               </div>
-              <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
-              <div className="button-container">
-                {MauSac.map((MauSac, index) => (
-                  <Button
-                    key={index}
-                    type={selectedMauSac === MauSac ? "primary" : "default"}
-                    onClick={() => handleMauSacClick(MauSac)}
-                    style={{
-                      marginLeft: "5px",
-                      marginBottom: "10px",
-                      marginRight: "5px",
-                    }}
-                  >
-                    {MauSac}
-                  </Button>
-                ))}
-              </div>
-              {/* </div> */}
               <div className="area_promo">
                 <strong>khuyến mãi</strong>
                 <div className="promo">
