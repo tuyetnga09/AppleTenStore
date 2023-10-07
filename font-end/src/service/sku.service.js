@@ -16,3 +16,7 @@ export const readAllProductNew = () => {
 export const getSKUProduct = (page) => {
   return httpClient.get(`/sku/getSKU?${page}`);
 };
+
+export const getOneSKU = (id) => {
+  return httpClient.get(`/sku/getOneSKU/${id}`);
+};

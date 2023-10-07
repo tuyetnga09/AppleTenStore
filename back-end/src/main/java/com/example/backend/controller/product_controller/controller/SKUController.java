@@ -42,4 +42,9 @@ public class SKUController {
         return skuService.getSkuProduct(capacity,color,idProduct);
     }
 
+    @GetMapping("getOneSKU/{id}")
+    public SKU getOneSKU(@PathVariable("id") Long id){
+        return skuService.findByID(id);
+    }
+
 }

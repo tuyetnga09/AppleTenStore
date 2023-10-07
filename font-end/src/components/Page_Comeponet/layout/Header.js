@@ -16,6 +16,32 @@ export default function Header(){
       });
   }, []);
 
+  // const fetchQuantity = () => {
+  //   readQuantityInCart(1)
+  //     .then((response) => {
+  //       console.log(response.data);
+  //       setQuantity(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(`${error}`);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   // Khởi chạy lần đầu
+  //   fetchQuantity();
+
+  //   // Thiết lập một interval để gọi fetchQuantity sau mỗi 5 giây (hoặc thời gian bạn muốn)
+  //   const intervalId = setInterval(() => {
+  //     fetchQuantity();
+  //   }, 1000);
+
+  //   // Hủy interval khi component unmount (nếu cần)
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, []);
+
   return(
     <React.Fragment>
        <>

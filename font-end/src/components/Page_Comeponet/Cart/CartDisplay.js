@@ -8,11 +8,13 @@ import { RightOutlined } from "@ant-design/icons";
 import { Link ,useHistory,
 } from "react-router-dom/cjs/react-router-dom.min";
 import { notification  } from "antd";
+import { getOneSKU } from "../../../service/sku.service";
+
 
 export default function CartDisplay(){
   const history = useHistory();
   const [products, setProducts] = useState([]);
-
+  
   useEffect(() => {
     readAll(1)
       .then((response) => {
@@ -22,6 +24,8 @@ export default function CartDisplay(){
       .catch((error) => {
         console.log(`${error}`);
       });
+
+     
   }, []);
 
   async function remove(id) {
@@ -31,8 +35,10 @@ export default function CartDisplay(){
       window.location.reload();
     });
   }
-  
-  const handleUpdateQuantity = (cartItemId, newQuantity) => {
+
+  const [sku, setSKU] = useState([]);
+
+  const handleUpdateQuantity = (cartItemId, newQuantity, idSKU) => {
     if (newQuantity <= 0) {
       // xóa sản phẩm khỏi giỏ hàng khi so luong bang 0
       deleteCartDetail(cartItemId);
@@ -44,20 +50,27 @@ export default function CartDisplay(){
               readAll(1)
                   .then((response) => {
                       console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-                      if(products.quantity <= 0){
-                        notification.error({
-                          message: "ADD TO CART",
-                          description: "Sản phẩm đang tạm thời hết hàng",
-                        });
-                      }else{
-                        notification.success({
-                          message: "ADD TO CART",
-                          description: "Cập nhật giỏ hàng thành công",
-                        });
-                      }
-
+                      getOneSKU(idSKU)
+                      .then((response) => {
+                        console.log(response.data);
+                       setSKU(response.data);
+                        if(sku.quantity <= 0){
+                          notification.error({
+                            message: "ADD TO CART",
+                            description: "Sản phẩm đang tạm thời hết hàng",
+                          });
+                        }else{
+                          notification.success({
+                            message: "ADD TO CART",
+                            description: "Cập nhật giỏ hàng thành công",
+                          });
+                        }
+                         
+                      })
+                      .catch((error) => {
+                        console.log(`${error}`);
+                      });
                       setProducts(response.data);
-                      
                   })
                   .catch((error) => {
                       console.log("Lỗi khi đọc lại giỏ hàng:", error);
@@ -148,7 +161,7 @@ export default function CartDisplay(){
                                         <button
                                           // onClick={() => handleDownQuantiy(product.id)}
                                           // className="minus"
-                                          onClick={() => handleUpdateQuantity(product.idCartDetail, product.quantity - 1)}
+                                          onClick={() => handleUpdateQuantity(product.idCartDetail, product.quantity - 1, product.idSKU)}
                                           className="minus"
                                         />
                                         <input
@@ -161,7 +174,7 @@ export default function CartDisplay(){
                                         <button
                                           // onClick={() => handleUpQuantiy(product.id)}
                                           // className="plus"
-                                          onClick={() => handleUpdateQuantity(product.idCartDetail, parseInt(product.quantity) + 1)}
+                                          onClick={() => handleUpdateQuantity(product.idCartDetail, parseInt(product.quantity) + 1, product.idSKU)}
                                           className="plus"
                                         />
                                 </div>

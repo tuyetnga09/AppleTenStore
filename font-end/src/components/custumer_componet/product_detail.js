@@ -67,7 +67,6 @@ export default function ProductDetail() {
     console.log("ttt" + filtersNoDate);
   };
 
-
   const handleAddToCart = () => {
     if (selectedDungLuong && selectedMauSac) {
       // Tạo một đối tượng AddCart để gửi lên API
@@ -80,22 +79,33 @@ export default function ProductDetail() {
       addToCart(addToCartData)
         .then((response) => {
           console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
-          // window.location.href = "/cart"; 
-          if(item2.quantity <= 0){
-            notification.error({
-              message: "ADD TO CART",
-              description: "Sản phẩm đang tạm thời hết hàng",
+
+          const paramsString = queryString.stringify(filtersNoDate);
+            getSKUProduct(paramsString)
+            .then((response) => {
+              console.log(response.data);
+                if(item2.quantity <= 0){
+                  notification.error({
+                    message: "ADD TO CART",
+                    description: "Sản phẩm đang tạm thời hết hàng",
+                  });
+                }else{
+                  notification.success({
+                    message: "ADD TO CART",
+                    description: "Thêm giỏ hàng thành công",
+                  });
+                }
+                setItem2(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
             });
-          }else{
-            notification.success({
-              message: "ADD TO CART",
-              description: "Thêm giỏ hàng thành công",
-            });
-          }
+          
         })
         .catch((error) => {
           console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
         });
+   
     } else {
       notification.warning({
         message: "ADD TO CART",
