@@ -22,14 +22,6 @@ export default function TrangChu() {
 
   const [productCheap, setProductCheap] = useState([]);
 
-  const [productByPrice, setProductByPrice] = useState([]);
-
-  const [productByCategory, setProductByCategory] = useState([]);
-
-  const [productByAscendingPrice, setProductByAscendingPrice] = useState([]);
-
-  const [productByDecreasePrice, setProductByDecreasePrice] = useState([]);
-
   const [quantityNoiBat, setQuantityNoiBat] = useState([]);
 
   const [quantityMoi, setQuantityMoi] = useState([]);
@@ -95,7 +87,51 @@ export default function TrangChu() {
     readAll(paramsString)
       .then((response) => {
         setDisplay(response.data.content);
-        setProductFilter(outstandingProducts);
+        setProductFilter(
+          response.data.content.map((dl) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()}>
+                <Link to={`/product/${dl.id}`}>
+                  <img
+                    src="https://ava-grp-talk.zadn.vn/d/a/d/9/6/360/cf2dcf5dfc1a9ab9b653241d642a47bd.jpg"
+                    alt=""
+                  />
+                  <h3>{dl.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {dl.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>9999 đánh giá</span>
+                  </div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 1.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Nok1', 'Nokia black future'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
         setQuantityNoiBat(response.data.totalElements);
         setPagination(response.data);
       })
@@ -105,7 +141,49 @@ export default function TrangChu() {
     readProductNew(paramsStringNew)
       .then((response) => {
         setProductNew(response.data.content);
-        setProductFilter(listProductNew);
+        setProductFilter(
+          response.data.content.map((prn) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()} key={prn.id}>
+                <Link to={`/product/${prn.id}`}>
+                  <img
+                    src="https://zpsocial-f56-org.zadn.vn/3c1ad68c5c9ebdc0e48f.jpg"
+                    alt=""
+                  />
+                  <h3>{prn.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {prn.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star-o" />
+                    <span>372 đánh giá</span>
+                  </div>
+                  <label className="moiramat">Mới ra mắt</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Xia2', 'Xiaomi Redmi Note 5'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
         setQuantityMoi(response.data.totalElements);
         setPagination(response.data);
       })
@@ -115,7 +193,49 @@ export default function TrangChu() {
     readProductCheap(paramsStringCheap)
       .then((response) => {
         setProductCheap(response.data.content);
-        setProductFilter(listProductCheap);
+        setProductFilter(
+          response.data.content.map((prc) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()} key={prc.id}>
+                <Link to={`/product/${prc.id}`}>
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>{prc.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {prc.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>302 đánh giá</span>
+                  </div>
+                  <label className="giareonline">Giá rẻ online</label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
         setQuantityGiaRe(response.data.totalElements);
         setPagination(response.data);
       })
@@ -124,8 +244,48 @@ export default function TrangChu() {
       });
     readFilterProductByPrice(paramsStringPrice)
       .then((response) => {
-        setProductByPrice(response.data.content);
-        setProductFilter(listProductByPrice);
+        setProductFilter(
+          response.data.content.map((prp) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()} key={prp.id}>
+                <Link to={`/product/${prp.id}`}>
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>{prp.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {prp.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>302 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
         setPagination(response.data);
       })
       .catch((error) => {
@@ -133,8 +293,48 @@ export default function TrangChu() {
       });
     readFilterProductByCategory(paramsStringCategory)
       .then((response) => {
-        setProductByCategory(response.data.content);
-        setProductFilter(listProductByCategory);
+        setProductFilter(
+          response.data.content.map((prcg) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()} key={prcg.id}>
+                <Link to={`/product/${prcg.id}`}>
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>{prcg.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {prcg.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>302 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
         setPagination(response.data);
       })
       .catch((error) => {
@@ -142,8 +342,48 @@ export default function TrangChu() {
       });
     readFilterProductByAscendingPrice(paramsStringAcendingPrice)
       .then((response) => {
-        setProductByAscendingPrice(response.data.content);
-        setProductFilter(listProductByAscendingPrice);
+        setProductFilter(
+          response.data.content.map((prap) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()} key={prap.id}>
+                <Link to={`/product/${prap.id}`}>
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>{prap.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {prap.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>302 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
         setPagination(response.data);
       })
       .catch((error) => {
@@ -151,8 +391,48 @@ export default function TrangChu() {
       });
     readFilterProductByDecreasePrice(paramsStringDecreasePrice)
       .then((response) => {
-        setProductByDecreasePrice(response.data.content);
-        setProductFilter(listProductByDecreasePrice);
+        setProductFilter(
+          response.data.content.map((prdp) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()} key={prdp.id}>
+                <Link to={`/product/${prdp.id}`}>
+                  <img
+                    src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
+                    alt=""
+                  />
+                  <h3>{prdp.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {prdp.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>302 đánh giá</span>
+                  </div>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
         setPagination(response.data);
       })
       .catch((error) => {
@@ -403,170 +683,6 @@ export default function TrangChu() {
     );
   });
 
-  const listProductByPrice = productByPrice.map((prp) => {
-    return (
-      <li className="sanPham" onClick={() => goToTop()} key={prp.id}>
-        <Link to={`/product/${prp.id}`}>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
-            alt=""
-          />
-          <h3>{prp.name}</h3>
-          <div className="price">
-            <strong>
-              {prp.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <span>302 đánh giá</span>
-          </div>
-          <div className="tooltip">
-            <button
-              className="themvaogio"
-              onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
-            >
-              <span className="tooltiptext" style={{ fontSize: 15 }}>
-                Thêm vào giỏ
-              </span>
-              +
-            </button>
-          </div>
-        </Link>
-      </li>
-    );
-  });
-
-  const listProductByCategory = productByCategory.map((prcg) => {
-    return (
-      <li className="sanPham" onClick={() => goToTop()} key={prcg.id}>
-        <Link to={`/product/${prcg.id}`}>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
-            alt=""
-          />
-          <h3>{prcg.name}</h3>
-          <div className="price">
-            <strong>
-              {prcg.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <span>302 đánh giá</span>
-          </div>
-          <div className="tooltip">
-            <button
-              className="themvaogio"
-              onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
-            >
-              <span className="tooltiptext" style={{ fontSize: 15 }}>
-                Thêm vào giỏ
-              </span>
-              +
-            </button>
-          </div>
-        </Link>
-      </li>
-    );
-  });
-
-  const listProductByAscendingPrice = productByAscendingPrice.map((prap) => {
-    return (
-      <li className="sanPham" onClick={() => goToTop()} key={prap.id}>
-        <Link to={`/product/${prap.id}`}>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
-            alt=""
-          />
-          <h3>{prap.name}</h3>
-          <div className="price">
-            <strong>
-              {prap.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <span>302 đánh giá</span>
-          </div>
-          <div className="tooltip">
-            <button
-              className="themvaogio"
-              onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
-            >
-              <span className="tooltiptext" style={{ fontSize: 15 }}>
-                Thêm vào giỏ
-              </span>
-              +
-            </button>
-          </div>
-        </Link>
-      </li>
-    );
-  });
-
-  const listProductByDecreasePrice = productByDecreasePrice.map((prdp) => {
-    return (
-      <li className="sanPham" onClick={() => goToTop()} key={prdp.id}>
-        <Link to={`/product/${prdp.id}`}>
-          <img
-            src="https://cdn.tgdd.vn/Products/Images/42/146651/itel-it2123-d-300-300x300.jpg"
-            alt=""
-          />
-          <h3>{prdp.name}</h3>
-          <div className="price">
-            <strong>
-              {prdp.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <span>302 đánh giá</span>
-          </div>
-          <div className="tooltip">
-            <button
-              className="themvaogio"
-              onclick="themVaoGioHang('Ite2', 'Itel it2123'); return false;"
-            >
-              <span className="tooltiptext" style={{ fontSize: 15 }}>
-                Thêm vào giỏ
-              </span>
-              +
-            </button>
-          </div>
-        </Link>
-      </li>
-    );
-  });
-
   function noiBatNhat() {
     showContainProducts();
     let item = { page: 0, key: "" };
@@ -736,6 +852,10 @@ export default function TrangChu() {
     containKhungSanPham.hidden = false;
     containProducts.style.display = "none";
     deleteAllFilter.style.display = "none";
+    let item = { page: 0, key: "" };
+    setFilters(item);
+    setFiltersNew(item);
+    setFiltersCheap(item);
   }
 
   return (
