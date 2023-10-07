@@ -1,7 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import {readQuantityInCart} from "../../../service/cart.service";
 import { Link } from "react-router-dom";
 
 export default function Header(){
+  const [quantity, setQuantity] = useState([]);
+
+  useEffect(() => {
+    readQuantityInCart(1)
+      .then((response) => {
+        console.log(response.data);
+        setQuantity(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
+
   return(
     <React.Fragment>
        <>
@@ -45,13 +59,13 @@ export default function Header(){
 
     <div className="header group">
     <div className="logo">
-      <a href="/">
+    <Link to="/">
         <img
           src="img/logo.jpg"
           alt="Trang chủ Smartphone Store"
           title="Trang chủ Smartphone Store"
         />
-      </a>
+      </Link>
     </div>{" "}
     {/* End Logo */}
     <div className="content">
@@ -98,11 +112,13 @@ export default function Header(){
         </div>{" "}
         {/* End Member */}
         <div className="cart">
-          <a href="/cart">
+          <Link to="/cart">
             <i className="fa fa-shopping-cart" />
             <span>Giỏ hàng</span>
-            <span className="cart-number" />
-          </a>
+            <span className="cart-number" >
+              {quantity}
+            </span>
+          </Link>
         </div>{" "}
         {/* End Cart */}
         <div class="check-order">
