@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/product/")
@@ -71,8 +73,23 @@ public class ProductController {
     }
 
     @GetMapping(value = "get-all-product")
-    public void selectAll(){
-        this.productRepository.selectAll();
+    public List<Product> selectAll() {
+        return this.productService.selectAll();
+    }
+
+    @GetMapping(value = "new-product")
+    public List<Product> selectNewProduct() {
+        return this.productService.selectNewProduct();
+    }
+
+    @GetMapping(value = "chip-product")
+    public List<Product> selectChipProduct() {
+        return this.productService.selectChipProduct();
+    }
+
+    @GetMapping(value = "/search/{id}")
+    public Product findById(@PathVariable int id){
+        return this.productService.findById(id);
     }
 
 }

@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-import {useState} from "react";
 import {add} from "../../../service/image.service";
-=======
 import {useEffect, useState} from "react";
 import {addImage} from "../../../service/image.service";
->>>>>>> origin/phongnh
 import "../../../css/form.css";
 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -16,26 +12,12 @@ import {useHistory} from "react-router-dom";
 const ImageFormAddOrUpdate = () => {
     const formData = new FormData();
 
-<<<<<<< HEAD
-
-    function handleChange(event) {
-        setFile(event.target.files[0]);
-        console.log(event.target.files);
-        console.log(file);
-=======
     function handleChangeFile(event) {
         const list = event.target.files;
         for (let i = 0; i < list.length; i++) {
             formData.append("file", list.item(i));
         }
         console.log(event.target.files[0]);
-    }
-
-    function handleChangeProduct(event) {
-        const target = event.target;
-        const value = target.value;
-        formData.append("product", value);
->>>>>>> origin/phongnh
     }
 
     const history = useHistory();
@@ -78,6 +60,6 @@ const ImageFormAddOrUpdate = () => {
             </div>
         </div>
     </form>);
-};
+}
 
 export default ImageFormAddOrUpdate;

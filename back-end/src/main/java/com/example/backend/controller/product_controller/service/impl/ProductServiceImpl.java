@@ -199,4 +199,17 @@ public class ProductServiceImpl {
     public Page<Product> deleteProduct(Pageable pageable, String key) {
         return productRepository.deleteProduct(pageable, key);
     }
+
+    public List<Product> selectNewProduct(){
+        return productRepository.selectNewProduct();
+    }
+
+    public List<Product> selectChipProduct(){
+        return productRepository.selectChipProduct();
+    }
+
+    public Product findById(int id){
+        return this.productRepository.findById(id);
+    }
+
 }

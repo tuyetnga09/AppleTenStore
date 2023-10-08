@@ -38,10 +38,22 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Modifying
     @Transactional
+    @Query(value = "select * from product order by date_create desc limit 5", nativeQuery = true)
+    List<Product> selectNewProduct();
+
+    @Modifying
+    @Transactional
+    @Query(value = "select * from product order by price limit 5", nativeQuery = true)
+    List<Product> selectChipProduct();
+
+    @Modifying
+    @Transactional
     @Query(value = "select pr from Product pr where pr.name = ?1")
     Product search(String name);
 
     Product findByName(String nameProduct);
     Product findByCode(String code);
+
+    Product findById(int id);
 
 }
