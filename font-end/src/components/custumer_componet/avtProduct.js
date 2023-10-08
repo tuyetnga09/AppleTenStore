@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {searchImage} from "../../../../service/image.service";
+import {searchImage} from "../../service/image.service";
 
 const AvtProduct = (props) => {
     const [image, setImage] = useState({});

@@ -8,7 +8,7 @@ import CapacityOfProduct from "./capacity/CapacityOfProduct";
 import ColorOfProduct from "./color/ColorOfProduct";
 import {useParams} from "react-router-dom/cjs/react-router-dom";
 import {findProductById} from "../../../service/product.service";
-import AvtProduct from "./image/avtProduct";
+import AvtProduct from "../avtProduct";
 
 export default function ProductDetail() {
 

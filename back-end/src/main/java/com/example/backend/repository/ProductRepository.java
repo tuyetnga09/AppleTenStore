@@ -54,10 +54,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Product findByName(String nameProduct);
     Product findByCode(String code);
 
-<<<<<<< HEAD
     Product findById(int id);
 
-=======
     @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 and DATEDIFF(CURDATE(), date_create) < 30 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Product> productNew(Pageable pageable, String key);
 
@@ -75,5 +73,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 order by price desc", nativeQuery = true)
     Page<Product> filterProductByDecreasePrice(Pageable pageable, String key);
->>>>>>> main
+
 }
