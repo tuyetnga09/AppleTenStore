@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -200,6 +201,7 @@ public class ProductServiceImpl {
         return productRepository.deleteProduct(pageable, key);
     }
 
+<<<<<<< HEAD
     public List<Product> selectNewProduct(){
         return productRepository.selectNewProduct();
     }
@@ -213,3 +215,29 @@ public class ProductServiceImpl {
     }
 
 }
+=======
+    public Page<Product> productNew(Pageable pageable, String key){
+        return productRepository.productNew(pageable, key);
+    }
+
+    public Page<Product> productCheap(Pageable pageable, String key){
+        return productRepository.productCheap(pageable, key);
+    }
+
+    public Page<Product> filterProductByPrice(Pageable pageable, String key, Integer minPrice, Integer maxPrice){
+        return productRepository.filterProductByPrice(pageable, key, minPrice, maxPrice);
+    }
+
+    public Page<Product> filterProductByCategory(Pageable pageable, String key, String nameCategory){
+        return productRepository.filterProductByCategory(pageable, key, nameCategory);
+    }
+
+    public Page<Product> filterProductByAscendingPrice(Pageable pageable, String key){
+        return productRepository.filterProductByAscendingPrice(pageable, key);
+    }
+
+    public Page<Product> filterProductByDecreasePrice(Pageable pageable, String key){
+        return productRepository.filterProductByDecreasePrice(pageable, key);
+    }
+}
+>>>>>>> main

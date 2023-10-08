@@ -11,5 +11,5 @@ public class ChangeSizeInCart  {
      Integer idCartDetail;
      BigDecimal price;
      Integer quantity;
-     Integer idProductDetail;
+     Long idProductDetail;
 }

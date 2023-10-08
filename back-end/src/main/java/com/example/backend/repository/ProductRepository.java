@@ -54,6 +54,26 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Product findByName(String nameProduct);
     Product findByCode(String code);
 
+<<<<<<< HEAD
     Product findById(int id);
 
+=======
+    @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 and DATEDIFF(CURDATE(), date_create) < 30 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    Page<Product> productNew(Pageable pageable, String key);
+
+    @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 and price < 2000000 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    Page<Product> productCheap(Pageable pageable, String key);
+
+    @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 and price > ?2 and price < ?3 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    Page<Product> filterProductByPrice(Pageable pageable, String key, Integer minPrice, Integer maxPrice);
+
+    @Query(value = "select product.id, product.id_battery, product.id_category, product.id_chip, product.id_manufacture, product.id_ram, product.id_screen, product.id_size, product.price, product.quantity, product.status, product.date_create, product.date_update, product.code, product.description, product.name, product.person_create, product.person_update from product join category on product.id_category = category.id where (product.name like %?1% or product.price like %?1%) and product.status = 0 and category.name like %?2% ORDER BY product.date_create DESC, product.Id DESC\n", nativeQuery = true)
+    Page<Product> filterProductByCategory(Pageable pageable, String key, String nameCategory);
+
+    @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 order by price asc", nativeQuery = true)
+    Page<Product> filterProductByAscendingPrice(Pageable pageable, String key);
+
+    @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 order by price desc", nativeQuery = true)
+    Page<Product> filterProductByDecreasePrice(Pageable pageable, String key);
+>>>>>>> main
 }

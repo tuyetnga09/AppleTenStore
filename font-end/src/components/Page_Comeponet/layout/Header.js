@@ -1,7 +1,47 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import {readQuantityInCart} from "../../../service/cart.service";
 import { Link } from "react-router-dom";
 
 export default function Header(){
+  const [quantity, setQuantity] = useState([]);
+
+  useEffect(() => {
+    readQuantityInCart(1)
+      .then((response) => {
+        console.log(response.data);
+        setQuantity(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
+
+  // const fetchQuantity = () => {
+  //   readQuantityInCart(1)
+  //     .then((response) => {
+  //       console.log(response.data);
+  //       setQuantity(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(`${error}`);
+  //     });
+  // };
+
+  // useEffect(() => {
+  //   // Khởi chạy lần đầu
+  //   fetchQuantity();
+
+  //   // Thiết lập một interval để gọi fetchQuantity sau mỗi 5 giây (hoặc thời gian bạn muốn)
+  //   const intervalId = setInterval(() => {
+  //     fetchQuantity();
+  //   }, 1000);
+
+  //   // Hủy interval khi component unmount (nếu cần)
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, []);
+
   return(
     <React.Fragment>
        <>
@@ -45,13 +85,13 @@ export default function Header(){
 
     <div className="header group">
     <div className="logo">
-      <a href="/">
+    <Link to="/">
         <img
           src="img/logo.jpg"
           alt="Trang chủ Smartphone Store"
           title="Trang chủ Smartphone Store"
         />
-      </a>
+      </Link>
     </div>{" "}
     {/* End Logo */}
     <div className="content">
@@ -98,11 +138,13 @@ export default function Header(){
         </div>{" "}
         {/* End Member */}
         <div className="cart">
-          <a href="/cart">
+          <Link to="/cart">
             <i className="fa fa-shopping-cart" />
             <span>Giỏ hàng</span>
-            <span className="cart-number" />
-          </a>
+            <span className="cart-number" >
+              {quantity}
+            </span>
+          </Link>
         </div>{" "}
         {/* End Cart */}
         <div class="check-order">
