@@ -11,6 +11,7 @@ import {readQuantityInCart} from "../../../service/cart.service";
 import {GiftOutlined} from "@ant-design/icons";
 import {Image,Checkbox,Modal,notification,Button,Input} from "antd";
 import {getVoucher} from "../../../service/Voucher/voucher.service";
+import { getPay } from "../../../service/Vnpay/vnpay.service";
 
 const Checkout = () => {
   const [isLogin, setIsGLogin] = useState([false]);
@@ -22,6 +23,8 @@ const Checkout = () => {
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
   const [voucher, setVoucher] = useState([]);
   const [selecteVoucher, setSelectedVoucher] = useState(0);
+  const [linkPay, setLinkPay] = useState(["/login"]);
+  const [isChecked, setIsChecked] = useState([true]);
 
   useEffect(() => {
     //hiển thị giỏ hàng
@@ -182,6 +185,24 @@ const Checkout = () => {
     setIsModalVisible(false);
   };
 
+  function datHang() {
+    const tienMat = document.getElementById("httt-1");
+    if (tienMat.checked === true) {
+      setIsChecked(true);
+      setLinkPay("/login");
+    }
+    const vnpay = document.getElementById("httt-2");
+    if (vnpay.checked == true) {
+      getPay()
+        .then((res) => {
+          setLinkPay(res.data);
+          setIsChecked(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
 
   return (
     <>
@@ -189,12 +210,12 @@ const Checkout = () => {
       <button onClick={() => test()}>test</button>
       <main role="main">
         <div class="container mt-4">
-          <form
+          {/* <form
             class="needs-validation"
             name="frmthanhtoan"
             method="post"
             action="#"
-          >
+          > */}
             <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
             <div class="py-5 text-center">
               <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
@@ -412,46 +433,51 @@ const Checkout = () => {
                 </div>
                 <br />
                 <h4 class="mb-3">Hình thức thanh toán</h4>
-                <div class="d-block my-3">
-                  <div class="custom-control custom-radio">
-                    <input
-                      id="httt-1"
-                      name="httt_ma"
-                      type="radio"
-                      class="custom-control-input"
-                      required=""
-                      value="1"
-                      checked
-                    ></input>
-                    <label class="custom-control-label" for="httt-1">
-                      Tiền mặt
-                    </label>
-                  </div>
-                  <div class="custom-control custom-radio">
-                    <input
-                      id="httt-2"
-                      name="httt_ma"
-                      type="radio"
-                      class="custom-control-input"
-                      required=""
-                      value="2"
-                    ></input>
-                    <label class="custom-control-label" for="httt-2">
-                      VN Pay
-                    </label>
-                  </div>
-                  <hr class="mb-4" />
+              <div class="d-block my-3">
+                <div class="custom-control custom-radio">
+                  <input
+                    id="httt-1"
+                    name="httt_ma"
+                    type="radio"
+                    class="custom-control-input"
+                    required=""
+                    value="1"
+                    checked={isChecked}
+                    onChange={datHang}
+                  />
+                  <label class="custom-control-label" for="httt-1">
+                    Tiền mặt
+                  </label>
+                </div>
+                <div class="custom-control custom-radio">
+                  <input
+                    id="httt-2"
+                    name="httt_ma"
+                    type="radio"
+                    class="custom-control-input"
+                    required=""
+                    value="2"
+                    checked={!isChecked}
+                    onChange={datHang}
+                  />
+                  <label class="custom-control-label" for="httt-2">
+                    VN Pay
+                  </label>
+                </div>
+                <hr class="mb-4" />
+                <a href={linkPay}>
                   <button
                     class="btn btn-primary btn-lg btn-block"
-                    type="submit"
+                    // type="submit"
                     name="btnDatHang"
                   >
                     Đặt hàng
                   </button>
-                </div>
+                </a>
+              </div>
               </div>
             </div>
-          </form>
+          {/* </form> */}
         </div>
       </main>
       <Footer />

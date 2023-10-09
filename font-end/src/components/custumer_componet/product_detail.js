@@ -8,6 +8,7 @@ import { detail } from "../../service/product.service";
 import { addToCart } from "../../service/cart.service";
 import { getSKUProduct } from "../../service/sku.service";
 import queryString from "query-string";
+import AvtProduct from "./avtProduct";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -92,26 +93,25 @@ export default function ProductDetail() {
           console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
 
           const paramsString = queryString.stringify(filtersSKU);
-            getSKUProduct(paramsString)
+          getSKUProduct(paramsString)
             .then((response) => {
               console.log(response.data);
-                if(item2.quantity <= 0){
-                  notification.error({
-                    message: "ADD TO CART",
-                    description: "Sản phẩm đang tạm thời hết hàng",
-                  });
-                }else{
-                  notification.success({
-                    message: "ADD TO CART",
-                    description: "Thêm giỏ hàng thành công",
-                  });
-                }
-                setItem2(response.data);
+              if (item2.quantity <= 0) {
+                notification.error({
+                  message: "ADD TO CART",
+                  description: "Sản phẩm đang tạm thời hết hàng",
+                });
+              } else {
+                notification.success({
+                  message: "ADD TO CART",
+                  description: "Thêm giỏ hàng thành công",
+                });
+              }
+              setItem2(response.data);
             })
             .catch((error) => {
               console.log(`${error}`);
             });
-
         })
         .catch((error) => {
           console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
@@ -123,7 +123,6 @@ export default function ProductDetail() {
       });
     }
   };
-  
 
   return (
     <React.Fragment>
@@ -152,86 +151,7 @@ export default function ProductDetail() {
             <span> 372 đánh giá</span>
           </div>
           <div className="rowdetail group">
-            <div className="picture">
-              <img
-                src="https://zpsocial-f56-org.zadn.vn/3c1ad68c5c9ebdc0e48f.jpg"
-                onclick="opencertain()"
-              />
-              {/* <div className="slick slideshow picture-thumbs slick-initialized slick-slider">
-                  <button
-                    className="slick-prev slick-arrow"
-                    aria-label="Previous"
-                    type="button"
-                    style={{}}
-                  >
-                    Previous
-                  </button>
-                  <div className="slick-list draggable">
-                    <div
-                      className="slick-track"
-                      style={{
-                        opacity: 1,
-                        width: 3234,
-                        transform: "translate3d(-588px, 0px, 0px)"
-                      }}
-                    >
-                      <div
-                        className="slick-slide slick-cloned"
-                        data-slick-index={-4}
-                        id=""
-                        aria-hidden="true"
-                        style={{ width: 144 }}
-                        tabIndex={-1}
-                      >
-                        <div>
-                          <div
-                            className="thumb-item"
-                            style={{ width: "100%", display: "inline-block" }}
-                          >
-                            <img
-                              src="img/products/xiaomi-redmi-note-5-pro-600x600.jpg"
-                              alt="media.productreivew.imagealternatetextformat"
-                              title="Ảnh của iPhone 14 Pro 128GB"
-                              data-defaultsize="https://shopdunk.com/images/thumbs/0008749_iphone-14-pro-128gb_550.webp"
-                              data-fullsize="https://shopdunk.com/images/thumbs/0008749_iphone-14-pro-128gb.webp"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className="slick-slide slick-cloned"
-                        data-slick-index={-3}
-                        id=""
-                        aria-hidden="true"
-                        style={{ width: 144 }}
-                        tabIndex={-1}
-                      >
-                        <div>
-                          <div
-                            className="thumb-item"
-                            style={{ width: "100%", display: "inline-block" }}
-                          >
-                            <img
-                              src="img/products/xiaomi-redmi-note-5-pro-600x600.jpg"
-                              title="Ảnh của iPhone 14 Pro 128GB"
-                              data-defaultsize="https://shopdunk.com/images/thumbs/0008750_iphone-14-pro-128gb_550.webp"
-                              data-fullsize="https://shopdunk.com/images/thumbs/0008750_iphone-14-pro-128gb.webp"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    className="slick-next slick-arrow"
-                    aria-label="Next"
-                    type="button"
-                    style={{}}
-                  >
-                    Next
-                  </button>
-                </div> */}
-            </div>
+            <AvtProduct product={id}></AvtProduct>
             <div className="price_sale">
               <div className="area_price">
                 <strong>

@@ -44,7 +44,7 @@ import ColorDisplayReturn from "./components/product_component/Color/DisplayRetu
 import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
-import Home from "./components/Page_Comeponet/TrangChu";
+import Home from "./components/Page_Comeponet/page/TrangChu";
 import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";

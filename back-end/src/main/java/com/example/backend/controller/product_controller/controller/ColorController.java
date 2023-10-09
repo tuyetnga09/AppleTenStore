@@ -92,4 +92,10 @@ public class ColorController {
             return ResponseEntity.ok("Import Thất bại");
         }
     }
+
+    @GetMapping(value = "/find-color-by-product/{id}")
+    public List<Color> findColorByIdProduct(@PathVariable int id){
+        return this.colorService.findColorByProduct(id);
+    }
+
 }

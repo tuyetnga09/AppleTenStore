@@ -5,7 +5,7 @@ import java.util.Date;
 
 public interface ListCart {
     @Value("#{target['Name Color']}")
-    String getNamColor();
+    String getNameColor();
     @Value("#{target['Name Capacity']}")
     String getNameCapacity();
     @Value("#{target['Id Sku']}")
@@ -37,4 +37,7 @@ public interface ListCart {
 
     @Value("#{target['Total']}")
     String getTotal();
+
+    @Value("#{target['Id Product']}")
+    Integer getIdProduct();
 }

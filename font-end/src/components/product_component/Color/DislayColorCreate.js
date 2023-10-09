@@ -49,9 +49,9 @@ const FormAddOrUpdate = () => {
     const items = { ...colorItem };
 
     if (id !== "new") {
-      update(id, items);
+      await update(id, items);
     } else {
-      add(items);
+      await add(items);
     }
 
     console.log(items);

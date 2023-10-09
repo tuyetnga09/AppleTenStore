@@ -68,7 +68,7 @@ const ChatManager = ({}) => {
                 <Menu.Item key="6" icon={<LogoutOutlined />}>
                     <Link to="/logout">Logout</Link>
                 </Menu.Item>
-                </Menu>      
+                </Menu>
             </Sider>
       <Layout>
         <Header style={{ padding: 0, background: colorBgContainer }}>

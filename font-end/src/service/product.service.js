@@ -62,6 +62,18 @@ export const returnProduct = (id) => {
   return httpClient.put(`/product/return/${id}`);
 };
 
+export const newProduct = () => {
+    return httpClient.get(`/product/new-product`);
+}
+
+export const chipProduct = () => {
+    return httpClient.get(`/product/chip-product`);
+}
+
+export const findProductById = (id) => {
+    return httpClient.get(`/product/search/${id}`);
+}
+
 // export const importChip = (form) => {
 //   return httpClient.post("/chip/import", form, config);
 // };

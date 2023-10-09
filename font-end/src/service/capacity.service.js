@@ -41,3 +41,7 @@ export const importCapacity = (form) =>{
 export const search = (page, search) =>{
   return  httpClient.get(`/capacity/search?${page}`, search);
 }
+
+export const findCapacitisByIdProduct = (id) => {
+    return httpClient.get(`/capacity/find-capacity-by-id-product/${id}`);
+}
