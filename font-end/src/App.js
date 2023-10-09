@@ -55,7 +55,7 @@ import Voucher from "./components/Page_Comeponet/Voucher/VoucherDisplay";
 import blog from "./components/Page_Comeponet/Blogs";
 import Cart from "./components/Page_Comeponet/Cart/CartDisplay";
 import ReturnDeleteProduct from "./components/product_component/Product/ReturnDeleteProduct";
-import SingleProduct from "./components/custumer_componet/product_detail/product_detail";
+import SingleProduct from "./components/custumer_componet/product_detail";
 import Dashboard from "./components/Page_Comeponet/dashboard/index";
 import Checkout from "./components/Page_Comeponet/Checkout/index";
 import Login from "./components/Page_Comeponet/Login/login";

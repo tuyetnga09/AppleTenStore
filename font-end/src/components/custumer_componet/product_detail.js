@@ -93,26 +93,25 @@ export default function ProductDetail() {
           console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
 
           const paramsString = queryString.stringify(filtersSKU);
-            getSKUProduct(paramsString)
+          getSKUProduct(paramsString)
             .then((response) => {
               console.log(response.data);
-                if(item2.quantity <= 0){
-                  notification.error({
-                    message: "ADD TO CART",
-                    description: "Sản phẩm đang tạm thời hết hàng",
-                  });
-                }else{
-                  notification.success({
-                    message: "ADD TO CART",
-                    description: "Thêm giỏ hàng thành công",
-                  });
-                }
-                setItem2(response.data);
+              if (item2.quantity <= 0) {
+                notification.error({
+                  message: "ADD TO CART",
+                  description: "Sản phẩm đang tạm thời hết hàng",
+                });
+              } else {
+                notification.success({
+                  message: "ADD TO CART",
+                  description: "Thêm giỏ hàng thành công",
+                });
+              }
+              setItem2(response.data);
             })
             .catch((error) => {
               console.log(`${error}`);
             });
-
         })
         .catch((error) => {
           console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
@@ -124,7 +123,6 @@ export default function ProductDetail() {
       });
     }
   };
-  
 
   return (
     <React.Fragment>
@@ -153,7 +151,7 @@ export default function ProductDetail() {
             <span> 372 đánh giá</span>
           </div>
           <div className="rowdetail group">
-            <AvtProduct product={item.id}></AvtProduct>
+            <AvtProduct product={id}></AvtProduct>
             <div className="price_sale">
               <div className="area_price">
                 <strong>
