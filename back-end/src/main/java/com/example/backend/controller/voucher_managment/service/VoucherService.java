@@ -8,6 +8,8 @@ import com.example.backend.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface VoucherService {
 
     VoucherResponse getOne(Integer id);
@@ -23,5 +25,7 @@ public interface VoucherService {
     Page<Voucher> getAll(FindVoucherRequest request, Pageable pageable);
 
     Voucher findByIdVoucher(Integer id);
+
+    List<Voucher> getVoucher(Voucher voucher);
 
 }

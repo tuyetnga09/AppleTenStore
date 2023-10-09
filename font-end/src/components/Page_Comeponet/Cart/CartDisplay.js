@@ -35,7 +35,7 @@ export default function CartDisplay(){
     });
   }
 
-  const [sku, setSKU] = useState([]);
+  // const [sku, setSKU] = useState([]);
 
   const handleUpdateQuantity = (cartItemId, newQuantity, idSKU) => {
     if (newQuantity <= 0) {
@@ -49,26 +49,26 @@ export default function CartDisplay(){
               readAll(1)
                   .then((response) => {
                       console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-                      getOneSKU(idSKU)
-                      .then((response) => {
-                        console.log(response.data);
-                       setSKU(response.data);
-                        if(sku.quantity <= 0){
-                          notification.error({
-                            message: "ADD TO CART",
-                            description: "Sản phẩm đang tạm thời hết hàng",
-                          });
-                        }else{
-                          notification.success({
-                            message: "ADD TO CART",
-                            description: "Cập nhật giỏ hàng thành công",
-                          });
-                        }
+                      // getOneSKU(idSKU)
+                      // .then((response) => {
+                      //   console.log(response.data);
+                      //  setSKU(response.data);
+                      //   if(sku.quantity <= 0){
+                      //     notification.error({
+                      //       message: "ADD TO CART",
+                      //       description: "Sản phẩm đang tạm thời hết hàng",
+                      //     });
+                      //   }else{
+                      //     notification.success({
+                      //       message: "ADD TO CART",
+                      //       description: "Cập nhật giỏ hàng thành công",
+                      //     });
+                      //   }
                          
-                      })
-                      .catch((error) => {
-                        console.log(`${error}`);
-                      });
+                      // })
+                      // .catch((error) => {
+                      //   console.log(`${error}`);
+                      // });
                       setProducts(response.data);
                   })
                   .catch((error) => {
@@ -109,7 +109,7 @@ export default function CartDisplay(){
           </div>
         </div>
       </div>
-       <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
+       <section className="h-100 h-custom" style={{ backgroundColor: "#fffff" }}>
         
         <div className="container h-100 py-5">
           <div className="row d-flex justify-content-center align-items-center h-100">
@@ -201,7 +201,6 @@ export default function CartDisplay(){
                     </table>
                     
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end" style={{marginTop: "10px"}}>
-                      <button class="btn btn-outline-primary me-md-2" type="button">Cập nhật giỏ hàng</button>
                       <button class="btn btn-outline-primary me-md-2" type="button">Xóa hết</button>
                     </div>
                       <hr
@@ -213,7 +212,10 @@ export default function CartDisplay(){
                               style={{ backgroundColor: "#e1f5fe" }}
                             >
                               <h5 className="fw-bold mb-0">Tồng tiền:</h5>
-                              <h5 className="fw-bold mb-0">{totalPrice} VNĐ</h5>
+                              <h5 className="fw-bold mb-0">{totalPrice?.toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}</h5>
                             </div>
                        
                         <div class="d-grid gap-2 col-6 mx-auto">

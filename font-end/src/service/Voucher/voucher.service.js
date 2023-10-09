@@ -10,6 +10,10 @@ export const readAll = () => {
   return httpClient.get(`/voucher/vouchers`);
 };
 
+export const getVoucher = () => {
+  return httpClient.get(`/voucher/getVoucher`);
+};
+
 // export const returnDeleteAll = (page) => {
 //   return httpClient.get(`/battery/displayDelete?${page}`);
 // };

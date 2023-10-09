@@ -139,5 +139,10 @@ public class VoucherServiceImpl implements VoucherService {
         return voucherRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public List<Voucher> getVoucher(Voucher voucher) {
+        return voucherRepository.findAll();
+    }
+
 
 }

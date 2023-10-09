@@ -3,6 +3,7 @@ import com.example.backend.controller.voucher_managment.model.request.CreateVouc
 import com.example.backend.controller.voucher_managment.model.request.FindVoucherRequest;
 import com.example.backend.controller.voucher_managment.model.request.UpdateVoucherRequest;
 import com.example.backend.controller.voucher_managment.service.VoucherService;
+import com.example.backend.entity.Voucher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/voucher")
@@ -58,6 +61,11 @@ public class VoucherRestController {
     @GetMapping("/detail/{id}")
     public ResponseEntity detailVoucher(@PathVariable("id") Integer id) {
         return new ResponseEntity(voucherService.findByIdVoucher(id) , HttpStatus.OK);
+    }
+
+    @GetMapping("/getVoucher")
+    public ResponseEntity<List<Voucher>> hienThiVoucher(Voucher voucher) {
+        return new ResponseEntity(voucherService.getVoucher(voucher), HttpStatus.OK);
     }
 
 }
