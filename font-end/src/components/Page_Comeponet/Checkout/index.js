@@ -2,7 +2,6 @@ import * as React from "react";
 import "../Checkout/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect } from "react";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import { useState } from "react";
@@ -194,23 +193,23 @@ const Checkout = () => {
     const vnpay = document.getElementById("httt-2");
     if (vnpay.checked == true) {
       getPay()
-        .then((res) => {
-          setLinkPay(res.data);
-          setIsChecked(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+          .then((res) => {
+            setLinkPay(res.data);
+            setIsChecked(false);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
     }
   }
 
   return (
-    <>
-      <Header />
-      <button onClick={() => test()}>test</button>
-      <main role="main">
-        <div class="container mt-4">
-          {/* <form
+      <>
+        <Header />
+        <button onClick={() => test()}>test</button>
+        <main role="main">
+          <div class="container mt-4">
+            {/* <form
             class="needs-validation"
             name="frmthanhtoan"
             method="post"
@@ -420,9 +419,9 @@ const Checkout = () => {
                     <br />
                     <label for="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
                     <select
-                      class="form-select"
-                      id="floatingSelect"
-                      aria-label="Floating label select example"
+                        class="form-select"
+                        id="floatingSelect"
+                        aria-label="Floating label select example"
                     >
                       <option selected>Chọn tỉnh, thành phố</option>
                       <option value="1">One</option>
