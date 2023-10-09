@@ -1,17 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Input, Button } from 'antd';
+import { Input, Button, List } from 'antd';
+import ChatMessage from './ChatMessage';
 
-export default function ChatModal({ socket }) {
-    const [message, setMessage] = useState('');
+export default function ChatPopUp() {
+    const [message, setMessage] = useState(''); // State để lưu tin nhắn mới
+    const [messages, setMessages] = useState([]); // State để lưu danh sách tin nhắn
+    const [socket, setSocket] = useState(null); // State để lưu kết nối WebSocket
 
+    // Khởi tạo kết nối WebSocket trong useEffect
+    useEffect(() => {
+        const newSocket = new WebSocket('ws://localhost:8080/ws'); // Điều chỉnh URL WebSocket theo máy chủ Spring Boot của bạn
+
+        newSocket.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
+
+        newSocket.onmessage = (event) => {
+            const receivedMessage = JSON.parse(event.data);
+            setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+        };
+
+        setSocket(newSocket);
+
+        return () => {
+            newSocket.close(); // Đóng kết nối WebSocket khi component unmount
+        };
+    }, []);
+
+    // Hàm gửi tin nhắn
     const sendMessage = () => {
         if (message && socket) {
             const newMessage = {
                 text: message,
-                sender: 'You',
+                sender: 'You', // Đổi thành tên của người dùng hoặc tên của bạn
             };
             socket.send(JSON.stringify(newMessage));
-            setMessage('');
+            setMessage(''); // Xóa nội dung của input sau khi gửi tin nhắn
         }
     };
 
@@ -24,23 +48,21 @@ export default function ChatModal({ socket }) {
                 >
                     <h5 className="mb-0">Chat messages</h5>
                     <div className="d-flex flex-row align-items-center">
-                        <span className="badge bg-warning me-3">20</span>
+                        <span className="badge bg-warning me-3">{messages.length}</span> {/* Hiển thị số lượng tin nhắn */}
                     </div>
                 </div>
-                <div
-                    className="card-body"
-                    data-mdb-perfect-scrollbar="true"
-                    style={{ position: "relative", height: 400, overflowY: 'auto' }}
-                >
-                    {message.map((message, index) => (
-                        <div key={index} className="d-flex flex-row justify-content-start">
-                            <div>
-                                <p className="small p-2 ms-3 mb-3 rounded-3" style={{ backgroundColor: "#f5f6f7" }}>
-                                    {message.text}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
+                <div className="card-body">
+                    <List
+                        itemLayout="horizontal"
+                        dataSource={messages}
+                        renderItem={(messageItem) => (
+                            <ChatMessage
+                                key={messageItem.id}
+                                message={messageItem}
+                                isSentByYou={messageItem.sender === 'You'}
+                            />
+                        )}
+                    />
                 </div>
                 <div className="card-footer text-muted d-flex justify-content-start align-items-center p-3">
                     <div className="input-group mb-0">
