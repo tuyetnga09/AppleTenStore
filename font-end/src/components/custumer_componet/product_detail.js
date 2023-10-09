@@ -9,6 +9,21 @@ import { addToCart } from "../../service/cart.service";
 import { getSKUProduct } from "../../service/sku.service";
 import queryString from "query-string";
 import AvtProduct from "./avtProduct";
+import "../../css/topnav.css";
+import "../../css/header.css";
+import "../../css/banner.css";
+import "../../css/taikhoan.css";
+import "../../css/home_products.css";
+import "../../css/cart.css";
+import "../../css/chitietsanpham.css";
+import "../../css/pagination_phantrang.css";
+import "../../css/topnav.css";
+import "../../css/gioHang.css";
+import "../../css/footer.css";
+import "../../css/trangchu.css";
+import "../../css/style2.css";
+// import "../../css/owl.carousel.min.css";
+import "../../css/owl.theme.default.min.css";
 
 export default function ProductDetail() {
   const { id } = useParams();

@@ -3,7 +3,9 @@ import com.example.backend.controller.voucher_managment.model.request.CreateVouc
 import com.example.backend.controller.voucher_managment.model.request.FindVoucherRequest;
 import com.example.backend.controller.voucher_managment.model.request.UpdateVoucherRequest;
 import com.example.backend.controller.voucher_managment.service.VoucherService;
+import com.example.backend.entity.Voucher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/voucher")
@@ -60,4 +65,13 @@ public class VoucherRestController {
         return new ResponseEntity(voucherService.findByIdVoucher(id) , HttpStatus.OK);
     }
 
+    @GetMapping("/searchNoDate")
+    public Page<Voucher> searchNoDate(Pageable pageable, @RequestParam("key") String key, @RequestParam("status") String status){
+        return voucherService.searchNoDate(pageable, key, status);
+    }
+
+    @GetMapping("/searchWithDate")
+    public Page<Voucher> searchWithDate(Pageable pageable, @RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
+        return voucherService.searchWithDate(pageable, key, status, dateStart, dateEnd);
+    }
 }
