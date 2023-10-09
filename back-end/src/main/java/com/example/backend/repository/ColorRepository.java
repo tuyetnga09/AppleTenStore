@@ -1,9 +1,11 @@
 package com.example.backend.repository;
 
 import com.example.backend.entity.Color;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -33,5 +35,10 @@ public interface ColorRepository extends JpaRepository<Color, Integer> {
     Page<Color> search(Pageable pageable, String key);
 
     Color findByCode(String code);
+
+    @Modifying
+    @Transactional
+    @Query(value = "select color.id, color.status, color.date_create, color.date_update, color.code, color.name, color.person_create, color.person_update from color inner join product p on color.id = p.id_color where id_color = ?1", nativeQuery = true)
+    List<Color> findColorByIdProduct(int id);
 
 }

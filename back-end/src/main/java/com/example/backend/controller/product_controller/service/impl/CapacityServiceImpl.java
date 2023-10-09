@@ -107,4 +107,8 @@ public class CapacityServiceImpl implements Iservice<Capacity> {
         return capacityRepository.search(search, pageable);
     }
 
+    public List<Capacity> findCapacitiesByIdProduct(int id){
+        return capacityRepository.findCapacitiesByIdProduct(id);
+    }
+
 }

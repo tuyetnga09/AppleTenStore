@@ -1,3 +1,4 @@
+import {add} from "../../../service/image.service";
 import {useEffect, useState} from "react";
 import {addImage} from "../../../service/image.service";
 import "../../../css/form.css";
@@ -17,12 +18,6 @@ const ImageFormAddOrUpdate = () => {
             formData.append("file", list.item(i));
         }
         console.log(event.target.files[0]);
-    }
-
-    function handleChangeProduct(event) {
-        const target = event.target;
-        const value = target.value;
-        formData.append("product", value);
     }
 
     const history = useHistory();
@@ -65,6 +60,6 @@ const ImageFormAddOrUpdate = () => {
             </div>
         </div>
     </form>);
-};
+}
 
 export default ImageFormAddOrUpdate;

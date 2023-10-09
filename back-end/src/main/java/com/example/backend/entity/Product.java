@@ -82,4 +82,5 @@ public class Product  extends DuplicateAttribute implements Identify {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<SKU> skus;
+
 }

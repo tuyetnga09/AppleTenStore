@@ -19,7 +19,6 @@ public class ImageController {
 
     @Autowired
     private ImageService service;
-    //hihi
 
     @GetMapping(value = "/display")
     public Page<Image> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page){
