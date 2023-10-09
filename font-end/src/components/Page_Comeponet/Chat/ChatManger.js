@@ -32,7 +32,7 @@ const ChatManager = () => {
                 sender: "You",
             };
             // Gửi tin nhắn đến máy chủ WebSocket
-            socket.send(JSON.stringify(newMessage));
+            // socket.send(JSON.stringify(newMessage));
             setMessage(""); // Xóa nội dung tin nhắn sau khi gửi
         }
     };
