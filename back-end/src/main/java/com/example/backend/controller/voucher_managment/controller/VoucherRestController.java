@@ -68,4 +68,9 @@ public class VoucherRestController {
         return new ResponseEntity(voucherService.getVoucher(voucher), HttpStatus.OK);
     }
 
+    @GetMapping("/getVoucherFreeShip")
+    public ResponseEntity<List<Voucher>> hienThiVoucherFreeShip(Voucher voucher) {
+        return new ResponseEntity(voucherService.getVoucherFreeShip(voucher), HttpStatus.OK);
+    }
+
 }

@@ -101,12 +101,13 @@ export default function ProductDetail() {
                   message: "ADD TO CART",
                   description: "Sản phẩm đang tạm thời hết hàng",
                 });
-              } else {
-                notification.success({
-                  message: "ADD TO CART",
-                  description: "Thêm giỏ hàng thành công",
-                });
-              }
+              } 
+              // else {
+              //   notification.success({
+              //     message: "ADD TO CART",
+              //     description: "Thêm giỏ hàng thành công",
+              //   });
+              // }
               setItem2(response.data);
             })
             .catch((error) => {
@@ -155,14 +156,26 @@ export default function ProductDetail() {
             <div className="price_sale">
               <div className="area_price">
                 <strong>
-                  {item?.price?.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
+                {(item2 && item2.price)
+                  ? item2.price?.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  :(item && item.price) 
+                  ? item?.price?.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }):null}
                 </strong>
                 <label className="moiramat">Mới ra mắt</label>
                 <label className="giamgia">
-                  Số lượng: {item.quantity && item.quantity}
+                  Số lượng: {(item2 && item2.quantity)
+                  ? item2.quantity && item2.quantity
+                  :(item2 && item2.quantity === 0) 
+                  ? item2.quantity && item2.quantity
+                  :(item && item.quantity) 
+                  ? item.quantity && item.quantity
+                  :null}
                 </label>
               </div>
               {/* <div className="ship" style={{ display: "none" }}>
@@ -207,11 +220,11 @@ export default function ProductDetail() {
                   ))}
                 </div>
               </div>
-              <div className="area_price">
+              {/* <div className="area_price">
                 <label className="giamgia">
                   Số lượng phân loại: {item2.quantity && item2.quantity}
                 </label>
-              </div>
+              </div> */}
               {/* </div> */}
               <div className="area_promo">
                 <strong>khuyến mãi</strong>

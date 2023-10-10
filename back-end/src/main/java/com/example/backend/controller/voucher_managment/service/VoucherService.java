@@ -28,4 +28,6 @@ public interface VoucherService {
 
     List<Voucher> getVoucher(Voucher voucher);
 
+    List<Voucher> getVoucherFreeShip(Voucher voucher);
+
 }

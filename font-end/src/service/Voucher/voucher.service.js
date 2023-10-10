@@ -14,6 +14,10 @@ export const getVoucher = () => {
   return httpClient.get(`/voucher/getVoucher`);
 };
 
+export const getVoucherFreeShip = () => {
+  return httpClient.get(`/voucher/getVoucherFreeShip`);
+};
+
 // export const returnDeleteAll = (page) => {
 //   return httpClient.get(`/battery/displayDelete?${page}`);
 // };

@@ -9,7 +9,7 @@ import { readAll } from "../../../service/cart.service";
 import {readQuantityInCart} from "../../../service/cart.service";
 import {GiftOutlined} from "@ant-design/icons";
 import {Image,Checkbox,Modal,notification,Button,Input} from "antd";
-import {getVoucher} from "../../../service/Voucher/voucher.service";
+import {getVoucher,getVoucherFreeShip} from "../../../service/Voucher/voucher.service";
 import { getPay } from "../../../service/Vnpay/vnpay.service";
 
 const Checkout = () => {
@@ -24,6 +24,8 @@ const Checkout = () => {
   const [selecteVoucher, setSelectedVoucher] = useState(0);
   const [linkPay, setLinkPay] = useState(["/login"]);
   const [isChecked, setIsChecked] = useState([true]);
+  const [voucherFreeShip, setVoucherFreeShip] = useState([true]);
+  const [selecteVoucherFreeShip, setSelectedVoucherFreeShip] = useState(0);
 
   useEffect(() => {
     //hiển thị giỏ hàng
@@ -49,6 +51,15 @@ const Checkout = () => {
       .then((response) => {
         console.log(response.data);
         setVoucher(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+      //lấy danh sách voucher
+      getVoucherFreeShip()
+      .then((response) => {
+        console.log(response.data);
+        setVoucherFreeShip(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -119,12 +130,21 @@ const Checkout = () => {
     setPriceShip(priceS);
     //tính số tiền cẩn thanh toán
     let price = 0; 
-    if (selecteVoucher) {
-      // Nếu selectedVoucher có giá trị, sử dụng giá trị voucher
+    
+    if (selecteVoucherFreeShip && selecteVoucher) {
+      const voucherValue = parseFloat(selecteVoucher.valueVoucher);
+      const voucherVoucherFree = parseFloat(selecteVoucherFreeShip.valueVoucher);
+      price = total + priceS - (voucherValue + voucherVoucherFree);
+    } else if (selecteVoucher) {
+      // Nếu chỉ có selectedVoucher có giá trị, sử dụng giá trị voucher
       const voucherValue = parseFloat(selecteVoucher.valueVoucher);
       price = total + priceS - voucherValue;
+    } else if (selecteVoucherFreeShip) {
+      // Nếu chỉ có selectedVoucherFreeShip có giá trị, sử dụng giá trị voucherfreeship
+      const voucherVoucherFree = parseFloat(selecteVoucherFreeShip.valueVoucher);
+      price = total + priceS - voucherVoucherFree;
     } else {
-      // Nếu selectedVoucher không có giá trị, không sử dụng giảm giá
+      // Nếu cả hai đều không có giá trị, không sử dụng giảm giá
       price = total + priceS;
     }
     setSoTienThanhToan(price);
@@ -151,7 +171,7 @@ const Checkout = () => {
         }
   };
 
-  //clear voucher
+  //clear voucher 
   const handleClearVoucher = (id)=>{
     if(selecteVoucher.id === id){
       setSelectedVoucher(null);
@@ -165,6 +185,42 @@ const Checkout = () => {
       });
     }
   }
+
+    //click Voucher freeship
+    const handleVoucherFreeShipClick = (voucher) => {
+      if( totalPrice < voucher.valueMinimum || totalPrice > voucher.valueMaximum){
+        notification.error({
+          message: "VOUCHER",
+          description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
+        });
+      }else{
+        setSelectedVoucherFreeShip(voucher);
+      readAll(1)
+      .then((response) => {
+        console.log(response.data);
+        setProducts(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+      }
+};
+
+//clear voucher freeship
+const handleClearVoucherFreeShip = (id)=>{
+  if(selecteVoucherFreeShip.id === id){
+    setSelectedVoucherFreeShip(null);
+    readAll(1)
+    .then((response) => {
+      console.log(response.data);
+      setProducts(response.data);
+    })
+    .catch((error) => {
+      console.log(`${error}`);
+    });
+  }
+}
 
   // Hàm để hiển thị Modal khi cần
   const handleEditClick = (record) => {
@@ -262,18 +318,36 @@ const Checkout = () => {
                   <p className="fw-bold">
                     Giảm giá Voucher:
                   </p>
-                  <p className="fw-bold">{selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
+                  <p className="fw-bold">
+                    -{(selecteVoucher && selecteVoucher.valueVoucher) ? 
+                      selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
-                      })}</p>
+                      }):
+                      0?.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND"})}</p>
                 </div>
                 <div className="d-flex justify-content-between px-x">
-                  <p className="fw-bold">Tiền ship:</p>
+                  <p className="fw-bold">Tiền vận chuyển:</p>
                   <p className="fw-bold">
                       {priceShip?.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })}
+                  </p>
+                </div>
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Giảm giá tiền vận chuyển:</p>
+                  <p className="fw-bold">
+                      -{(selecteVoucherFreeShip && selecteVoucherFreeShip.valueVoucher) ? 
+                      selecteVoucherFreeShip?.valueVoucher?.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }):
+                      0?.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND"})}
                   </p>
                 </div>
                 <div className="d-flex justify-content-between p-2 mb-2"
@@ -486,7 +560,7 @@ const Checkout = () => {
         onCancel={handleCancel}
         width={550}
         footer={null}
-        bodyStyle={{ minHeight: "500px" }}
+        bodyStyle={{ minHeight: "700px" }}
     >
         <div className="container py-5">
         <div className="row d-flex justify-content-center">
@@ -497,10 +571,56 @@ const Checkout = () => {
             >
               <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
             </div>
+            <p style={{marginTop: "10px"}}>Mã FreeShip</p>
             <div
               className="card-body"
               data-mdb-perfect-scrollbar="true"
-              style={{ position: "relative", height: 400, overflowY: 'auto' }}
+              style={{ position: "relative", height: 200, overflowY: 'auto' }}
+            >
+              {voucherFreeShip.map((voucher) => (
+                 <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>
+                      <Image
+                        style={{
+                          width: "100px",
+                        }}
+                        src="https://bizweb.dktcdn.net/100/377/231/articles/freeship.png?v=1588928233387"
+                      />
+                    </span>
+                    <span style={{paddingLeft: "10px"}}>
+                      {voucher.name}
+                      <br/>
+                      <p style={{color: "red", fontSize: "15px"}}>Giảm {voucher?.valueVoucher?.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}</p>
+                      <p>Đơn giá trị tối thiểu {voucher.valueMinimum} 
+                      <br/>
+                       Đơn giá trị tối đa {voucher.valueMaximum}</p>
+                    </span>
+                    <strong>
+                      {/* <Checkbox
+                        onClick={() => handleVoucherClick(voucher)}
+                      /> */}
+                      <Button type="text" danger onClick={() => handleVoucherFreeShipClick(voucher)}>
+                        Áp dụng
+                      </Button>
+                      <br/>
+                      <Button type="text"  danger onClick={() => handleClearVoucherFreeShip(voucher.id)}>
+                        Hủy
+                      </Button>
+                    </strong>
+                  </li>
+              </ul>
+              ))}
+              
+            </div>
+            <p style={{marginTop: "10px"}}>Mã Giảm giá</p>
+            <div
+              className="card-body"
+              data-mdb-perfect-scrollbar="true"
+              style={{ position: "relative", height: 330, overflowY: 'auto' }}
             >
               {voucher.map((voucher) => (
                  <ul class="list-group mb-3">
@@ -525,9 +645,6 @@ const Checkout = () => {
                        Đơn giá trị tối đa {voucher.valueMaximum}</p>
                     </span>
                     <strong>
-                      {/* <Checkbox
-                        onClick={() => handleVoucherClick(voucher)}
-                      /> */}
                       <Button type="text" danger onClick={() => handleVoucherClick(voucher)}>
                         Áp dụng
                       </Button>

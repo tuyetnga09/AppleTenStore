@@ -39,4 +39,10 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
     List<Voucher> checkToStartAfterAndStatus(@Param("dateTime") Date dateTime, Integer status);
 
     Voucher findByCode(String code);
+
+    @Query(value = "select * from voucher where value_voucher > 100000", nativeQuery = true)
+    List<Voucher> getVoucherGiamGia(Voucher voucher);
+
+    @Query(value = "select * from voucher where value_voucher < 100000", nativeQuery = true)
+    List<Voucher> getVoucherFreeShip(Voucher voucher);
 }

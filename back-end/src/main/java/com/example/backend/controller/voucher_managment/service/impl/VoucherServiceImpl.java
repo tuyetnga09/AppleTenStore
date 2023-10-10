@@ -141,7 +141,12 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<Voucher> getVoucher(Voucher voucher) {
-        return voucherRepository.findAll();
+        return voucherRepository.getVoucherGiamGia(voucher);
+    }
+
+    @Override
+    public List<Voucher> getVoucherFreeShip(Voucher voucher) {
+        return voucherRepository.getVoucherFreeShip(voucher);
     }
 
 
