@@ -704,6 +704,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function tu2Den4Trieu() {
@@ -715,6 +717,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function tu4Den7Trieu() {
@@ -726,6 +730,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function tu7Den13Trieu() {
@@ -737,6 +743,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function tren13Trieu() {
@@ -748,6 +756,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function iphone() {
@@ -759,6 +769,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function samsung() {
@@ -770,6 +782,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function oppo() {
@@ -781,6 +795,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function xiaomi() {
@@ -792,6 +808,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function huawei() {
@@ -803,6 +821,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function ascendingPrice() {
@@ -814,6 +834,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(null);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function decreasePrice() {
@@ -825,6 +847,8 @@ export default function TrangChu() {
     setFiltersDecreasePrice(item);
     setFiltersNew(null);
     setFiltersCheap(null);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   function showContainProducts() {
@@ -847,6 +871,8 @@ export default function TrangChu() {
     setFilters(item);
     setFiltersNew(item);
     setFiltersCheap(item);
+    const keyword = document.getElementById("key");
+    keyword.value = "";
   }
 
   return (
@@ -860,8 +886,9 @@ export default function TrangChu() {
               id="carouselExampleInterval"
               class="carousel slide"
               data-bs-ride="carousel"
+              style={{ maxHeight: "500px" }}
             >
-              <div class="carousel-inner">
+              <div class="carousel-inner" style={{ maxHeight: "500px" }}>
                 <div class="carousel-item active" data-bs-interval="3000">
                   <img
                     src="/img/banners/banner1.png"
@@ -1000,6 +1027,7 @@ export default function TrangChu() {
           >
             <div className="filterName">
               <input
+                id="key"
                 type="text"
                 // placeholder="Lọc trong trang theo tên..."
                 placeholder="Lọc theo tên hoặc giá"

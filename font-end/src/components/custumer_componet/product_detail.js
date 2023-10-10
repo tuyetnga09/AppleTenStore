@@ -231,7 +231,7 @@ export default function ProductDetail() {
               <div className="area_promo">
                 <strong>khuyến mãi</strong>
                 <div className="promo">
-                  <img src="img/chitietsanpham/icon-tick.png" />
+                  <img src="/img/chitietsanpham/icon-tick.png" />
                   <div id="detailPromo">
                     Khách hàng sẽ được thử máy miễn phí tại cửa hàng. Có thể đổi
                     trả lỗi trong vòng 2 tháng.
@@ -240,18 +240,18 @@ export default function ProductDetail() {
               </div>
               <div className="policy">
                 <div>
-                  <img src="img/chitietsanpham/box.png" />
+                  <img src="/img/chitietsanpham/box.png" />
                   <p>
                     Trong hộp có: Sạc, Tai nghe, Sách hướng dẫn, Cây lấy sim, Ốp
                     lưng{" "}
                   </p>
                 </div>
                 <div>
-                  <img src="img/chitietsanpham/icon-baohanh.png" />
+                  <img src="/img/chitietsanpham/icon-baohanh.png" />
                   <p>Bảo hành chính hãng 12 tháng.</p>
                 </div>
                 <div className="last">
-                  <img src="img/chitietsanpham/1-1.jpg" />
+                  <img src="/img/chitietsanpham/1-1.jpg" />
                   <p>
                     1 đổi 1 trong 1 tháng nếu lỗi, đổi sản phẩm tại nhà trong 1
                     ngày.
