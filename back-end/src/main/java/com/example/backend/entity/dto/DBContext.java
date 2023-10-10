@@ -134,7 +134,6 @@ public class DBContext implements CommandLineRunner {
         addAccount("hongphong673@gmail.com", "123456", Status.DANG_SU_DUNG);
         addAccount("tuyetnga673@gmail.com", "123456", Status.DANG_SU_DUNG);
         addAccount("hoanghieu673@gmail.com", "123456", Status.DANG_SU_DUNG);
-
         // Thêm dữ liệu cho bảng Product
         addProduct("PR1", "Iphone 11 Pro Max", "Khung viền thép", 0, new BigDecimal(11000000));
         addProduct("PR2", "Iphone 12 Pro Max", "Kính  cường lực", 0, new BigDecimal(15500000));
@@ -253,6 +252,9 @@ public class DBContext implements CommandLineRunner {
             accountRepository.save(account);
         }
     }
+
+
+
 
     private void addProduct(String code, String name, String description, int quantity, BigDecimal price) {
         if (productRepository.findByCode(code) == null) {
