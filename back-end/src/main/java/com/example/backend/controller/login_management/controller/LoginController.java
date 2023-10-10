@@ -1,6 +1,7 @@
 package com.example.backend.controller.login_management.controller;
 
 import com.example.backend.controller.login_management.model.request.LoginRequest;
+import com.example.backend.controller.login_management.model.request.ResetRequest;
 import com.example.backend.controller.login_management.service.LoginService;
 import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.service.AccountService;
@@ -27,6 +28,11 @@ public class LoginController {
     public ResponseObj authentication (LoginRequest request){
 
         return new ResponseObj(loginService.getOneByEmailAndPass(request));
+    }
+
+    @GetMapping("/resetPassword")
+    public ResponseObj restPassword (ResetRequest resetPassword){
+        return new ResponseObj(loginService.resetPassword(resetPassword));
     }
 
 }

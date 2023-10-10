@@ -50,7 +50,7 @@ public class LoginServiceImpl  implements LoginService {
         account.setPassword(passwordEncoder.encode(String.valueOf(randomNumber)));
         accountRepository.save(account);
         String subject = "Mật khẩu mới của bạn ";
-//        emailService.sendEmailPasword(account.getEmail(),subject,String.valueOf(randomNumber));
+        emailService.sendEmailPasword(account.getEmail(),subject,String.valueOf(randomNumber));
         LoginResponse response = new LoginResponse(account);
         return response;
     }
