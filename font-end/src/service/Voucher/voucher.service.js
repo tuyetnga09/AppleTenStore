@@ -45,3 +45,10 @@ export const deleteVoucher = (id) => {
 // export const importBattery = (form) => {
 //   return httpClient.post("/battery/import", form, config);
 // };
+export const searchNoDate = (page) => {
+  return httpClient.get(`/voucher/searchNoDate?${page}`);
+};
+
+export const searchWithDate = (page) => {
+  return httpClient.get(`/voucher/searchWithDate?${page}`);
+};

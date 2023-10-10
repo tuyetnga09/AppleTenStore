@@ -1,7 +1,5 @@
 package com.example.backend.repository;
 
-import com.example.backend.controller.order_management.model.bill.request.BillRequest;
-import com.example.backend.controller.order_management.model.bill.response.BillResponse;
 import com.example.backend.entity.Bill;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

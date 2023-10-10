@@ -20,6 +20,7 @@ import {
   GiftOutlined,
   LogoutOutlined,
   ShopOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 const { Text } = Typography;
@@ -52,7 +53,10 @@ const DashboardPage = () => {
             <Menu.Item key="5" icon={<GiftOutlined />}>
               <Link to="/voucher">Voucher</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined />}>
+            <Menu.Item key="6" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Categories</Link>
+            </Menu.Item>
+            <Menu.Item key="7" icon={<LogoutOutlined />}>
               <Link to="/logout">Logout</Link>
             </Menu.Item>
           </Menu>

@@ -2,6 +2,7 @@ package com.example.backend.entity;
 
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
+import com.example.backend.untils.Roles;
 import com.example.backend.untils.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -57,4 +58,6 @@ public class Account {
     private Date dateUpdate;
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Enumerated(EnumType.STRING)
+    private Roles roles;
 }

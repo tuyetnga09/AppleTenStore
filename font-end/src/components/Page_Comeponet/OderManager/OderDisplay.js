@@ -34,7 +34,7 @@ import {
   Modal,
   Dropdown,
 } from "antd";
-import { List, Array } from "@refinedev/antd";
+import { List, Array, DateField } from "@refinedev/antd";
 import {
   Link,
   useHistory,
@@ -106,15 +106,29 @@ const OderDisplay = ({}) => {
 
   useEffect(() => {
     const paramsString = queryString.stringify(filtersNoDate);
-    searchNoDate(paramsString)
-      .then((response) => {
-        // console.log(response.data);
-        setOder(response.data.content);
-        // setEditedVoucher(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+    const paramsString2 = queryString.stringify(filtersWithDate);
+    const dateFilter = document.getElementById("dateFilter");
+    if (dateFilter.value == "") {
+      searchNoDate(paramsString)
+        .then((response) => {
+          // console.log(response.data);
+          setOder(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      searchWithDate(paramsString2)
+        .then((response) => {
+          // console.log(response.data);
+          setOder(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
     readAllUser()
       .then((response) => {
         // console.log(response.data);
@@ -124,7 +138,7 @@ const OderDisplay = ({}) => {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, []);
+  }, [filtersNoDate, filtersWithDate]);
 
   function handleChangeSearch(event) {
     const target = event.target;
@@ -136,12 +150,10 @@ const OderDisplay = ({}) => {
       item = { ...filtersNoDate };
       item[name] = value;
       setFiltersNoDate(item);
-      console.log(filtersNoDate);
     } else {
       item = { ...filtersWithDate };
       item[name] = value;
       setFiltersWithDate(item);
-      console.log(filtersWithDate);
     }
   }
 
@@ -167,7 +179,6 @@ const OderDisplay = ({}) => {
         item["status"] = "";
         setFiltersWithDate(item);
       }
-      console.log(filtersWithDate);
     }
   }
 
@@ -183,7 +194,6 @@ const OderDisplay = ({}) => {
         item["user"] = "";
         setFiltersNoDate(item);
       }
-      console.log(filtersNoDate);
     } else {
       item = { ...filtersWithDate };
       item["user"] = value;
@@ -193,11 +203,11 @@ const OderDisplay = ({}) => {
         item["user"] = "";
         setFiltersWithDate(item);
       }
-      console.log(filtersWithDate);
     }
   }
 
   function handleChangeDate(value) {
+    let item = {};
     if (value != null) {
       const dateStart = new Date(value[0]);
       const yearStart = dateStart.getFullYear();
@@ -213,10 +223,14 @@ const OderDisplay = ({}) => {
       const formattedDateEnd = `${yearEnd}-${monthEnd
         .toString()
         .padStart(2, "0")}-${dayEnd.toString().padStart(2, "0")}`;
-      let item = { ...filtersWithDate };
+      item = { ...filtersWithDate };
       item["dateStart"] = formattedDateStart;
       item["dateEnd"] = formattedDateEnd;
       setFiltersWithDate(item);
+      console.log(filtersWithDate);
+    } else {
+      item = { ...filtersNoDate };
+      setFiltersNoDate(item);
     }
   }
 
@@ -520,7 +534,11 @@ const OderDisplay = ({}) => {
                       dataIndex="dateCreate"
                       title={t("DateCreate")}
                       render={(text, record) => (
-                        <span>{record.dateCreate}</span>
+                        // <span>{record.dateCreate}</span>
+                        <DateField
+                          value={record.dateCreate}
+                          format="DD/MM/YYYY"
+                        />
                       )}
                     />
                     <Table.Column
@@ -528,7 +546,11 @@ const OderDisplay = ({}) => {
                       dataIndex="dateUpdate"
                       title={t("DateUpdate")}
                       render={(text, record) => (
-                        <span>{record.dateUpdate}</span>
+                        // <span>{record.dateUpdate}</span>
+                        <DateField
+                          value={record.dateUpdate}
+                          format="DD/MM/YYYY"
+                        />
                       )}
                     />
 

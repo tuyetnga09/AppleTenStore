@@ -9,6 +9,21 @@ import { addToCart } from "../../service/cart.service";
 import { getSKUProduct } from "../../service/sku.service";
 import queryString from "query-string";
 import AvtProduct from "./avtProduct";
+import "../../css/topnav.css";
+import "../../css/header.css";
+import "../../css/banner.css";
+import "../../css/taikhoan.css";
+import "../../css/home_products.css";
+import "../../css/cart.css";
+import "../../css/chitietsanpham.css";
+import "../../css/pagination_phantrang.css";
+import "../../css/topnav.css";
+import "../../css/gioHang.css";
+import "../../css/footer.css";
+import "../../css/trangchu.css";
+import "../../css/style2.css";
+// import "../../css/owl.carousel.min.css";
+import "../../css/owl.theme.default.min.css";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -229,7 +244,7 @@ export default function ProductDetail() {
               <div className="area_promo">
                 <strong>khuyến mãi</strong>
                 <div className="promo">
-                  <img src="img/chitietsanpham/icon-tick.png" />
+                  <img src="/img/chitietsanpham/icon-tick.png" />
                   <div id="detailPromo">
                     Khách hàng sẽ được thử máy miễn phí tại cửa hàng. Có thể đổi
                     trả lỗi trong vòng 2 tháng.
@@ -238,18 +253,18 @@ export default function ProductDetail() {
               </div>
               <div className="policy">
                 <div>
-                  <img src="img/chitietsanpham/box.png" />
+                  <img src="/img/chitietsanpham/box.png" />
                   <p>
                     Trong hộp có: Sạc, Tai nghe, Sách hướng dẫn, Cây lấy sim, Ốp
                     lưng{" "}
                   </p>
                 </div>
                 <div>
-                  <img src="img/chitietsanpham/icon-baohanh.png" />
+                  <img src="/img/chitietsanpham/icon-baohanh.png" />
                   <p>Bảo hành chính hãng 12 tháng.</p>
                 </div>
                 <div className="last">
-                  <img src="img/chitietsanpham/1-1.jpg" />
+                  <img src="/img/chitietsanpham/1-1.jpg" />
                   <p>
                     1 đổi 1 trong 1 tháng nếu lỗi, đổi sản phẩm tại nhà trong 1
                     ngày.
