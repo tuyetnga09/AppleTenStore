@@ -3,9 +3,11 @@ package com.example.backend.controller.vnpay.controller;
 import com.example.backend.controller.vnpay.config.Config;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -23,12 +25,12 @@ import java.util.TimeZone;
 public class PaymentController {
 
     @GetMapping("/pay")
-    public String getPay() throws UnsupportedEncodingException {
+    public String getPay(@RequestParam("soTienThanhToan") long soTienThanhToan) throws UnsupportedEncodingException {
 
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
-        long amount = 10000*100;
+        long amount = soTienThanhToan*100;
         String bankCode = "NCB";
 
         String vnp_TxnRef = Config.getRandomNumber(8);

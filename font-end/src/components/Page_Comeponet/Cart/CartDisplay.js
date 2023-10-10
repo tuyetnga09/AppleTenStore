@@ -15,17 +15,20 @@ import { notification } from "antd";
 import { getOneSKU } from "../../../service/sku.service";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { event } from "jquery";
+import { DateField } from "@refinedev/antd";
 
 export default function CartDisplay() {
   const history = useHistory();
   const [products, setProducts] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
+  // const [number, setNumber] = useState(0);
 
   useEffect(() => {
     readAll(1)
       .then((response) => {
         console.log(response.data);
         setProducts(response.data);
+        // setNumber(response.data.total);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -222,11 +225,11 @@ export default function CartDisplay() {
                                         });
                                       }}
                                       onBlur={(event) => {
-                                        if (event.target.value < 0) {
+                                        if (event.target.value <= 0) {
                                           notification.error({
                                             message: "ADD TO CART",
                                             description:
-                                              "Không thể nhập số lượng âm",
+                                              "Số lượng phải lớn hơn 0",
                                           });
                                           const quantity =
                                             document.getElementById(
@@ -238,8 +241,7 @@ export default function CartDisplay() {
                                             product.quantity,
                                             product.idSKU
                                           );
-                                        }
-                                        if (
+                                        } else if (
                                           event.target.value >
                                           parseInt(quantitySKU) +
                                             parseInt(product.quantity)
@@ -257,6 +259,17 @@ export default function CartDisplay() {
                                           handleUpdateQuantity(
                                             product.idCartDetail,
                                             product.quantity,
+                                            product.idSKU
+                                          );
+                                        } else {
+                                          // const quantity =
+                                          //   document.getElementById(
+                                          //     `quantity-${index}`
+                                          //   );
+                                          // quantity.value = event.target.value;
+                                          handleUpdateQuantity(
+                                            product.idCartDetail,
+                                            event.target.value,
                                             product.idSKU
                                           );
                                         }
@@ -278,12 +291,21 @@ export default function CartDisplay() {
                                 </td>
                                 <td>
                                   <p className="fw-bold mb-0 me-5 pe-3">
-                                    {product.total}
+                                    {parseFloat(product.total).toLocaleString(
+                                      "vi-VN",
+                                      {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }
+                                    )}
                                   </p>
                                 </td>
                                 <td>
                                   <p className="fw-bold mb-0 me-5 pe-3">
-                                    {product.dateCreate}
+                                    <DateField
+                                      value={product.dateCreate}
+                                      format="DD/MM/YYYY"
+                                    />
                                   </p>
                                 </td>
 
@@ -340,7 +362,12 @@ export default function CartDisplay() {
                           style={{ backgroundColor: "#e1f5fe" }}
                         >
                           <h5 className="fw-bold mb-0">Tồng tiền:</h5>
-                          <h5 className="fw-bold mb-0">{totalPrice} VNĐ</h5>
+                          <h5 className="fw-bold mb-0">
+                            {totalPrice.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}{" "}
+                          </h5>
                         </div>
 
                         <div class="d-grid gap-2 col-6 mx-auto">
