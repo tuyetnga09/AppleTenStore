@@ -17,6 +17,9 @@ import {
   readAll,
 } from "../../../service/product.service";
 import Pagination from "../../product_component/Size/Paging";
+import "bootstrap/dist/js/bootstrap";
+import "bootstrap/dist/js/bootstrap.bundle";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function TrangChu() {
   const [display, setDisplay] = useState([]);
@@ -852,261 +855,64 @@ export default function TrangChu() {
         <Header />
         <section>
           {/* Start Banner */}
-          {/* <div className="banner">
-            <div className="owl-carousel owl-theme owl-loaded owl-drag">
-              <div className="owl-stage-outer">
-                <div
-                  className="owl-stage"
-                  style={{
-                    transition: "all 0.45s ease 0s",
-                    width: 17400,
-                    transform: "translate3d(-4132px, 0px, 0px)",
-                  }}
-                >
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner5.png">
-                        <img src="img/banners/banner5.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner6.png">
-                        <img src="img/banners/banner6.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner7.png">
-                        <img src="img/banners/banner7.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner8.png">
-                        <img src="img/banners/banner8.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner9.png">
-                        <img src="img/banners/banner9.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item active center"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner0.gif">
-                        <img src="img/banners/banner0.gif" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item active"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner1.png">
-                        <img src="img/banners/banner1.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner2.png">
-                        <img src="img/banners/banner2.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner3.png">
-                        <img src="img/banners/banner3.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner4.png">
-                        <img src="img/banners/banner4.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner5.png">
-                        <img src="img/banners/banner5.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner6.png">
-                        <img src="img/banners/banner6.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner7.png">
-                        <img src="img/banners/banner7.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner8.png">
-                        <img src="img/banners/banner8.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner9.png">
-                        <img src="img/banners/banner9.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner0.gif">
-                        <img src="img/banners/banner0.gif" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner1.png">
-                        <img src="img/banners/banner1.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner2.png">
-                        <img src="img/banners/banner2.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner3.png">
-                        <img src="img/banners/banner3.png" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="owl-item cloned"
-                    style={{ width: 770, marginRight: 100 }}
-                  >
-                    <div className="item">
-                      <a target="_blank" href="img/banners/banner4.png">
-                        <img src="img/banners/banner4.png" />
-                      </a>
-                    </div>
-                  </div>
+          <div className="banner" style={{ maxHeight: "500px" }}>
+            <div
+              id="carouselExampleInterval"
+              class="carousel slide"
+              data-bs-ride="carousel"
+            >
+              <div class="carousel-inner">
+                <div class="carousel-item active" data-bs-interval="3000">
+                  <img
+                    src="/img/banners/banner1.png"
+                    class="d-block w-100"
+                    alt="..."
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                </div>
+                <div class="carousel-item" data-bs-interval="3000">
+                  <img
+                    src="/img/banners/banner2.png"
+                    class="d-block w-100"
+                    alt="..."
+                    style={{ maxWidth: "50%", height: "auto" }}
+                  />
+                </div>
+                <div class="carousel-item">
+                  <img
+                    src="/img/banners/banner3.png"
+                    class="d-block w-100"
+                    alt="..."
+                    style={{ maxWidth: "50%", height: "auto" }}
+                  />
                 </div>
               </div>
-              <div className="owl-nav disabled">
-                <button type="button" role="presentation" className="owl-prev">
-                  <span aria-label="Previous">‹</span>
-                </button>
-                <button type="button" role="presentation" className="owl-next">
-                  <span aria-label="Next">›</span>
-                </button>
-              </div>
-              <div className="owl-dots">
-                <button role="button" className="owl-dot active">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-                <button role="button" className="owl-dot">
-                  <span />
-                </button>
-              </div>
+              <button
+                class="carousel-control-prev"
+                type="button"
+                data-bs-target="#carouselExampleInterval"
+                data-bs-slide="prev"
+              >
+                <span
+                  class="carousel-control-prev-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button
+                class="carousel-control-next"
+                type="button"
+                data-bs-target="#carouselExampleInterval"
+                data-bs-slide="next"
+              >
+                <span
+                  class="carousel-control-next-icon"
+                  aria-hidden="true"
+                ></span>
+                <span class="visually-hidden">Next</span>
+              </button>
             </div>
-          </div>{" "} */}
+          </div>{" "}
           {/* End Banner */}
           <img
             src="img/banners/blackFriday.gif"

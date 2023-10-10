@@ -114,16 +114,30 @@ const VoucherDisplay = ({}) => {
     //     console.log(`${error}`);
     //   });
     const paramsString = queryString.stringify(filtersNoDate);
-    searchNoDate(paramsString)
-      .then((response) => {
-        // console.log(response.data);
-        setVoucher(response.data.content);
-        // setEditedVoucher(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-  }, []);
+    const paramsString2 = queryString.stringify(filtersWithDate);
+    const dateFilter = document.getElementById("dateFilter");
+    if (dateFilter.value == "") {
+      searchNoDate(paramsString)
+        .then((response) => {
+          // console.log(response.data);
+          setVoucher(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      searchWithDate(paramsString2)
+        .then((response) => {
+          // console.log(response.data);
+          setVoucher(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }, [filtersNoDate, filtersWithDate]);
 
   async function remove(id) {
     deleteVoucher(id).then(() => {
@@ -186,6 +200,7 @@ const VoucherDisplay = ({}) => {
   }
 
   function handleChangeDate(value) {
+    let item = {};
     if (value != null) {
       const dateStart = new Date(value[0]);
       const yearStart = dateStart.getFullYear();
@@ -201,10 +216,14 @@ const VoucherDisplay = ({}) => {
       const formattedDateEnd = `${yearEnd}-${monthEnd
         .toString()
         .padStart(2, "0")}-${dayEnd.toString().padStart(2, "0")}`;
-      let item = { ...filtersWithDate };
+      item = { ...filtersWithDate };
       item["dateStart"] = formattedDateStart;
       item["dateEnd"] = formattedDateEnd;
       setFiltersWithDate(item);
+    } else {
+      item = { ...filtersNoDate };
+      setFiltersNoDate(item);
+      console.log(filtersNoDate);
     }
   }
 

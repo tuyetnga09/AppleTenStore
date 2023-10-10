@@ -14,10 +14,12 @@ import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { notification } from "antd";
 import { getOneSKU } from "../../../service/sku.service";
 import AvtProduct from "../../custumer_componet/avtProduct";
+import { event } from "jquery";
 
 export default function CartDisplay() {
   const history = useHistory();
   const [products, setProducts] = useState([]);
+  const [quantitySKU, setQuantitySKU] = useState(0);
 
   useEffect(() => {
     readAll(1)
@@ -41,10 +43,17 @@ export default function CartDisplay() {
   const [sku, setSKU] = useState([]);
 
   const handleUpdateQuantity = (cartItemId, newQuantity, idSKU) => {
-    if (newQuantity <= 0) {
+    if (newQuantity == 0) {
+      newQuantity = 1;
+    } else if (newQuantity < 0) {
       // xóa sản phẩm khỏi giỏ hàng khi so luong bang 0
-      deleteCartDetail(cartItemId);
-      window.location.reload();
+      notification.error({
+        message: "ADD TO CART",
+        description: "Không được nhập số lượng âm",
+      });
+      // console.log();
+      // deleteCartDetail(cartItemId);
+      // window.location.reload();
     } else {
       update(cartItemId, newQuantity)
         .then((response) => {
@@ -61,7 +70,7 @@ export default function CartDisplay() {
                       message: "ADD TO CART",
                       description: "Sản phẩm đang tạm thời hết hàng",
                     });
-                  } 
+                  }
                 })
                 .catch((error) => {
                   console.log(`${error}`);
@@ -97,219 +106,267 @@ export default function CartDisplay() {
     <React.Fragment>
       <>
         <Header />
-        <div className="breadcrumbs_area">
-          <div
-            className="row"
-            style={{ marginTop: "10px", marginLeft: "20px" }}
-          >
-            <div id="detailPromo">
-              <Link to={"/"}>Home</Link>
-              <RightOutlined />
-              <Link to={"/cart"}>Cart</Link>
+        <section>
+          <div className="breadcrumbs_area">
+            <div className="row" style={{ marginTop: "10px" }}>
+              <div id="detailPromo">
+                <Link to={"/"}>Home</Link>
+                <RightOutlined />
+                <Link to={"/cart"}>Cart</Link>
+              </div>
             </div>
           </div>
-        </div>
-        <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
-          <div className="container h-100 py-5">
-            <div className="row d-flex justify-content-center align-items-center h-100">
-              <div className="col">
-                <div
-                  className="card shopping-cart"
-                  style={{ borderRadius: 15 }}
-                >
-                  <div className="card-body text-black">
-                    <div className="row">
-                      {/* <div className="col-lg-6 px-5 py-4"> */}
-                      <h3 className="mb-5 pt-2 text-center fw-bold text-uppercase">
-                        Giỏ hàng
-                      </h3>
-                      <table>
-                        <thead>
-                          <tr style={{ textAlign: "center" }}>
-                            <th>
-                              <h5 className="fw-bold mb-0 me-5 pe-3">Ảnh</h5>
-                            </th>
-                            <th>
-                              <h5 className="fw-bold mb-0 me-5 pe-3">
-                                Sản phẩm
-                              </h5>
-                            </th>
-                            <th>
-                              <h5 className="fw-bold mb-0 me-5 pe-3">Giá</h5>
-                            </th>
-                            <th>
-                              <h5 className="fw-bold mb-0 me-5 pe-3">SL</h5>
-                            </th>
-                            <th>
-                              <h5 className="fw-bold mb-0 me-5 pe-3">
-                                Thành tiền
-                              </h5>
-                            </th>
-                            <th>
-                              <h5 className="fw-bold mb-0 me-5 pe-3">
-                                Thời gian
-                              </h5>
-                            </th>
-                            <th></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {products.map((product) => (
-                            <tr class="alert" role="alert">
-                              <td>
-                                <div className="flex-shrink-0">
-                                  <AvtProduct
-                                    product={product.idProduct}
-                                  ></AvtProduct>
-                                </div>
-                              </td>
-                              <td>
-                                <h5
-                                  className="text-primary"
-                                  style={{ paddingTop: "15px" }}
-                                >
-                                  {product.nameProduct}
+          <section
+            className="h-100 h-custom"
+            style={{ backgroundColor: "#eee" }}
+          >
+            <div className="container h-100 py-5">
+              <div className="row d-flex justify-content-center align-items-center h-100">
+                <div className="col">
+                  <div
+                    className="card shopping-cart"
+                    style={{ borderRadius: 15 }}
+                  >
+                    <div className="card-body text-black">
+                      <div className="row">
+                        {/* <div className="col-lg-6 px-5 py-4"> */}
+                        <h3 className="mb-5 pt-2 text-center fw-bold text-uppercase">
+                          Giỏ hàng
+                        </h3>
+                        <table>
+                          <thead>
+                            <tr style={{ textAlign: "center" }}>
+                              <th>
+                                <h5 className="fw-bold mb-0 me-5 pe-3">Ảnh</h5>
+                              </th>
+                              <th>
+                                <h5 className="fw-bold mb-0 me-5 pe-3">
+                                  Sản phẩm
                                 </h5>
-                                <p style={{ fontSize: "15px" }}>
-                                  Dung lượng: {product.capacity}
-                                  <br />
-                                  Màu sắc: {product.color}
-                                </p>
-                              </td>
-                              <td>
-                                <p className="fw-bold mb-0 me-5 pe-3">
-                                  {product.price}
-                                </p>
-                              </td>
-                              <td>
-                                <div
-                                  className="def-number-input number-input safari_only"
-                                  style={{ paddingRight: "10px" }}
-                                >
-                                  <button
-                                    // onClick={() => handleDownQuantiy(product.id)}
-                                    // className="minus"
-                                    onClick={() =>
-                                      handleUpdateQuantity(
-                                        product.idCartDetail,
-                                        product.quantity - 1,
-                                        product.idSKU
-                                      )
-                                    }
-                                    className="minus"
-                                  />
-                                  <input
-                                    className="quantity fw-bold text-black"
-                                    min={0}
-                                    name="quantity"
-                                    value={product.quantity}
-                                    type="number"
-                                  />
-                                  <button
-                                    // onClick={() => handleUpQuantiy(product.id)}
-                                    // className="plus"
-                                    onClick={() =>
-                                      handleUpdateQuantity(
-                                        product.idCartDetail,
-                                        parseInt(product.quantity) + 1,
-                                        product.idSKU
-                                      )
-                                    }
-                                    className="plus"
-                                  />
-                                </div>
-                              </td>
-                              <td>
-                                <p className="fw-bold mb-0 me-5 pe-3">
-                                  {product.total}
-                                </p>
-                              </td>
-                              <td>
-                                <p className="fw-bold mb-0 me-5 pe-3">
-                                  {product.dateCreate}
-                                </p>
-                              </td>
-
-                              <td>
-                                <button
-                                  type="button"
-                                  className="close"
-                                  data-dismiss="alert"
-                                  aria-label="Close"
-                                  onClick={() => remove(product.idCartDetail)}
-                                >
-                                  <span aria-hidden="true">
-                                    <FontAwesomeIcon
-                                      icon={faTimes}
-                                      style={{ paddingRight: "10px" }}
-                                    />
-                                  </span>
-                                </button>
-                              </td>
+                              </th>
+                              <th>
+                                <h5 className="fw-bold mb-0 me-5 pe-3">Giá</h5>
+                              </th>
+                              <th>
+                                <h5 className="fw-bold mb-0 me-5 pe-3">SL</h5>
+                              </th>
+                              <th>
+                                <h5 className="fw-bold mb-0 me-5 pe-3">
+                                  Thành tiền
+                                </h5>
+                              </th>
+                              <th>
+                                <h5 className="fw-bold mb-0 me-5 pe-3">
+                                  Thời gian
+                                </h5>
+                              </th>
+                              <th></th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {products.map((product, index) => (
+                              <tr class="alert" role="alert">
+                                <td>
+                                  <div className="flex-shrink-0">
+                                    <AvtProduct
+                                      product={product.idProduct}
+                                    ></AvtProduct>
+                                  </div>
+                                </td>
+                                <td>
+                                  <h5
+                                    className="text-primary"
+                                    style={{ paddingTop: "15px" }}
+                                  >
+                                    {product.nameProduct}
+                                  </h5>
+                                  <p style={{ fontSize: "15px" }}>
+                                    Dung lượng: {product.capacity}
+                                    <br />
+                                    Màu sắc: {product.color}
+                                  </p>
+                                </td>
+                                <td>
+                                  <p className="fw-bold mb-0 me-5 pe-3">
+                                    {product.price}
+                                  </p>
+                                </td>
+                                <td>
+                                  <div
+                                    className="def-number-input number-input safari_only"
+                                    style={{ paddingRight: "10px" }}
+                                  >
+                                    <button
+                                      // onClick={() => handleDownQuantiy(product.id)}
+                                      // className="minus"
+                                      onClick={() =>
+                                        handleUpdateQuantity(
+                                          product.idCartDetail,
+                                          product.quantity - 1,
+                                          product.idSKU
+                                        )
+                                      }
+                                      className="minus"
+                                    />
+                                    <input
+                                      id={`quantity-${index}`}
+                                      className="quantity fw-bold text-black"
+                                      min={0}
+                                      name="quantity"
+                                      // value={product.quantity}
+                                      type="number"
+                                      placeholder={product.quantity}
+                                      onChange={() => {
+                                        getOneSKU(product.idSKU).then((res) => {
+                                          setQuantitySKU(res.data.quantity);
+                                        });
+                                      }}
+                                      onBlur={(event) => {
+                                        if (event.target.value < 0) {
+                                          notification.error({
+                                            message: "ADD TO CART",
+                                            description:
+                                              "Không thể nhập số lượng âm",
+                                          });
+                                          const quantity =
+                                            document.getElementById(
+                                              `quantity-${index}`
+                                            );
+                                          quantity.value = product.quantity;
+                                          handleUpdateQuantity(
+                                            product.idCartDetail,
+                                            product.quantity,
+                                            product.idSKU
+                                          );
+                                        }
+                                        if (
+                                          event.target.value >
+                                          parseInt(quantitySKU) +
+                                            parseInt(product.quantity)
+                                        ) {
+                                          notification.error({
+                                            message: "ADD TO CART",
+                                            description:
+                                              "Không thể nhập quá số lượng đang có",
+                                          });
+                                          const quantity =
+                                            document.getElementById(
+                                              `quantity-${index}`
+                                            );
+                                          quantity.value = product.quantity;
+                                          handleUpdateQuantity(
+                                            product.idCartDetail,
+                                            product.quantity,
+                                            product.idSKU
+                                          );
+                                        }
+                                      }}
+                                    />
+                                    <button
+                                      // onClick={() => handleUpQuantiy(product.id)}
+                                      // className="plus"
+                                      onClick={() =>
+                                        handleUpdateQuantity(
+                                          product.idCartDetail,
+                                          parseInt(product.quantity) + 1,
+                                          product.idSKU
+                                        )
+                                      }
+                                      className="plus"
+                                    />
+                                  </div>
+                                </td>
+                                <td>
+                                  <p className="fw-bold mb-0 me-5 pe-3">
+                                    {product.total}
+                                  </p>
+                                </td>
+                                <td>
+                                  <p className="fw-bold mb-0 me-5 pe-3">
+                                    {product.dateCreate}
+                                  </p>
+                                </td>
 
-                      <div
-                        class="d-grid gap-2 d-md-flex justify-content-md-end"
-                        style={{ marginTop: "10px" }}
-                      >
-                        <button
-                          class="btn btn-outline-primary me-md-2"
-                          type="button"
-                        >
-                          Cập nhật giỏ hàng
-                        </button>
-                        <button
-                          class="btn btn-outline-primary me-md-2"
-                          type="button"
-                        >
-                          Xóa hết
-                        </button>
-                      </div>
-                      <hr
-                        className="mb-4"
-                        style={{
-                          height: 2,
-                          backgroundColor: "#1266f1",
-                          opacity: 1,
-                          width: "98%",
-                          marginTop: "20px",
-                        }}
-                      />
-                      <div
-                        className="d-flex justify-content-between p-2 mb-2"
-                        style={{ backgroundColor: "#e1f5fe" }}
-                      >
-                        <h5 className="fw-bold mb-0">Tồng tiền:</h5>
-                        <h5 className="fw-bold mb-0">{totalPrice} VNĐ</h5>
-                      </div>
+                                <td>
+                                  <button
+                                    type="button"
+                                    className="close"
+                                    data-dismiss="alert"
+                                    aria-label="Close"
+                                    onClick={() => remove(product.idCartDetail)}
+                                  >
+                                    <span aria-hidden="true">
+                                      <FontAwesomeIcon
+                                        icon={faTimes}
+                                        style={{ paddingRight: "10px" }}
+                                      />
+                                    </span>
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
 
-                      <div class="d-grid gap-2 col-6 mx-auto">
-                        <Link to={"/checkout"}>
+                        <div
+                          class="d-grid gap-2 d-md-flex justify-content-md-end"
+                          style={{ marginTop: "10px" }}
+                        >
                           <button
+                            class="btn btn-outline-primary me-md-2"
                             type="button"
-                            className="btn btn-danger btn-block btn-lg"
                           >
-                            TIẾN HÀNH ĐẶT HÀNG
+                            Cập nhật giỏ hàng
                           </button>
-                        </Link>
+                          <button
+                            class="btn btn-outline-primary me-md-2"
+                            type="button"
+                          >
+                            Xóa hết
+                          </button>
+                        </div>
+                        <hr
+                          className="mb-4"
+                          style={{
+                            height: 2,
+                            backgroundColor: "#1266f1",
+                            opacity: 1,
+                            width: "98%",
+                            marginTop: "20px",
+                          }}
+                        />
+                        <div
+                          className="d-flex justify-content-between p-2 mb-2"
+                          style={{ backgroundColor: "#e1f5fe" }}
+                        >
+                          <h5 className="fw-bold mb-0">Tồng tiền:</h5>
+                          <h5 className="fw-bold mb-0">{totalPrice} VNĐ</h5>
+                        </div>
+
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                          <Link to={"/checkout"}>
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-block btn-lg"
+                            >
+                              TIẾN HÀNH ĐẶT HÀNG
+                            </button>
+                          </Link>
+                        </div>
+                        <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>
+                          <a href="/">
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                            Tiếp tục mua hàng
+                          </a>
+                        </h5>
                       </div>
-                      <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>
-                        <a href="/">
-                          <FontAwesomeIcon icon={faArrowLeft} />
-                          Tiếp tục mua hàng
-                        </a>
-                      </h5>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </section>
         </section>
-
         <Footer />
       </>
     </React.Fragment>
