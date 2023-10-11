@@ -358,6 +358,7 @@ public class ProductServiceImpl {
         return this.productRepository.findById(id).orElse(null);
     }
 
+
     public CreateProduct getOne1(Integer id) {
         if (productRepository.existsById(id)) {
             Product product = productRepository.findById(id).get();
@@ -397,6 +398,20 @@ public class ProductServiceImpl {
         return productRepository.deleteProduct(pageable, key);
     }
 
+
+    public List<Product> selectNewProduct() {
+        return productRepository.selectNewProduct();
+    }
+
+    public List<Product> selectChipProduct() {
+        return productRepository.selectChipProduct();
+    }
+
+    public Product findById(int id) {
+        return this.productRepository.findById(id);
+
+    }
+
     public Page<Product> productNew(Pageable pageable, String key) {
         return productRepository.productNew(pageable, key);
     }
@@ -419,5 +434,9 @@ public class ProductServiceImpl {
 
     public Page<Product> filterProductByDecreasePrice(Pageable pageable, String key) {
         return productRepository.filterProductByDecreasePrice(pageable, key);
+    }
+
+    public Page<Product> listProductByCategories(Pageable pageable, Integer id) {
+        return productRepository.listProductByCategories(pageable, id);
     }
 }

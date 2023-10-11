@@ -44,7 +44,7 @@ import ColorDisplayReturn from "./components/product_component/Color/DisplayRetu
 import ScanColor from "./components/product_component/Color/DisplayScanQRColor";
 import ImageFormAddOrUpdate from "./components/product_component/image/FormAddOrUpdate";
 import Display from "./components/product_component/image/Display";
-import Home from "./components/Page_Comeponet/TrangChu";
+import Home from "./components/Page_Comeponet/page/TrangChu";
 import DisplayImei from "./components/product_component/Imei/Display";
 import ReturnDeleteImei from "./components/product_component/Imei/ReturnDeleteImei";
 import ImportImei from "./components/product_component/Imei/ImportImei";
@@ -64,6 +64,7 @@ import ForgotPassword from "./components/Page_Comeponet/Login/forgotpassword";
 import OderDisplay from "./components/Page_Comeponet/OderManager/OderDisplay";
 import ChatManager from "./components/Page_Comeponet/Chat/ChatManger";
 import SkuDisplay from "./components/product_component/SKU/SkuDisplay";
+import CategoryDisplay from "./components/Page_Comeponet/Categories/index";
 
 function App() {
   return (
@@ -196,6 +197,7 @@ function App() {
           <Route path="/orders" exact component={OderDisplay} />
           <Route path="/chats" exact component={ChatManager} />
           <Route path="/sku/display" exact component={SkuDisplay} />
+          <Route path="/categories" exact component={CategoryDisplay} />
         </Switch>
       </Router>
     </div>

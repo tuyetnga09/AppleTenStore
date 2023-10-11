@@ -4,11 +4,15 @@ import com.example.backend.controller.voucher_managment.model.response.VoucherRe
 import com.example.backend.entity.User;
 import com.example.backend.entity.Voucher;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -39,4 +43,18 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
     List<Voucher> checkToStartAfterAndStatus(@Param("dateTime") Date dateTime, Integer status);
 
     Voucher findByCode(String code);
+
+
+    @Query(value = "select * from voucher where value_voucher > 100000", nativeQuery = true)
+    List<Voucher> getVoucherGiamGia(Voucher voucher);
+
+    @Query(value = "select * from voucher where value_voucher < 100000", nativeQuery = true)
+    List<Voucher> getVoucherFreeShip(Voucher voucher);
+
+    @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2%", nativeQuery = true)
+    Page<Voucher> searchNoDate(Pageable pageable, String key, String status);
+
+    @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2% and (date_start = ?3 and date_end = ?4)", nativeQuery = true)
+    Page<Voucher> searchWithDate(Pageable pageable, String key, String status, LocalDate dateStart, LocalDate dateEnd);
+
 }

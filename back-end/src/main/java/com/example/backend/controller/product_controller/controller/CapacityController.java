@@ -91,5 +91,10 @@ public class CapacityController {
         return listCapacity;
     }
 
+    @GetMapping(value = "/find-capacity-by-id-product/{id}")
+    public List<Capacity> findCapacitisByIdProduct(@PathVariable int id){
+        return this.capacityRepository.findCapacitiesByIdProduct(id);
+    }
+
 
 }

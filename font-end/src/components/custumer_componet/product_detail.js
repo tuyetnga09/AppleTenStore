@@ -1,15 +1,42 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Page_Comeponet/layout/Header";
 import Footer from "../Page_Comeponet/layout/Footer";
-import { Button, Tag } from "antd";
+import { Button, Tag, notification } from "antd";
 import { RightOutlined } from "@ant-design/icons";
 import { Link, useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { detail } from "../../service/product.service";
+import { addToCart } from "../../service/cart.service";
+import { getSKUProduct } from "../../service/sku.service";
+import queryString from "query-string";
+import AvtProduct from "./avtProduct";
+import "../../css/topnav.css";
+import "../../css/header.css";
+import "../../css/banner.css";
+import "../../css/taikhoan.css";
+import "../../css/home_products.css";
+import "../../css/cart.css";
+import "../../css/chitietsanpham.css";
+import "../../css/pagination_phantrang.css";
+import "../../css/topnav.css";
+import "../../css/gioHang.css";
+import "../../css/footer.css";
+import "../../css/trangchu.css";
+import "../../css/style2.css";
+// import "../../css/owl.carousel.min.css";
+import "../../css/owl.theme.default.min.css";
 
 export default function ProductDetail() {
   const { id } = useParams();
 
   const [item, setItem] = useState({});
+
+  const [item2, setItem2] = useState({});
+
+  const [filtersSKU, setFiltersSKU] = useState({
+    capacity: "",
+    color: "",
+    idProduct: "",
+  });
 
   useEffect(() => {
     detail(id)
@@ -20,14 +47,38 @@ export default function ProductDetail() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, []);
+
+    const paramsString = queryString.stringify(filtersSKU);
+    getSKUProduct(paramsString)
+      .then((response) => {
+        setItem2(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, [filtersSKU]);
 
   const [selectedDungLuong, setSelectedDungLuong] = useState(null);
 
-  const dungLuong = item.capacities ? item.capacities.map((cp) => cp.name) : [];
+  const dungLuong = item.capacities
+    ? item.capacities
+        .map((cp) => cp.name)
+        .sort((a, b) => {
+          // Trích xuất giá trị số từ chuỗi, ví dụ: '512GB' -> 512
+          const aGB = parseInt(a);
+          const bGB = parseInt(b);
+
+          // So sánh dựa trên giá trị số
+          return aGB - bGB;
+        })
+    : [];
 
   const handleDungLuongClick = (dungLuong) => {
     setSelectedDungLuong(dungLuong);
+    let item = { ...filtersSKU };
+    item["capacity"] = dungLuong;
+    setFiltersSKU(item);
   };
 
   const [selectedMauSac, setSelectedMauSac] = useState(null);
@@ -36,6 +87,57 @@ export default function ProductDetail() {
 
   const handleMauSacClick = (MauSac) => {
     setSelectedMauSac(MauSac);
+    let itemS = { ...filtersSKU };
+    itemS["color"] = MauSac;
+    itemS["idProduct"] = item.id;
+    setFiltersSKU(itemS);
+    console.log("ttt" + filtersSKU);
+  };
+
+  const handleAddToCart = () => {
+    if (selectedDungLuong && selectedMauSac) {
+      // Tạo một đối tượng AddCart để gửi lên API
+      const addToCartData = {
+        idAccount: 1,
+        idSKU: item2.id,
+        price: item2.price,
+        quantity: 1,
+      };
+      addToCart(addToCartData)
+        .then((response) => {
+          console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
+
+          const paramsString = queryString.stringify(filtersSKU);
+          getSKUProduct(paramsString)
+            .then((response) => {
+              console.log(response.data);
+              if (item2.quantity <= 0) {
+                notification.error({
+                  message: "ADD TO CART",
+                  description: "Sản phẩm đang tạm thời hết hàng",
+                });
+              } 
+              // else {
+              //   notification.success({
+              //     message: "ADD TO CART",
+              //     description: "Thêm giỏ hàng thành công",
+              //   });
+              // }
+              setItem2(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        })
+        .catch((error) => {
+          console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+        });
+    } else {
+      notification.warning({
+        message: "ADD TO CART",
+        description: "Vui lòng chọn Dung Lương và Màu sắc",
+      });
+    }
   };
 
   return (
@@ -51,8 +153,11 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+        {/* <span>tttt {item2[0].quantity}</span> */}
         <div className="chitietSanpham" style={{ marginBottom: 100 }}>
-          <h1>{item.name && item.name}</h1>
+          <h1>
+            {item.name && item.name} {item2.capacity} {item2.color}
+          </h1>
           <div className="rating">
             <i className="fa fa-star" />
             <i className="fa fa-star" />
@@ -62,140 +167,84 @@ export default function ProductDetail() {
             <span> 372 đánh giá</span>
           </div>
           <div className="rowdetail group">
-            <div className="picture">
-              <img
-                src="https://zpsocial-f56-org.zadn.vn/3c1ad68c5c9ebdc0e48f.jpg"
-                onclick="opencertain()"
-              />
-              {/* <div className="slick slideshow picture-thumbs slick-initialized slick-slider">
-                  <button
-                    className="slick-prev slick-arrow"
-                    aria-label="Previous"
-                    type="button"
-                    style={{}}
-                  >
-                    Previous
-                  </button>
-                  <div className="slick-list draggable">
-                    <div
-                      className="slick-track"
-                      style={{
-                        opacity: 1,
-                        width: 3234,
-                        transform: "translate3d(-588px, 0px, 0px)"
-                      }}
-                    >
-                      <div
-                        className="slick-slide slick-cloned"
-                        data-slick-index={-4}
-                        id=""
-                        aria-hidden="true"
-                        style={{ width: 144 }}
-                        tabIndex={-1}
-                      >
-                        <div>
-                          <div
-                            className="thumb-item"
-                            style={{ width: "100%", display: "inline-block" }}
-                          >
-                            <img
-                              src="img/products/xiaomi-redmi-note-5-pro-600x600.jpg"
-                              alt="media.productreivew.imagealternatetextformat"
-                              title="Ảnh của iPhone 14 Pro 128GB"
-                              data-defaultsize="https://shopdunk.com/images/thumbs/0008749_iphone-14-pro-128gb_550.webp"
-                              data-fullsize="https://shopdunk.com/images/thumbs/0008749_iphone-14-pro-128gb.webp"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className="slick-slide slick-cloned"
-                        data-slick-index={-3}
-                        id=""
-                        aria-hidden="true"
-                        style={{ width: 144 }}
-                        tabIndex={-1}
-                      >
-                        <div>
-                          <div
-                            className="thumb-item"
-                            style={{ width: "100%", display: "inline-block" }}
-                          >
-                            <img
-                              src="img/products/xiaomi-redmi-note-5-pro-600x600.jpg"
-                              title="Ảnh của iPhone 14 Pro 128GB"
-                              data-defaultsize="https://shopdunk.com/images/thumbs/0008750_iphone-14-pro-128gb_550.webp"
-                              data-fullsize="https://shopdunk.com/images/thumbs/0008750_iphone-14-pro-128gb.webp"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    className="slick-next slick-arrow"
-                    aria-label="Next"
-                    type="button"
-                    style={{}}
-                  >
-                    Next
-                  </button>
-                </div> */}
-            </div>
+            <AvtProduct product={id}></AvtProduct>
             <div className="price_sale">
               <div className="area_price">
-                <strong>{item.price}₫</strong>
+                <strong>
+                {(item2 && item2.price)
+                  ? item2.price?.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  :(item && item.price) 
+                  ? item?.price?.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }):null}
+                </strong>
                 <label className="moiramat">Mới ra mắt</label>
                 <label className="giamgia">
-                  Số lượng: {item.quantity && item.quantity}
+                  Số lượng: {(item2 && item2.quantity)
+                  ? item2.quantity && item2.quantity
+                  :(item2 && item2.quantity === 0) 
+                  ? item2.quantity && item2.quantity
+                  :(item && item.quantity) 
+                  ? item.quantity && item.quantity
+                  :null}
                 </label>
               </div>
               {/* <div className="ship" style={{ display: "none" }}>
                 <img src="img/chitietsanpham/clock-152067_960_720.png" />
                 <div>NHẬN HÀNG TRONG 1 GIỜ</div>
               </div> */}
-              {/* <div className="area_promo"> */}
-              <strong style={{ marginLeft: "10px" }}>DUNG LƯỢNG</strong>
-              <div className="button-container">
-                {dungLuong.map((dungLuong, index) => (
-                  <Button
-                    key={index}
-                    type={
-                      selectedDungLuong === dungLuong ? "primary" : "default"
-                    }
-                    onClick={() => handleDungLuongClick(dungLuong)}
-                    style={{
-                      marginLeft: "5px",
-                      marginBottom: "10px",
-                      marginRight: "5px",
-                    }}
-                  >
-                    {dungLuong}
-                  </Button>
-                ))}
+              <div className="area_promo">
+                <strong style={{ marginLeft: "10px" }}>DUNG LƯỢNG</strong>
+                <div className="button-container">
+                  {dungLuong.map((dungLuong, index) => (
+                    <Button
+                      key={index}
+                      type={
+                        selectedDungLuong === dungLuong ? "primary" : "default"
+                      }
+                      onClick={() => handleDungLuongClick(dungLuong)}
+                      style={{
+                        marginLeft: "5px",
+                        marginBottom: "10px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {dungLuong}
+                    </Button>
+                  ))}
+                </div>
+                <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
+                <div className="button-container">
+                  {MauSac.map((MauSac, index) => (
+                    <Button
+                      key={index}
+                      type={selectedMauSac === MauSac ? "primary" : "default"}
+                      onClick={() => handleMauSacClick(MauSac)}
+                      style={{
+                        marginLeft: "5px",
+                        marginBottom: "10px",
+                        marginRight: "5px",
+                      }}
+                    >
+                      {MauSac}
+                    </Button>
+                  ))}
+                </div>
               </div>
-              <strong style={{ marginLeft: "10px" }}>MÀU SẮC</strong>
-              <div className="button-container">
-                {MauSac.map((MauSac, index) => (
-                  <Button
-                    key={index}
-                    type={selectedMauSac === MauSac ? "primary" : "default"}
-                    onClick={() => handleMauSacClick(MauSac)}
-                    style={{
-                      marginLeft: "5px",
-                      marginBottom: "10px",
-                      marginRight: "5px",
-                    }}
-                  >
-                    {MauSac}
-                  </Button>
-                ))}
-              </div>
+              {/* <div className="area_price">
+                <label className="giamgia">
+                  Số lượng phân loại: {item2.quantity && item2.quantity}
+                </label>
+              </div> */}
               {/* </div> */}
               <div className="area_promo">
                 <strong>khuyến mãi</strong>
                 <div className="promo">
-                  <img src="img/chitietsanpham/icon-tick.png" />
+                  <img src="/img/chitietsanpham/icon-tick.png" />
                   <div id="detailPromo">
                     Khách hàng sẽ được thử máy miễn phí tại cửa hàng. Có thể đổi
                     trả lỗi trong vòng 2 tháng.
@@ -204,18 +253,18 @@ export default function ProductDetail() {
               </div>
               <div className="policy">
                 <div>
-                  <img src="img/chitietsanpham/box.png" />
+                  <img src="/img/chitietsanpham/box.png" />
                   <p>
                     Trong hộp có: Sạc, Tai nghe, Sách hướng dẫn, Cây lấy sim, Ốp
                     lưng{" "}
                   </p>
                 </div>
                 <div>
-                  <img src="img/chitietsanpham/icon-baohanh.png" />
+                  <img src="/img/chitietsanpham/icon-baohanh.png" />
                   <p>Bảo hành chính hãng 12 tháng.</p>
                 </div>
                 <div className="last">
-                  <img src="img/chitietsanpham/1-1.jpg" />
+                  <img src="/img/chitietsanpham/1-1.jpg" />
                   <p>
                     1 đổi 1 trong 1 tháng nếu lỗi, đổi sản phẩm tại nhà trong 1
                     ngày.
@@ -224,10 +273,7 @@ export default function ProductDetail() {
               </div>
               <div className="area_order">
                 {/* nameProduct là biến toàn cục được khởi tạo giá trị trong phanTich_URL_chiTietSanPham */}
-                <a
-                  className="buy_now"
-                  onclick="themVaoGioHang(maProduct, nameProduct);"
-                >
+                <a className="buy_now" onClick={() => handleAddToCart()}>
                   <b>
                     <i className="fa fa-cart-plus" /> Thêm vào giỏ hàng
                   </b>

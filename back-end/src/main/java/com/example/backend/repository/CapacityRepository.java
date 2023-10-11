@@ -1,9 +1,11 @@
 package com.example.backend.repository;
 
 import com.example.backend.entity.Capacity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -25,4 +27,10 @@ public interface CapacityRepository extends JpaRepository<Capacity, Integer> {
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
             " FROM Capacity WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     List<Capacity> getAll();
+
+    @Modifying
+    @Transactional
+    @Query(value = "select capacity.id, capacity.status, capacity.date_create, capacity.date_update, capacity.code, capacity.name, capacity.person_create, capacity.person_update from capacity inner join product p on capacity.id = p.id_capacity where id_capacity = ?1", nativeQuery = true)
+    List<Capacity> findCapacitiesByIdProduct(int id);
+
 }

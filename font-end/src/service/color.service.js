@@ -37,3 +37,7 @@ export const returnColor = (id) => {
 export const importColor = (form) => {
   return httpClient.post("/color/import", form, config);
 };
+
+export const findColorByIdProduct = (id) => {
+    return httpClient.get(`/color/find-color-by-product/${id}`);
+}
