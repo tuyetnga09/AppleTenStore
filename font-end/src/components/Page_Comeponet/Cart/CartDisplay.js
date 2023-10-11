@@ -105,6 +105,18 @@ export default function CartDisplay() {
     setTotalPrice(total);
   };
 
+  //check tien hanh đặt hàng
+  const handleClickTienHangDH = () => {
+    if(products === null || products.length === 0){
+      notification.error({
+        message: "ĐẶT HÀNG",
+        description: "Vui lòng thêm sản phẩm vào giỏ hàng",
+      });
+    }else{
+      history.push("/checkout");
+    }
+  }
+
   return (
     <React.Fragment>
       <>
@@ -371,14 +383,15 @@ export default function CartDisplay() {
                         </div>
 
                         <div class="d-grid gap-2 col-6 mx-auto">
-                          <Link to={"/checkout"}>
+                          {/* <Link to={"/checkout"}> */}
                             <button
                               type="button"
                               className="btn btn-danger btn-block btn-lg"
+                              onClick={() => handleClickTienHangDH()}
                             >
                               TIẾN HÀNH ĐẶT HÀNG
                             </button>
-                          </Link>
+                          {/* </Link> */}
                         </div>
                         <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>
                           <a href="/">
