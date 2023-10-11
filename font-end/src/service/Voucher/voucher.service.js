@@ -10,6 +10,14 @@ export const readAll = () => {
   return httpClient.get(`/voucher/vouchers`);
 };
 
+export const getVoucher = () => {
+  return httpClient.get(`/voucher/getVoucher`);
+};
+
+export const getVoucherFreeShip = () => {
+  return httpClient.get(`/voucher/getVoucherFreeShip`);
+};
+
 // export const returnDeleteAll = (page) => {
 //   return httpClient.get(`/battery/displayDelete?${page}`);
 // };
@@ -37,3 +45,10 @@ export const deleteVoucher = (id) => {
 // export const importBattery = (form) => {
 //   return httpClient.post("/battery/import", form, config);
 // };
+export const searchNoDate = (page) => {
+  return httpClient.get(`/voucher/searchNoDate?${page}`);
+};
+
+export const searchWithDate = (page) => {
+  return httpClient.get(`/voucher/searchWithDate?${page}`);
+};

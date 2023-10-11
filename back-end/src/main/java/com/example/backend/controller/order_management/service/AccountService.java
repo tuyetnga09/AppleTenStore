@@ -13,4 +13,9 @@ public interface AccountService {
 
     AccountResponse getAccountUserByIdBill(String idBill );
 
+    Integer numberOfCustomersLastMonth();
+
+    Integer numberOfCustomersThisMonth();
+
+//    Integer numberOfCustomers();
 }

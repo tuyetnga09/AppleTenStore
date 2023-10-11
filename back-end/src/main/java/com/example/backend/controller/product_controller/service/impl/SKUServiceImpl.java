@@ -50,4 +50,12 @@ public class SKUServiceImpl implements Iservice<SKU> {
         return skuRepositoty.skuFindByProduct();
     }
 // viet ham hien thi o day
+
+    public SKU getSkuProduct(String capacity, String color, Integer idProduct){
+        return skuRepositoty.skuProduct(capacity,color,idProduct);
+    }
+
+    public SKU findByID(Long id){
+       return skuRepositoty.findById(id).orElse(null);
+    };
 }

@@ -8,6 +8,9 @@ import com.example.backend.entity.Voucher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.time.LocalDate;
+
 public interface VoucherService {
 
     VoucherResponse getOne(Integer id);
@@ -23,5 +26,12 @@ public interface VoucherService {
     Page<Voucher> getAll(FindVoucherRequest request, Pageable pageable);
 
     Voucher findByIdVoucher(Integer id);
+
+    List<Voucher> getVoucher(Voucher voucher);
+    Page<Voucher> searchNoDate(Pageable pageable, String key, String status);
+
+    Page<Voucher> searchWithDate(Pageable pageable, String key, String status, LocalDate dateStart, LocalDate dateEnd);
+
+    List<Voucher> getVoucherFreeShip(Voucher voucher);
 
 }

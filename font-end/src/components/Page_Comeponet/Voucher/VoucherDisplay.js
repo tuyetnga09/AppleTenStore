@@ -5,6 +5,11 @@ import {
   add,
   detail,
   update,
+<<<<<<< HEAD
+=======
+  searchNoDate,
+  searchWithDate,
+>>>>>>> 59a955484da8d3682ad8dd6049922669004b08aa
 } from "../../../service/Voucher/voucher.service";
 import { useTranslate } from "@refinedev/core";
 import {
@@ -51,6 +56,8 @@ import { faTimes, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CreateVoucher from "../Voucher/CreateVoucher";
 import UpdateVoucher from "../Voucher/UpdateVoucher";
+import queryString from "query-string";
+import { Option } from "antd/es/mentions";
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -73,6 +80,7 @@ const VoucherDisplay = ({}) => {
     setIsModalVisible(true);
     console.log(editedVoucher);
   };
+<<<<<<< HEAD
 
   // Hàm để ẩn Modal
   const handleCancel = () => {
@@ -90,6 +98,69 @@ const VoucherDisplay = ({}) => {
         console.log(`${error}`);
       });
   }, []);
+=======
+
+  // Hàm để ẩn Modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const [filtersNoDate, setFiltersNoDate] = useState({
+    key: "",
+    status: "",
+  });
+
+  const [filtersWithDate, setFiltersWithDate] = useState({
+    key: "",
+    status: "",
+    dateStart: "",
+    dateEnd: "",
+  });
+
+  const orderSelectProps = {
+    options: [
+      { label: "Hoạt động", value: 0 },
+      { label: "Không hoạt động", value: 1 },
+      // Thêm các giá trị khác nếu cần
+    ],
+  };
+
+  useEffect(() => {
+    // readAll()
+    //   .then((response) => {
+    //     console.log(response.data);
+    //     setVoucher(response.data.content);
+    //     // setEditedVoucher(response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log(`${error}`);
+    //   });
+    const paramsString = queryString.stringify(filtersNoDate);
+    const paramsString2 = queryString.stringify(filtersWithDate);
+    const dateFilter = document.getElementById("dateFilter");
+    if (dateFilter.value == "") {
+      searchNoDate(paramsString)
+        .then((response) => {
+          // console.log(response.data);
+          setVoucher(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      searchWithDate(paramsString2)
+        .then((response) => {
+          // console.log(response.data);
+          setVoucher(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }, [filtersNoDate, filtersWithDate]);
+>>>>>>> 59a955484da8d3682ad8dd6049922669004b08aa
 
   async function remove(id) {
     deleteVoucher(id).then(() => {
@@ -106,11 +177,121 @@ const VoucherDisplay = ({}) => {
     });
   }
 
+<<<<<<< HEAD
   // const dateStart = voucher.dateStart;
   // const dateStartText = dateStart.toLocaleDateString();
 
   // const dateEnd = voucher.dateEnd;
   // const dateEndText = dateEnd.toLocaleDateString();
+=======
+  function handleChangeSearch(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = {};
+    const dateFilter = document.getElementById("dateFilter");
+    if (dateFilter.value == "") {
+      item = { ...filtersNoDate };
+      item[name] = value;
+      setFiltersNoDate(item);
+      console.log(filtersNoDate);
+    } else {
+      item = { ...filtersWithDate };
+      item[name] = value;
+      setFiltersWithDate(item);
+      console.log(filtersWithDate);
+    }
+  }
+
+  function handleChangeStatus(value) {
+    let item = {};
+    const dateFilter = document.getElementById("dateFilter");
+    if (dateFilter.value == "") {
+      item = { ...filtersNoDate };
+      item["status"] = value;
+      setFiltersNoDate(item);
+      if (value == null) {
+        item = { ...filtersNoDate };
+        item["status"] = "";
+        setFiltersNoDate(item);
+      }
+      console.log(filtersNoDate);
+    } else {
+      item = { ...filtersWithDate };
+      item["status"] = value;
+      setFiltersWithDate(item);
+      if (value == null) {
+        item = { ...filtersWithDate };
+        item["status"] = "";
+        setFiltersWithDate(item);
+      }
+      console.log(filtersWithDate);
+    }
+  }
+
+  function handleChangeDate(value) {
+    let item = {};
+    if (value != null) {
+      const dateStart = new Date(value[0]);
+      const yearStart = dateStart.getFullYear();
+      const monthStart = dateStart.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+      const dayStart = dateStart.getDate();
+      const formattedDateStart = `${yearStart}-${monthStart
+        .toString()
+        .padStart(2, "0")}-${dayStart.toString().padStart(2, "0")}`;
+      const dateEnd = new Date(value[1]);
+      const yearEnd = dateEnd.getFullYear();
+      const monthEnd = dateEnd.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+      const dayEnd = dateEnd.getDate();
+      const formattedDateEnd = `${yearEnd}-${monthEnd
+        .toString()
+        .padStart(2, "0")}-${dayEnd.toString().padStart(2, "0")}`;
+      item = { ...filtersWithDate };
+      item["dateStart"] = formattedDateStart;
+      item["dateEnd"] = formattedDateEnd;
+      setFiltersWithDate(item);
+    } else {
+      item = { ...filtersNoDate };
+      setFiltersNoDate(item);
+      console.log(filtersNoDate);
+    }
+  }
+
+  function search1() {
+    const paramsString = queryString.stringify(filtersNoDate);
+    searchNoDate(paramsString)
+      .then((response) => {
+        // console.log(response.data);
+        setVoucher(response.data.content);
+        // setEditedVoucher(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }
+
+  function search2() {
+    const paramsString = queryString.stringify(filtersWithDate);
+    searchWithDate(paramsString)
+      .then((response) => {
+        // console.log(response.data);
+        setVoucher(response.data.content);
+        // setEditedVoucher(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }
+
+  function search() {
+    const dateFilter = document.getElementById("dateFilter");
+    if (dateFilter.value == "") {
+      search1();
+    } else {
+      search2();
+    }
+  }
+>>>>>>> 59a955484da8d3682ad8dd6049922669004b08aa
 
   return (
     <>
@@ -192,14 +373,22 @@ const VoucherDisplay = ({}) => {
                       <Col xl={24} md={8} sm={12} xs={24}>
                         <Form.Item label={t("Search")} name="q">
                           <Input
+<<<<<<< HEAD
                             placeholder={t("Search")}
                             prefix={<SearchOutlined />}
+=======
+                            name="key"
+                            placeholder={t("Code, Name")}
+                            prefix={<SearchOutlined />}
+                            onChange={handleChangeSearch}
+>>>>>>> 59a955484da8d3682ad8dd6049922669004b08aa
                           />
                         </Form.Item>
                       </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
                         <Form.Item label={t("Status")} name="status">
                           <Select
+<<<<<<< HEAD
                             // {...orderSelectProps}
                             allowClear
                             mode="multiple"
@@ -208,6 +397,22 @@ const VoucherDisplay = ({}) => {
                         </Form.Item>
                       </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
+=======
+                            name="status"
+                            allowClear
+                            onChange={handleChangeStatus}
+                            placeholder={t("Status")}
+                          >
+                            {orderSelectProps.options.map((st) => {
+                              return (
+                                <Option value={st.value}>{st.label}</Option>
+                              );
+                            })}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      {/* <Col xl={24} md={8} sm={12} xs={24}>
+>>>>>>> 59a955484da8d3682ad8dd6049922669004b08aa
                         <Form.Item label={t("Store")} name="store">
                           <Select
                             // {...storeSelectProps}
@@ -224,10 +429,21 @@ const VoucherDisplay = ({}) => {
                             // placeholder={t("orders.filter.user.placeholder")}
                           />
                         </Form.Item>
+<<<<<<< HEAD
                       </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
                         <Form.Item label={t("Date")} name="createdAt">
                           <RangePicker style={{ width: "100%" }} />
+=======
+                      </Col> */}
+                      <Col xl={24} md={8} sm={12} xs={24}>
+                        <Form.Item label={t("Date")} name="createdAt">
+                          <RangePicker
+                            id="dateFilter"
+                            style={{ width: "100%" }}
+                            onChange={handleChangeDate}
+                          />
+>>>>>>> 59a955484da8d3682ad8dd6049922669004b08aa
                         </Form.Item>
                       </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
@@ -237,6 +453,10 @@ const VoucherDisplay = ({}) => {
                             type="primary"
                             size="large"
                             block
+<<<<<<< HEAD
+=======
+                            onClick={() => search()}
+>>>>>>> 59a955484da8d3682ad8dd6049922669004b08aa
                           >
                             {t("FILLTER")}
                           </Button>

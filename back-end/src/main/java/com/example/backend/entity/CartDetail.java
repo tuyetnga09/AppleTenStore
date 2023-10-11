@@ -33,6 +33,6 @@ public class CartDetail  extends DuplicateAttribute implements Identify {
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_product",referencedColumnName = "id")
-    private Product productDetail;
+    @JoinColumn(name = "id_sku",referencedColumnName = "id")
+    private SKU sku;
 }

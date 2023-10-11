@@ -37,5 +37,14 @@ public class SKUController {
     }
 
 
+    @GetMapping("getSKU")
+    public SKU getSKUProduct(@RequestParam("capacity") String capacity,@RequestParam("color") String color,@RequestParam("idProduct") Integer idProduct){
+        return skuService.getSkuProduct(capacity,color,idProduct);
+    }
+
+    @GetMapping("getOneSKU/{id}")
+    public SKU getOneSKU(@PathVariable("id") Long id){
+        return skuService.findByID(id);
+    }
 
 }

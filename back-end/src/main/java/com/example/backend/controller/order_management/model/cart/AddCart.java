@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Setter
 public class AddCart {
    private Integer idAccount;
-    private Integer idProductDetail;
+    private Long idSKU;
     private Integer quantity;
     private BigDecimal price;
 

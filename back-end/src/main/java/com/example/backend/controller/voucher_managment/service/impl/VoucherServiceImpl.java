@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -137,6 +138,24 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher findByIdVoucher(Integer id) {
         return voucherRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Voucher> getVoucher(Voucher voucher) {
+        return voucherRepository.getVoucherGiamGia(voucher);
+    }
+
+    @Override
+    public List<Voucher> getVoucherFreeShip(Voucher voucher) {
+        return voucherRepository.getVoucherFreeShip(voucher);
+    }
+    public Page<Voucher> searchNoDate(Pageable pageable, String key, String status) {
+        return voucherRepository.searchNoDate(pageable, key, status);
+    }
+
+    @Override
+    public Page<Voucher> searchWithDate(Pageable pageable, String key, String status, LocalDate dateStart, LocalDate dateEnd) {
+        return voucherRepository.searchWithDate(pageable, key, status, dateStart, dateEnd);
     }
 
 

@@ -32,10 +32,13 @@ import com.example.backend.untils.StatusPayment;
 import com.example.backend.untils.TypeBill;
 import com.example.backend.untils.TypePayment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -160,5 +163,15 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill detail(Integer id) {
         return billRepository.findById(id).get();
+    }
+
+    @Override
+    public Page<Bill> searchNoDate(Pageable pageable, String key, String status, String user) {
+        return billRepository.searchNoDate(pageable, key, status, user);
+    }
+
+    @Override
+    public Page<Bill> searchWithDate(Pageable pageable, String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
+        return billRepository.searchWithDate(pageable, key, status, user, dateStart, dateEnd);
     }
 }

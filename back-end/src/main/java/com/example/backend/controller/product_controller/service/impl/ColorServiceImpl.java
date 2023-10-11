@@ -111,4 +111,9 @@ public class ColorServiceImpl implements Iservice<Color> {
     public Page<Color> search(Pageable pageable, String key) {
         return colorRepository.search(pageable, key);
     }
+
+    public List<Color> findColorByProduct(int id){
+        return this.colorRepository.findColorByIdProduct(id);
+    }
+
 }

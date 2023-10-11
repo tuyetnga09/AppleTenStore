@@ -14,4 +14,14 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Account getOneByEmail(@Param("email") String email);
 
     Account findByEmail(String code);
+
+    @Query(value = "SELECT SUM(CASE WHEN MONTH(date_create) = MONTH(CURRENT_DATE) - 1 AND YEAR(date_create) = YEAR(CURRENT_DATE) THEN 1 ELSE 0 END) from account", nativeQuery = true)
+    Integer numberOfCustomersLastMonth();
+
+    @Query(value = "SELECT SUM(CASE WHEN MONTH(date_create) = MONTH(CURRENT_DATE) AND YEAR(date_create) = YEAR(CURRENT_DATE) THEN 1 ELSE 0 END) from account", nativeQuery = true)
+    Integer numberOfCustomersThisMonth();
+
+    @Query("SELECT ac FROM Account ac WHERE ac.email =:email AND ac.user.phoneNumber =:phoneNumber")
+    Account resetPassword(@Param("email") String email , @Param("phoneNumber") String phoneNumber);
+
 }
