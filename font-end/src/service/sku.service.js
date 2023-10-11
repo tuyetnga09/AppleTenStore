@@ -7,16 +7,16 @@ const config = {
 };
 
 export const readAll = (page) => {
-  return httpClient.get(`/sku/display?${page}`);
+  return httpClient.get(`/admin/sku/display?${page}`);
 };
 export const readAllProductNew = () => {
-  return httpClient.get(`/sku/get-all`);
+  return httpClient.get(`/admin/sku/get-all`);
 };
 
 export const getSKUProduct = (page) => {
-  return httpClient.get(`/sku/getSKU?${page}`);
+  return httpClient.get(`/admin/sku/getSKU?${page}`);
 };
 
 export const getOneSKU = (id) => {
-  return httpClient.get(`/sku/getOneSKU/${id}`);
+  return httpClient.get(`/admin/sku/getOneSKU/${id}`);
 };
