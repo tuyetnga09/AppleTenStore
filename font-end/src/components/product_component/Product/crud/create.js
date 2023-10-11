@@ -3,10 +3,7 @@ import { useTranslate, useApiUrl } from "@refinedev/core";
 import { Create, getValueFromEvent } from "@refinedev/antd";
 import { add } from "../../../../service/product.service";
 import { addImage } from "../../../../service/image.service";
-import {
-  readImportImei,
-  ImportImeiExcel,
-} from "../../../../service/imei.service";
+import { readImportImei } from "../../../../service/imei.service";
 import QRScanner from "./QRScanner";
 import { Option } from "antd/es/mentions";
 import { importImei } from "../../../../service/imei.service";
@@ -15,7 +12,6 @@ import ExportImei from "./ExportImei";
 import * as XLSX from "xlsx";
 
 import {
-  readAll,
   readAllColor,
   readAllChip,
   readAllBattery,
@@ -39,7 +35,6 @@ import {
   Upload,
   Button,
   Modal,
-  notification,
 } from "antd";
 import { Link, useHistory } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
@@ -52,7 +47,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
 
-const Test = (setDisplay, setPagination) => {
+const Test = () => {
   const { Text } = Typography;
   const history = useHistory();
   const t = useTranslate();
@@ -73,7 +68,7 @@ const Test = (setDisplay, setPagination) => {
     chip: "",
     color: [],
     capacities: [],
-    manufacturer: "",
+    manufacture: "",
     ram: "",
     screen: "",
     size: "",
@@ -104,7 +99,7 @@ const Test = (setDisplay, setPagination) => {
   const handleInputChangeManufacturer = (value) => {
     setProductData({
       ...productData,
-      manufacturer: value,
+      manufacture: value,
     });
   };
   const handleInputChangeCapacity = (value) => {
@@ -152,16 +147,11 @@ const Test = (setDisplay, setPagination) => {
     setList(value);
   }
 
-  const [filters, setFilters] = useState({
-    page: 0,
-    key: "",
-  });
-
   async function handleSubmit(event) {
-    try {
-      event.preventDefault();
-      const items = { ...productData };
+    event.preventDefault();
+    const items = { ...productData };
 
+    try {
       // Thực hiện thêm sản phẩm
       await add(items);
 
@@ -169,18 +159,22 @@ const Test = (setDisplay, setPagination) => {
       const response = await readAllProductNew();
       setDisplaySku(response.data);
       console.log("Dữ liệu sản phẩm:", items);
-      notification.success({
-        message: "Add product successfully",
-        // description: "Add product successfully",
-      });
       for (let i = 0; i < list.fileList.length; i++) {
-        await form.append("file", list.fileList[i].originFileObj);
+        form.append("file", list.fileList[i].originFileObj);
       }
-      await form.append("name", items.nameProduct);
-      // await addImage(form);
+      form.append("name", items.nameProduct);
+      await addImage(form);
     } catch (error) {
       console.log(error);
     }
+
+    // for (let i = 0; i < list.fileList.length; i++) {
+    //   form.append("file", list.fileList[i].originFileObj);
+    // }
+    // form.append("name", items.nameProduct);
+    // // await
+    // addImage(form);
+    // history.push("/product/display");
   }
 
   const [displayColor, setDisplayColor] = useState([]);
@@ -273,35 +267,25 @@ const Test = (setDisplay, setPagination) => {
   //set id SKU
   const [displayIdSku, setIdSku] = useState(null); // Khởi tạo là null
 
-  // Khởi tạo là null
-  const [isCheckImei, setCheckImei] = useState([]);
-
   // mở modal để import imei
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
 
   // Hàm để hiển thị Modal khi cần
-  async function showModal(sku) {
-    await setIdSku(sku.id);
-    await setIsModalVisible(true);
-    await setExcelData([]);
-    await setCheckImei([]);
-    await setFile([]);
-  }
+  const showModal = (sku) => {
+    setIdSku(sku.id);
+    setIsModalVisible(true);
+  };
 
   // Hàm để ẩn Modal
-  async function handleCancel() {
-    await setIsModalVisible(false);
-    await setExcelData([]);
-    await setIdSku([]);
-    await setCheckImei([]);
-    // handleFileUpload([]);
-    await setFile([]);
-  }
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setExcelData([]);
+    setIdSku([]);
+  };
 
   const [excelData, setExcelData] = useState(null); // Khởi tạo là null
 
   const handleFileUpload = (event) => {
-    event.preventDefault();
     const file = event.target.files[0];
     setFile(event.target.files[0]);
 
@@ -314,11 +298,11 @@ const Test = (setDisplay, setPagination) => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         setExcelData(jsonData); // Cập nhật dữ liệu khi tệp đã được chọn
+        console.log("hihhiiihi ------------------- " + jsonData);
       };
       reader.readAsBinaryString(file);
     }
   };
-
   const handleImportImei = async (event) => {
     event.preventDefault();
     if (!displayfile) {
@@ -329,27 +313,22 @@ const Test = (setDisplay, setPagination) => {
     console.log(displayIdSku);
     const formData = new FormData();
     formData.append("file", displayfile);
+    await readImportImei(formData, displayIdSku)
+      .then((response) => {
+        console.log("hihihihi ------------- " + response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
+    // Load lại bảng SKU
     try {
-      const response = await ImportImeiExcel(formData, displayIdSku);
-      await setCheckImei(response.data);
-      if (response.data.length === 0) {
-        // Load lại bảng SKU
-        const response = await readAllProductNew();
-        setDisplaySku(response.data);
-        setIsModalVisible(false);
-        notification.success({
-          message: "Add Imei successfully",
-          // description: "Add product successfully",
-        });
-      } else {
-        notification.error({
-          message: "Add Imei failed",
-          // description: "Add product successfully",
-        });
-      }
+      const response = await readAllProductNew();
+      setDisplaySku(response.data);
+      console.log("hihihihi 222 ------------- " + response.data);
+      setIsModalVisible(false);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -426,7 +405,7 @@ const Test = (setDisplay, setPagination) => {
             </Form.Item>
             <Form.Item
               label={t("Name")}
-              // name="nameProduct"
+              name="nameProduct"
               rules={[{ required: true }]}
             >
               <Input
@@ -587,7 +566,7 @@ const Test = (setDisplay, setPagination) => {
 
             <Form.Item
               label={t("Manufacture")}
-              name={["manufacturer", "id"]}
+              name={["manufacture", "id"]}
               rules={[
                 {
                   required: true,
@@ -595,15 +574,13 @@ const Test = (setDisplay, setPagination) => {
               ]}
             >
               <Select
-                name="manufacturer"
-                value={productData.manufacturer}
+                name="manufacture"
+                value={productData.manufacture}
                 onChange={handleInputChangeManufacturer}
               >
-                {displayManufacture.map((manufacturer) => {
+                {displayManufacture.map((manufacture) => {
                   return (
-                    <Option value={manufacturer.name}>
-                      {manufacturer.name}
-                    </Option>
+                    <Option value={manufacture.name}>{manufacture.name}</Option>
                   );
                 })}
               </Select>
@@ -653,6 +630,12 @@ const Test = (setDisplay, setPagination) => {
                 })}
               </Select>
             </Form.Item>
+            {/*<Form.Item label={t("Active")} name="isActive">*/}
+            {/*  <Radio.Group>*/}
+            {/*    <Radio value={true}>Enable</Radio>*/}
+            {/*    <Radio value={false}>Disable</Radio>*/}
+            {/*  </Radio.Group>*/}
+            {/*</Form.Item>*/}
           </Form>
         </Create>
       </form>
@@ -697,7 +680,6 @@ const Test = (setDisplay, setPagination) => {
           </table>
         </div>
       </section>
-
       <section>
         <Modal
           // {...modalProps}
@@ -731,44 +713,12 @@ const Test = (setDisplay, setPagination) => {
                 </div>
               </div>
             </form>
-            {isCheckImei != null && isCheckImei.length > 0 ? (
-              <div className="table-wrap">
-                <h2>Imei Trung Lap</h2>
-                <table class="table">
-                  <thead class="table-dark">
-                    <th>STT</th>
-                    <th>PRODUCT</th>
-                    <th>COLOR</th>
-                    <th>CAPACITY</th>
-                    <th>IMEI</th>
-                    <th>PRICE</th>
-                  </thead>
-                  <tbody>
-                    {isCheckImei.map((s, index) => {
-                      return (
-                        <tr className="alert" role="alert" key={s.id}>
-                          <td>{index + 1}</td>
-                          <td>{s.nameProduct}</td>
-                          <td>{s.color}</td>
-                          <td>{s.capacity}</td>
-                          <td>{s.codeImei}</td>
-                          <td>{s.price}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p></p>
-            )}
 
-            {excelData != null && excelData.length > 0 ? (
+            {excelData ? (
               <div className="table-wrap">
-                <h2>Imei Doc Tu File Excel Vui Long Check Lai Truoc Khi Luu</h2>
                 <table class="table">
                   <thead>
-                    <tr></tr>
+                    <tr>Kiểm Tra Lại Imei</tr>
                   </thead>
                   <tbody>
                     {excelData.map((row, rowIndex) => (

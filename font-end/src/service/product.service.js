@@ -46,9 +46,9 @@ export const add = (product) => {
   return httpClient.post(`/product/save`, product);
 };
 
-export const update = (id, product) => {
-  return httpClient.put(`/product/update/${id}`, product);
-};
+// export const update = (id, chip) => {
+//   return httpClient.put(`/chip/update/${id}`, chip);
+// };
 
 export const detail = (id) => {
   return httpClient.get(`/product/${id}`);

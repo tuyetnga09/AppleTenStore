@@ -118,24 +118,24 @@ const VoucherDisplay = ({}) => {
     const dateFilter = document.getElementById("dateFilter");
     if (dateFilter.value == "") {
       searchNoDate(paramsString)
-          .then((response) => {
-            // console.log(response.data);
-            setVoucher(response.data.content);
-            // setEditedVoucher(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+        .then((response) => {
+          // console.log(response.data);
+          setVoucher(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
     } else {
       searchWithDate(paramsString2)
-          .then((response) => {
-            // console.log(response.data);
-            setVoucher(response.data.content);
-            // setEditedVoucher(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+        .then((response) => {
+          // console.log(response.data);
+          setVoucher(response.data.content);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
     }
   }, [filtersNoDate, filtersWithDate]);
 
@@ -207,15 +207,15 @@ const VoucherDisplay = ({}) => {
       const monthStart = dateStart.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
       const dayStart = dateStart.getDate();
       const formattedDateStart = `${yearStart}-${monthStart
-          .toString()
-          .padStart(2, "0")}-${dayStart.toString().padStart(2, "0")}`;
+        .toString()
+        .padStart(2, "0")}-${dayStart.toString().padStart(2, "0")}`;
       const dateEnd = new Date(value[1]);
       const yearEnd = dateEnd.getFullYear();
       const monthEnd = dateEnd.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
       const dayEnd = dateEnd.getDate();
       const formattedDateEnd = `${yearEnd}-${monthEnd
-          .toString()
-          .padStart(2, "0")}-${dayEnd.toString().padStart(2, "0")}`;
+        .toString()
+        .padStart(2, "0")}-${dayEnd.toString().padStart(2, "0")}`;
       item = { ...filtersWithDate };
       item["dateStart"] = formattedDateStart;
       item["dateEnd"] = formattedDateEnd;
@@ -230,27 +230,27 @@ const VoucherDisplay = ({}) => {
   function search1() {
     const paramsString = queryString.stringify(filtersNoDate);
     searchNoDate(paramsString)
-        .then((response) => {
-          // console.log(response.data);
-          setVoucher(response.data.content);
-          // setEditedVoucher(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        // console.log(response.data);
+        setVoucher(response.data.content);
+        // setEditedVoucher(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   }
 
   function search2() {
     const paramsString = queryString.stringify(filtersWithDate);
     searchWithDate(paramsString)
-        .then((response) => {
-          // console.log(response.data);
-          setVoucher(response.data.content);
-          // setEditedVoucher(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        // console.log(response.data);
+        setVoucher(response.data.content);
+        // setEditedVoucher(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   }
 
   function search() {
@@ -263,56 +263,56 @@ const VoucherDisplay = ({}) => {
   }
 
   return (
-      <>
+    <>
+      <Layout>
+        <Sider trigger={null} collapsible collapsed={collapsed}>
+          <div className="demo-logo-vertical" />
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["5"]}>
+            <Menu.Item key="1" icon={<DashboardOutlined />}>
+              <Link to="/dashboard">Dashboard</Link>
+            </Menu.Item>
+            <Menu.Item key="2" icon={<ShopOutlined />}>
+              <Link to="/orders">Orders</Link>
+            </Menu.Item>
+            <Menu.Item key="3" icon={<UserOutlined />}>
+              <Link to="/users">Users</Link>
+            </Menu.Item>
+            <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
+              <Link to="/product">Product</Link>
+            </Menu.Item>
+            <Menu.Item key="5" icon={<GiftOutlined />}>
+              <Link to="/voucher">Voucher</Link>
+            </Menu.Item>
+            <Menu.Item key="6" icon={<LogoutOutlined />}>
+              <Link to="/logout">Logout</Link>
+            </Menu.Item>
+          </Menu>
+        </Sider>
         <Layout>
-          <Sider trigger={null} collapsible collapsed={collapsed}>
-            <div className="demo-logo-vertical" />
-            <Menu theme="dark" mode="inline" defaultSelectedKeys={["5"]}>
-              <Menu.Item key="1" icon={<DashboardOutlined />}>
-                <Link to="/dashboard">Dashboard</Link>
-              </Menu.Item>
-              <Menu.Item key="2" icon={<ShopOutlined />}>
-                <Link to="/orders">Orders</Link>
-              </Menu.Item>
-              <Menu.Item key="3" icon={<UserOutlined />}>
-                <Link to="/users">Users</Link>
-              </Menu.Item>
-              <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-                <Link to="/product">Product</Link>
-              </Menu.Item>
-              <Menu.Item key="5" icon={<GiftOutlined />}>
-                <Link to="/voucher">Voucher</Link>
-              </Menu.Item>
-              <Menu.Item key="6" icon={<LogoutOutlined />}>
-                <Link to="/logout">Logout</Link>
-              </Menu.Item>
-            </Menu>
-          </Sider>
-          <Layout>
-            <Header style={{ padding: 0, background: colorBgContainer }}>
-              <Button
-                  type="text"
-                  icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                  onClick={() => setCollapsed(!collapsed)}
-                  style={{
-                    fontSize: "16px",
-                    width: 64,
-                    height: 64,
-                  }}
-              />
-            </Header>
-            <Content
-                style={{
-                  margin: "24px 16px",
-                  padding: 24,
-                  minHeight: 280,
-                  background: colorBgContainer,
-                }}
-            >
-              <Text style={{ fontSize: "24px", color: "blue" }} strong>
-                VOUCHER
-              </Text>
-              {/* <Row gutter={[16, 16]}>
+          <Header style={{ padding: 0, background: colorBgContainer }}>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: "16px",
+                width: 64,
+                height: 64,
+              }}
+            />
+          </Header>
+          <Content
+            style={{
+              margin: "24px 16px",
+              padding: 24,
+              minHeight: 280,
+              background: colorBgContainer,
+            }}
+          >
+            <Text style={{ fontSize: "24px", color: "blue" }} strong>
+              VOUCHER
+            </Text>
+            {/* <Row gutter={[16, 16]}>
         <Col
                 xl={6}
                 lg={24}
@@ -327,45 +327,45 @@ const VoucherDisplay = ({}) => {
 
         </Col>
         </Row> */}
-              <Row gutter={[16, 16]}>
-                <Col
-                    xl={6}
-                    lg={24}
-                    xs={24}
-                    style={{
-                      marginTop: "52px",
-                    }}
-                >
-                  <Card title={t("Filter")}>
-                    <Form>
-                      <Row gutter={[10, 0]} align="bottom">
-                        <Col xl={24} md={8} sm={12} xs={24}>
-                          <Form.Item label={t("Search")} name="q">
-                            <Input
-                                name="key"
-                                placeholder={t("Code, Name")}
-                                prefix={<SearchOutlined />}
-                                onChange={handleChangeSearch}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col xl={24} md={8} sm={12} xs={24}>
-                          <Form.Item label={t("Status")} name="status">
-                            <Select
-                                name="status"
-                                allowClear
-                                onChange={handleChangeStatus}
-                                placeholder={t("Status")}
-                            >
-                              {orderSelectProps.options.map((st) => {
-                                return (
-                                    <Option value={st.value}>{st.label}</Option>
-                                );
-                              })}
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                        {/* <Col xl={24} md={8} sm={12} xs={24}>
+            <Row gutter={[16, 16]}>
+              <Col
+                xl={6}
+                lg={24}
+                xs={24}
+                style={{
+                  marginTop: "52px",
+                }}
+              >
+                <Card title={t("Filter")}>
+                  <Form>
+                    <Row gutter={[10, 0]} align="bottom">
+                      <Col xl={24} md={8} sm={12} xs={24}>
+                        <Form.Item label={t("Search")} name="q">
+                          <Input
+                            name="key"
+                            placeholder={t("Code, Name")}
+                            prefix={<SearchOutlined />}
+                            onChange={handleChangeSearch}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col xl={24} md={8} sm={12} xs={24}>
+                        <Form.Item label={t("Status")} name="status">
+                          <Select
+                            name="status"
+                            allowClear
+                            onChange={handleChangeStatus}
+                            placeholder={t("Status")}
+                          >
+                            {orderSelectProps.options.map((st) => {
+                              return (
+                                <Option value={st.value}>{st.label}</Option>
+                              );
+                            })}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      {/* <Col xl={24} md={8} sm={12} xs={24}>
                         <Form.Item label={t("Store")} name="store">
                           <Select
                             // {...storeSelectProps}
@@ -383,230 +383,230 @@ const VoucherDisplay = ({}) => {
                           />
                         </Form.Item>
                       </Col> */}
-                        <Col xl={24} md={8} sm={12} xs={24}>
-                          <Form.Item label={t("Date")} name="createdAt">
-                            <RangePicker
-                                id="dateFilter"
-                                style={{ width: "100%" }}
-                                onChange={handleChangeDate}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col xl={24} md={8} sm={12} xs={24}>
-                          <Form.Item>
-                            <Button
-                                htmlType="submit"
-                                type="primary"
-                                size="large"
-                                block
-                                onClick={() => search()}
-                            >
-                              {t("FILLTER")}
-                            </Button>
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </Form>
-                  </Card>
-                </Col>
-                <Col xl={18} xs={24}>
-                  {/* <Link to="/voucher/new">
-                    <Button style={{ marginLeft: "1000px" }}>
+                      <Col xl={24} md={8} sm={12} xs={24}>
+                        <Form.Item label={t("Date")} name="createdAt">
+                          <RangePicker
+                            id="dateFilter"
+                            style={{ width: "100%" }}
+                            onChange={handleChangeDate}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col xl={24} md={8} sm={12} xs={24}>
+                        <Form.Item>
+                          <Button
+                            htmlType="submit"
+                            type="primary"
+                            size="large"
+                            block
+                            onClick={() => search()}
+                          >
+                            {t("FILLTER")}
+                          </Button>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Card>
+              </Col>
+              <Col xl={18} xs={24}>
+                {/* <Link to="/voucher/new">
+                    <Button style={{ marginLeft: "1000px" }}> 
                         <FaPlus className="add-icon" />
                     </Button>
                 </Link> */}
 
-                  <CreateVoucher />
+                <CreateVoucher />
 
-                  <List>
-                    <Table
-                        rowKey="id"
-                        dataSource={voucher}
-                        scroll={{ x: "max-content" }}
-                    >
-                      <Table.Column
-                          key="id"
-                          dataIndex="id"
-                          title={t("ID")}
-                          render={(text, record) => <span>{record.id}</span>}
-                      />
-                      <Table.Column
-                          key="status"
-                          dataIndex="status"
-                          title={t("Status")}
-                          render={(text, record) => (
-                              <span>
+                <List>
+                  <Table
+                    rowKey="id"
+                    dataSource={voucher}
+                    scroll={{ x: "max-content" }}
+                  >
+                    <Table.Column
+                      key="id"
+                      dataIndex="id"
+                      title={t("ID")}
+                      render={(text, record) => <span>{record.id}</span>}
+                    />
+                    <Table.Column
+                      key="status"
+                      dataIndex="status"
+                      title={t("Status")}
+                      render={(text, record) => (
+                        <span>
                           {record.status === 0 ? (
-                              <Badge
-                                  className="site-badge-count-109"
-                                  count={"Hoạt động"}
-                                  style={{ backgroundColor: "#52c41a" }}
-                              />
+                            <Badge
+                              className="site-badge-count-109"
+                              count={"Hoạt động"}
+                              style={{ backgroundColor: "#52c41a" }}
+                            />
                           ) : (
-                              <Badge count={"Không hoạt động"} />
+                            <Badge count={"Không hoạt động"} />
                           )}
                         </span>
-                          )}
-                      />
-                      <Table.Column
-                          key="code"
-                          dataIndex="code"
-                          title={t("Code")}
-                          render={(text, record) => <span>{record.code}</span>}
-                      />
-                      <Table.Column
-                          key="name"
-                          dataIndex="name"
-                          title={t("Name")}
-                          render={(text, record) => <span>{record.name}</span>}
-                      />
-                      <Table.Column
-                          key="dateStart"
-                          dataIndex="dateStart"
-                          title={t("DateStart")}
-                          render={(text, record) => <span>{record.dateStart}</span>}
-                      />
-                      <Table.Column
-                          key="dateEnd"
-                          dataIndex="dateEnd"
-                          title={t("DateEnd")}
-                          render={(text, record) => <span>{record.dateEnd}</span>}
-                      />
-                      <Table.Column
-                          key="conditionsApply"
-                          dataIndex="conditionsApply"
-                          title={t("ConditionsApply")}
-                          render={(text, record) => (
-                              <span>{record.conditionsApply}</span>
-                          )}
-                      />
-                      <Table.Column
-                          key="valueVoucher"
-                          dataIndex="valueVoucher"
-                          title={t("ValueVoucher")}
-                          render={(text, record) => (
-                              <span>{record.valueVoucher}</span>
-                          )}
-                      />
-                      <Table.Column
-                          key="valueMinimum"
-                          dataIndex="valueMinimum"
-                          title={t("ValueMinimum")}
-                          render={(text, record) => (
-                              <span>{record.valueMinimum}</span>
-                          )}
-                      />
-                      <Table.Column
-                          key="valueMaximum"
-                          dataIndex="valueMaximum"
-                          title={t("ValueMaximum")}
-                          render={(text, record) => (
-                              <span>{record.valueMaximum}</span>
-                          )}
-                      />
-                      <Table.Column
-                          key="typeVoucher"
-                          dataIndex="typeVoucher"
-                          title={t("TypeVoucher")}
-                          render={(text, record) => (
-                              <span>{record.typeVoucher}</span>
-                          )}
-                      />
-                      <Table.Column
-                          key="quantity"
-                          dataIndex="quantity"
-                          title={t("Quantity")}
-                          render={(text, record) => <span>{record.quantity}</span>}
-                      />
-                      <Table.Column
-                          key="actions"
-                          dataIndex="actions"
-                          title={t("Action")}
-                          fixed="right"
-                          align="center"
-                          render={(text, record) => (
-                              <span>
+                      )}
+                    />
+                    <Table.Column
+                      key="code"
+                      dataIndex="code"
+                      title={t("Code")}
+                      render={(text, record) => <span>{record.code}</span>}
+                    />
+                    <Table.Column
+                      key="name"
+                      dataIndex="name"
+                      title={t("Name")}
+                      render={(text, record) => <span>{record.name}</span>}
+                    />
+                    <Table.Column
+                      key="dateStart"
+                      dataIndex="dateStart"
+                      title={t("DateStart")}
+                      render={(text, record) => <span>{record.dateStart}</span>}
+                    />
+                    <Table.Column
+                      key="dateEnd"
+                      dataIndex="dateEnd"
+                      title={t("DateEnd")}
+                      render={(text, record) => <span>{record.dateEnd}</span>}
+                    />
+                    <Table.Column
+                      key="conditionsApply"
+                      dataIndex="conditionsApply"
+                      title={t("ConditionsApply")}
+                      render={(text, record) => (
+                        <span>{record.conditionsApply}</span>
+                      )}
+                    />
+                    <Table.Column
+                      key="valueVoucher"
+                      dataIndex="valueVoucher"
+                      title={t("ValueVoucher")}
+                      render={(text, record) => (
+                        <span>{record.valueVoucher}</span>
+                      )}
+                    />
+                    <Table.Column
+                      key="valueMinimum"
+                      dataIndex="valueMinimum"
+                      title={t("ValueMinimum")}
+                      render={(text, record) => (
+                        <span>{record.valueMinimum}</span>
+                      )}
+                    />
+                    <Table.Column
+                      key="valueMaximum"
+                      dataIndex="valueMaximum"
+                      title={t("ValueMaximum")}
+                      render={(text, record) => (
+                        <span>{record.valueMaximum}</span>
+                      )}
+                    />
+                    <Table.Column
+                      key="typeVoucher"
+                      dataIndex="typeVoucher"
+                      title={t("TypeVoucher")}
+                      render={(text, record) => (
+                        <span>{record.typeVoucher}</span>
+                      )}
+                    />
+                    <Table.Column
+                      key="quantity"
+                      dataIndex="quantity"
+                      title={t("Quantity")}
+                      render={(text, record) => <span>{record.quantity}</span>}
+                    />
+                    <Table.Column
+                      key="actions"
+                      dataIndex="actions"
+                      title={t("Action")}
+                      fixed="right"
+                      align="center"
+                      render={(text, record) => (
+                        <span>
                           {/* <Button type="danger" onClick={() => remove(record.id)}>
                                             <FontAwesomeIcon icon={faTimes} />
                                         </Button>
                                         {/* <Link to={"/voucher/" + record.id}> */}
-                                {/* <Button type="danger" onClick={() => handleEditClick(record)}>
+                          {/* <Button type="danger" onClick={() => handleEditClick(record)}>
                                             <FontAwesomeIcon icon={faPencilAlt} />
                                         </Button> */}
-                                {/* </Link> */}
-                                {/* <Link to={"/voucher/update/" + record.id}>
+                          {/* </Link> */}
+                          {/* <Link to={"/voucher/update/" + record.id}>
                                             <Button type="danger">
                                                 <FontAwesomeIcon icon={faPencilAlt} />
                                             </Button>
                                         </Link> */}
-                                <Dropdown
-                                    overlay={
-                                      <Menu mode="vertical">
-                                        <Menu.Item
-                                            key="1"
-                                            disabled={record.stock <= 0}
-                                            style={{
-                                              fontWeight: 500,
-                                            }}
-                                            icon={
-                                              <CloseCircleOutlined
-                                                  style={{
-                                                    color: "red",
-                                                  }}
-                                              />
-                                            }
-                                            onClick={() => remove(record.id)}
-                                        >
-                                          Delete
-                                        </Menu.Item>
-                                        <Menu.Item
-                                            key="2"
-                                            style={{
-                                              fontWeight: 500,
-                                            }}
-                                            icon={
-                                              <FormOutlined
-                                                  style={{
-                                                    color: "green",
-                                                  }}
-                                              />
-                                            }
-                                            onClick={() => handleEditClick(record)}
-                                        >
-                                          Edit
-                                        </Menu.Item>
-                                      </Menu>
-                                    }
-                                    trigger={["click"]}
+                          <Dropdown
+                            overlay={
+                              <Menu mode="vertical">
+                                <Menu.Item
+                                  key="1"
+                                  disabled={record.stock <= 0}
+                                  style={{
+                                    fontWeight: 500,
+                                  }}
+                                  icon={
+                                    <CloseCircleOutlined
+                                      style={{
+                                        color: "red",
+                                      }}
+                                    />
+                                  }
+                                  onClick={() => remove(record.id)}
                                 >
+                                  Delete
+                                </Menu.Item>
+                                <Menu.Item
+                                  key="2"
+                                  style={{
+                                    fontWeight: 500,
+                                  }}
+                                  icon={
+                                    <FormOutlined
+                                      style={{
+                                        color: "green",
+                                      }}
+                                    />
+                                  }
+                                  onClick={() => handleEditClick(record)}
+                                >
+                                  Edit
+                                </Menu.Item>
+                              </Menu>
+                            }
+                            trigger={["click"]}
+                          >
                             <MoreOutlined
-                                style={{
-                                  fontSize: 24,
-                                }}
+                              style={{
+                                fontSize: 24,
+                              }}
                             />
                           </Dropdown>
                         </span>
-                          )}
-                      />
-                    </Table>
-                  </List>
-                </Col>
-              </Row>
-              <section>
-                <Modal
-                    visible={isModalVisible}
-                    onCancel={handleCancel}
-                    width={1000}
-                    footer={null}
-                    bodyStyle={{ minHeight: "450px" }}
-                >
-                  <UpdateVoucher editedVoucher={editedVoucher} />
-                </Modal>
-              </section>
-            </Content>
-          </Layout>
+                      )}
+                    />
+                  </Table>
+                </List>
+              </Col>
+            </Row>
+            <section>
+              <Modal
+                visible={isModalVisible}
+                onCancel={handleCancel}
+                width={1000}
+                footer={null}
+                bodyStyle={{ minHeight: "450px" }}
+              >
+                <UpdateVoucher editedVoucher={editedVoucher} />
+              </Modal>
+            </section>
+          </Content>
         </Layout>
-      </>
+      </Layout>
+    </>
   );
 };
 export default VoucherDisplay;
