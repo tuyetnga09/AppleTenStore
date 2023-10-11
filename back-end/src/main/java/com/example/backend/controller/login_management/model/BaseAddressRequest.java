@@ -9,21 +9,14 @@ import lombok.Setter;
 public abstract class BaseAddressRequest {
     private Integer id;
 
-    private String line;
 
-    private String district;
+    private String address;
 
-    private String province;
+    private String tinhThanhPho;
 
-    private String ward;
+    private String quanHuyen;
 
-    private Integer provinceId;
-
-    private Integer toDistrictId;
-
-    private String wardCode;
-
-    private Status status;
+    private String xaPhuong;
 
     private Integer userId;
 }
