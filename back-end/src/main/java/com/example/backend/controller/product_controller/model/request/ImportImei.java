@@ -2,19 +2,15 @@ package com.example.backend.controller.product_controller.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
-@ToString
 public class ImportImei {
     private  String codeImei;
     private String color;
     private String capacity;
     private Integer quantity;
     private BigDecimal price;
-    private String nameProduct;
-
 }

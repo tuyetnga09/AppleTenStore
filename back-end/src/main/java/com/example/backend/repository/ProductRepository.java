@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 
+
 import com.example.backend.entity.Product;
 import com.example.backend.entity.Voucher;
 import jakarta.persistence.EntityManager;
@@ -11,7 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Modifying;
 import jakarta.transaction.Transactional;
-
 import java.util.List;
 
 @Repository
@@ -25,12 +25,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Product findProductById(Integer id);
 
-    @Query(value = "select * from product where (id like %?1% or name like %?1% or description like %?1% or price like %?1%) and status = 0 " +
-            " ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    @Query(value = "select * from product where (id like %?1% or name like %?1% or description like %?1% or price like %?1%) and status = 0 ", nativeQuery = true)
     Page<Product> search(Pageable pageable, String key);
 
-    @Query(value = "select * from product where (id like %?1% or name like %?1% or description like %?1% or price like %?1%) and status = 1 " +
-            " ORDER BY date_create DESC", nativeQuery = true)
+    @Query(value = "select * from product where (id like %?1% or name like %?1% or description like %?1% or price like %?1%) and status = 1 ", nativeQuery = true)
     Page<Product> deleteProduct(Pageable pageable, String key);
 
     @Modifying
@@ -54,7 +52,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Product search(String name);
 
     Product findByName(String nameProduct);
-
     Product findByCode(String code);
 
     Product findById(int id);
