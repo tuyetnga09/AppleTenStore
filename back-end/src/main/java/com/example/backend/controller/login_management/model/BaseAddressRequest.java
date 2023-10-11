@@ -19,4 +19,5 @@ public abstract class BaseAddressRequest {
     private String xaPhuong;
 
     private Integer userId;
+    private Status status;
 }

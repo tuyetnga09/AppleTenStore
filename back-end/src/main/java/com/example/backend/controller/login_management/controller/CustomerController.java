@@ -41,13 +41,8 @@ public class CustomerController {
 
         // add địa chỉ
         CreateAddressRequest addressRequest = new CreateAddressRequest();
-        addressRequest.setLine(jsonObject.get("line").getAsString());
-        addressRequest.setProvince(jsonObject.get("province").getAsString());
-        addressRequest.setDistrict(jsonObject.get("district").getAsString());
-        addressRequest.setWard(jsonObject.get("ward").getAsString());
-        addressRequest.setToDistrictId(Integer.valueOf(jsonObject.get("toDistrictId").getAsString()));
-        addressRequest.setProvinceId(Integer.valueOf(jsonObject.get("provinceId").getAsString()));
-        addressRequest.setWardCode(jsonObject.get("wardCode").getAsString());
+        addressRequest.setAddress(jsonObject.get("line").getAsString());
+        //....
 
         return new ResponseObj(customerService.create(customerRequest, addressRequest, file));
     }
