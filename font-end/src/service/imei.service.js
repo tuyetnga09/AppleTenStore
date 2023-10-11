@@ -41,3 +41,7 @@ export const importImei = (form) => {
 export const readImportImei = (form, idSku) => {
   return httpClient.post(`/imei/importimei?idSku=${idSku}`, form, config);
 };
+// import imei excel and check trung imei
+export const ImportImeiExcel = (form, idSku) => {
+  return httpClient.post(`/imei/importimei-excel?idSku=${idSku}`, form, config);
+};

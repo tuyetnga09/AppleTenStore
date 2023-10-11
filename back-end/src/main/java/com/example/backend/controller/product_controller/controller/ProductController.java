@@ -33,7 +33,7 @@ public class ProductController {
 
     @GetMapping("display")
     public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 5);
+        Pageable pageable = PageRequest.of(page, 10);
 //        Page<Product> listProduct = productService.getAll(pageable);
         Page<Product> listProduct = productService.search(pageable, key);
         return listProduct;
@@ -46,7 +46,7 @@ public class ProductController {
 
     @GetMapping("displayDelete")
     public Page<Product> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 5);
+        Pageable pageable = PageRequest.of(page, 10);
 //        Page<Product> listProduct = productService.getDelete(pageable);
         Page<Product> listProduct = productService.deleteProduct(pageable, key);
         return listProduct;
@@ -65,9 +65,9 @@ public class ProductController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
-        productService.update(product, id);
-        return new ResponseEntity<>("Update ok", HttpStatus.OK);
+    public ResponseEntity<String> update(@RequestBody CreateProduct createProduct, @PathVariable("id") Integer id) {
+
+        return new ResponseEntity<>(productService.update(createProduct, id), HttpStatus.OK);
     }
 
     @GetMapping(value = "get-all-product")
@@ -90,8 +90,12 @@ public class ProductController {
     }
 
     @GetMapping("{id}")
-    public Product detail(@PathVariable("id") Integer id){
-        return productService.getOne(id);
+//    public Product detail(@PathVariable("id") Integer id){
+//        return productService.getOne(id);
+//    }
+    public CreateProduct detail(@PathVariable("id") Integer id){
+
+        return productService.getOne1(id);
     }
 
     @GetMapping("display/filterProductbyPrice")

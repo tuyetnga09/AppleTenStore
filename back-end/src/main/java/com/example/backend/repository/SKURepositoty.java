@@ -1,5 +1,7 @@
 package com.example.backend.repository;
 
+import com.example.backend.entity.Capacity;
+import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
 import com.example.backend.entity.Size;
 import org.springframework.data.domain.Page;
@@ -16,4 +18,10 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
             " FROM sku join product on sku.product_Id = product.id\n" +
             " where product.id = (select  id from product ORDER BY id DESC limit 1) ;", nativeQuery = true)
     List<SKU> skuFindByProduct();
+
+    List<SKU> findByProduct(Product product);
+    SKU findByProductAndCapacityAndColor(Product product, String capacity, String color);
+    List<SKU> findByProductAndCapacity(Product product, String capacity);
+    List<SKU> findByProductAndColor(Product product, String color);
+
 }
