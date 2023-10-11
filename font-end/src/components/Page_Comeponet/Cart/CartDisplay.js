@@ -68,12 +68,12 @@ export default function CartDisplay() {
                 .then((response) => {
                   console.log(response.data);
                   setSKU(response.data);
-                  if (sku.quantity <= 0) {
-                    notification.error({
-                      message: "ADD TO CART",
-                      description: "Sản phẩm đang tạm thời hết hàng",
-                    });
-                  }
+                  // if (sku.quantity <= 0) {
+                  //   notification.error({
+                  //     message: "ADD TO CART",
+                  //     description: "Không được nhập quá số lượng sản phẩm",
+                  //   });
+                  // }
                 })
                 .catch((error) => {
                   console.log(`${error}`);
@@ -200,15 +200,27 @@ export default function CartDisplay() {
                                     style={{ paddingRight: "10px" }}
                                   >
                                     <button
-                                      // onClick={() => handleDownQuantiy(product.id)}
-                                      // className="minus"
-                                      onClick={() =>
+                                      onClick={() => {
+                                        const quantity =
+                                          document.getElementById(
+                                            `quantity-${index}`
+                                          );
+                                        quantity.value = product.quantity - 1;
+                                        console.log(quantity.value);
+                                        if (quantity.value <= 0) {
+                                          notification.error({
+                                            message: "ADD TO CART",
+                                            description:
+                                              "Số lượng phải lớn hơn 0",
+                                          });
+                                          quantity.value = 1;
+                                        }
                                         handleUpdateQuantity(
                                           product.idCartDetail,
                                           product.quantity - 1,
                                           product.idSKU
-                                        )
-                                      }
+                                        );
+                                      }}
                                       className="minus"
                                     />
                                     <input
@@ -262,11 +274,11 @@ export default function CartDisplay() {
                                             product.idSKU
                                           );
                                         } else {
-                                          // const quantity =
-                                          //   document.getElementById(
-                                          //     `quantity-${index}`
-                                          //   );
-                                          // quantity.value = event.target.value;
+                                          const quantity =
+                                            document.getElementById(
+                                              `quantity-${index}`
+                                            );
+                                          quantity.value = event.target.value;
                                           handleUpdateQuantity(
                                             product.idCartDetail,
                                             event.target.value,
@@ -276,15 +288,35 @@ export default function CartDisplay() {
                                       }}
                                     />
                                     <button
-                                      // onClick={() => handleUpQuantiy(product.id)}
-                                      // className="plus"
-                                      onClick={() =>
+                                      onClick={() => {
+                                        getOneSKU(product.idSKU).then((res) => {
+                                          const quantity =
+                                            document.getElementById(
+                                              `quantity-${index}`
+                                            );
+                                          quantity.value =
+                                            parseInt(product.quantity) + 1;
+                                          if (
+                                            quantity.value >
+                                            parseInt(res.data.quantity) +
+                                              parseInt(product.quantity)
+                                          ) {
+                                            notification.error({
+                                              message: "ADD TO CART",
+                                              description:
+                                                "Không thể nhập quá số lượng đang có",
+                                            });
+                                            quantity.value =
+                                              parseInt(res.data.quantity) +
+                                              parseInt(product.quantity);
+                                          }
+                                        });
                                         handleUpdateQuantity(
                                           product.idCartDetail,
                                           parseInt(product.quantity) + 1,
                                           product.idSKU
-                                        )
-                                      }
+                                        );
+                                      }}
                                       className="plus"
                                     />
                                   </div>

@@ -7,33 +7,33 @@ const config = {
 };
 
 export const readAll = (page) => {
-  return httpClient.get(`/size/getAll?${page}`);
+  return httpClient.get(`/admin/size/getAll?${page}`);
 };
 
 export const returnDeleteAll = (page) => {
-  return httpClient.get(`/size/displayDelete?${page}`);
+  return httpClient.get(`/admin/size/displayDelete?${page}`);
 };
 
 export const add = (size) => {
-  return httpClient.post(`/size/add`, size);
+  return httpClient.post(`/admin/size/add`, size);
 };
 
 export const update = (id, size) => {
-  return httpClient.put(`/size/update/${id}`, size);
+  return httpClient.put(`/admin/size/update/${id}`, size);
 };
 
 export const detail = (id) => {
-  return httpClient.get(`/size/${id}`);
+  return httpClient.get(`/admin/size/${id}`);
 };
 
 export const deleteSize = (id) => {
-  return httpClient.delete(`/size/delete/${id}`);
+  return httpClient.delete(`/admin/size/delete/${id}`);
 };
 
 export const returnSize = (id) => {
-  return httpClient.put(`/size/return/${id}`);
+  return httpClient.put(`/admin/size/return/${id}`);
 };
 
 export const importSize = (form) => {
-  return httpClient.post("/size/import", form, config);
+  return httpClient.post("/admin/size/import", form, config);
 };

@@ -7,7 +7,7 @@ const config = {
 };
 
 export const readAll = (page) => {
-  return httpClient.get(`/product/display?${page}`);
+  return httpClient.get(`/admin/product/display?${page}`);
 };
 
 // hiển thị comboobox
@@ -39,11 +39,11 @@ export const readAllSize = () => {
   return httpClient.get(`/size/get-all-size`);
 };
 export const returnDeleteAll = (page) => {
-  return httpClient.get(`/product/displayDelete?${page}`);
+  return httpClient.get(`/admin/product/displayDelete?${page}`);
 };
 
 export const add = (product) => {
-  return httpClient.post(`/product/save`, product);
+  return httpClient.post(`/admin/product/save`, product);
 };
 
 // export const update = (id, chip) => {
@@ -51,27 +51,27 @@ export const add = (product) => {
 // };
 
 export const detail = (id) => {
-  return httpClient.get(`/product/${id}`);
+  return httpClient.get(`/admin/product/${id}`);
 };
 
 export const deleteProduct = (id) => {
-  return httpClient.delete(`/product/delete/${id}`);
+  return httpClient.delete(`/admin/product/delete/${id}`);
 };
 
 export const returnProduct = (id) => {
-  return httpClient.put(`/product/return/${id}`);
+  return httpClient.put(`/admin/product/return/${id}`);
 };
 
 export const newProduct = () => {
-  return httpClient.get(`/product/new-product`);
+  return httpClient.get(`/admin/product/new-product`);
 };
 
 export const chipProduct = () => {
-  return httpClient.get(`/product/chip-product`);
+  return httpClient.get(`/admin/product/chip-product`);
 };
 
 export const findProductById = (id) => {
-  return httpClient.get(`/product/search/${id}`);
+  return httpClient.get(`/admin/product/search/${id}`);
 };
 
 // export const importChip = (form) => {
@@ -79,33 +79,37 @@ export const findProductById = (id) => {
 // };
 
 export const readProductNew = (page) => {
-  return httpClient.get(`/product/display/productNew?${page}`);
+  return httpClient.get(`/admin/product/display/productNew?${page}`);
 };
 
 export const readProductCheap = (page) => {
-  return httpClient.get(`/product/display/productCheap?${page}`);
+  return httpClient.get(`/admin/product/display/productCheap?${page}`);
 };
 
 export const readFilterProductByPrice = (page) => {
-  return httpClient.get(`/product/display/filterProductbyPrice?${page}`);
+  return httpClient.get(`/admin/product/display/filterProductbyPrice?${page}`);
 };
 
 export const readFilterProductByCategory = (page) => {
-  return httpClient.get(`/product/display/filterProductbyCategory?${page}`);
+  return httpClient.get(
+    `/admin/product/display/filterProductbyCategory?${page}`
+  );
 };
 
 export const readFilterProductByAscendingPrice = (page) => {
   return httpClient.get(
-    `/product/display/filterProductByAscendingPrice?${page}`
+    `/admin/product/display/filterProductByAscendingPrice?${page}`
   );
 };
 
 export const readFilterProductByDecreasePrice = (page) => {
   return httpClient.get(
-    `/product/display/filterProductByDecreasePrice?${page}`
+    `/admin/product/display/filterProductByDecreasePrice?${page}`
   );
 };
 
 export const listProductByCategories = (page) => {
-  return httpClient.get(`/product/display/listProductByCategories?${page}`);
+  return httpClient.get(
+    `/admin/product/display/listProductByCategories?${page}`
+  );
 };
