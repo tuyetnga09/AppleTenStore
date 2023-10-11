@@ -24,7 +24,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/chip/")
+@RequestMapping("/admin/chip/")
 public class ChipController {
     @Autowired
     private ChipServiceIpml chipServiceIpml;

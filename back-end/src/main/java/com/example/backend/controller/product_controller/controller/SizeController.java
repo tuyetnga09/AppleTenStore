@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/size/")
+@RequestMapping("/admin/size/")
 @CrossOrigin("*")
 public class SizeController {
 

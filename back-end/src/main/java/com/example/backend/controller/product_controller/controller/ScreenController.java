@@ -24,7 +24,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/screen/")
+@RequestMapping("/admin/screen/")
 public class ScreenController {
     @Autowired
     private ScreenServiceImpl screenService;

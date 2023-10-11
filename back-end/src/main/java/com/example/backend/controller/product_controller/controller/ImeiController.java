@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/imei/")
+@RequestMapping("/admin/imei/")
 @CrossOrigin("*")
 public class ImeiController {
 

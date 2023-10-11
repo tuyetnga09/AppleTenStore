@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/cart-detail")
+@RequestMapping("/customer/cart-detail")
 public class CartDetailController {
     @Autowired
     private CartDetailService cartDetailService;

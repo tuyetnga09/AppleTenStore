@@ -19,7 +19,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/sku/")
+@RequestMapping("/admin/sku/")
 public class SKUController {
     @Autowired
     private SKUServiceImpl skuService;

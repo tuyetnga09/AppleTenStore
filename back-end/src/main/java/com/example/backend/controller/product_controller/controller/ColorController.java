@@ -24,7 +24,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/color/")
+@RequestMapping("/admin/color/")
 public class ColorController {
     @Autowired
     private ColorServiceImpl colorService;
