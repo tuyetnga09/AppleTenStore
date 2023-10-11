@@ -65,4 +65,7 @@ public class User {
     private Date dateUpdate;
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Column(name = "citizen_identity ")
+    private String citizenIdentity;
+
 }
