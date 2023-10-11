@@ -411,9 +411,7 @@ const StoreProducts = ({}) => {
                                   height: "100%",
                                 }}
                               >
-                                <AvatarProduct
-                                  product={item.id}
-                                ></AvatarProduct>
+                                <AvatarProduct product={item.id}></AvatarProduct>
                                 <Divider />
                                 <Paragraph
                                   ellipsis={{ rows: 2, tooltip: true }}
