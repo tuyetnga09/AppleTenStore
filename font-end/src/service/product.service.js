@@ -53,6 +53,10 @@ export const update = (id, product) => {
 export const detail = (id) => {
   return httpClient.get(`/admin/product/${id}`);
 };
+export const detailCreateProduct = (id) => {
+  return httpClient.get(`/admin/product/detail/${id}`);
+};
+
 
 export const deleteProduct = (id) => {
   return httpClient.delete(`/admin/product/delete/${id}`);

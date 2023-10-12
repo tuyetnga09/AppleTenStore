@@ -113,6 +113,10 @@ public class ProductController {
     public CreateProduct detail(@PathVariable("id") Integer id){
         return productService.getOne1(id);
     }
+    @GetMapping("detail/{id}")
+    public CreateProduct detailCreateProduct(@PathVariable("id") Integer id){
+        return productService.getOne1(id);
+    }
 
     @GetMapping("display/filterProductbyPrice")
     public Page<Product> filterProductbyPrice(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key, @RequestParam("minPrice") Integer minPrice, @RequestParam("maxPrice") Integer maxPrice) {

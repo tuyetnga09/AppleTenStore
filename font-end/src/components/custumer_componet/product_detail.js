@@ -42,7 +42,7 @@ export default function ProductDetail() {
     detail(id)
       .then((response) => {
         setItem(response.data);
-        console.log(response.data);
+        console.log(response.data.colors);
       })
       .catch((error) => {
         console.log(`${error}`);
