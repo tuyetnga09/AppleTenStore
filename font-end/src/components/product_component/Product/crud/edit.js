@@ -1,6 +1,10 @@
 import React from "react";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { detailCreateProduct, update} from "../../../../service/product.service";
+=======
+import { detail, update } from "../../../../service/product.service";
+>>>>>>> 35ec5636af7f9e79b89f81d6e8e9b27c509b5c05
 import { notification, Modal } from "antd";
 import { Option } from "antd/es/mentions";
 
@@ -91,7 +95,11 @@ const EditProduct = ({
 
   useEffect(() => {
     if (product.id !== "new") {
+<<<<<<< HEAD
       detailCreateProduct(product.id)
+=======
+      detail(product.id)
+>>>>>>> 35ec5636af7f9e79b89f81d6e8e9b27c509b5c05
         .then((response) => {
           setProductData(response.data);
           //   console.log(productData);
