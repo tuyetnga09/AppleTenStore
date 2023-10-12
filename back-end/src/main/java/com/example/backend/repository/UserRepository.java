@@ -3,11 +3,12 @@ package com.example.backend.repository;
 import com.example.backend.controller.login_management.model.response.EmployeeResponse;
 import com.example.backend.entity.Chip;
 import com.example.backend.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -43,4 +44,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM  User u WHERE u.email =:email")
     User getOneUserByEmail(@Param("email") String email);
+
+    @Query(value = "select user.id, user.avatar, user.citizen_identity, user.date_create, user.date_of_birth, user.date_update, user.email, user.full_name, user.gender, user.person_create, user.person_update, user.phone_number, user.points, user.status from account join user on account.id_user = user.id join address on user.id = address.id_user where roles = ?1", nativeQuery = true)
+    Page<User> findByRole(Pageable pageable, String role);
 }

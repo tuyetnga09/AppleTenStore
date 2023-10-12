@@ -12,19 +12,21 @@ const ForgotPassword = () => {
               <input type="email" name="" required="" />
               <label>Email</label>
             </div>
-            <a href="#">
+            <button>
               <span></span>
               <span></span>
               <span></span>
               <span></span>
               Submit
-            </a>{" "}
+            </button>{" "}
             <Link to="/login">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              Cannel
+              <button>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Cannel
+              </button>
             </Link>
           </form>
         </div>

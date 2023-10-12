@@ -4,6 +4,8 @@ import com.example.backend.controller.login_management.model.request.CreateAddre
 import com.example.backend.controller.login_management.model.request.CreateCustomerRequest;
 import com.example.backend.controller.login_management.model.request.FindEmployeeRequest;
 import com.example.backend.controller.login_management.model.response.EmployeeResponse;
+import com.example.backend.entity.Account;
+import com.example.backend.entity.Address;
 import com.example.backend.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,4 +18,5 @@ public interface CustomerService {
                 CreateAddressRequest addressRequest,
                 MultipartFile file);
 
+    User add(User user, Address address, Account account);
 }
