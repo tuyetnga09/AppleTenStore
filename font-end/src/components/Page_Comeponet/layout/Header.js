@@ -136,10 +136,10 @@ export default function Header() {
             {/* End Search header */}
             <div className="tools-member">
               <div className="cart">
-                <a onclick="checkTaiKhoan()">
+                <Link to="/signup" >
                   <i className="fa fa-user" />
                   Tài khoản
-                </a>
+                </Link>
                 {/* <div className="menuMember hide">
             <a href="nguoidung.html">Trang người dùng</a>
             <a onclick="if(window.confirm('Xác nhận đăng xuất ?')) logOut();">

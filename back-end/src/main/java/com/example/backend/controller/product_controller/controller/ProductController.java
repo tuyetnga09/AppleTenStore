@@ -107,11 +107,8 @@ public class ProductController {
     }
 
     @GetMapping("{id}")
-//    public Product detail(@PathVariable("id") Integer id){
-//        return productService.getOne(id);
-//    }
-    public CreateProduct detail(@PathVariable("id") Integer id){
-        return productService.getOne1(id);
+    public Product detail(@PathVariable("id") Integer id){
+        return productService.getOne(id);
     }
     @GetMapping("detail/{id}")
     public CreateProduct detailCreateProduct(@PathVariable("id") Integer id){
