@@ -15,7 +15,7 @@ export const returnDeleteAll = (page) => {
 };
 
 export const addImage = (image) => {
-  return httpClient.post(`/admin/admin/image/save`, image, config);
+  return httpClient.post(`/admin/image/save`, image, config);
 };
 
 export const update = (id, image) => {

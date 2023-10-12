@@ -31,7 +31,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl {
@@ -183,9 +185,6 @@ public class ProductServiceImpl {
         return productRepository.getAllPageDelete(pageable);
     }
 
-    public void update(Product updatedProduct, Integer id) {
-    }
-
 
     public Product getOne(Integer id) {
         return this.productRepository.findById(id).orElse(null);
@@ -242,5 +241,197 @@ public class ProductServiceImpl {
 
     public Page<Product> listProductByCategories(Pageable pageable, Integer id) {
         return productRepository.listProductByCategories(pageable, id);
+    }
+
+    public CreateProduct getOne1(Integer id) {
+        if (productRepository.existsById(id)) {
+            Product product = productRepository.findById(id).get();
+            List<SKU> skuList = skuRepositoty.findByProduct(product);
+            List<String> capacityList = skuList.stream().map(s -> s.getCapacity()).distinct().collect(Collectors.toList());
+            List<String> colorList = skuList.stream().map(s -> s.getColor()).distinct().collect(Collectors.toList());
+
+            CreateProduct editProduct = new CreateProduct();
+            editProduct.setCodeProduct(product.getCode());
+            editProduct.setNameProduct(product.getName());
+            editProduct.setPrice(product.getPrice());
+            editProduct.setDescription(product.getDescription());
+            editProduct.setBattery(product.getIdbattery().getName());
+            editProduct.setCapacity(capacityList);
+            editProduct.setCategory(product.getIdcategory().getName());
+            editProduct.setChip(product.getIdchip().getName());
+            editProduct.setColor(colorList);
+            editProduct.setManufacturer(product.getIdmanufacture().getName());
+            editProduct.setRam(product.getIdRam().getName());
+            editProduct.setScreen(product.getIdscreen().getName());
+            editProduct.setSize(product.getIdsize().getName());
+
+            return editProduct;
+        }
+        return null;
+    }
+
+    public String update(CreateProduct productUpdate, Integer id) {
+        //  productUpdate là đối tượng được FE truyền vào để cập nhật lại
+        if (productRepository.existsById(id)) {
+            Chip chip = chipRepository.findByName(productUpdate.getChip());
+            Battery battery = batteryRepository.findByName(productUpdate.getBattery());
+            Manufacture manufacture = manufacturerRepository.findByName(productUpdate.getManufacturer());
+            Ram ram = ramRepository.findByName(productUpdate.getRam());
+            Screen screen = screenRepository.findByName(productUpdate.getScreen());
+            Size size = sizeRepository.findByName(productUpdate.getSize());
+            Category category = categoryRepository.findByName(productUpdate.getCategory());
+            //Image image = imageRepository.findByLink(productUpdate.getImage());
+            List<String> capacityList = productUpdate.getCapacity(); // list capacity truyền vào để edit
+            List<String> colorList = productUpdate.getColor();  //list color truyền vào để edit
+
+            Product product = productRepository.findById(id).get(); // lấy sản phẩm theo id từ CSDL
+
+            List<SKU> skuList = skuRepositoty.findByProduct(product); // lisst sku theo product
+
+
+            product.setName(productUpdate.getNameProduct());
+            product.setDescription(productUpdate.getDescription());
+            product.setPrice(productUpdate.getPrice());
+            product.setIdchip(chip);
+            product.setIdbattery(battery);
+            product.setIdmanufacture(manufacture);
+            product.setIdscreen(screen);
+            product.setIdsize(size);
+            product.setIdRam(ram);
+            product.setIdcategory(category);
+            product.setDateUpdate(new Date());
+
+
+            // kkiểm tra xem dữ liệu đầu vào có giống với lúc đầu không
+            Boolean isCkeckCapacity = capacityList.containsAll(skuList.stream().map(s -> s.getCapacity()).collect(Collectors.toList()));
+            Boolean isCkeckColor = colorList.containsAll(skuList.stream().map(s -> s.getColor()).collect(Collectors.toList()));
+            //lisst String capacity
+            List<String> sizeCapacityList = skuList.stream().map(s -> s.getCapacity()).collect(Collectors.toList());
+            // lisst string color
+            List<String> sizeColorList = skuList.stream().map(s -> s.getColor()).collect(Collectors.toList());
+
+
+            if (isCkeckCapacity && isCkeckColor && capacityList.size() == sizeCapacityList.size() && colorList.size() == sizeColorList.size()) {
+                System.out.println(" ===================------------------------======================= ");
+
+            } else {
+
+                // tìm và xoá các sku bị xoá color ỏ capacity
+                int skuListSize = skuList.size();
+                List<String> capacityListDelete = new ArrayList<>(); // list capacity bị xoá khi product edit
+                List<String> colorListDelete = new ArrayList<>(); // list color bị xoá khi product edit
+
+                for (int i = 0; i < skuListSize; i++) {
+                    if (capacityList.contains(skuList.get(i).getCapacity().trim())) {
+                        System.out.println("------------1");
+                    } else {
+                        System.out.println("xxxxxx-------------------" + skuList.get(i).getCapacity().trim());
+
+                        capacityListDelete.add(skuList.get(i).getCapacity().trim());
+                    }
+                    //
+                    if (colorList.contains(skuList.get(i).getColor().trim())) {
+                        System.out.println("------------1");
+                    } else {
+                        System.out.println("xxxxxx-------------------" + skuList.get(i).getColor().trim());
+
+                        colorListDelete.add(skuList.get(i).getColor().trim());
+                    }
+                }
+                capacityListDelete = capacityListDelete.stream().distinct().collect(Collectors.toList());
+
+                for (String s : capacityListDelete) {
+                    System.out.println("------------1 ++++ : " + s.trim());
+
+                }
+
+                for (String s : colorListDelete) {
+                    System.out.println("------------1 ==== : " + s.trim());
+
+                }
+
+                if (capacityListDelete != null && colorListDelete.isEmpty()) {
+                    capacityListDelete.stream().distinct();
+                    // nếu capacityListDelete != null thì đã có capacity bị xoá đi khi edit product
+                    // colorListDelete == null là các color cũ vẫn đang giữ nguyên
+                    // -> lúc này cần xoá các bản ghi  SKU cũ có chữa capacityListDelete
+                    for (String capacity : capacityListDelete) {
+                        List<SKU> listSkuDelete = skuRepositoty.findByProductAndCapacity(product, capacity);
+                        if (!listSkuDelete.isEmpty()) {
+                            for (int i = 0; i < listSkuDelete.size(); i++) {
+                                skuRepositoty.deleteById(listSkuDelete.get(i).getId());
+                                System.out.println("------------1 ok");
+
+                            }
+                        }
+                    }
+
+                }
+                if (capacityListDelete.isEmpty() && colorListDelete != null) {
+                    // nếu colorListDelete != null thì đã có color bị xoá đi khi edit product
+                    // capacityListDelete == null là các capacity cũ vẫn đang giữ nguyên
+                    // -> lúc này cần xoá các bản ghi  SKU cũ có chữa colorListDelete
+                    for (String color : colorListDelete) {
+                        List<SKU> listSkuDelete = skuRepositoty.findByProductAndColor(product, color);
+                        if (!listSkuDelete.isEmpty()) {
+                            for (int i = 0; i < listSkuDelete.size(); i++) {
+                                skuRepositoty.deleteById(listSkuDelete.get(i).getId());
+                                System.out.println("------------2 ok");
+
+                            }
+
+                        }
+                    }
+
+                }
+                if (capacityListDelete != null && colorListDelete != null) {
+                    // nếu colorListDelete != null thì đã có color bị xoá đi khi edit product
+                    // capacityListDelete != null là các capacity bị xoá đi khi edit product
+                    // -> lúc này cần xoá các bản ghi  SKU cũ có chữa colorListDelete vaf capacityListDelete
+                    for (String capacity : sizeCapacityList) {
+                        for (String color : colorListDelete) {
+                            SKU skuDelete = skuRepositoty.findByProductAndCapacityAndColor(product, capacity, color);
+                            if (skuDelete != null) {
+                                skuRepositoty.deleteById(skuDelete.getId());
+                            }
+                        }
+
+                    }
+                }
+
+                if (capacityList != null && colorList != null) {
+                    skuList.clear(); // xoá rỗng list
+                    for (String colorName : colorList) {
+                        for (String capacityName : capacityList) {
+                            SKU skuCheck = skuRepositoty.findByProductAndCapacityAndColor(product, capacityName, colorName);
+                            if (skuCheck != null) {
+                                skuList.add(skuCheck); // add sku vaof lisst để chút cập nhật
+                                // skuCheck != null là skuCheck đã tồn tại nên bỏ qua, không cần cập nhật
+                                continue;
+                            }
+                            Color color = colorRepository.findByName(colorName); // lấy ra color theo name
+                            Capacity capacity = capacityRepository.findByName(capacityName);// lấy ra capacity theo name
+
+                            if (color != null && capacity != null) {
+                                SKU sku = new SKU();
+                                sku.setColor(color.getName());
+                                sku.setCapacity(capacity.getName());
+                                sku.setQuantity(0);  //các sku chưa có imei mặc đinh là 0
+                                sku.setProduct(product);
+                                skuList.add(sku);
+                            }
+                        }
+                    }
+                }
+            }
+
+//            product.setIdimage(image);
+            product.setSkus(skuList);
+            product.setQuantity(skuList.size());
+            productRepository.save(product);
+            return "Cập Nhật Thành Công.";
+        } else {
+            return "Cập Nhật Thất Bại! - Sản Phẩm Không Tồn Tại.";
+        }
     }
 }

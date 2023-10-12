@@ -5,6 +5,7 @@ import {
 } from "../../../service/product.service";
 import Pagination from "./Paging";
 import queryString from "query-string";
+
 import {
   Typography,
   Row,
@@ -21,12 +22,22 @@ import {
   Dropdown,
   Menu,
   Button,
+  theme,
+  Layout,
 } from "antd";
 import {
   SearchOutlined,
   CloseCircleOutlined,
   FormOutlined,
   MoreOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined,
+  DashboardOutlined,
+  AppstoreAddOutlined,
+  GiftOutlined,
+  LogoutOutlined,
+  ShopOutlined,
 } from "@ant-design/icons";
 import { StyledStoreProducts } from "./Interface/index";
 import { NumberField } from "@refinedev/antd";
@@ -39,12 +50,16 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
 import "primereact/resources/primereact.css"; // core css
 import { Toast } from "primereact/toast";
-import AvatarProduct from "./AvatarProduct";
 import { QueryClient, QueryClientProvider } from "react-query";
 const queryClient = new QueryClient();
+const { Header, Sider, Content } = Layout;
 
 const { Text, Paragraph } = Typography;
 const StoreProducts = ({}) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
   const toast = useRef(null);
 
   const acceptReturn = (id) => {
@@ -156,45 +171,90 @@ const StoreProducts = ({}) => {
 
   return (
     <>
-      <Toast ref={toast} />
-      <ConfirmDialog />
-      <QueryClientProvider client={queryClient}>
-        <main>
-          {/* <aside>
+      <Layout>
+        <Sider trigger={null} collapsible collapsed={collapsed}>
+          <div className="demo-logo-vertical" />
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["4"]}>
+            <Menu.Item key="1" icon={<DashboardOutlined />}>
+              <Link to="/dashboard">Dashboard</Link>
+            </Menu.Item>
+            <Menu.Item key="2" icon={<ShopOutlined />}>
+              <Link to="/orders">Orders</Link>
+            </Menu.Item>
+            <Menu.Item key="3" icon={<UserOutlined />}>
+              <Link to="/users">Users</Link>
+            </Menu.Item>
+            <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
+              <Link to="/product">Product</Link>
+            </Menu.Item>
+            <Menu.Item key="5" icon={<GiftOutlined />}>
+              <Link to="/voucher">Voucher</Link>
+            </Menu.Item>
+            <Menu.Item key="6" icon={<LogoutOutlined />}>
+              <Link to="/logout">Logout</Link>
+            </Menu.Item>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Header style={{ padding: 0, background: colorBgContainer }}>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: "16px",
+                width: 64,
+                height: 64,
+              }}
+            />
+          </Header>
+          <Content
+            style={{
+              margin: "24px 16px",
+              padding: 24,
+              minHeight: 280,
+              background: colorBgContainer,
+            }}
+          >
+            <Toast ref={toast} />
+            <ConfirmDialog />
+            <QueryClientProvider client={queryClient}>
+              <main>
+                {/* <aside>
               <Navbar expand="lg" className="bg-body-tertiary">
                 <Container>
                   <Navbar.Brand href="#">Navbar</Navbar.Brand>
                 </Container>
               </Navbar>
             </aside> */}
-          <section>
-            <Form
-              style={{ marginTop: "24px", marginLeft: "30px" }}
-              // {...searchFormProps}
-              // form={searchForm}
-              // onValuesChange={() => onSearch()}
-            >
-              <Row gutter={[16, 16]}>
-                <Col xs={24} sm={18}>
-                  <StyledStoreProducts>
-                    <Text style={{ fontSize: "24px" }} strong>
-                      {/* {t("stores.storeProducts")} */}
-                      PRODUCT
-                    </Text>
-                    <Form.Item name="name" noStyle>
-                      <Input
-                        style={{ width: "300px" }}
-                        placeholder={"Product Search"}
-                        suffix={<SearchOutlined />}
-                        onChange={handleChange}
-                        name="key"
-                      />
-                    </Form.Item>
-                    <Link to="/product/display">
-                      <Button>Back</Button>
-                    </Link>
-                  </StyledStoreProducts>
-                  {/* <AntdList
+                <section>
+                  <Form
+                    style={{ marginTop: "24px", marginLeft: "30px" }}
+                    // {...searchFormProps}
+                    // form={searchForm}
+                    // onValuesChange={() => onSearch()}
+                  >
+                    <Row gutter={[16, 16]}>
+                      <Col xs={24} sm={18}>
+                        <StyledStoreProducts>
+                          <Text style={{ fontSize: "24px" }} strong>
+                            {/* {t("stores.storeProducts")} */}
+                            ALL PRODUCT DELETE
+                          </Text>
+                          <Form.Item name="name" noStyle>
+                            <Input
+                              style={{ width: "300px" }}
+                              placeholder={"Product Search"}
+                              suffix={<SearchOutlined />}
+                              onChange={handleChange}
+                              name="key"
+                            />
+                          </Form.Item>
+                          <Link to="/product">
+                            <Button>Back</Button>
+                          </Link>
+                        </StyledStoreProducts>
+                        {/* <AntdList
                       grid={{
                         gutter: 8,
                         xs: 1,
@@ -219,114 +279,113 @@ const StoreProducts = ({}) => {
                           // editShow={showEdit}
                         />
                       )} */}
-                  {/* /> */}
-                </Col>
-              </Row>
+                        {/* /> */}
+                      </Col>
+                    </Row>
 
-              <Row>
-                {display.map((item) => {
-                  return (
-                    <Col key={item.id}>
-                      <Card
-                        style={{
-                          margin: "8px",
-                          opacity: item.stock <= 0 ? 0.5 : 1,
-                        }}
-                        bodyStyle={{ height: "500px" }}
-                      >
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "10px",
-                            right: "5px",
-                          }}
-                        >
-                          <Dropdown
-                            overlay={
-                              <Menu mode="vertical">
-                                <Menu.Item
-                                  key="1"
-                                  disabled={item.stock <= 0}
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <CloseCircleOutlined
-                                      style={{
-                                        color: "red",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => confirm2(item.id)}
-                                >
-                                  Return
-                                </Menu.Item>
-                              </Menu>
-                            }
-                            trigger={["click"]}
-                          >
-                            <MoreOutlined
+                    <Row>
+                      {display.map((item) => {
+                        return (
+                          <Col key={item.id}>
+                            <Card
                               style={{
-                                fontSize: 24,
+                                margin: "8px",
+                                opacity: item.stock <= 0 ? 0.5 : 1,
                               }}
-                            />
-                          </Dropdown>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
-                            height: "100%",
-                          }}
-                        >
-                          <div style={{ textAlign: "center" }}>
-                            {/* <Avatar
-                              size={128}
-                              src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                            /> */}
-                            <AvatarProduct product={item.id}></AvatarProduct>
-                          </div>
-                          <Divider />
-                          <Paragraph
-                            ellipsis={{ rows: 2, tooltip: true }}
-                            style={{
-                              fontSize: "18px",
-                              fontWeight: 800,
-                              marginBottom: "8px",
-                            }}
-                          >
-                            {item.name}
-                          </Paragraph>
-                          <Paragraph
-                            ellipsis={{ rows: 3, tooltip: true }}
-                            style={{ marginBottom: "8px" }}
-                          >
-                            {item.description}
-                          </Paragraph>
-                          <Text
-                            className="item-id"
-                            style={{
-                              fontSize: "18px",
-                              fontWeight: 700,
-                              color: "#999999",
-                            }}
-                          >
-                            #{item.id}
-                          </Text>
-                          <NumberField
-                            style={{
-                              fontSize: "24px",
-                              fontWeight: 500,
-                              marginBottom: "8px",
-                            }}
-                            options={{
-                              currency: "VND",
-                              style: "currency",
-                            }}
-                            value={item.price}
-                          />
-                          {/* {updateStock && (
+                              bodyStyle={{ height: "500px" }}
+                            >
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "10px",
+                                  right: "5px",
+                                }}
+                              >
+                                <Dropdown
+                                  overlay={
+                                    <Menu mode="vertical">
+                                      <Menu.Item
+                                        key="1"
+                                        disabled={item.stock <= 0}
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <CloseCircleOutlined
+                                            style={{
+                                              color: "red",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() => confirm2(item.id)}
+                                      >
+                                        Return
+                                      </Menu.Item>
+                                    </Menu>
+                                  }
+                                  trigger={["click"]}
+                                >
+                                  <MoreOutlined
+                                    style={{
+                                      fontSize: 24,
+                                    }}
+                                  />
+                                </Dropdown>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
+                                  height: "100%",
+                                }}
+                              >
+                                <div style={{ textAlign: "center" }}>
+                                  <Avatar
+                                    size={128}
+                                    src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                  />
+                                </div>
+                                <Divider />
+                                <Paragraph
+                                  ellipsis={{ rows: 2, tooltip: true }}
+                                  style={{
+                                    fontSize: "18px",
+                                    fontWeight: 800,
+                                    marginBottom: "8px",
+                                  }}
+                                >
+                                  {item.name}
+                                </Paragraph>
+                                <Paragraph
+                                  ellipsis={{ rows: 3, tooltip: true }}
+                                  style={{ marginBottom: "8px" }}
+                                >
+                                  {item.description}
+                                </Paragraph>
+                                <Text
+                                  className="item-id"
+                                  style={{
+                                    fontSize: "18px",
+                                    fontWeight: 700,
+                                    color: "#999999",
+                                  }}
+                                >
+                                  #{item.id}
+                                </Text>
+                                <NumberField
+                                  style={{
+                                    fontSize: "24px",
+                                    fontWeight: 500,
+                                    marginBottom: "8px",
+                                  }}
+                                  options={{
+                                    currency: "VND",
+                                    style: "currency",
+                                  }}
+                                  value={item.price}
+                                />
+                                {/* {updateStock && (
                             <div id="stock-number">
                               <InputNumber
                                 size="large"
@@ -338,52 +397,39 @@ const StoreProducts = ({}) => {
                               />
                             </div>
                           )} */}
-                        </div>
-                      </Card>
-                    </Col>
-                  );
-                })}
-              </Row>
+                              </div>
+                            </Card>
+                          </Col>
+                        );
+                      })}
+                    </Row>
 
-              <Row>
-                <Col xs={0} sm={6}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      height: "40px",
-                      marginBottom: "16px",
-                    }}
-                  >
-                    <Text style={{ fontWeight: 500 }}>
-                      {/* {t("stores.tagFilterDescription")} */}
-                    </Text>
-                  </div>
-                  <Form.Item name="categories">
-                    {/* <ProductCategoryFilter /> */}
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Form>
-          </section>
-          <section>
-            <Modal
-              // {...modalProps}
-              visible={isModalVisible}
-              onCancel={handleCancel}
-              width={1000}
-              footer={null}
-              bodyStyle={{ minHeight: "650px" }}
-            >
-              <CreateProduct />
-            </Modal>
-            <Pagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-            />
-          </section>
-        </main>
-      </QueryClientProvider>
+                    <Row>
+                      <Col xs={0} sm={6}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            height: "40px",
+                            marginBottom: "16px",
+                          }}
+                        >
+                          <Text style={{ fontWeight: 500 }}>
+                            {/* {t("stores.tagFilterDescription")} */}
+                          </Text>
+                        </div>
+                        <Form.Item name="categories">
+                          {/* <ProductCategoryFilter /> */}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Form>
+                </section>
+              </main>
+            </QueryClientProvider>
+          </Content>
+        </Layout>
+      </Layout>
     </>
   );
 };

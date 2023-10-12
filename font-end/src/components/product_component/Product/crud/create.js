@@ -3,7 +3,10 @@ import { useTranslate, useApiUrl } from "@refinedev/core";
 import { Create, getValueFromEvent } from "@refinedev/antd";
 import { add } from "../../../../service/product.service";
 import { addImage } from "../../../../service/image.service";
-import { readImportImei } from "../../../../service/imei.service";
+import {
+  readImportImei,
+  ImportImeiExcel,
+} from "../../../../service/imei.service";
 import QRScanner from "./QRScanner";
 import { Option } from "antd/es/mentions";
 import { importImei } from "../../../../service/imei.service";
@@ -12,6 +15,7 @@ import ExportImei from "./ExportImei";
 import * as XLSX from "xlsx";
 
 import {
+  readAll,
   readAllColor,
   readAllChip,
   readAllBattery,
@@ -35,6 +39,7 @@ import {
   Upload,
   Button,
   Modal,
+  notification,
 } from "antd";
 import { Link, useHistory } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
@@ -47,7 +52,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import queryString from "query-string";
 
-const Test = () => {
+const Test = (setDisplay, setPagination) => {
   const { Text } = Typography;
   const history = useHistory();
   const t = useTranslate();
@@ -68,7 +73,7 @@ const Test = () => {
     chip: "",
     color: [],
     capacities: [],
-    manufacture: "",
+    manufacturer: "",
     ram: "",
     screen: "",
     size: "",
@@ -99,7 +104,7 @@ const Test = () => {
   const handleInputChangeManufacturer = (value) => {
     setProductData({
       ...productData,
-      manufacture: value,
+      manufacturer: value,
     });
   };
   const handleInputChangeCapacity = (value) => {
@@ -147,11 +152,16 @@ const Test = () => {
     setList(value);
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-    const items = { ...productData };
+  const [filters, setFilters] = useState({
+    page: 0,
+    key: "",
+  });
 
+  async function handleSubmit(event) {
     try {
+      event.preventDefault();
+      const items = { ...productData };
+
       // Thực hiện thêm sản phẩm
       await add(items);
 
@@ -159,22 +169,18 @@ const Test = () => {
       const response = await readAllProductNew();
       setDisplaySku(response.data);
       console.log("Dữ liệu sản phẩm:", items);
+      notification.success({
+        message: "Add product successfully",
+        // description: "Add product successfully",
+      });
       for (let i = 0; i < list.fileList.length; i++) {
-        form.append("file", list.fileList[i].originFileObj);
+        await form.append("file", list.fileList[i].originFileObj);
       }
-      form.append("name", items.nameProduct);
+      await form.append("name", items.nameProduct);
       await addImage(form);
     } catch (error) {
       console.log(error);
     }
-
-    // for (let i = 0; i < list.fileList.length; i++) {
-    //   form.append("file", list.fileList[i].originFileObj);
-    // }
-    // form.append("name", items.nameProduct);
-    // // await
-    // addImage(form);
-    // history.push("/product/display");
   }
 
   const [displayColor, setDisplayColor] = useState([]);
@@ -267,25 +273,35 @@ const Test = () => {
   //set id SKU
   const [displayIdSku, setIdSku] = useState(null); // Khởi tạo là null
 
+  // Khởi tạo là null
+  const [isCheckImei, setCheckImei] = useState([]);
+
   // mở modal để import imei
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
 
   // Hàm để hiển thị Modal khi cần
-  const showModal = (sku) => {
-    setIdSku(sku.id);
-    setIsModalVisible(true);
-  };
+  async function showModal(sku) {
+    await setIdSku(sku.id);
+    await setIsModalVisible(true);
+    await setExcelData([]);
+    await setCheckImei([]);
+    await setFile([]);
+  }
 
   // Hàm để ẩn Modal
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setExcelData([]);
-    setIdSku([]);
-  };
+  async function handleCancel() {
+    await setIsModalVisible(false);
+    await setExcelData([]);
+    await setIdSku([]);
+    await setCheckImei([]);
+    // handleFileUpload([]);
+    await setFile([]);
+  }
 
   const [excelData, setExcelData] = useState(null); // Khởi tạo là null
 
   const handleFileUpload = (event) => {
+    event.preventDefault();
     const file = event.target.files[0];
     setFile(event.target.files[0]);
 
@@ -298,37 +314,46 @@ const Test = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         setExcelData(jsonData); // Cập nhật dữ liệu khi tệp đã được chọn
-        console.log("hihhiiihi ------------------- " + jsonData);
       };
       reader.readAsBinaryString(file);
     }
   };
+
   const handleImportImei = async (event) => {
     event.preventDefault();
-    if (!displayfile) {
+    if (!displayfile || displayfile == null || displayfile.length == 0) {
       console.error("Vui lòng chọn một file trước khi import.");
-      return;
-    }
-    console.log(displayfile);
-    console.log(displayIdSku);
-    const formData = new FormData();
-    formData.append("file", displayfile);
-    await readImportImei(formData, displayIdSku)
-      .then((response) => {
-        console.log("hihihihi ------------- " + response.data);
-      })
-      .catch((error) => {
-        console.error(error);
+      notification.error({
+        message: "Vui lòng chọn một file trước khi import.",
       });
+      return;
+    } else {
+      console.log(displayfile);
+      console.log(displayIdSku);
+      const formData = new FormData();
+      formData.append("file", displayfile);
 
-    // Load lại bảng SKU
-    try {
-      const response = await readAllProductNew();
-      setDisplaySku(response.data);
-      console.log("hihihihi 222 ------------- " + response.data);
-      setIsModalVisible(false);
-    } catch (error) {
-      console.log(error);
+      try {
+        const response = await ImportImeiExcel(formData, displayIdSku);
+        await setCheckImei(response.data);
+        if (response.data.length === 0) {
+          // Load lại bảng SKU
+          const response = await readAllProductNew();
+          setDisplaySku(response.data);
+          setIsModalVisible(false);
+          notification.success({
+            message: "Add Imei successfully",
+            // description: "Add product successfully",
+          });
+        } else {
+          notification.error({
+            message: "Add Imei failed",
+            // description: "Add product successfully",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -405,7 +430,7 @@ const Test = () => {
             </Form.Item>
             <Form.Item
               label={t("Name")}
-              name="nameProduct"
+              // name="nameProduct"
               rules={[{ required: true }]}
             >
               <Input
@@ -566,7 +591,7 @@ const Test = () => {
 
             <Form.Item
               label={t("Manufacture")}
-              name={["manufacture", "id"]}
+              name={["manufacturer", "id"]}
               rules={[
                 {
                   required: true,
@@ -574,13 +599,15 @@ const Test = () => {
               ]}
             >
               <Select
-                name="manufacture"
-                value={productData.manufacture}
+                name="manufacturer"
+                value={productData.manufacturer}
                 onChange={handleInputChangeManufacturer}
               >
-                {displayManufacture.map((manufacture) => {
+                {displayManufacture.map((manufacturer) => {
                   return (
-                    <Option value={manufacture.name}>{manufacture.name}</Option>
+                    <Option value={manufacturer.name}>
+                      {manufacturer.name}
+                    </Option>
                   );
                 })}
               </Select>
@@ -630,12 +657,6 @@ const Test = () => {
                 })}
               </Select>
             </Form.Item>
-            {/*<Form.Item label={t("Active")} name="isActive">*/}
-            {/*  <Radio.Group>*/}
-            {/*    <Radio value={true}>Enable</Radio>*/}
-            {/*    <Radio value={false}>Disable</Radio>*/}
-            {/*  </Radio.Group>*/}
-            {/*</Form.Item>*/}
           </Form>
         </Create>
       </form>
@@ -680,6 +701,7 @@ const Test = () => {
           </table>
         </div>
       </section>
+
       <section>
         <Modal
           // {...modalProps}
@@ -713,12 +735,44 @@ const Test = () => {
                 </div>
               </div>
             </form>
-
-            {excelData ? (
+            {isCheckImei != null && isCheckImei.length > 0 ? (
               <div className="table-wrap">
+                <h2>Imei Trung Lap</h2>
+                <table class="table">
+                  <thead class="table-dark">
+                    <th>STT</th>
+                    <th>PRODUCT</th>
+                    <th>COLOR</th>
+                    <th>CAPACITY</th>
+                    <th>IMEI</th>
+                    <th>PRICE</th>
+                  </thead>
+                  <tbody>
+                    {isCheckImei.map((s, index) => {
+                      return (
+                        <tr className="alert" role="alert" key={s.id}>
+                          <td>{index + 1}</td>
+                          <td>{s.nameProduct}</td>
+                          <td>{s.color}</td>
+                          <td>{s.capacity}</td>
+                          <td>{s.codeImei}</td>
+                          <td>{s.price}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p></p>
+            )}
+
+            {excelData != null && excelData.length > 0 ? (
+              <div className="table-wrap">
+                <h2>Imei Doc Tu File Excel Vui Long Check Lai Truoc Khi Luu</h2>
                 <table class="table">
                   <thead>
-                    <tr>Kiểm Tra Lại Imei</tr>
+                    <tr></tr>
                   </thead>
                   <tbody>
                     {excelData.map((row, rowIndex) => (
