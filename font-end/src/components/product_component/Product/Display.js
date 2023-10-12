@@ -41,10 +41,13 @@ import {
 import { StyledStoreProducts } from "./Interface/index";
 import { NumberField } from "@refinedev/antd";
 import CreateProduct from "./crud/create";
+import UpdateProduct from "./crud/edit";
 // import "../css/index.css";
 // import Container from "react-bootstrap/Container";
 // import Navbar from "react-bootstrap/Navbar";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
+
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
@@ -115,6 +118,24 @@ const StoreProducts = ({}) => {
     setIsModalVisible(false);
   };
 
+  // nut edit update
+  const [isModalVisibleUpdate, setIsModalVisibleUpdate] = useState(false); // Trạng thái hiển thị Modal
+  // Hàm để hiển thị Modal khi cần
+  // const showModalEdit = () => {
+  //   setIsModalVisibleUpdate(true);
+  // };
+  const openDetailModal = (product) => {
+    setSelectedProduct(product);
+    setIsModalVisibleUpdate(true);
+  };
+
+  // Hàm để ẩn Modal
+  const handleCancelEdit = () => {
+    setIsModalVisibleUpdate(false);
+  };
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   // const [item, setItem] = useState({
   //   id: 1,
   //   name: "Iphone 11",
@@ -141,19 +162,19 @@ const StoreProducts = ({}) => {
   });
 
   const fileType =
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
   useEffect(() => {
     const paramsString = queryString.stringify(filters);
     readAll(paramsString)
-        .then((response) => {
-          console.log(response.data);
-          setDisplay(response.data.content);
-          setPagination(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        console.log(response.data);
+        setDisplay(response.data.content);
+        setPagination(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   }, [filters]);
 
   function handleChange(event) {
@@ -180,93 +201,114 @@ const StoreProducts = ({}) => {
     });
   }
 
+  // sắp xếp theo giá
+  async function ascendingPrice() {}
+
   return (
-      <>
+    <>
+      <Layout>
+        <Sider trigger={null} collapsible collapsed={collapsed}>
+          <div className="demo-logo-vertical" />
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["4"]}>
+            <Menu.Item key="1" icon={<DashboardOutlined />}>
+              <Link to="/dashboard">Dashboard</Link>
+            </Menu.Item>
+            <Menu.Item key="2" icon={<ShopOutlined />}>
+              <Link to="/orders">Orders</Link>
+            </Menu.Item>
+            <Menu.Item key="3" icon={<UserOutlined />}>
+              <Link to="/users">Users</Link>
+            </Menu.Item>
+            <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
+              <Link to="/product">Product</Link>
+            </Menu.Item>
+            <Menu.Item key="5" icon={<GiftOutlined />}>
+              <Link to="/voucher">Voucher</Link>
+            </Menu.Item>
+            <Menu.Item key="6" icon={<LogoutOutlined />}>
+              <Link to="/logout">Logout</Link>
+            </Menu.Item>
+          </Menu>
+        </Sider>
         <Layout>
-          <Sider trigger={null} collapsible collapsed={collapsed}>
-            <div className="demo-logo-vertical" />
-            <Menu theme="dark" mode="inline" defaultSelectedKeys={["4"]}>
-              <Menu.Item key="1" icon={<DashboardOutlined />}>
-                <Link to="/dashboard">Dashboard</Link>
-              </Menu.Item>
-              <Menu.Item key="2" icon={<ShopOutlined />}>
-                <Link to="/orders">Orders</Link>
-              </Menu.Item>
-              <Menu.Item key="3" icon={<UserOutlined />}>
-                <Link to="/users">Users</Link>
-              </Menu.Item>
-              <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-                <Link to="/product">Product</Link>
-              </Menu.Item>
-              <Menu.Item key="5" icon={<GiftOutlined />}>
-                <Link to="/voucher">Voucher</Link>
-              </Menu.Item>
-              <Menu.Item key="6" icon={<LogoutOutlined />}>
-                <Link to="/logout">Logout</Link>
-              </Menu.Item>
-            </Menu>
-          </Sider>
-          <Layout>
-            <Header style={{ padding: 0, background: colorBgContainer }}>
-              <Button
-                  type="text"
-                  icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                  onClick={() => setCollapsed(!collapsed)}
-                  style={{
-                    fontSize: "16px",
-                    width: 64,
-                    height: 64,
-                  }}
-              />
-            </Header>
-            <Content
-                style={{
-                  margin: "24px 16px",
-                  padding: 24,
-                  minHeight: 280,
-                  background: colorBgContainer,
-                }}
-            >
-              <Toast ref={toast} />
-              <ConfirmDialog />
-              <QueryClientProvider client={queryClient}>
-                <main>
-                  {/* <aside>
+          <Header style={{ padding: 0, background: colorBgContainer }}>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: "16px",
+                width: 64,
+                height: 64,
+              }}
+            />
+          </Header>
+          <Content
+            style={{
+              margin: "24px 16px",
+              padding: 24,
+              minHeight: 280,
+              background: colorBgContainer,
+            }}
+          >
+            <Toast ref={toast} />
+            <ConfirmDialog />
+            <QueryClientProvider client={queryClient}>
+              <main>
+                {/* <aside>
               <Navbar expand="lg" className="bg-body-tertiary">
                 <Container>
                   <Navbar.Brand href="#">Navbar</Navbar.Brand>
                 </Container>
               </Navbar>
             </aside> */}
-                  <section>
-                    <Form
-                        style={{ marginTop: "24px", marginLeft: "30px" }}
-                        // {...searchFormProps}
-                        // form={searchForm}
-                        // onValuesChange={() => onSearch()}
-                    >
-                      <Row gutter={[16, 16]}>
-                        <Col xs={24} sm={18}>
-                          <StyledStoreProducts>
-                            <Text style={{ fontSize: "24px" }} strong>
-                              {/* {t("stores.storeProducts")} */}
-                              PRODUCT
-                            </Text>
-                            <Form.Item name="name" noStyle>
-                              <Input
-                                  style={{ width: "300px" }}
-                                  placeholder={"Product Search"}
-                                  suffix={<SearchOutlined />}
-                                  onChange={handleChange}
-                                  name="key"
-                              />
-                            </Form.Item>
-                            <Button onClick={showModal}>AddProduct</Button>
-                            <Link to="/product/displayDelete">
-                              <Button>Deleted</Button>
-                            </Link>
-                          </StyledStoreProducts>
-                          {/* <AntdList
+                <section>
+                  <Form
+                    style={{ marginTop: "24px", marginLeft: "30px" }}
+                    // {...searchFormProps}
+                    // form={searchForm}
+                    // onValuesChange={() => onSearch()}
+                  >
+                    <Row gutter={[16, 16]}>
+                      <Col xs={24} sm={18}>
+                        <StyledStoreProducts>
+                          <Text style={{ fontSize: "24px" }} strong>
+                            {/* {t("stores.storeProducts")} */}
+                            PRODUCT
+                          </Text>
+                          <Form.Item name="name" noStyle>
+                            <Input
+                              style={{ width: "300px" }}
+                              placeholder={"Product Search"}
+                              suffix={<SearchOutlined />}
+                              onChange={handleChange}
+                              name="key"
+                            />
+                          </Form.Item>
+                          <Button onClick={showModal}>AddProduct</Button>
+                          <Link to="/product/displayDelete">
+                            <Button>Deleted</Button>
+                          </Link>
+
+                          <div className="sortFilter dropdown">
+                            {/* <Button className="dropbtn">Sắp xếp</Button> */}
+                            <Button>Sắp xếp</Button>
+                            <div
+                              class="dropdown-content"
+                              // onClick={() => showContainProducts()}
+                            >
+                              <Link
+                                to={`/product`}
+                                onClick={() => ascendingPrice()}
+                              >
+                                Giá tăng dần
+                              </Link>
+                              <Link to={`/product`}>Giá giảm dần</Link>
+                            </div>
+                          </div>
+                        </StyledStoreProducts>
+
+                        {/* <AntdList
                       grid={{
                         gutter: 8,
                         xs: 1,
@@ -291,125 +333,127 @@ const StoreProducts = ({}) => {
                           // editShow={showEdit}
                         />
                       )} */}
-                          {/* /> */}
-                        </Col>
-                      </Row>
+                        {/* /> */}
+                      </Col>
+                    </Row>
 
-                      <Row>
-                        {display.map((item) => {
-                          return (
-                              <Col key={item.id}>
-                                <Card
-                                    style={{
-                                      margin: "8px",
-                                      opacity: item.stock <= 0 ? 0.5 : 1,
-                                    }}
-                                    bodyStyle={{ height: "500px" }}
-                                >
-                                  <div
-                                      style={{
-                                        position: "absolute",
-                                        top: "10px",
-                                        right: "5px",
-                                      }}
-                                  >
-                                    <Dropdown
-                                        overlay={
-                                          <Menu mode="vertical">
-                                            <Menu.Item
-                                                key="1"
-                                                disabled={item.stock <= 0}
-                                                style={{
-                                                  fontWeight: 500,
-                                                }}
-                                                icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                        color: "red",
-                                                      }}
-                                                  />
-                                                }
-                                                onClick={() => confirm2(item.id)}
-                                                // onClick={() => remove(item.id)}
-                                            >
-                                              Delete
-                                            </Menu.Item>
-                                            <Menu.Item
-                                                key="2"
-                                                style={{
-                                                  fontWeight: 500,
-                                                }}
-                                                icon={
-                                                  <FormOutlined
-                                                      style={{
-                                                        color: "green",
-                                                      }}
-                                                  />
-                                                }
-                                                // onClick={() => editShow(item.id)}
-                                            >
-                                              Edit
-                                            </Menu.Item>
-                                          </Menu>
-                                        }
-                                        trigger={["click"]}
-                                    >
-                                      <MoreOutlined
-                                          style={{
-                                            fontSize: 24,
-                                          }}
-                                      />
-                                    </Dropdown>
-                                  </div>
-                                  <div
-                                      style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        justifyContent: "space-between",
-                                        height: "100%",
-                                      }}
-                                  >
-                                    <AvatarProduct product={item.id}></AvatarProduct>
-                                    <Divider />
-                                    <Paragraph
-                                        ellipsis={{ rows: 2, tooltip: true }}
+                    <Row>
+                      {display.map((item) => {
+                        return (
+                          <Col key={item.id}>
+                            <Card
+                              style={{
+                                margin: "8px",
+                                opacity: item.stock <= 0 ? 0.5 : 1,
+                              }}
+                              bodyStyle={{ height: "500px" }}
+                            >
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "10px",
+                                  right: "5px",
+                                }}
+                              >
+                                <Dropdown
+                                  overlay={
+                                    <Menu mode="vertical">
+                                      <Menu.Item
+                                        key="1"
+                                        disabled={item.stock <= 0}
                                         style={{
-                                          fontSize: "18px",
-                                          fontWeight: 800,
-                                          marginBottom: "8px",
-                                        }}
-                                    >
-                                      {item.name}
-                                    </Paragraph>
-                                    <Paragraph
-                                        ellipsis={{ rows: 3, tooltip: true }}
-                                        style={{ marginBottom: "8px" }}
-                                    >
-                                      {item.description}
-                                    </Paragraph>
-                                    <Text
-                                        className="item-id"
-                                        style={{
-                                          fontSize: "18px",
-                                          fontWeight: 700,
-                                          color: "#999999",
-                                        }}
-                                    >
-                                      #{item.id}
-                                    </Text>
-                                    <NumberField
-                                        style={{
-                                          fontSize: "24px",
                                           fontWeight: 500,
-                                          marginBottom: "8px",
                                         }}
-                                        options={{
-                                          currency: "VND",
-                                          style: "currency",
+                                        icon={
+                                          <CloseCircleOutlined
+                                            style={{
+                                              color: "red",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() => confirm2(item.id)}
+                                        // onClick={() => remove(item.id)}
+                                      >
+                                        Delete
+                                      </Menu.Item>
+                                      <Menu.Item
+                                        key="2"
+                                        style={{
+                                          fontWeight: 500,
                                         }}
-                                        value={item.price}
-                                    />
-                                    {/* {updateStock && (
+                                        icon={
+                                          <FormOutlined
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() => openDetailModal(item)}
+                                      >
+                                        Edit
+                                      </Menu.Item>
+                                    </Menu>
+                                  }
+                                  trigger={["click"]}
+                                >
+                                  <MoreOutlined
+                                    style={{
+                                      fontSize: 24,
+                                    }}
+                                  />
+                                </Dropdown>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  justifyContent: "space-between",
+                                  height: "100%",
+                                }}
+                              >
+                                <AvatarProduct
+                                  product={item.id}
+                                ></AvatarProduct>
+                                <Divider />
+                                <Paragraph
+                                  ellipsis={{ rows: 2, tooltip: true }}
+                                  style={{
+                                    fontSize: "18px",
+                                    fontWeight: 800,
+                                    marginBottom: "8px",
+                                  }}
+                                >
+                                  {item.name}
+                                </Paragraph>
+                                <Paragraph
+                                  ellipsis={{ rows: 3, tooltip: true }}
+                                  style={{ marginBottom: "8px" }}
+                                >
+                                  {item.description}
+                                </Paragraph>
+                                <Text
+                                  className="item-id"
+                                  style={{
+                                    fontSize: "18px",
+                                    fontWeight: 700,
+                                    color: "#999999",
+                                  }}
+                                >
+                                  #{item.id}
+                                </Text>
+                                <NumberField
+                                  style={{
+                                    fontSize: "24px",
+                                    fontWeight: 500,
+                                    marginBottom: "8px",
+                                  }}
+                                  options={{
+                                    currency: "VND",
+                                    style: "currency",
+                                  }}
+                                  value={item.price}
+                                />
+                                {/* {updateStock && (
                             <div id="stock-number">
                               <InputNumber
                                 size="large"
@@ -421,67 +465,79 @@ const StoreProducts = ({}) => {
                               />
                             </div>
                           )} */}
-                                    <span>
+                                <span>
                                   <b>Quantity:</b> {item.quantity}
-                                      <Link to="/imei/getAll">
+                                  <Link to="/imei/getAll">
                                     <FaFileExcel
-                                        style={{
-                                          float: "right",
-                                          color: "green",
-                                        }}
+                                      style={{
+                                        float: "right",
+                                        color: "green",
+                                      }}
                                     />
                                   </Link>
                                 </span>
-                                  </div>
-                                </Card>
-                              </Col>
-                          );
-                        })}
-                      </Row>
+                              </div>
+                            </Card>
+                          </Col>
+                        );
+                      })}
+                    </Row>
 
-                      <Row>
-                        <Col xs={0} sm={6}>
-                          <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                height: "40px",
-                                marginBottom: "16px",
-                              }}
-                          >
-                            <Text style={{ fontWeight: 500 }}>
-                              {/* {t("stores.tagFilterDescription")} */}
-                            </Text>
-                          </div>
-                          <Form.Item name="categories">
-                            {/* <ProductCategoryFilter /> */}
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </Form>
-                  </section>
-                  <section>
-                    <Modal
-                        // {...modalProps}
-                        visible={isModalVisible}
-                        onCancel={handleCancel}
-                        width={1000}
-                        footer={null}
-                        bodyStyle={{ minHeight: "650px" }}
-                    >
-                      <CreateProduct />
-                    </Modal>
-                    <Pagination
-                        pagination={pagination}
-                        onPageChange={handlePageChange}
-                    />
-                  </section>
-                </main>
-              </QueryClientProvider>
-            </Content>
-          </Layout>
+                    <Row>
+                      <Col xs={0} sm={6}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            height: "40px",
+                            marginBottom: "16px",
+                          }}
+                        >
+                          <Text style={{ fontWeight: 500 }}>
+                            {/* {t("stores.tagFilterDescription")} */}
+                          </Text>
+                        </div>
+                        <Form.Item name="categories">
+                          {/* <ProductCategoryFilter /> */}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Form>
+                </section>
+                <section>
+                  <Modal
+                    // {...modalProps}
+                    visible={isModalVisible}
+                    onCancel={handleCancel}
+                    width={1000}
+                    footer={null}
+                    bodyStyle={{ minHeight: "650px" }}
+                    setDisplay={setDisplay}
+                    setPagination={setPagination}
+                  >
+                    <CreateProduct />
+                  </Modal>
+                  <Modal
+                    // {...modalProps}
+                    visible={isModalVisibleUpdate}
+                    onCancel={handleCancelEdit}
+                    width={700}
+                    footer={null}
+                    bodyStyle={{ minHeight: "450px" }}
+                  >
+                    <UpdateProduct product={selectedProduct} />
+                  </Modal>
+                  <Pagination
+                    pagination={pagination}
+                    onPageChange={handlePageChange}
+                  />
+                </section>
+              </main>
+            </QueryClientProvider>
+          </Content>
         </Layout>
-      </>
+      </Layout>
+    </>
   );
 };
 
