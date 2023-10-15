@@ -1,6 +1,7 @@
 package com.example.backend.entity;
 
 import com.example.backend.untils.StatusBill;
+import com.example.backend.untils.StatusPayment;
 import com.example.backend.untils.TypeBill;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -99,5 +100,7 @@ public class Bill  {
 
     @Column(name = "date_update")
     private Date dateUpdate;
+
+    private StatusPayment statusPayment;
 
 }

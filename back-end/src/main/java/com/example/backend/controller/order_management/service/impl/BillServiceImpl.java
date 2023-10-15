@@ -4,6 +4,9 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
+import com.example.backend.controller.order_management.model.bill.request.CreateBillDetailRequest;
+import com.example.backend.controller.order_management.model.bill.request.CreatePaymentsMethodRequest;
+import com.example.backend.controller.order_management.model.bill.request.CreateVoucherDetailRequest;
 import com.example.backend.controller.order_management.model.bill.response.BillResponse;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.AddressRepository;
@@ -171,8 +174,64 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill saveBillOffline(Integer id, BillRequestOffline request) {
-        return null;
+    public Bill saveBillOffline(Integer id, BillRequestOffline billRequestOffline) {
+        Bill bill = new Bill();
+        bill.setPhoneNumber(billRequestOffline.getPhoneNumber());
+        bill.setAddress(billRequestOffline.getAddress());
+        bill.setUserName(billRequestOffline.getUserName());
+        bill.setItemDiscount(new BigDecimal(billRequestOffline.getItemDiscount()));
+        bill.setTotalMoney(new BigDecimal(billRequestOffline.getTotalMoney()));
+        bill.setNote(billRequestOffline.getNote());
+        bill.setTypeBill(TypeBill.valueOf(billRequestOffline.getTypeBill()));
+        bill.setCode(billRequestOffline.getCode());
+//        bill.setStatusPayment(StatusPayment.valueOf(billRequestOffline.getStatusPayMent()));
+
+        bill.setMoneyShip(new BigDecimal(billRequestOffline.getMoneyShip()));
+        Bill savedBill = billRepository.save(bill);
+
+        List<CreateBillDetailRequest> billDetailRequests = billRequestOffline.getBillDetailRequest();
+
+        if (billDetailRequests != null) {
+            for (CreateBillDetailRequest billDetailRequest : billDetailRequests) {
+                Bill billOffline = billRepository.findById(billDetailRequest.getIdBill()).orElse(null);
+                if (billOffline != null) {
+                    BillDetails billDetail = new BillDetails();
+                    billDetail.getProduct().setId(billDetailRequest.getIdProduct());
+                    billDetail.setQuantity(billDetailRequest.getQuantity());
+                    billDetail.setPrice(billDetailRequest.getPrice());
+                    billDetail.setBill(billOffline);
+                    billDetailRepository.save(billDetail);
+                }
+            }
+        }
+
+        List<CreatePaymentsMethodRequest> paymentsMethodRequests = billRequestOffline.getPaymentsMethodRequest();
+        if (paymentsMethodRequests != null) {
+            for (CreatePaymentsMethodRequest paymentsMethodRequest : paymentsMethodRequests) {
+                Payments payments = new Payments();
+                payments.setCode(paymentsMethodRequest.getActionDescription());
+                payments.setMethod(paymentsMethodRequest.getMethod());
+                payments.setMoneyPayment(paymentsMethodRequest.getTotalMoney());
+                payments.setNote(paymentsMethodRequest.getActionDescription());
+                payments.setTypePayment(paymentsMethodRequest.getStatus());
+                payments.setBill(savedBill);
+                paymentsRepository.save(payments);
+            }
+        }
+        List<CreateVoucherDetailRequest> voucherDetails = billRequestOffline.getVoucher();
+        if (voucherDetails != null) {
+            for (CreateVoucherDetailRequest voucherDetail : voucherDetails) {
+                VoucherDetail voucherDetailEntity = new VoucherDetail();
+                voucherDetailEntity.setBeforePrice(voucherDetail.getBeforePrice());
+                voucherDetailEntity.setAfterPrice(voucherDetail.getAfterPrice());
+                voucherDetailEntity.setDiscountPrice(voucherDetail.getDiscountPrice());
+
+                voucherDetailEntity.setBill(savedBill);
+                voucherDetailRepository.save(voucherDetailEntity);
+            }
+        }
+
+        return savedBill;
     }
 
     @Override

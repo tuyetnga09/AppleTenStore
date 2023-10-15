@@ -10,12 +10,9 @@ import java.math.BigDecimal;
 public class CreateBillDetailRequest {
     private Integer idBill;
     private Integer idProduct;
-
     private String color;
     private String capacity;
     private Integer quantity;
-
     private BigDecimal totalMoney;
-
     private BigDecimal price;
 }

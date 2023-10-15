@@ -25,7 +25,7 @@ public class BillRequestOffline {
 
     private String code;
 
-    private String statusPayMents;
+    private String statusPayMent;
 
     private String deliveryDate;
 

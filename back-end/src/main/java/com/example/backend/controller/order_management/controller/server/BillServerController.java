@@ -1,6 +1,7 @@
 package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.service.BillDetailService;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,17 +43,26 @@ public class BillServerController {
         return billService.searchWithDate(pageable, key, status, user, dateStart, dateEnd);
     }
 
-    @RestController
-    @CrossOrigin("*")
-    @RequestMapping("/admin/billDetail")
-    public static class BillDetailController {
+//    @RestController
+//    @CrossOrigin("*")
+//    @RequestMapping("/admin/billDetail")
+//    public static class BillDetailController {
+//
+//        @Autowired
+//        private BillDetailService billDetailService;
+//
+//        @GetMapping("")
+//        public ResponseEntity getAll(Pageable pageable){
+//            return new ResponseEntity(billDetailService.getAll(null, pageable), HttpStatus.OK);
+//        }
+//
+//
+//    }
 
-        @Autowired
-        private BillDetailService billDetailService;
 
-        @GetMapping("")
-        public ResponseEntity getAll(Pageable pageable){
-            return new ResponseEntity(billDetailService.getAll(null, pageable), HttpStatus.OK);
-        }
+    @PostMapping("/offline")
+    public ResponseEntity<Bill> saveBillOffline(@RequestBody BillRequestOffline billRequestOffline) {
+        Bill savedBill = billService.saveBillOffline(null, billRequestOffline);
+        return new ResponseEntity<>(savedBill, HttpStatus.CREATED);
     }
 }

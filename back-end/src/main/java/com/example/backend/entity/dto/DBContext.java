@@ -145,7 +145,7 @@ public class DBContext implements CommandLineRunner {
         // Thêm dữ liệu cho bảng Payments
         addPayment("PAY1", 1, new BigDecimal("100.50"), "Payment for order 1", "John Doe", TypePayment.TIEN_MAT, StatusPayment.THANH_TOAN);
         addPayment("PAY2", 2, new BigDecimal("75.25"), "Payment for order 2", "Jane Smith", TypePayment.CHUYEN_KHOAN, StatusPayment.THANH_TOAN);
-        addPayment("PAY3", 3, new BigDecimal("50.00"), "Payment for order 3", "Bob Johnson", TypePayment.THE, StatusPayment.THANH_TOAN);
+        addPayment("PAY3", 3, new BigDecimal("50.00"), "Payment for order 3", "Bob Johnson", TypePayment.CHUYEN_KHOAN, StatusPayment.THANH_TOAN);
         addPayment("PAY4", 4, new BigDecimal("200.75"), "Payment for order 4", "Alice Brown", TypePayment.CHUYEN_KHOAN, null);
         addPayment("PAY5", 5, new BigDecimal("150.25"), "Payment for order 5", "Charlie Wilson", TypePayment.TIEN_MAT, StatusPayment.THANH_TOAN);
 
