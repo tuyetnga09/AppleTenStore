@@ -40,17 +40,17 @@ public class BillServerController {
         return billService.searchWithDate(pageable, key, status, user, dateStart, dateEnd);
     }
 
-    @RestController
-    @CrossOrigin("*")
-    @RequestMapping("/admin/billDetail")
-    public static class BillDetailController {
-
-        @Autowired
-        private BillDetailService billDetailService;
-
-        @GetMapping("")
-        public ResponseEntity getAll(Pageable pageable){
-            return new ResponseEntity(billDetailService.getAll(null, pageable), HttpStatus.OK);
-        }
-    }
+//    @RestController
+//    @CrossOrigin("*")
+//    @RequestMapping("/admin/billDetail")
+//    public static class BillDetailController {
+//
+//        @Autowired
+//        private BillDetailService billDetailService;
+//
+//        @GetMapping("")
+//        public ResponseEntity getAll(Pageable pageable){
+//            return new ResponseEntity(billDetailService.getAll(null, pageable), HttpStatus.OK);
+//        }
+//    }
 }

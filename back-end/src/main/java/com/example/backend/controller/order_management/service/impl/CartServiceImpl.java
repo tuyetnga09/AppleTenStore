@@ -35,7 +35,7 @@ public class CartServiceImpl implements CartService {
 
         CartDetail cartDetailQuan = cartDetailRepository.getCartDetailBySku(listAddToCart.getIdSKU(), cart.getId());
 
-        if(cartDetailQuan != null && sku.getQuantity() <= cartDetailQuan.getQuantity() || sku.getQuantity() <= 0 ){
+        if(cartDetailQuan != null && cart != null && sku.getQuantity() <= cartDetailQuan.getQuantity() || sku.getQuantity() <= 0 ){
             System.out.println("Số lượng sản phẩm không đủ");
         }else{
             if (cart == null) {
@@ -110,7 +110,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<ListCart> getListCart(Integer idAccount) {
-      return  cartRepository.getListCart(idAccount);
+        return  cartRepository.getListCart(idAccount);
     }
 
     @Override

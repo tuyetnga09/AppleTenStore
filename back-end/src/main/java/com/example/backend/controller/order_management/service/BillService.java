@@ -14,14 +14,11 @@ import java.util.List;
 
 public interface BillService {
     String createBillCustomerOnlineRequest( BillRequestOnline request) ;
-<<<<<<< HEAD
     String createBillCustomerOfflineRequest(BillRequestOffline request);
-=======
     /* Bán tại cửa hàng*/
     boolean billWait(BillRequestOffline request);
 
     Bill  saveBillOffline(Integer id,  BillRequestOffline request);
->>>>>>> 0f10eaa0ce21f087a2b5d202ee14eb6fbd3c7eab
     Bill detail(Integer id);
 
     Page<Bill> searchNoDate(Pageable pageable, String key, String status, String user);

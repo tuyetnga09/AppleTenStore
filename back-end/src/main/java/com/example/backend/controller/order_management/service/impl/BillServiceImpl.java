@@ -41,12 +41,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-<<<<<<< HEAD
 import java.text.ParseException;import java.text.SimpleDateFormat;
-=======
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
->>>>>>> 0f10eaa0ce21f087a2b5d202ee14eb6fbd3c7eab
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -171,7 +168,6 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-<<<<<<< HEAD
     public String createBillCustomerOfflineRequest(BillRequestOffline request) {
         User user = User.builder()
                 .fullName(request.getUserName())
@@ -220,7 +216,7 @@ public class BillServiceImpl implements BillService {
                 .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
-        for (BillAskClient cart: request.getBillDetail()) {
+        for (BillAskClient cart : request.getBillDetail()) {
             Product productDetail = productRepository.findById(cart.getIdProductDetail()).get();
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -257,7 +253,7 @@ public class BillServiceImpl implements BillService {
         }
 
         return "Finished";
-=======
+    }
     public boolean billWait(BillRequestOffline request) {
         return false;
     }
@@ -265,7 +261,6 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill saveBillOffline(Integer id, BillRequestOffline request) {
         return null;
->>>>>>> 0f10eaa0ce21f087a2b5d202ee14eb6fbd3c7eab
     }
 
     @Override
