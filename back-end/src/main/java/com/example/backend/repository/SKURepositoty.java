@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.product_controller.model.request.ListSkuProduct;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
 import com.example.backend.entity.Size;
@@ -25,4 +26,8 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     SKU findByProductAndCapacityAndColor(Product product, String capacity, String color);
     List<SKU> findByProductAndCapacity(Product product, String capacity);
     List<SKU> findByProductAndColor(Product product, String color);
+
+    @Query(value = "select s.price AS 'Price SKU', p.id AS 'Product ID', s.id AS 'SKU ID', s.quantity 'SKU Quantity', s.capacity AS 'Capacity', s.color AS 'Color', p.name AS 'Name Product'\n" +
+            "from sku s join product p on p.id = s.product_id;", nativeQuery = true)
+    Page<ListSkuProduct> getSkuProductFormSellOffline(Pageable pageable);
 }

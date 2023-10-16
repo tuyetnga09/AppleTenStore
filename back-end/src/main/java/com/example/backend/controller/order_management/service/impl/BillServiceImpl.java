@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.bill.request.BillAskClient;
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.response.BillResponse;
 import com.example.backend.repository.AccountRepository;
@@ -25,7 +26,9 @@ import com.example.backend.entity.Product;
 import com.example.backend.entity.User;
 import com.example.backend.entity.Voucher;
 import com.example.backend.entity.VoucherDetail;
+import com.example.backend.untils.Message;
 import com.example.backend.untils.Random;
+import com.example.backend.untils.RestAPIRunTime;
 import com.example.backend.untils.Status;
 import com.example.backend.untils.StatusBill;
 import com.example.backend.untils.StatusPayment;
@@ -36,10 +39,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,6 +163,16 @@ public class BillServiceImpl implements BillService {
 
         return "Finished";
 
+    }
+
+    @Override
+    public boolean billWait(BillRequestOffline request) {
+        return false;
+    }
+
+    @Override
+    public Bill saveBillOffline(Integer id, BillRequestOffline request) {
+        return null;
     }
 
     @Override

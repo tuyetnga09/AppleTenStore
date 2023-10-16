@@ -3,9 +3,9 @@ import Header from "../Page_Comeponet/layout/Header";
 import Footer from "../Page_Comeponet/layout/Footer";
 import { Button, Tag, notification } from "antd";
 import { RightOutlined } from "@ant-design/icons";
-import { Link, useParams } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useParams ,  useHistory} from "react-router-dom/cjs/react-router-dom.min";
 import { detail } from "../../service/product.service";
-import { addToCart } from "../../service/cart.service";
+import { addToCart,getQuantityCartDetailBySku } from "../../service/cart.service";
 import { getSKUProduct } from "../../service/sku.service";
 import queryString from "query-string";
 import AvtProduct from "./avtProduct";
@@ -37,6 +37,8 @@ export default function ProductDetail() {
     color: "",
     idProduct: "",
   });
+
+  const history = useHistory();
 
   useEffect(() => {
     detail(id)
@@ -103,34 +105,49 @@ export default function ProductDetail() {
         price: item2.price,
         quantity: 1,
       };
-      addToCart(addToCartData)
-          .then((response) => {
-            console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
-
-            const paramsString = queryString.stringify(filtersSKU);
-            getSKUProduct(paramsString)
+       getQuantityCartDetailBySku(item2.id, 1)
                 .then((response) => {
                   console.log(response.data);
-                  if (item2.quantity <= 0) {
+                  if (item2.quantity <= response.data) {
                     notification.error({
                       message: "ADD TO CART",
-                      description: "Sản phẩm đang tạm thời hết hàng",
+                      description: "Số lượng trong kho không đủ",
                     });
-                  }
-                  // else {
-                  //   notification.success({
-                  //     message: "ADD TO CART",
-                  //     description: "Thêm giỏ hàng thành công",
-                  //   });
-                  // }
-                  setItem2(response.data);
-                })
-                .catch((error) => {
-                  console.log(`${error}`);
-                });
+                  }else{
+                  addToCart(addToCartData)
+                      .then((response) => {
+                        console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
+
+                        // const paramsString = queryString.stringify(filtersSKU);
+                        // getSKUProduct(paramsString)
+                        //     .then((response) => {
+                        //       console.log(response.data);
+                        //       if (item2.quantity <= 0) {
+                        //         notification.error({
+                        //           message: "ADD TO CART",
+                        //           description: "Sản phẩm đang tạm thời hết hàng",
+                        //         });
+                        //       }
+                        //       // else {
+                        //       //   notification.success({
+                        //       //     message: "ADD TO CART",
+                        //       //     description: "Thêm giỏ hàng thành công",
+                        //       //   });
+                        //       // }
+                        //       setItem2(response.data);
+                        //     })
+                        //     .catch((error) => {
+                        //       console.log(`${error}`);
+                        //     });
+                        history.push("/cart");
+                      })
+                      .catch((error) => {
+                        console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+                      });
+                    }
           })
           .catch((error) => {
-            console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+            console.log(`${error}`);
           });
     } else {
       notification.warning({

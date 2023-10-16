@@ -3,7 +3,7 @@ import {
   readAll,
   deleteCartDetail,
   updateQuantity,
-  update,
+  update, getQuantityCartDetailBySku,
 } from "../../../service/cart.service";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
@@ -16,6 +16,7 @@ import { getOneSKU } from "../../../service/sku.service";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { event } from "jquery";
 import { DateField } from "@refinedev/antd";
+import queryString from "query-string";
 
 export default function CartDisplay() {
   const history = useHistory();
@@ -64,20 +65,20 @@ export default function CartDisplay() {
           readAll(1)
             .then((response) => {
               console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-              getOneSKU(idSKU)
-                .then((response) => {
-                  console.log(response.data);
-                  setSKU(response.data);
-                  // if (sku.quantity <= 0) {
-                  //   notification.error({
-                  //     message: "ADD TO CART",
-                  //     description: "Không được nhập quá số lượng sản phẩm",
-                  //   });
-                  // }
-                })
-                .catch((error) => {
-                  console.log(`${error}`);
-                });
+              // getOneSKU(idSKU)
+              //   .then((response) => {
+              //     console.log(response.data);
+              //     setSKU(response.data);
+              //     // if (newQuantity > sku.quantity) {
+              //     //   notification.error({
+              //     //     message: "ADD TO CART",
+              //     //     description: "Không được nhập quá số lượng sản phẩm",
+              //     //   });
+              //     // }
+              //   })
+              //   .catch((error) => {
+              //     console.log(`${error}`);
+              //   });
               setProducts(response.data);
             })
             .catch((error) => {
@@ -203,7 +204,13 @@ export default function CartDisplay() {
                                 </td>
                                 <td>
                                   <p className="fw-bold mb-0 me-5 pe-3">
-                                    {product.price}
+                                    {parseFloat(product.price).toLocaleString(
+                                      "vi-VN",
+                                      {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }
+                                    )}
                                   </p>
                                 </td>
                                 <td>
@@ -267,8 +274,9 @@ export default function CartDisplay() {
                                           );
                                         } else if (
                                           event.target.value >
-                                          parseInt(quantitySKU) +
-                                            parseInt(product.quantity)
+                                          parseInt(quantitySKU) 
+                                          // +
+                                          //   parseInt(product.quantity)
                                         ) {
                                           notification.error({
                                             message: "ADD TO CART",
@@ -310,8 +318,8 @@ export default function CartDisplay() {
                                             parseInt(product.quantity) + 1;
                                           if (
                                             quantity.value >
-                                            parseInt(res.data.quantity) +
-                                              parseInt(product.quantity)
+                                            parseInt(res.data.quantity) 
+                                            // + parseInt(product.quantity)
                                           ) {
                                             notification.error({
                                               message: "ADD TO CART",
@@ -319,8 +327,9 @@ export default function CartDisplay() {
                                                 "Không thể nhập quá số lượng đang có",
                                             });
                                             quantity.value =
-                                              parseInt(res.data.quantity) +
-                                              parseInt(product.quantity);
+                                              parseInt(res.data.quantity) 
+                                              // +
+                                              // parseInt(product.quantity);
                                           }
                                         });
                                         handleUpdateQuantity(
@@ -332,6 +341,9 @@ export default function CartDisplay() {
                                       className="plus"
                                     />
                                   </div>
+                                  <p style={{fontSize: "10px", color: "red"}}>
+                                    Còn {product.quantitySKU} sản phẩm
+                                  </p>
                                 </td>
                                 <td>
                                   <p className="fw-bold mb-0 me-5 pe-3">
@@ -378,12 +390,12 @@ export default function CartDisplay() {
                           class="d-grid gap-2 d-md-flex justify-content-md-end"
                           style={{ marginTop: "10px" }}
                         >
-                          <button
+                          {/* <button
                             class="btn btn-outline-primary me-md-2"
                             type="button"
                           >
                             Cập nhật giỏ hàng
-                          </button>
+                          </button> */}
                           <button
                             class="btn btn-outline-primary me-md-2"
                             type="button"

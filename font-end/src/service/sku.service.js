@@ -24,3 +24,6 @@ export const getOneSKU = (id) => {
 export const getListSkuProduct = (idProduct) => {
   return httpClient.get(`/admin/sku/get-list-product/${idProduct}`);
 };
+export const getSKUProductFormSell = (page) => {
+  return httpClient.get(`/admin/sku/getSkuProduc?${page}`);
+};

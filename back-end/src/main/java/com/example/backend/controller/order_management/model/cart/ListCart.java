@@ -34,6 +34,8 @@ public interface ListCart {
     @Value("#{target['Quantity']}")
     String getQuantity();
 
+    @Value("#{target['QuantitySKU']}")
+    String getQuantitySKU();
 
     @Value("#{target['Total']}")
     String getTotal();

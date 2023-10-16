@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.controller.product_controller.model.request.ListSkuProduct;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
@@ -59,7 +60,10 @@ public class SKUServiceImpl implements Iservice<SKU> {
        return skuRepositoty.findById(id).orElse(null);
     };
 
-    public List<SKU> getAllSkuFindByProduct(Product product){
+    public List<SKU> getAllSkuFindByProduct(Product product) {
         return skuRepositoty.findByProduct(product);
+    }
+    public Page<ListSkuProduct> getSKUProductFormSellOff(Pageable pageable){
+        return skuRepositoty.getSkuProductFormSellOffline(pageable);
     }
 }

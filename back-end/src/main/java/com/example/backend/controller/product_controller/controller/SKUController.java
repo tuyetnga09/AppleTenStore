@@ -1,6 +1,7 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.service.impl.ProductServiceImpl;
+import com.example.backend.controller.product_controller.model.request.ListSkuProduct;
 import com.example.backend.controller.product_controller.service.impl.SKUServiceImpl;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
@@ -52,9 +53,14 @@ public class SKUController {
     }
 
     @GetMapping("get-list-product/{idProduct}")
-    public List<SKU> getListProduct(@PathVariable("idProduct") Integer idProduct){
+    public List<SKU> getListProduct(@PathVariable("idProduct") Integer idProduct) {
         Product product = productService.findById(idProduct);
         return skuService.getAllSkuFindByProduct(product);
+    }
+    @GetMapping("getSkuProduc")
+    public Page<ListSkuProduct> getSKUProduct(@RequestParam(value = "page", defaultValue = "0") Integer page){
+        Pageable pageable = PageRequest.of(page, 5);
+       return skuService.getSKUProductFormSellOff(pageable);
     }
 
 }
