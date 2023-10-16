@@ -10,32 +10,36 @@ const Login = () => {
           <form>
             <div class="user-box">
               <input type="text" name="" required="" />
-              <label>Username</label>
+              <label>Email</label>
             </div>
             <div class="user-box">
               <input type="password" name="" required="" />
               <label>Password</label>
             </div>
-            <a href="#">
+            <button>
               <span></span>
               <span></span>
               <span></span>
               <span></span>
               Submit
-            </a>{" "}
+            </button>{" "}
             <Link to="/signup">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              Sign up
+              <button>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Sign up
+              </button>
             </Link>
             <Link to="/forgotpassword">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              Forgot password
+              <button>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Forgot password
+              </button>
             </Link>
           </form>
         </div>

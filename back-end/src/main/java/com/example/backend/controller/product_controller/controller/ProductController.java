@@ -25,7 +25,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/product/")
+@RequestMapping("/admin/product/")
 public class ProductController {
 
     @Autowired
@@ -33,13 +33,13 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    @GetMapping("display")
-    public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 5);
-//        Page<Product> listProduct = productService.getAll(pageable);
-        Page<Product> listProduct = productService.search(pageable, key);
-        return listProduct;
-    }
+//    @GetMapping("display")
+//    public Page<Product> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
+//        Pageable pageable = PageRequest.of(page, 10);
+////        Page<Product> listProduct = productService.getAll(pageable);
+//        Page<Product> listProduct = productService.search(pageable, key);
+//        return listProduct;
+//    }
 
     @PostMapping("save")
     public Product save(@RequestBody CreateProduct createProduct) {
@@ -48,7 +48,7 @@ public class ProductController {
 
     @GetMapping("displayDelete")
     public Page<Product> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 5);
+        Pageable pageable = PageRequest.of(page, 10);
 //        Page<Product> listProduct = productService.getDelete(pageable);
         Page<Product> listProduct = productService.deleteProduct(pageable, key);
         return listProduct;
@@ -67,10 +67,10 @@ public class ProductController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<String> update(@RequestBody Product product, @PathVariable("id") Integer id) {
-        productService.update(product, id);
-        return new ResponseEntity<>("Update ok", HttpStatus.OK);
+    public ResponseEntity<String> update(@RequestBody CreateProduct createProduct, @PathVariable("id") Integer id) {
+        return new ResponseEntity<>(productService.update(createProduct, id), HttpStatus.OK);
     }
+
 
     @GetMapping(value = "get-all-product")
     public List<Product> selectAll() {
@@ -92,51 +92,55 @@ public class ProductController {
         return this.productService.findById(id);
     }
 
-    @GetMapping("display/productNew")
-    public Page<Product> productNew(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.productNew(pageable, key);
-        return listProduct;
-    }
-
-    @GetMapping("display/productCheap")
-    public Page<Product> productCheap(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.productCheap(pageable, key);
-        return listProduct;
-    }
+//    @GetMapping("display/productNew")
+//    public Page<Product> productNew(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
+//        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.productNew(pageable, key);
+//        return listProduct;
+//    }
+//
+//    @GetMapping("display/productCheap")
+//    public Page<Product> productCheap(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
+//        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.productCheap(pageable, key);
+//        return listProduct;
+//    }
 
     @GetMapping("{id}")
     public Product detail(@PathVariable("id") Integer id){
         return productService.getOne(id);
     }
-
-    @GetMapping("display/filterProductbyPrice")
-    public Page<Product> filterProductbyPrice(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key, @RequestParam("minPrice") Integer minPrice, @RequestParam("maxPrice") Integer maxPrice) {
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.filterProductByPrice(pageable, key, minPrice, maxPrice);
-        return listProduct;
-    }
-    @GetMapping("display/filterProductbyCategory")
-    public Page<Product> filterProductbyCategory(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key, @RequestParam("nameCategory") String nameCategory) {
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.filterProductByCategory(pageable, key, nameCategory);
-        return listProduct;
+    @GetMapping("detail/{id}")
+    public CreateProduct detailCreateProduct(@PathVariable("id") Integer id){
+        return productService.getOne1(id);
     }
 
-    @GetMapping("display/filterProductByAscendingPrice")
-    public Page<Product> filterProductByAscendingPrice(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.filterProductByAscendingPrice(pageable, key);
-        return listProduct;
-    }
-
-    @GetMapping("display/filterProductByDecreasePrice")
-    public Page<Product> filterProductByDecreasePrice(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.filterProductByDecreasePrice(pageable, key);
-        return listProduct;
-    }
+//    @GetMapping("display/filterProductbyPrice")
+//    public Page<Product> filterProductbyPrice(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key, @RequestParam("minPrice") Integer minPrice, @RequestParam("maxPrice") Integer maxPrice) {
+//        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.filterProductByPrice(pageable, key, minPrice, maxPrice);
+//        return listProduct;
+//    }
+//    @GetMapping("display/filterProductbyCategory")
+//    public Page<Product> filterProductbyCategory(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key, @RequestParam("nameCategory") String nameCategory) {
+//        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.filterProductByCategory(pageable, key, nameCategory);
+//        return listProduct;
+//    }
+//
+//    @GetMapping("display/filterProductByAscendingPrice")
+//    public Page<Product> filterProductByAscendingPrice(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
+//        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.filterProductByAscendingPrice(pageable, key);
+//        return listProduct;
+//    }
+//
+//    @GetMapping("display/filterProductByDecreasePrice")
+//    public Page<Product> filterProductByDecreasePrice(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
+//        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.filterProductByDecreasePrice(pageable, key);
+//        return listProduct;
+//    }
 
     @GetMapping("display/listProductByCategories")
     public Page<Product> listProductByCategories(Pageable pageable, @RequestParam("id") Integer id) {
@@ -144,4 +148,6 @@ public class ProductController {
         Page<Product> listProduct = productService.listProductByCategories(pageable, id);
         return listProduct;
     }
+
+
 }

@@ -30,6 +30,7 @@
     "i18next-http-backend": "^2.2.2",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.5",
+    "numeral": "^2.0.6",
     "owl.carousel": "^2.3.4",
     "primereact": "^9.6.2",
     "query-string": "^8.1.0",

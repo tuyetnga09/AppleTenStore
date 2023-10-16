@@ -27,7 +27,9 @@ import com.example.backend.entity.Product;
 import com.example.backend.entity.User;
 import com.example.backend.entity.Voucher;
 import com.example.backend.entity.VoucherDetail;
+import com.example.backend.untils.Message;
 import com.example.backend.untils.Random;
+import com.example.backend.untils.RestAPIRunTime;
 import com.example.backend.untils.Status;
 import com.example.backend.untils.StatusBill;
 import com.example.backend.untils.StatusPayment;
@@ -39,9 +41,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+<<<<<<< HEAD
 import java.text.ParseException;import java.text.SimpleDateFormat;
+=======
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+>>>>>>> 0f10eaa0ce21f087a2b5d202ee14eb6fbd3c7eab
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -163,6 +171,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+<<<<<<< HEAD
     public String createBillCustomerOfflineRequest(BillRequestOffline request) {
         User user = User.builder()
                 .fullName(request.getUserName())
@@ -248,6 +257,15 @@ public class BillServiceImpl implements BillService {
         }
 
         return "Finished";
+=======
+    public boolean billWait(BillRequestOffline request) {
+        return false;
+    }
+
+    @Override
+    public Bill saveBillOffline(Integer id, BillRequestOffline request) {
+        return null;
+>>>>>>> 0f10eaa0ce21f087a2b5d202ee14eb6fbd3c7eab
     }
 
     @Override

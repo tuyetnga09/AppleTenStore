@@ -13,4 +13,5 @@ public class ImportImei {
     private String capacity;
     private Integer quantity;
     private BigDecimal price;
+    private String nameProduct;
 }

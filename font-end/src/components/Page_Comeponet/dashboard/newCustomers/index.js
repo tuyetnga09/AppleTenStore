@@ -68,7 +68,7 @@ const NewCustomers = () => {
         <Header>
           <Title level={3}>New Customers</Title>
           <HeaderNumbers>
-            <Text strong>{dataThisMonth - dataLastMonth}</Text>
+            <Text strong>{dataThisMonth}</Text>
             <div>
               <Text strong>{phanTram()}%</Text>
               <IncreaseIcon />

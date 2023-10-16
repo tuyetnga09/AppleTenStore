@@ -1,5 +1,5 @@
 import { useNavigation, useTranslate } from "@refinedev/core";
-import { Typography, Table, Avatar, Space, Tag } from "antd";
+import { Typography, Table, Avatar, Space, Tag, Button } from "antd";
 import {
   RecentOrdersColumn,
   Price,
@@ -9,7 +9,9 @@ import {
 } from "./styled";
 
 import { readAll } from "../../../../service/product.service";
+import { viewAllBillsForTheDayWhereStatusChoVanChuyen } from "../../../../service/dashboard/admin_bill.service";
 import React, { useEffect, useState } from "react";
+// import { Button } from "bootstrap";
 
 const { Text, Paragraph } = Typography;
 
@@ -17,7 +19,7 @@ const RecentOrders = () => {
   const [display, setDisplay] = useState([]);
 
   useEffect(() => {
-    readAll("key=&page=0")
+    viewAllBillsForTheDayWhereStatusChoVanChuyen("key=&page=0")
       .then((response) => {
         console.log(response.data);
         setDisplay(response.data.content);
@@ -28,24 +30,24 @@ const RecentOrders = () => {
   }, []);
 
   const t = useTranslate();
-  //   const { tableProps } = useTable({
-  //     resource: "orders",
-  //     initialSorter: [
-  //       {
-  //         field: "createdAt",
-  //         order: "desc",
-  //       },
-  //     ],
-  //     initialPageSize: 4,
-  //     permanentFilter: [
-  //       {
-  //         field: "status.text",
-  //         operator: "eq",
-  //         value: "Pending",
-  //       },
-  //     ],
-  //     syncWithLocation: false,
-  //   });
+  // const { tableProps } = useTable({
+  //   resource: "orders",
+  //   initialSorter: [
+  //     {
+  //       field: "createdAt",
+  //       order: "desc",
+  //     },
+  //   ],
+  //   initialPageSize: 4,
+  //   permanentFilter: [
+  //     {
+  //       field: "status.text",
+  //       operator: "eq",
+  //       value: "Pending",
+  //     },
+  //   ],
+  //   syncWithLocation: false,
+  // });
 
   const { show } = useNavigation();
 
@@ -69,8 +71,8 @@ const RecentOrders = () => {
         key="summary"
         render={(_, display) => (
           <TitleWrapper>
-            <Title strong>{display.name}</Title>
-            <Paragraph
+            <Title strong>{display.code}</Title>
+            {/* <Paragraph
               ellipsis={{
                 rows: 2,
                 tooltip: display.description,
@@ -78,16 +80,7 @@ const RecentOrders = () => {
               }}
             >
               {display.description}
-            </Paragraph>
-
-            <OrderId
-              strong
-              onClick={() => {
-                show("orders", display.id);
-              }}
-            >
-              #{display.id}
-            </OrderId>
+            </Paragraph> */}
           </TitleWrapper>
         )}
       />
@@ -95,8 +88,8 @@ const RecentOrders = () => {
         key="summary"
         render={(_, display) => (
           <Space direction="vertical">
-            <Title strong>{`${display.name} ${display.surname}`}</Title>
-            <Text>{display.name}</Text>
+            <Title strong>{`${display.userName}`}</Title>
+            <Text>{display.phoneNumber}</Text>
           </Space>
         )}
       />
@@ -117,9 +110,17 @@ const RecentOrders = () => {
                 style: "currency",
                 notation: "standard",
               }}
-              value={display.price}
+              value={display.totalMoney}
             />
-            <Tag color="orange">Pending</Tag>
+            <OrderId
+              strong
+              onClick={() => {
+                show("orders", display.id);
+              }}
+            >
+              {/* <Button>Xem Chi Tiết</Button> */}
+              <Tag color="orange">Xem Chi Tiết</Tag>
+            </OrderId>
           </Space>
         )}
       />

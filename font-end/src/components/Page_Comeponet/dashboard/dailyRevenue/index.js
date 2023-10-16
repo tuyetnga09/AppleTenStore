@@ -144,11 +144,22 @@
 import { useMemo, useState, useEffect } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { NumberField } from "@refinedev/antd";
-import { Typography } from "antd";
+import { Row, Typography } from "antd";
 import { LineConfig } from "@ant-design/plots/lib/components/line";
 import dayjs, { Dayjs } from "dayjs";
 import { IncreaseIcon } from "../../icon/increase";
 import { DecreaseIcon } from "../../icon/decrease";
+import {
+  sumMoneyBill,
+  sumMoneyBillNotStatusDaHuy,
+  sumToTalMoneyBillUnconfimred,
+  sumToTalMoneyBillConfirmed,
+  sumToTalMoneyBillAreDelivering,
+  sumToTalMoneyBillAlreadyPaid,
+  sumToTalMoneyBillNoReturn,
+  sumToTalMoneyBillReturns,
+  sumToTalMoneyBillCancelOrder,
+} from "../../../../service/dashboard/admin_bill.service";
 
 // import { ISalesChart } from "../../../interfaces";
 import {
@@ -167,50 +178,186 @@ import {
   Legend,
   CartesianGrid,
 } from "recharts";
+import numeral from "numeral";
 
 const DailyRevenue = () => {
   const [data, setData] = useState([]);
+  const [dataSumMoneyBill, setDataSumMoneyBill] = useState();
+  const [dataSumMoneyBillNotStatusDaHuy, setDataSumMoneyBillNotStatusDaHuy] =
+    useState();
+  const [
+    dataSumToTalMoneyBillUnconfimred,
+    setDataSumToTalMoneyBillUnconfimred,
+  ] = useState();
+  const [dataSumMoneyBillConfirmed, setDataSumMoneyBillConfirmed] = useState();
+  const [dataSumMoneyBillAreDelivering, setDataSumMoneyBillAreDelivering] =
+    useState();
+
+  const [dataSumMoneyBillAlreadyPaid, setDataSumMoneyBillAlreadyPaid] =
+    useState();
+  const [dataSumMoneyBillNoReturn, setDataSumMoneyBillNoReturn] = useState();
+  const [dataSumMoneyBillReturns, setDataSumMoneyBillReturns] = useState();
+  const [dataSumMoneyBillCancelOrder, setDataSumMoneyBillCancelOrder] =
+    useState();
 
   // Simulate data from the backend
-  const fetchDataFromBackend = () => {
+  const fetchDataFromBackend = (a, b, c, d, e, f, g) => {
     // Replace this with actual API call to your backend
+    // const number = a;
+    // const formattedNumber = numeral(number).format("0,0");
+
     const dataFromBackend = [
-      { name: "", revenue: 10 },
-      { name: "", revenue: 25 },
-      { name: "", revenue: 12 },
-      { name: "", revenue: 32 },
-      { name: "", revenue: 18 },
-      { name: "", revenue: 10 },
-      { name: "", revenue: 25 },
+      { name: "1MU", revenue: a },
+      { name: "2MC", revenue: b },
+      { name: "3MAD", revenue: c },
+      { name: "4MAP", revenue: d },
+      { name: "5MNR", revenue: e },
+      { name: "6MR", revenue: f },
+      { name: "7MCO", revenue: g },
     ];
     setData(dataFromBackend);
   };
 
   useEffect(() => {
-    fetchDataFromBackend();
-  }, []);
+    let unconfirmedData = null;
+    let confirmedData = null;
+    let alreadyPaidData = null;
+    let areDeliveringData = null;
+    let noReturnData = null;
+    let returnsData = null;
+    let cancelOrderData = null;
+    //1
+    sumMoneyBill()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBill(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
 
+    //2
+    sumMoneyBillNotStatusDaHuy()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBillNotStatusDaHuy(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+    //3----
+    sumToTalMoneyBillUnconfimred()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumToTalMoneyBillUnconfimred(response.data);
+        unconfirmedData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //4
+    sumToTalMoneyBillConfirmed()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBillConfirmed(response.data);
+        confirmedData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //5
+    sumToTalMoneyBillAreDelivering()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBillAreDelivering(response.data);
+        areDeliveringData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //6
+    sumToTalMoneyBillAlreadyPaid()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBillAlreadyPaid(response.data);
+        alreadyPaidData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //7
+    sumToTalMoneyBillNoReturn()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBillNoReturn(response.data);
+        noReturnData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+    //8
+    sumToTalMoneyBillReturns()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBillReturns(response.data);
+        returnsData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //9
+    sumToTalMoneyBillCancelOrder()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumMoneyBillCancelOrder(response.data);
+
+        cancelOrderData = response.data;
+
+        fetchDataFromBackend(
+          unconfirmedData,
+          confirmedData,
+          areDeliveringData,
+          alreadyPaidData,
+          noReturnData,
+          returnsData,
+          cancelOrderData
+        );
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
+  const { Text, Title } = Typography;
   return (
     <DailyRevenueWrapper>
-      <TitleArea>
+      {/* <TitleArea> */}
+      <Row>
         <TitleAreaAmount>
-          <Typography.Title level={3}>Daily Revenue</Typography.Title>
+          <Typography.Title level={3}>
+            Daily Revenue Minus Canceled Bills
+          </Typography.Title>
         </TitleAreaAmount>
+      </Row>
+      <Row>
         <TitleAreNumber>
           <NumberField
-            style={{ fontSize: 36, color: "white" }}
+            style={{ fontSize: 26, color: "white" }}
             strong
             options={{
               currency: "VND",
               style: "currency",
-              notation: "compact",
+              // notation: "compact",
             }}
-            value={50000000}
+            value={dataSumMoneyBillNotStatusDaHuy}
           />
           {/* {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />} */}
           <IncreaseIcon />
         </TitleAreNumber>
-      </TitleArea>
+      </Row>
+      {/* </TitleArea> */}
+
       <LineChart width={450} height={150} data={data}>
         <XAxis dataKey="name" />
         <YAxis />
@@ -219,6 +366,143 @@ const DailyRevenue = () => {
         <Legend />
         <Line type="monotone" dataKey="revenue" stroke="rgb(75, 192, 192)" />
       </LineChart>
+      {/* 1 */}
+      <TitleArea>
+        <Title level={4} style={{ color: "red" }}>
+          * Daily Revenue
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "red" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumMoneyBill}
+        />
+      </TitleArea>
+      {/* 2 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          1MU - Sum Total Money Bill Unconfimred
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "white" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumToTalMoneyBillUnconfimred}
+        />
+      </TitleArea>
+
+      {/* 3 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          2MC - Sum Total Money Bill Confimred
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "white" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumMoneyBillConfirmed}
+        />
+      </TitleArea>
+      {/* 4 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          3MAD - Sum Total Money Bill Are Delivering
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "white" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumMoneyBillAreDelivering}
+        />
+      </TitleArea>
+      {/* 5 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          4MAP - Sum Total Money Bill Already Paid
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "white" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumMoneyBillAlreadyPaid}
+        />
+      </TitleArea>
+      {/* 6 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          5MNR - Sum Total Money Bill No Return
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "white" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumMoneyBillNoReturn}
+        />
+      </TitleArea>
+      {/* 7 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          6MR - Sum Total Money Bill Returns
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "white" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumMoneyBillReturns}
+        />
+      </TitleArea>
+      {/* 8 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          7MCO - Sum Total Money Bill Cancel Order
+        </Title>
+
+        <NumberField
+          style={{ fontSize: 20, color: "white" }}
+          strong
+          options={{
+            currency: "VND",
+            style: "currency",
+            // notation: "compact",
+          }}
+          value={dataSumMoneyBillCancelOrder}
+        />
+      </TitleArea>
     </DailyRevenueWrapper>
   );
 };

@@ -6,38 +6,38 @@ const config = {
   },
 };
 
-export const readAll = (page) =>{
-    return  httpClient.get(`/ram/display?${page}`);
-}
+export const readAll = (page) => {
+  return httpClient.get(`/admin/ram/display?${page}`);
+};
 
-export const returnDeleteAll = (page) =>{
-  return  httpClient.get(`/ram/displayDelete?${page}`);
-}
+export const returnDeleteAll = (page) => {
+  return httpClient.get(`/admin/ram/displayDelete?${page}`);
+};
 
-export const createRam = (ram) =>{
-  return  httpClient.post("/ram/save", ram);
-}
+export const createRam = (ram) => {
+  return httpClient.post("/admin/ram/save", ram);
+};
 
 export const update = (id, ram) => {
-  return httpClient.put(`/ram/update/${id}`, ram);
+  return httpClient.put(`/admin/ram/update/${id}`, ram);
 };
 
 export const detail = (id) => {
-  return httpClient.get(`/ram/${id}`);
+  return httpClient.get(`/admin/ram/${id}`);
 };
 
-export const deleteRam = (id) =>{
-  return  httpClient.put(`/ram/delete/${id}`);
-}
+export const deleteRam = (id) => {
+  return httpClient.put(`/admin/ram/delete/${id}`);
+};
 
-export const returnRam = (id) =>{
-  return  httpClient.put(`/ram/return/${id}`);
-}
+export const returnRam = (id) => {
+  return httpClient.put(`/admin/ram/return/${id}`);
+};
 
-export const importRam = (form) =>{
-  return  httpClient.post("/ram/import", form, config);
-}
+export const importRam = (form) => {
+  return httpClient.post("/admin/ram/import", form, config);
+};
 
-export const search = (page, search) =>{
-  return  httpClient.get(`/ram/search?${page}`, search);
-}
+export const search = (page, search) => {
+  return httpClient.get(`/admin/ram/search?${page}`, search);
+};

@@ -25,7 +25,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/category/")
+@RequestMapping("/admin/category/")
 public class CategoryController {
     @Autowired
     private CategoryServiceImpl categoryService;

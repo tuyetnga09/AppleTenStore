@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/battery/")
+@RequestMapping("/admin/battery/")
 @CrossOrigin("*")
 public class BatteryController {
 

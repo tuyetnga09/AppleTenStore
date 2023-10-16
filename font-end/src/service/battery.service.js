@@ -7,33 +7,33 @@ const config = {
 };
 
 export const readAll = (page) => {
-  return httpClient.get(`/battery/getAll?${page}`);
+  return httpClient.get(`/admin/battery/getAll?${page}`);
 };
 
 export const returnDeleteAll = (page) => {
-  return httpClient.get(`/battery/displayDelete?${page}`);
+  return httpClient.get(`/admin/battery/displayDelete?${page}`);
 };
 
 export const add = (battery) => {
-  return httpClient.post(`/battery/add`, battery);
+  return httpClient.post(`/admin/battery/add`, battery);
 };
 
 export const update = (id, battery) => {
-  return httpClient.put(`/battery/update/${id}`, battery);
+  return httpClient.put(`/admin/battery/update/${id}`, battery);
 };
 
 export const detail = (id) => {
-  return httpClient.get(`/battery/${id}`);
+  return httpClient.get(`/admin/battery/${id}`);
 };
 
 export const deleteBattery = (id) => {
-  return httpClient.delete(`/battery/delete/${id}`);
+  return httpClient.delete(`/admin/battery/delete/${id}`);
 };
 
 export const returnBattery = (id) => {
-  return httpClient.put(`/battery/return/${id}`);
+  return httpClient.put(`/admin/battery/return/${id}`);
 };
 
 export const importBattery = (form) => {
-  return httpClient.post("/battery/import", form, config);
+  return httpClient.post("/admin/battery/import", form, config);
 };

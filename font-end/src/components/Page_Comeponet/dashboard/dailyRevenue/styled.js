@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { DatePicker } from "antd";
 
 export const DailyRevenueWrapper = styled.div`
-  height: 232px;
+  height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -1,28 +1,29 @@
 import httpClient from "../api/http-comons";
 
 export const readAll = (idAccount) => {
-  return httpClient.get(`/cart/${idAccount}`);
+  return httpClient.get(`/customer/cart/${idAccount}`);
 };
 
 export const readQuantityInCart = (idAccount) => {
-  return httpClient.get(`/cart/quantityInCart/${idAccount}`);
+  return httpClient.get(`/customer/cart/quantityInCart/${idAccount}`);
 };
 
 export const deleteCartDetail = (id) => {
-  return httpClient.delete(`/cart-detail/${id}`);
+  return httpClient.delete(`/customer/cart-detail/${id}`);
 };
 
 export const updateQuantity = (quantity) => {
-  return httpClient.post(`/cart-detail/change-quantity`, quantity);
+  return httpClient.post(`/customer/cart-detail/change-quantity`, quantity);
 };
 
 export const update = (id, newQuantity) => {
-  return httpClient.put(`/cart-detail/update-quantity/${id}?quantity=${newQuantity}`);
+  return httpClient.put(`/customer/cart-detail/update-quantity/${id}?quantity=${newQuantity}`);
 };
 
 export const addToCart = (newCart) => {
-  return httpClient.post("/cart/addToCart", newCart);
+  return httpClient.post("/customer/cart/addToCart", newCart);
 };
 
-
-
+export const getQuantityCartDetailBySku = (idsku,idAccount) => {
+  return httpClient.get(`/customer/cart-detail/getCartDetail/${idsku}?idAccount=${idAccount}`);
+};

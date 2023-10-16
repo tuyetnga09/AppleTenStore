@@ -6,35 +6,34 @@ const config = {
   },
 };
 
-export const readAll = (page) =>{
-    return  httpClient.get(`/screen/display?${page}`);
-}
+export const readAll = (page) => {
+  return httpClient.get(`/admin/screen/display?${page}`);
+};
 
-export const readAllDelete = (page) =>{
-  return  httpClient.get(`/screen/displayDelete?${page}`);
-}
+export const readAllDelete = (page) => {
+  return httpClient.get(`/admin/screen/displayDelete?${page}`);
+};
 
-export const create = (screen) =>{
-  return  httpClient.post("/screen/save", screen);
-}
+export const create = (screen) => {
+  return httpClient.post("/admin/screen/save", screen);
+};
 
 export const update = (id, screen) => {
-  return httpClient.put(`/screen/update/${id}`, screen);
+  return httpClient.put(`/admin/screen/update/${id}`, screen);
 };
 
 export const detail = (id) => {
-  return httpClient.get(`/screen/${id}`);
+  return httpClient.get(`/admin/screen/${id}`);
 };
 
-export const deleteScreen = (id) =>{
-  return  httpClient.put(`/screen/delete/${id}`);
-}
+export const deleteScreen = (id) => {
+  return httpClient.put(`/admin/screen/delete/${id}`);
+};
 
-export const returnScreen = (id) =>{
-  return  httpClient.put(`/screen/return/${id}`);
-}
+export const returnScreen = (id) => {
+  return httpClient.put(`/admin/screen/return/${id}`);
+};
 
-export const importScreen = (form) =>{
-  return  httpClient.post("/screen/import", form, config);
-}
-
+export const importScreen = (form) => {
+  return httpClient.post("/admin/screen/import", form, config);
+};

@@ -1,4 +1,4 @@
-package com.example.backend.controller.order_management.controller.client;
+package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.service.BillDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/billDetail")
-public class BillDetailController {
+@RequestMapping("/admin/billDetail")
+public  class BillDetailController {
 
     @Autowired
     private BillDetailService billDetailService;

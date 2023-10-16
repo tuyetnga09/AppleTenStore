@@ -3,7 +3,7 @@ import {
   readAll,
   deleteCartDetail,
   updateQuantity,
-  update,
+  update, getQuantityCartDetailBySku,
 } from "../../../service/cart.service";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
@@ -16,6 +16,7 @@ import { getOneSKU } from "../../../service/sku.service";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { event } from "jquery";
 import { DateField } from "@refinedev/antd";
+import queryString from "query-string";
 
 export default function CartDisplay() {
   const history = useHistory();
@@ -64,20 +65,20 @@ export default function CartDisplay() {
           readAll(1)
             .then((response) => {
               console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-              getOneSKU(idSKU)
-                .then((response) => {
-                  console.log(response.data);
-                  setSKU(response.data);
-                  if (sku.quantity <= 0) {
-                    notification.error({
-                      message: "ADD TO CART",
-                      description: "Sản phẩm đang tạm thời hết hàng",
-                    });
-                  }
-                })
-                .catch((error) => {
-                  console.log(`${error}`);
-                });
+              // getOneSKU(idSKU)
+              //   .then((response) => {
+              //     console.log(response.data);
+              //     setSKU(response.data);
+              //     // if (newQuantity > sku.quantity) {
+              //     //   notification.error({
+              //     //     message: "ADD TO CART",
+              //     //     description: "Không được nhập quá số lượng sản phẩm",
+              //     //   });
+              //     // }
+              //   })
+              //   .catch((error) => {
+              //     console.log(`${error}`);
+              //   });
               setProducts(response.data);
             })
             .catch((error) => {
@@ -104,6 +105,18 @@ export default function CartDisplay() {
     // Đặt lại giá trị tổng giá tiền
     setTotalPrice(total);
   };
+
+  //check tien hanh đặt hàng
+  const handleClickTienHangDH = () => {
+    if(products === null || products.length === 0){
+      notification.error({
+        message: "ĐẶT HÀNG",
+        description: "Vui lòng thêm sản phẩm vào giỏ hàng",
+      });
+    }else{
+      history.push("/checkout");
+    }
+  }
 
   return (
     <React.Fragment>
@@ -191,7 +204,13 @@ export default function CartDisplay() {
                                 </td>
                                 <td>
                                   <p className="fw-bold mb-0 me-5 pe-3">
-                                    {product.price}
+                                    {parseFloat(product.price).toLocaleString(
+                                      "vi-VN",
+                                      {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }
+                                    )}
                                   </p>
                                 </td>
                                 <td>
@@ -200,15 +219,27 @@ export default function CartDisplay() {
                                     style={{ paddingRight: "10px" }}
                                   >
                                     <button
-                                      // onClick={() => handleDownQuantiy(product.id)}
-                                      // className="minus"
-                                      onClick={() =>
+                                      onClick={() => {
+                                        const quantity =
+                                          document.getElementById(
+                                            `quantity-${index}`
+                                          );
+                                        quantity.value = product.quantity - 1;
+                                        console.log(quantity.value);
+                                        if (quantity.value <= 0) {
+                                          notification.error({
+                                            message: "ADD TO CART",
+                                            description:
+                                              "Số lượng phải lớn hơn 0",
+                                          });
+                                          quantity.value = 1;
+                                        }
                                         handleUpdateQuantity(
                                           product.idCartDetail,
                                           product.quantity - 1,
                                           product.idSKU
-                                        )
-                                      }
+                                        );
+                                      }}
                                       className="minus"
                                     />
                                     <input
@@ -243,8 +274,9 @@ export default function CartDisplay() {
                                           );
                                         } else if (
                                           event.target.value >
-                                          parseInt(quantitySKU) +
-                                            parseInt(product.quantity)
+                                          parseInt(quantitySKU) 
+                                          // +
+                                          //   parseInt(product.quantity)
                                         ) {
                                           notification.error({
                                             message: "ADD TO CART",
@@ -262,11 +294,11 @@ export default function CartDisplay() {
                                             product.idSKU
                                           );
                                         } else {
-                                          // const quantity =
-                                          //   document.getElementById(
-                                          //     `quantity-${index}`
-                                          //   );
-                                          // quantity.value = event.target.value;
+                                          const quantity =
+                                            document.getElementById(
+                                              `quantity-${index}`
+                                            );
+                                          quantity.value = event.target.value;
                                           handleUpdateQuantity(
                                             product.idCartDetail,
                                             event.target.value,
@@ -276,18 +308,42 @@ export default function CartDisplay() {
                                       }}
                                     />
                                     <button
-                                      // onClick={() => handleUpQuantiy(product.id)}
-                                      // className="plus"
-                                      onClick={() =>
+                                      onClick={() => {
+                                        getOneSKU(product.idSKU).then((res) => {
+                                          const quantity =
+                                            document.getElementById(
+                                              `quantity-${index}`
+                                            );
+                                          quantity.value =
+                                            parseInt(product.quantity) + 1;
+                                          if (
+                                            quantity.value >
+                                            parseInt(res.data.quantity) 
+                                            // + parseInt(product.quantity)
+                                          ) {
+                                            notification.error({
+                                              message: "ADD TO CART",
+                                              description:
+                                                "Không thể nhập quá số lượng đang có",
+                                            });
+                                            quantity.value =
+                                              parseInt(res.data.quantity) 
+                                              // +
+                                              // parseInt(product.quantity);
+                                          }
+                                        });
                                         handleUpdateQuantity(
                                           product.idCartDetail,
                                           parseInt(product.quantity) + 1,
                                           product.idSKU
-                                        )
-                                      }
+                                        );
+                                      }}
                                       className="plus"
                                     />
                                   </div>
+                                  <p style={{fontSize: "10px", color: "red"}}>
+                                    Còn {product.quantitySKU} sản phẩm
+                                  </p>
                                 </td>
                                 <td>
                                   <p className="fw-bold mb-0 me-5 pe-3">
@@ -334,12 +390,12 @@ export default function CartDisplay() {
                           class="d-grid gap-2 d-md-flex justify-content-md-end"
                           style={{ marginTop: "10px" }}
                         >
-                          <button
+                          {/* <button
                             class="btn btn-outline-primary me-md-2"
                             type="button"
                           >
                             Cập nhật giỏ hàng
-                          </button>
+                          </button> */}
                           <button
                             class="btn btn-outline-primary me-md-2"
                             type="button"
@@ -371,14 +427,15 @@ export default function CartDisplay() {
                         </div>
 
                         <div class="d-grid gap-2 col-6 mx-auto">
-                          <Link to={"/checkout"}>
+                          {/* <Link to={"/checkout"}> */}
                             <button
                               type="button"
                               className="btn btn-danger btn-block btn-lg"
+                              onClick={() => handleClickTienHangDH()}
                             >
                               TIẾN HÀNH ĐẶT HÀNG
                             </button>
-                          </Link>
+                          {/* </Link> */}
                         </div>
                         <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>
                           <a href="/">

@@ -24,7 +24,7 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/manufacture/")
+@RequestMapping("/admin/manufacture/")
 public class ManufactureController {
     @Autowired
     private ManufactureServiceImpl manufactureService;
