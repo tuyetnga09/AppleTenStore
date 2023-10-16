@@ -66,6 +66,7 @@ import ChatManager from "./components/Page_Comeponet/Chat/ChatManger";
 import SkuDisplay from "./components/product_component/SKU/SkuDisplay";
 import CategoryDisplay from "./components/Page_Comeponet/Categories/index";
 import AccountList from "./components/Page_Comeponet/Account/index";
+import Paydone from "./components/Page_Comeponet/Paydone";
 
 function App() {
   return (
@@ -200,6 +201,7 @@ function App() {
           <Route path="/sku/display" exact component={SkuDisplay} />
           <Route path="/categories" exact component={CategoryDisplay} />
           <Route path="/account" exact component={AccountList} />
+          <Route path="/paydone" exact component={Paydone} />
         </Switch>
       </Router>
     </div>

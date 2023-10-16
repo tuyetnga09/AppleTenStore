@@ -7,7 +7,7 @@ const config = {
 };
 
 export const readAll = (page) => {
-  return httpClient.get(`/admin/product/display?${page}`);
+  return httpClient.get(`/public/product/display?${page}`);
 };
 
 // hiển thị comboobox
@@ -57,7 +57,6 @@ export const detailCreateProduct = (id) => {
   return httpClient.get(`/admin/product/detail/${id}`);
 };
 
-
 export const deleteProduct = (id) => {
   return httpClient.delete(`/admin/product/delete/${id}`);
 };
@@ -83,32 +82,32 @@ export const findProductById = (id) => {
 // };
 
 export const readProductNew = (page) => {
-  return httpClient.get(`/admin/product/display/productNew?${page}`);
+  return httpClient.get(`/public/product/display/productNew?${page}`);
 };
 
 export const readProductCheap = (page) => {
-  return httpClient.get(`/admin/product/display/productCheap?${page}`);
+  return httpClient.get(`/public/product/display/productCheap?${page}`);
 };
 
 export const readFilterProductByPrice = (page) => {
-  return httpClient.get(`/admin/product/display/filterProductbyPrice?${page}`);
+  return httpClient.get(`/public/product/display/filterProductbyPrice?${page}`);
 };
 
 export const readFilterProductByCategory = (page) => {
   return httpClient.get(
-    `/admin/product/display/filterProductbyCategory?${page}`
+    `/public/product/display/filterProductbyCategory?${page}`
   );
 };
 
 export const readFilterProductByAscendingPrice = (page) => {
   return httpClient.get(
-    `/admin/product/display/filterProductByAscendingPrice?${page}`
+    `/public/product/display/filterProductByAscendingPrice?${page}`
   );
 };
 
 export const readFilterProductByDecreasePrice = (page) => {
   return httpClient.get(
-    `/admin/product/display/filterProductByDecreasePrice?${page}`
+    `/public/product/display/filterProductByDecreasePrice?${page}`
   );
 };
 
