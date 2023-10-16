@@ -2,7 +2,6 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.cart.AddCart;
 import com.example.backend.controller.order_management.model.cart.ListCart;
-import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.CartDetailRepository;
@@ -34,9 +33,11 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.getCartByAccount_Id(listAddToCart.getIdAccount());
         SKU sku = skuRepositoty.getOne(listAddToCart.getIdSKU());
 
-        if(sku.getQuantity() <= 0){
+        CartDetail cartDetailQuan = cartDetailRepository.getCartDetailBySku(listAddToCart.getIdSKU(), cart.getId());
+
+        if(cartDetailQuan != null && sku.getQuantity() <= cartDetailQuan.getQuantity() || sku.getQuantity() <= 0 ){
             System.out.println("Số lượng sản phẩm không đủ");
-        }else {
+        }else{
             if (cart == null) {
                 Cart c = new Cart();
                 c.setAccount(accountRepository.findById(listAddToCart.getIdAccount()).get());
@@ -49,9 +50,9 @@ public class CartServiceImpl implements CartService {
                         .quantity(listAddToCart.getQuantity()).build();
 
                 //Cập nhật số lượng sku
-                sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
-                skuRepositoty.save(sku);
-                System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
+//                sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
+//                skuRepositoty.save(sku);
+//                System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
 
                 cartDetailRepository.save(cartDetail);
 
@@ -67,9 +68,9 @@ public class CartServiceImpl implements CartService {
                             cartDetail.setQuantity(cartDetail.getQuantity() + listAddToCart.getQuantity());
 
                             //Cập nhật số lượng sku
-                            sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
-                            skuRepositoty.save(sku);
-                            System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
+//                            sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
+//                            skuRepositoty.save(sku);
+//                            System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
 
                             cartDetailRepository.save(cartDetail);
                             foundInOld = true;
@@ -83,9 +84,9 @@ public class CartServiceImpl implements CartService {
                                 .quantity(listAddToCart.getQuantity()).build();
 
                         //Cập nhật số lượng sku
-                        sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
-                        skuRepositoty.save(sku);
-                        System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
+//                        sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
+//                        skuRepositoty.save(sku);
+//                        System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
 
                         cartDetailRepository.save(cartDetail);
                     }
@@ -95,9 +96,9 @@ public class CartServiceImpl implements CartService {
                     CartDetail cartDetail = CartDetail.builder().sku(skuRepositoty.findById(listAddToCart.getIdSKU()).get()).cart(cart).price(listAddToCart.getPrice()).quantity(listAddToCart.getQuantity()).build();
 
                     //Cập nhật số lượng sku
-                    sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
-                    skuRepositoty.save(sku);
-                    System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
+//                    sku.setQuantity(sku.getQuantity() - listAddToCart.getQuantity());
+//                    skuRepositoty.save(sku);
+//                    System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
 
                     cartDetailRepository.save(cartDetail);
 

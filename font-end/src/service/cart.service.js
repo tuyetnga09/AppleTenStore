@@ -23,3 +23,7 @@ export const update = (id, newQuantity) => {
 export const addToCart = (newCart) => {
   return httpClient.post("/customer/cart/addToCart", newCart);
 };
+
+export const getQuantityCartDetailBySku = (idsku,idAccount) => {
+  return httpClient.get(`/customer/cart-detail/getCartDetail/${idsku}?idAccount=${idAccount}`);
+};

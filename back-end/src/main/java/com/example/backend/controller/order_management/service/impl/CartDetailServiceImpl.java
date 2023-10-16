@@ -13,6 +13,8 @@ import com.example.backend.repository.SKURepositoty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CartDetailServiceImpl implements CartDetailService {
     @Autowired
@@ -35,10 +37,10 @@ public class CartDetailServiceImpl implements CartDetailService {
     }
     @Override
     public Boolean deleteCartDetail(Integer id) {
-        CartDetail cartDetail = cartDetailRepository.findById(id).orElse(null);
-        SKU sku = cartDetail.getSku();
-        sku.setQuantity(sku.getQuantity() + cartDetail.getQuantity());
-        skuRepositoty.save(sku);
+//        CartDetail cartDetail = cartDetailRepository.findById(id).orElse(null);
+//        SKU sku = cartDetail.getSku();
+//        sku.setQuantity(sku.getQuantity() + cartDetail.getQuantity());
+//        skuRepositoty.save(sku);
         cartDetailRepository.deleteById(id);
         return true;
     }
@@ -59,12 +61,12 @@ public class CartDetailServiceImpl implements CartDetailService {
                 //Tìm sản phẩm
                 SKU sku = cartDetail.getSku();
                 //Số lượng còn trong kho
-                Integer tongSLSanPham = sku.getQuantity() + cartDetail.getQuantity();
+                Integer tongSLSanPham = sku.getQuantity();
                 //kiểm tra số lượng sản phẩm có đủ không
-                if(tongSLSanPham >= newQuantity){
+                if(tongSLSanPham >= newQuantity ){
                     // Cập nhật số lượng sản phẩm và cartdetail
-                    sku.setQuantity(tongSLSanPham - newQuantity);
-                    skuRepositoty.save(sku);
+//                    sku.setQuantity(tongSLSanPham - newQuantity);
+//                    skuRepositoty.save(sku);
                     cartDetail.setQuantity(newQuantity);
                     cartDetailRepository.save(cartDetail);
                     System.out.println("Số lượng sản phẩm còn lại: " + sku.getQuantity());
@@ -77,5 +79,10 @@ public class CartDetailServiceImpl implements CartDetailService {
             }
 
         }
+    }
+
+    @Override
+    public Integer getQuantityCartDetailBySku(Long id,Integer idAccount) {
+        return cartDetailRepository.getQuantityCartDetailBySku(id,idAccount);
     }
 }

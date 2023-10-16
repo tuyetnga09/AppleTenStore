@@ -5,10 +5,12 @@ import com.example.backend.controller.order_management.model.cartDetail.ChangeQu
 import com.example.backend.controller.order_management.model.cartDetail.ChangeSizeInCart;
 import com.example.backend.controller.order_management.service.CartDetailService;
 import com.example.backend.entity.CartDetail;
+import com.example.backend.entity.SKU;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,5 +41,10 @@ public class CartDetailController {
     @PutMapping("/update-quantity/{id}")
     public void changeQuantity(@PathVariable("id") Integer id, @RequestParam("quantity") Integer newQuantity) {
         cartDetailService.updateQuantity(id, newQuantity);
+    }
+
+    @GetMapping("/getCartDetail/{id}")
+    public Integer getCartDetail(@PathVariable("id") Long id,@RequestParam("idAccount") Integer idAccount) {
+        return cartDetailService.getQuantityCartDetailBySku(id, idAccount);
     }
 }
