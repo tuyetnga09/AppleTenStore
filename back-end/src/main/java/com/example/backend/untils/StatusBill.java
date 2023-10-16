@@ -1,7 +1,7 @@
 package com.example.backend.untils;
 
 public enum StatusBill {
-    TAO_HOA_DON,
+    XAC_NHAN,
     CHO_XAC_NHAN,
     CHO_VAN_CHUYEN,
     VAN_CHUYEN,

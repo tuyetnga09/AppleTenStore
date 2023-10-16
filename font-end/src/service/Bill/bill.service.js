@@ -7,3 +7,11 @@ export const searchNoDate = (page) => {
 export const searchWithDate = (page) => {
   return httpClient.get(`/manager/bill/searchWithDate?${page}`);
 };
+
+export const createBill = (bill) => {
+  return httpClient.post(`/customer/bill/offline`, bill);
+}
+
+export const updateStatusBill = (id) => {
+  return httpClient.put(`/customer/bill/update-status/${id}`)
+}

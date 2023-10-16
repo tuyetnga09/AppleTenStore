@@ -20,6 +20,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -54,16 +55,16 @@ public class Bill  {
     private BigDecimal totalMoney;
 
     @Column(name = "confirmation_date")
-    private Long confirmationDate;
+    private LocalDate confirmationDate;
 
     @Column(name = "delivery_date")
-    private Long deliveryDate;
+    private LocalDate deliveryDate;
 
     @Column(name = "receive_date ")
-    private Long receiveDate ;
+    private LocalDate receiveDate ;
 
     @Column(name = "completion_date ")
-    private Long completionDate;
+    private LocalDate completionDate;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)

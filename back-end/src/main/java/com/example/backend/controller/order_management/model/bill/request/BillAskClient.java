@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class BillAskClient {
-    private Integer  idProductDetail;
+    private Integer idProductDetail;
     private BigDecimal price;
     private Integer quantity;
 }
