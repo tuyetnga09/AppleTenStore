@@ -45,7 +45,7 @@ import CreateProduct from "./crud/create";
 // import "../css/index.css";
 // import Container from "react-bootstrap/Container";
 // import Navbar from "react-bootstrap/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
 import "primereact/resources/primereact.css"; // core css
@@ -56,6 +56,7 @@ const { Header, Sider, Content } = Layout;
 
 const { Text, Paragraph } = Typography;
 const StoreProducts = ({}) => {
+  const history = useHistory();
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
@@ -167,6 +168,7 @@ const StoreProducts = ({}) => {
       let newArr = [...display].filter((s) => s.id !== id);
       setDisplay(newArr);
     });
+    history.push("/product");
   }
 
   return (

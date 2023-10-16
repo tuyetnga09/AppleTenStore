@@ -90,6 +90,16 @@ import { ColumnConfig } from "@ant-design/plots/lib/components/column";
 
 import { IncreaseIcon } from "../../icon/increase";
 import { DecreaseIcon } from "../../icon/decrease";
+import {
+  sumAllBill,
+  sumBillUnconfimred,
+  sumBillConfirmed,
+  sumBillAreDelivering,
+  sumBillAlreadyPaid,
+  sumBillNoReturn,
+  sumBillReturns,
+  sumBillCancelOrder,
+} from "../../../../service/dashboard/admin_bill.service";
 
 // import { ISalesChart } from "../../../interfaces";
 import { DailyOrderWrapper, TitleAreNumber, TitleArea } from "./styled";
@@ -105,25 +115,131 @@ import {
 
 const DailyOrders = () => {
   const [data, setData] = useState([]);
-
+  const [dataSumAllBill, setDataSumAllBill] = useState();
+  const [dataSumUnconfimred, setDataSumUnconfimred] = useState();
+  const [dataSumConfimred, setDataSumConfimred] = useState();
+  const [dataSumAreDelivering, setDataSumAreDelivering] = useState();
+  const [dataSumAlreadyPaid, setDataSumAlreadyPaid] = useState();
+  const [dataSumNoReturn, setDataSumNoReturn] = useState();
+  const [dataSumReturns, setDataSumReturns] = useState();
+  const [dataSumCancelOrder, setDataSumCancelOrder] = useState();
   // Simulate data from the backend
-  const fetchDataFromBackend = () => {
+
+  useEffect(() => {
+    let unconfirmedData = null;
+    let confirmedData = null;
+    let alreadyPaidData = null;
+    let areDeliveringData = null;
+    let noReturnData = null;
+    let returnsData = null;
+    let cancelOrderData = null;
+    //1
+    sumAllBill()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumAllBill(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+    //2
+    sumBillUnconfimred()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumUnconfimred(response.data);
+        unconfirmedData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //3
+    sumBillConfirmed()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumConfimred(response.data);
+        confirmedData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+    //4
+    sumBillAreDelivering()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumAreDelivering(response.data);
+        areDeliveringData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //5
+    sumBillAlreadyPaid()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumAlreadyPaid(response.data);
+        alreadyPaidData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //6
+    sumBillNoReturn()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumNoReturn(response.data);
+        noReturnData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //7
+    sumBillReturns()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumReturns(response.data);
+        returnsData = response.data;
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    //8
+    sumBillCancelOrder()
+      .then((response) => {
+        console.log(response.data);
+        setDataSumCancelOrder(response.data);
+        cancelOrderData = response.data;
+        // Gọi fetchDataFromBackend sau khi nhận được cả hai dữ liệu
+        fetchDataFromBackend(
+          unconfirmedData,
+          confirmedData,
+          areDeliveringData,
+          alreadyPaidData,
+          noReturnData,
+          returnsData,
+          cancelOrderData
+        );
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
+
+  const fetchDataFromBackend = (a, b, c, d, e, f, g) => {
+    console.log(a + " " + b + " " + c + " " + d + " " + e + " " + f + " " + g);
     // Replace this with actual API call to your backend
     const dataFromBackend = [
-      { name: "", orders: 10 },
-      { name: "", orders: 25 },
-      { name: "", orders: 12 },
-      { name: "", orders: 32 },
-      { name: "", orders: 18 },
-      { name: "", orders: 10 },
-      { name: "", orders: 25 },
+      { name: "1U", orders: a },
+      { name: "2C", orders: b },
+      { name: "3AD", orders: c },
+      { name: "4AP", orders: d },
+      { name: "5NR", orders: e },
+      { name: "6R", orders: f },
+      { name: "7CO", orders: g },
     ];
     setData(dataFromBackend);
   };
-
-  useEffect(() => {
-    fetchDataFromBackend();
-  }, []);
 
   const { Text, Title } = Typography;
 
@@ -132,14 +248,15 @@ const DailyOrders = () => {
       <TitleArea>
         <Title level={3}>Daily Orders</Title>
         <TitleAreNumber>
-          <Text strong>50</Text>
+          <Text strong>{dataSumAllBill}</Text>
 
           {/* {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />} */}
           <IncreaseIcon />
           {/* <DecreaseIcon /> */}
         </TitleAreNumber>
       </TitleArea>
-      <LineChart width={300} height={150} data={data}>
+
+      <LineChart width={330} height={150} data={data}>
         <XAxis dataKey="name" />
         <YAxis />
         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
@@ -147,6 +264,84 @@ const DailyOrders = () => {
         <Legend />
         <Line type="monotone" dataKey="orders" stroke="rgb(75, 192, 192)" />
       </LineChart>
+      {/* 1 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          1U - Sum Bill Unconfimred
+        </Title>
+        <TitleAreNumber>
+          <Title level={5} style={{ color: "white" }}>
+            {dataSumUnconfimred}
+          </Title>
+        </TitleAreNumber>
+      </TitleArea>
+      {/* 2 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          2C - Sum Bill Confimred
+        </Title>
+        <TitleAreNumber>
+          <Title level={5} style={{ color: "white" }}>
+            {dataSumConfimred}
+          </Title>
+        </TitleAreNumber>
+      </TitleArea>
+      {/* 3 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          3AD - Sum Bill Are Delivering
+        </Title>
+        <TitleAreNumber>
+          <Title level={5} style={{ color: "white" }}>
+            {dataSumAreDelivering}
+          </Title>
+        </TitleAreNumber>
+      </TitleArea>
+
+      {/* 4 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          4AP - Sum Bill Already Paid
+        </Title>
+        <TitleAreNumber>
+          <Title level={5} style={{ color: "white" }}>
+            {dataSumAlreadyPaid}
+          </Title>
+        </TitleAreNumber>
+      </TitleArea>
+      {/* 5 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          5NR - Sum Bill No Return
+        </Title>
+        <TitleAreNumber>
+          <Title level={5} style={{ color: "white" }}>
+            {dataSumNoReturn}
+          </Title>
+        </TitleAreNumber>
+      </TitleArea>
+      {/* 6 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          6R - Sum Bill Returns
+        </Title>
+        <TitleAreNumber>
+          <Title level={5} style={{ color: "white" }}>
+            {dataSumReturns}
+          </Title>
+        </TitleAreNumber>
+      </TitleArea>
+      {/* 7 */}
+      <TitleArea>
+        <Title level={5} style={{ color: "white" }}>
+          7CO - Sum Bill Cancel Order
+        </Title>
+        <TitleAreNumber>
+          <Title level={5} style={{ color: "white" }}>
+            {dataSumCancelOrder}
+          </Title>
+        </TitleAreNumber>
+      </TitleArea>
     </DailyOrderWrapper>
   );
 };

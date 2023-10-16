@@ -1,5 +1,6 @@
 import { width } from "@mui/system";
 import React, { useEffect, useState } from "react";
+import { revenue } from "../../../../service/dashboard/admin_bill.service";
 import {
   LineChart,
   Line,
@@ -17,7 +18,7 @@ const DeliveryMap = () => {
   const fetchDataFromBackend = () => {
     // Replace this with actual API call to your backend
     const dataFromBackend = [
-      { name: "Jan", sales: 10 },
+      { name: "Jan", sales: 2 },
       { name: "Feb", sales: 25 },
       { name: "Mar", sales: 12 },
       { name: "Apr", sales: 32 },
@@ -34,6 +35,14 @@ const DeliveryMap = () => {
   };
 
   useEffect(() => {
+    revenue()
+      .then((response) => {
+        const data = response.data;
+        console.log(data + " Ann1 --------------------------------------");
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     fetchDataFromBackend();
   }, []);
 

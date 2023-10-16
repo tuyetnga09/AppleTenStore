@@ -301,7 +301,6 @@ public class ProductServiceImpl {
             product.setIdcategory(category);
             product.setDateUpdate(new Date());
 
-
             // kkiểm tra xem dữ liệu đầu vào có giống với lúc đầu không
             Boolean isCkeckCapacity = capacityList.containsAll(skuList.stream().map(s -> s.getCapacity()).collect(Collectors.toList()));
             Boolean isCkeckColor = colorList.containsAll(skuList.stream().map(s -> s.getColor()).collect(Collectors.toList()));
@@ -325,32 +324,20 @@ public class ProductServiceImpl {
                     if (capacityList.contains(skuList.get(i).getCapacity().trim())) {
                         System.out.println("------------1");
                     } else {
-                        System.out.println("xxxxxx-------------------" + skuList.get(i).getCapacity().trim());
-
                         capacityListDelete.add(skuList.get(i).getCapacity().trim());
                     }
                     //
                     if (colorList.contains(skuList.get(i).getColor().trim())) {
                         System.out.println("------------1");
                     } else {
-                        System.out.println("xxxxxx-------------------" + skuList.get(i).getColor().trim());
-
                         colorListDelete.add(skuList.get(i).getColor().trim());
                     }
                 }
+                //.stream().distinct() xoá những giá trị trùng lặp trong list
                 capacityListDelete = capacityListDelete.stream().distinct().collect(Collectors.toList());
+                colorListDelete = colorListDelete.stream().distinct().collect(Collectors.toList());
 
-                for (String s : capacityListDelete) {
-                    System.out.println("------------1 ++++ : " + s.trim());
-
-                }
-
-                for (String s : colorListDelete) {
-                    System.out.println("------------1 ==== : " + s.trim());
-
-                }
-
-                if (capacityListDelete != null && colorListDelete.isEmpty()) {
+                if (capacityListDelete.size() > 0 && colorListDelete.size() == 0) {
                     capacityListDelete.stream().distinct();
                     // nếu capacityListDelete != null thì đã có capacity bị xoá đi khi edit product
                     // colorListDelete == null là các color cũ vẫn đang giữ nguyên
@@ -367,7 +354,7 @@ public class ProductServiceImpl {
                     }
 
                 }
-                if (capacityListDelete.isEmpty() && colorListDelete != null) {
+                if (capacityListDelete.size() == 0 && colorListDelete.size() > 0) {
                     // nếu colorListDelete != null thì đã có color bị xoá đi khi edit product
                     // capacityListDelete == null là các capacity cũ vẫn đang giữ nguyên
                     // -> lúc này cần xoá các bản ghi  SKU cũ có chữa colorListDelete
@@ -384,12 +371,30 @@ public class ProductServiceImpl {
                     }
 
                 }
-                if (capacityListDelete != null && colorListDelete != null) {
+                System.out.println(colorListDelete.size() + " hihi -------------------------");
+                System.out.println(colorListDelete + " hihi -------------------------");
+                System.out.println(colorListDelete.isEmpty() + " hihi -------------------------");
+                System.out.println((colorListDelete == null) + " hihi -------------------------");
+
+
+                if (capacityListDelete.size() > 0 && colorListDelete.size() > 0) {
                     // nếu colorListDelete != null thì đã có color bị xoá đi khi edit product
                     // capacityListDelete != null là các capacity bị xoá đi khi edit product
                     // -> lúc này cần xoá các bản ghi  SKU cũ có chữa colorListDelete vaf capacityListDelete
                     for (String capacity : sizeCapacityList) {
+                        // xoá tất cả bản ghi duyệt theo capacity trước lúc cập nhật và xoá theo các color đã bị xoá đi khi được thêm vào để edit
                         for (String color : colorListDelete) {
+                            SKU skuDelete = skuRepositoty.findByProductAndCapacityAndColor(product, capacity, color);
+                            if (skuDelete != null) {
+                                skuRepositoty.deleteById(skuDelete.getId());
+                            }
+                        }
+
+                    }
+
+                    for (String color : sizeColorList) {
+                        // xoá tất cả bản ghi duyệt theo color trước lúc cập nhật và xoá theo các capacity đã bị xoá đi khi được thêm vào để edit
+                        for (String capacity : capacityListDelete) {
                             SKU skuDelete = skuRepositoty.findByProductAndCapacityAndColor(product, capacity, color);
                             if (skuDelete != null) {
                                 skuRepositoty.deleteById(skuDelete.getId());
@@ -425,6 +430,30 @@ public class ProductServiceImpl {
                 }
             }
 
+            // colorList list name color đc truyền vaò thao đối tượng product để edit
+            List<Color> colors = new ArrayList<>();
+            if (colorList != null) {
+                for (String colorName : colorList) {
+                    Color color = colorRepository.findByName(colorName);
+                    if (color != null) {
+                        colors.add(color);
+                    }
+                }
+            }
+            product.setColors(colors);
+
+            //  capacityList list name capacity đc truyền vaò thao đối tượng product để edit
+            List<Capacity> capacities = new ArrayList<>();
+            if (capacityList != null) {
+                for (String capacityName : capacityList) {
+                    Capacity capacity = capacityRepository.findByName(capacityName);
+                    if (capacity != null) {
+                        capacities.add(capacity);
+                    }
+                }
+            }
+            product.setCapacities(capacities);
+
 //            product.setIdimage(image);
             product.setSkus(skuList);
             product.setQuantity(skuList.size());
@@ -434,4 +463,6 @@ public class ProductServiceImpl {
             return "Cập Nhật Thất Bại! - Sản Phẩm Không Tồn Tại.";
         }
     }
+
+
 }

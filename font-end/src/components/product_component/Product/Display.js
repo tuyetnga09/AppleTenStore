@@ -2,7 +2,16 @@ import React, { useEffect, useState, useRef } from "react";
 import { readAll, deleteProduct } from "../../../service/product.service";
 import Pagination from "./Paging";
 import queryString from "query-string";
-
+import { readImportImei, ImportImeiExcel } from "../../../service/imei.service";
+import { detailCreateProduct, update } from "../../../service/product.service";
+import {
+  readFilterProductByAscendingPrice,
+  readFilterProductByCategory,
+  readFilterProductByDecreasePrice,
+  readFilterProductByPrice,
+  readProductCheap,
+  readProductNew,
+} from "../../../service/product.service";
 import {
   Typography,
   Row,
@@ -23,6 +32,7 @@ import {
   DatePicker,
   Layout,
   theme,
+  notification,
 } from "antd";
 import {
   SearchOutlined,
@@ -37,17 +47,21 @@ import {
   LogoutOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  FileAddFilled,
 } from "@ant-design/icons";
 import { StyledStoreProducts } from "./Interface/index";
 import { NumberField } from "@refinedev/antd";
 import CreateProduct from "./crud/create";
 import UpdateProduct from "./crud/edit";
+import ExportImei from "./crud/ExportImei";
+
 // import "../css/index.css";
 // import Container from "react-bootstrap/Container";
 // import Navbar from "react-bootstrap/Navbar";
 // import { Link } from "react-router-dom";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
@@ -55,6 +69,8 @@ import "primereact/resources/primereact.css"; // core css
 import { Toast } from "primereact/toast";
 import { FaFileExcel } from "react-icons/fa";
 import AvatarProduct from "./AvatarProduct";
+import * as XLSX from "xlsx";
+
 const queryClient = new QueryClient();
 const { Header, Sider, Content } = Layout;
 
@@ -201,8 +217,58 @@ const StoreProducts = ({}) => {
     });
   }
 
+  // Hàm khởi tạo để hiển thị Modal detal product để import excel imei  -- 11
+  const [
+    isModalVisibleDetailProductImportImei,
+    setIsModalVisibleDetailProductImportImei,
+  ] = useState(false); // Trạng thái hiển thị Modal
+
+  // lưu trữ thông tin product detail
+  const [detailedProduct, setDetailedProduct] = useState(null);
+  // Hàm để hiển thị Modal detal product để import excel imei
+  const openDetailModalDetailProductImportImei = (product) => {
+    setDetailedProduct(product);
+    setIsModalVisibleDetailProductImportImei(true);
+  };
+
+  // Hàm để ẩn Modal detal product để import excel imei
+  const handleCancelDetailProductImportImei = () => {
+    setIsModalVisibleDetailProductImportImei(false);
+  };
+
   // sắp xếp theo giá
-  async function ascendingPrice() {}
+  // const paramsStringDecreasePrice = queryString.stringify(filtersDecreasePrice);
+
+  const [filtersDecreasePrice, setFiltersDecreasePrice] = useState({
+    page: 0,
+    key: "",
+  });
+  const [productFilter, setProductFilter] = useState([]);
+  // sắp xếp theo giá
+  function ascendingPrice() {
+    let item = { page: 0, key: "" };
+    // setFilters(null);
+    // // setFiltersPrice(null);
+    // // setFiltersCategory(null);
+    // setFiltersAcendingPrice(item);
+    // setFiltersDecreasePrice(null);
+    // setFiltersNew(null);
+    // setFiltersCheap(null);
+    // const keyword = document.getElementById("key");
+    // keyword.value = "";
+  }
+
+  //xoá bộ lọc
+  function unShowContainProducts() {
+    // const deleteAllFilter = document.getElementById("deleteAllFilter");
+    // deleteAllFilter.style.display = "none";
+    // let item = { page: 0, key: "" };
+    // setFilters(item);
+    // // setFiltersNew(item);
+    // // setFiltersCheap(item);
+    // const keyword = document.getElementById("key");
+    // keyword.value = "";
+  }
 
   return (
     <>
@@ -289,7 +355,6 @@ const StoreProducts = ({}) => {
                           <Link to="/product/displayDelete">
                             <Button>Deleted</Button>
                           </Link>
-
                           <div className="sortFilter dropdown">
                             {/* <Button className="dropbtn">Sắp xếp</Button> */}
                             <Button>Sắp xếp</Button>
@@ -299,13 +364,23 @@ const StoreProducts = ({}) => {
                             >
                               <Link
                                 to={`/product`}
-                                onClick={() => ascendingPrice()}
+                                // onClick={() => ascendingPrice()}
                               >
                                 Giá tăng dần
                               </Link>
                               <Link to={`/product`}>Giá giảm dần</Link>
                             </div>
                           </div>
+                          <div className="choosedFilter flexContain">
+                            <Link
+                              id="deleteAllFilter"
+                              style={{ display: "none" }}
+                              to={"/product"}
+                              // onClick={() => unShowContainProducts()}
+                            >
+                              Xóa bộ lọc
+                            </Link>
+                          </div>{" "}
                         </StyledStoreProducts>
 
                         {/* <AntdList
@@ -391,6 +466,26 @@ const StoreProducts = ({}) => {
                                         onClick={() => openDetailModal(item)}
                                       >
                                         Edit
+                                      </Menu.Item>
+                                      <Menu.Item
+                                        key="3"
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <FileAddFilled
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() =>
+                                          openDetailModalDetailProductImportImei(
+                                            item
+                                          )
+                                        }
+                                      >
+                                        Import Imei
                                       </Menu.Item>
                                     </Menu>
                                   }
@@ -526,6 +621,17 @@ const StoreProducts = ({}) => {
                     bodyStyle={{ minHeight: "450px" }}
                   >
                     <UpdateProduct product={selectedProduct} />
+                  </Modal>
+
+                  <Modal
+                    // {...modalProps}
+                    visible={isModalVisibleDetailProductImportImei}
+                    onCancel={handleCancelDetailProductImportImei}
+                    width={1000}
+                    footer={null}
+                    bodyStyle={{ minHeight: "650px" }}
+                  >
+                    <ExportImei productDetail={detailedProduct} />
                   </Modal>
                   <Pagination
                     pagination={pagination}

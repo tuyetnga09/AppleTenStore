@@ -58,4 +58,8 @@ public class SKUServiceImpl implements Iservice<SKU> {
     public SKU findByID(Long id){
        return skuRepositoty.findById(id).orElse(null);
     };
+
+    public List<SKU> getAllSkuFindByProduct(Product product){
+        return skuRepositoty.findByProduct(product);
+    }
 }

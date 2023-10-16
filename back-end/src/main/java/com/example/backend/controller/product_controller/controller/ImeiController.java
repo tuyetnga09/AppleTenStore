@@ -101,7 +101,6 @@ public class ImeiController {
         try {
             List<ImportImei> checkedImeiList = service.isCheckImei(file, idSku);
             if (checkedImeiList.isEmpty()) {
-
                 return new ResponseEntity<>(checkedImeiList, HttpStatus.OK); // import thành công
             }
             return new ResponseEntity<>(checkedImeiList, HttpStatus.OK); // import bị trùng imei

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 export const DailyOrderWrapper = styled.div`
-  height: 232px;
+  height: 500px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -18,7 +18,7 @@ export const TitleArea = styled.div`
 
   h3,
   span {
-    color: #ffffff !important;
+    color: white !important;
     margin-bottom: 0 !important;
   }
 
