@@ -20,6 +20,7 @@ import {readAllProvince} from "../../../service/AddressAPI/province.service";
 import {getFee} from "../../../service/AddressAPI/fee.service";
 import {get} from "jquery";
 import {Link} from "react-router-dom";
+import {createBill} from "../../../service/Bill/bill.service";
 
 const Checkout = () => {
     const [isLogin, setIsGLogin] = useState([false]);
@@ -69,18 +70,18 @@ const Checkout = () => {
         readAll(1)
             .then((response) => {
                 const list = response.data;
-                const listBill = []
                 setProducts(list);
+                const adidaphat = []
                 list.map((item) => {
-                    [...listBill].push({
-                        idProductDetail: item.id,
+                    adidaphat.push({
+                        idProductDetail: item.idProduct,
                         price: item.price,
                         quantity: item.quantity
                     })
                 })
                 setBill({
                     ...bill,
-                    billDetail: listBill
+                    billDetail: adidaphat
                 })
             })
             .catch((error) => {
@@ -130,7 +131,6 @@ const Checkout = () => {
         readAllWard(district_id)
             .then((response) => {
                 setWards(response.data.data);
-                console.log(response.data);
             })
             .catch((error) => {
                 console.log(`${error}`);
@@ -139,7 +139,6 @@ const Checkout = () => {
             getFee(transportationFeeDTO)
                 .then((response) => {
                     setFee(response.data.data);
-                    console.log(response.data);
                 })
                 .catch((error) => {
                     console.log(`${error}`);
@@ -368,7 +367,6 @@ const Checkout = () => {
         const target = event.target;
         const value = target.value;
         setProvince_id(value);
-        console.log(value);
         setDistrict_id(null);
         setWards([]);
         let item = {
@@ -380,8 +378,8 @@ const Checkout = () => {
         setTransportationFeeDTO(item);
         setBill({
             ...bill,
-            province: value
-        })
+            province: 'Bắc Giang'
+        });
     };
 
     const handleDistrict = (event) => {
@@ -395,7 +393,7 @@ const Checkout = () => {
         console.log(transportationFeeDTO);
         setBill({
             ...bill,
-            district: value
+            district: 'Hiệp Hòa'
         })
     };
 
@@ -408,8 +406,9 @@ const Checkout = () => {
         console.log(transportationFeeDTO);
         setBill({
             ...bill,
-            wards: value
+            wards: 'Bắc Lý'
         })
+        console.log(bill)
     };
 
     function hanldeName(event) {
@@ -434,7 +433,11 @@ const Checkout = () => {
     }
 
     function handleSubmit() {
-        console.log(bill)
+        createBill(bill).then((response) => {
+            console.log(response.data)
+        }).catch((error) => {
+            console.log(error)
+        })
     }
 
     return (
@@ -446,8 +449,6 @@ const Checkout = () => {
                     <form
                         class="needs-validation"
                         name="frmthanhtoan"
-                        method="post"
-                        action="#"
                         onSubmit={handleSubmit}
                     >
                         <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
@@ -645,14 +646,14 @@ const Checkout = () => {
                                             <label for="kh_cmnd">Tỉnh, thành phố:</label>
                                             <select
                                                 class="form-select"
-                                                id="floatingSelect"
+                                                id="provinces"
                                                 aria-label="Floating label select example"
                                                 onChange={handleProvince}
                                             >
                                                 <option value={"undefined"} selected></option>
                                                 {provinces.map((pr) => {
                                                     return (
-                                                        <option key={pr.ProvinceID} value={pr.ProvinceName}>
+                                                        <option key={pr.ProvinceID} value={pr.ProvinceID}>
                                                             {pr.ProvinceName}
                                                         </option>
                                                     );
@@ -664,14 +665,14 @@ const Checkout = () => {
                                             <label for="kh_cmnd">Quận, huyện:</label>
                                             <select
                                                 class="form-select"
-                                                id="floatingSelect"
+                                                id="districts"
                                                 aria-label="Floating label select example"
                                                 onChange={handleDistrict}
                                             >
                                                 <option selected></option>
                                                 {districts.map((dt) => {
                                                     return (
-                                                        <option key={dt.DistrictID} value={dt.DistrictName}>
+                                                        <option key={dt.DistrictID} value={dt.DistrictID}>
                                                             {dt.DistrictName}
                                                         </option>
                                                     );
@@ -683,14 +684,14 @@ const Checkout = () => {
                                             <label for="kh_cmnd">Phường, xã:</label>
                                             <select
                                                 class="form-select"
-                                                id="floatingSelect"
+                                                id="wards"
                                                 aria-label="Floating label select example"
                                                 onChange={handleWard}
                                             >
                                                 <option selected></option>
                                                 {wards.map((w) => {
                                                     return (
-                                                        <option key={w.WardID} value={w.WardName}>
+                                                        <option key={w.WardID} value={w.WardID}>
                                                             {w.WardName}
                                                         </option>
                                                     );

@@ -109,7 +109,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = Bill.builder()
                 .code(new Random().randomToString("Bill"))
                 .phoneNumber(request.getPhoneNumber())
-                .address(request.getAddress() + ',' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
+                .address(request.getAddress() + '-' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
                 .itemDiscount(request.getItemDiscount())
