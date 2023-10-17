@@ -269,13 +269,13 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Page<Bill> searchNoDate(Pageable pageable, String key, String status, String user) {
-        return billRepository.searchNoDate(pageable, key, status, user);
+    public List<Bill> searchNoDate(String key, String status, String user) {
+        return billRepository.searchNoDate(key, status, user);
     }
 
     @Override
-    public Page<Bill> searchWithDate(Pageable pageable, String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
-        return billRepository.searchWithDate(pageable, key, status, user, dateStart, dateEnd);
+    public List<Bill> searchWithDate(String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
+        return billRepository.searchWithDate(key, status, user, dateStart, dateEnd);
     }
 
     @Override

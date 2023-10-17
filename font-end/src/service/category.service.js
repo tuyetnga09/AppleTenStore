@@ -39,6 +39,6 @@ export const search = (page, search) => {
   return httpClient.get(`/admin/category/search?${page}`, search);
 };
 
-export const readAllDashboard = (page) => {
-  return httpClient.get(`/admin/category/displayDashboard?${page}`);
+export const readAllDashboard = () => {
+  return httpClient.get(`/admin/category/displayDashboard`);
 };

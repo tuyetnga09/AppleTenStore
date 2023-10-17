@@ -28,9 +28,9 @@ public interface VoucherService {
     Voucher findByIdVoucher(Integer id);
 
     List<Voucher> getVoucher(Voucher voucher);
-    Page<Voucher> searchNoDate(Pageable pageable, String key, String status);
+    List<Voucher> searchNoDate(String key, String status);
 
-    Page<Voucher> searchWithDate(Pageable pageable, String key, String status, LocalDate dateStart, LocalDate dateEnd);
+    List<Voucher> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
     List<Voucher> getVoucherFreeShip(Voucher voucher);
 

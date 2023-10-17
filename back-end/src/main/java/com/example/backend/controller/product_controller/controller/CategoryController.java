@@ -94,9 +94,9 @@ public class CategoryController {
     }
 
     @GetMapping("displayDashboard")
-    public Page<Category> viewAllDashboard(Pageable pageable) {
+    public List<Category> viewAllDashboard() {
 //        Pageable pageable = PageRequest.of(page, 5);
-        Page<Category> listCategory = categoryService.getAll(pageable);
-        return listCategory;
+//        Page<Category> listCategory = categoryService.getAll(pageable);
+        return categoryService.viewAllDashboard();
     }
 }

@@ -143,10 +143,8 @@ public class ProductController {
 //    }
 
     @GetMapping("display/listProductByCategories")
-    public Page<Product> listProductByCategories(Pageable pageable, @RequestParam("id") Integer id) {
-//        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.listProductByCategories(pageable, id);
-        return listProduct;
+    public List<Product> listProductByCategories(@RequestParam("id") Integer id) {
+        return productService.listProductByCategories(id);
     }
 
 

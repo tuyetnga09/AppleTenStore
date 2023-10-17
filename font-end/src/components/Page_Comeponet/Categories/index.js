@@ -52,9 +52,9 @@ export const CategoryList = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    readAllDashboard("page=0")
+    readAllDashboard()
       .then((res) => {
-        setCategories(res.data.content);
+        setCategories(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -158,6 +158,12 @@ export const CategoryList = () => {
                       ? expandedRowRender
                       : undefined,
                   }}
+                  pagination={{
+                    pageSize: 5,
+                    showSizeChanger: false,
+                    showTotal: (total) => `Tổng số ${total} mục`,
+                    showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                  }}
                   rowKey="id"
                 >
                   <Table.Column
@@ -227,9 +233,9 @@ const CategoryProductsTable = ({ record }) => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    listProductByCategories(`page=0&id=${record.id}`)
+    listProductByCategories(`id=${record.id}`)
       .then((res) => {
-        setProducts(res.data.content);
+        setProducts(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -267,7 +273,16 @@ const CategoryProductsTable = ({ record }) => {
 
   return (
     <List title="Products" createButtonProps={undefined}>
-      <Table rowKey="id" dataSource={products}>
+      <Table
+        rowKey="id"
+        dataSource={products}
+        pagination={{
+          pageSize: 5,
+          showSizeChanger: false,
+          showTotal: (total) => `Tổng số ${total} mục`,
+          showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+        }}
+      >
         <Table.Column
           dataIndex="images"
           render={(text, record) => (

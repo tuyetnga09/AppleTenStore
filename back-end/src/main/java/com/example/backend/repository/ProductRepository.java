@@ -77,5 +77,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> filterProductByDecreasePrice(Pageable pageable, String key);
 
     @Query(value = "select product.id, product.date_create, product.date_update, product.person_create, product.person_update, product.status, product.code, product.description, product.name, product.price, product.quantity, product.id_ram, product.id_battery, product.id_category, product.id_chip, product.id_manufacture, product.id_screen, product.id_size from product join category on product.id_category = category.id where category.id = ?1", nativeQuery = true)
-    Page<Product> listProductByCategories(Pageable pageable, Integer id);
+    List<Product> listProductByCategories(Integer id);
 }

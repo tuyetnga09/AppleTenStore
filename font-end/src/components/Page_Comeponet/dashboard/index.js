@@ -20,7 +20,8 @@ import {
   GiftOutlined,
   LogoutOutlined,
   ShopOutlined,
-  UnorderedListOutlined,FileDoneOutlined
+  UnorderedListOutlined,
+  FileDoneOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 const { Text } = Typography;
@@ -38,12 +39,12 @@ const DashboardPage = () => {
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
-          <Menu.Item key="0" >
-            <img
+            <Menu.Item key="0">
+              <img
                 src="/img/logo.jpg"
                 alt="Trang chủ Smartphone Store"
                 title="Trang chủ Smartphone Store"
-                style={{width: "150px"}}
+                style={{ width: "150px" }}
               />
             </Menu.Item>
             <Menu.Item key="0" icon={<FileDoneOutlined />}>

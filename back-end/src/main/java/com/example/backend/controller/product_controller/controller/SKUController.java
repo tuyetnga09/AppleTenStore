@@ -57,10 +57,19 @@ public class SKUController {
         Product product = productService.findById(idProduct);
         return skuService.getAllSkuFindByProduct(product);
     }
-    @GetMapping("getSkuProduc")
-    public Page<ListSkuProduct> getSKUProduct(@RequestParam(value = "page", defaultValue = "0") Integer page){
-        Pageable pageable = PageRequest.of(page, 5);
-       return skuService.getSKUProductFormSellOff(pageable);
+//    @GetMapping("getSkuProduc")
+//    public Page<ListSkuProduct> getSKUProduct(@RequestParam(value = "page", defaultValue = "0") Integer page){
+//        Pageable pageable = PageRequest.of(page, 5);
+//       return skuService.getSKUProductFormSellOff(pageable);
+//    }
+
+    @GetMapping("getSkuProduct")
+    public List<ListSkuProduct> getSKUProduct(@RequestParam("key") String key){
+        return skuService.getSKUProductFormSellOff(key);
     }
 
+    @GetMapping("getSkuProductByCategory")
+    public List<ListSkuProduct> getSKUProductByCategory(@RequestParam("id") Integer id, @RequestParam("key") String key){
+        return skuService.getSKUProductFormSellOffByCategory(id, key);
+    }
 }
