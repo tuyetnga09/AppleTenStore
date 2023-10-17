@@ -4,7 +4,6 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
-import com.example.backend.controller.order_management.model.bill.response.BillResponse;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.AddressRepository;
@@ -254,6 +253,7 @@ public class BillServiceImpl implements BillService {
 
         return "Finished";
     }
+
     public boolean billWait(BillRequestOffline request) {
         return false;
     }

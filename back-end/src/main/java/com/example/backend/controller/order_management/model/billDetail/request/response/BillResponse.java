@@ -1,4 +1,4 @@
-package com.example.backend.controller.order_management.model.bill.response;
+package com.example.backend.controller.order_management.model.billDetail.request.response;
 
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.User;
