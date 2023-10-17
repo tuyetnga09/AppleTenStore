@@ -9,7 +9,7 @@ export const searchWithDate = (page) => {
 };
 
 export const createBill = (bill) => {
-  return httpClient.post(`/customer/bill/offline`, bill);
+  return httpClient.post(`/customer/bill/`, bill);
 }
 
 export const updateStatusBill = (id) => {
