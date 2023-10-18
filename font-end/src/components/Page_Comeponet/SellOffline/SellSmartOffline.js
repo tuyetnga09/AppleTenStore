@@ -35,11 +35,12 @@ import { getOneSKU } from "../../../service/sku.service";
 const { Header, Sider, Content } = Layout;
 
 export default function SellSmart() {
+  const idNhanVien = 5; // truyền id nhân viên đăng nhập vào đây
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal khách hàng
   const [isModalVisibleVoucher, setIsModalVisibleVoucher] = useState(false); // Trạng thái hiển thị Modal Voucher
   const [voucher, setVoucher] = useState([]);
   const [selecteVoucher, setSelectedVoucher] = useState(0);
@@ -48,6 +49,10 @@ export default function SellSmart() {
   const [skuProduct, setSkuProduct] = useState([]);
   const [cartIemts, setCartItems] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);//tổng tiền sản phẩm
+  const [priceShip, setPriceShip] = useState([]);//tiền ship
+  const [soTienThanhToan, setSoTienThanhToan] = useState([]);//số tiền khách cần trả
+  const[tienThua, setTienThua] = useState([]);//tiền thiếu
 
   const [pagination, setPagination] = useState({
     page: 0,
@@ -93,7 +98,7 @@ export default function SellSmart() {
       });
 
     //lấy danh sách giỏ hàng
-    readAllCartOff(5) //sau truyền id nhân viên vào đây
+    readAllCartOff(idNhanVien)
       .then((response) => {
         setCartItems(response.data);
       })
@@ -170,7 +175,7 @@ export default function SellSmart() {
   const handleAddToCart = (idsku, priceSku) => {
     // Tạo một đối tượng AddCart để gửi lên API
     const addToCartData = {
-      idAccount: 5,
+      idAccount: idNhanVien,
       idSKU: idsku,
       price: priceSku,
       quantity: 1,
@@ -178,7 +183,7 @@ export default function SellSmart() {
     addToCartOffline(addToCartData)
       .then((response) => {
         console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
-        readAllCartOff(5) //sau truyền id nhân viên vào đây
+        readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
           .then((response) => {
             setCartItems(response.data);
           })
@@ -204,7 +209,7 @@ export default function SellSmart() {
       updateQuantityOff(cartItemId, newQuantity)
         .then((response) => {
           console.log("Phản hồi từ máy chủ:", response.data);
-          readAllCartOff(5) //sau truyền id nhân viên vào đây
+          readAllCartOff(idNhanVien)
             .then((response) => {
               setCartItems(response.data);
             })
@@ -226,9 +231,10 @@ export default function SellSmart() {
     });
   }
 
-  const [totalPrice, setTotalPrice] = useState(0);
+// TÍNH TIỀN TỔNG SẢN PHẨN - ADD VOUCHER
   useEffect(() => {
     calculateTotalPrice();
+    calculateChange();
   }, [cartIemts]);
   const calculateTotalPrice = () => {
     let total = 0;
@@ -239,6 +245,117 @@ export default function SellSmart() {
     });
     // Đặt lại giá trị tổng giá tiền
     setTotalPrice(total);
+
+    //tính phí ship
+    let priceS = 0;
+    setPriceShip(priceS);
+    //tính số tiền cẩn thanh toán
+    let price = 0;
+
+    if (selecteVoucherFreeShip && selecteVoucher) {
+      const voucherValue = parseFloat(selecteVoucher.valueVoucher);
+      const voucherVoucherFree = parseFloat(
+        selecteVoucherFreeShip.valueVoucher
+      );
+      price = total + priceS - (voucherValue + voucherVoucherFree);
+    } else if (selecteVoucher) {
+      // Nếu selectedVoucher có giá trị, sử dụng giá trị voucher
+      const voucherValue = parseFloat(selecteVoucher.valueVoucher);
+      price = total + priceS - voucherValue;
+    } else if (selecteVoucherFreeShip) {
+      // Nếu chỉ có selectedVoucherFreeShip có giá trị, sử dụng giá trị voucherfreeship
+      const voucherVoucherFree = parseFloat(
+        selecteVoucherFreeShip.valueVoucher
+      );
+      price = total + priceS - voucherVoucherFree;
+    } else {
+      // Nếu cả hai đều không có giá trị, không sử dụng giảm giá
+      price = total + priceS;
+    }
+    setSoTienThanhToan(price);
+  };
+
+ // TÍNH TIỀN Thiếu
+  function calculateChange() {
+    // Lấy giá trị số tiền khách đưa
+    const amountGiven = parseFloat(document.getElementById("amountGiven").value);
+    // Lấy giá trị số tiền cần trả (bạn có thể sử dụng biến soTienThanhToan)
+    const amountToReturn = parseFloat(soTienThanhToan);
+    // Tính số tiền thừa
+    const change =  amountToReturn - amountGiven;
+    setTienThua(change)
+  }
+
+  //click Voucher
+  const handleVoucherClick = (voucher) => {
+    if (
+      totalPrice < voucher.valueMinimum ||
+      totalPrice > voucher.valueMaximum
+    ) {
+      notification.error({
+        message: "VOUCHER",
+        description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
+      });
+    } else {
+      setSelectedVoucher(voucher);
+      readAllCartOff(idNhanVien)
+        .then((response) => {
+          setCartItems(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
+  //clear voucher
+  const handleClearVoucher = (id) => {
+    if (selecteVoucher.id === id) {
+      setSelectedVoucher(null);
+      readAllCartOff(idNhanVien)
+        .then((response) => {
+          setCartItems(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
+  //click Voucher freeship
+  const handleVoucherFreeShipClick = (voucher) => {
+    if (
+      totalPrice < voucher.valueMinimum ||
+      totalPrice > voucher.valueMaximum
+    ) {
+      notification.error({
+        message: "VOUCHER",
+        description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
+      });
+    } else {
+      setSelectedVoucherFreeShip(voucher);
+      readAllCartOff(idNhanVien)
+        .then((response) => {
+          setCartItems(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
+  //clear voucher freeship
+  const handleClearVoucherFreeShip = (id) => {
+    if (selecteVoucherFreeShip.id === id) {
+      setSelectedVoucherFreeShip(null);
+      readAllCartOff(idNhanVien)
+        .then((response) => {
+          setCartItems(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   };
 
   return (
@@ -726,10 +843,11 @@ export default function SellSmart() {
                             Tổng tiền hàng:{" "}
                           </label>
                           <p className="control-all-money-tamtinh">
-                            = {totalPrice?.toLocaleString("vi-VN", {
-                                        style: "currency",
-                                        currency: "VND",
-                                    })}
+                            ={" "}
+                            {totalPrice?.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
                           </p>
                         </div>
                         <div className="form-group  col-md-6">
@@ -749,7 +867,19 @@ export default function SellSmart() {
                             Giảm giá Voucher:{" "}
                           </label>
                           <p className="control-all-money-total">
-                            = 129.397.213 VNĐ
+                            ={" "}
+                            {selecteVoucher && selecteVoucher.valueVoucher
+                              ? selecteVoucher?.valueVoucher?.toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )
+                              : 0?.toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
                           </p>
                         </div>
                         <div className="form-group  col-md-6">
@@ -757,9 +887,11 @@ export default function SellSmart() {
                             Khách hàng đưa tiền:{" "}
                           </label>
                           <input
+                            id="amountGiven"
                             className="form-control"
                             type="number"
-                            defaultValue={290000}
+                            // defaultValue={290000}
+                            onChange={calculateChange}
                           />
                         </div>
                         <div
@@ -771,7 +903,10 @@ export default function SellSmart() {
                           </label>
                           <p className="control-all-money">
                             {" "}
-                            - 129.397.213 VNĐ
+                            = {soTienThanhToan?.toLocaleString("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        })}
                           </p>
                         </div>
                         <div
@@ -781,7 +916,10 @@ export default function SellSmart() {
                           <label className="control-label">Thiếu: </label>
                           <p className="control-all-money">
                             {" "}
-                            - 129.397.213 VNĐ
+                            {tienThua?.toLocaleString("vi-VN", {
+                                            style: "currency",
+                                            currency: "VND",
+                                        })}
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
@@ -922,11 +1060,19 @@ export default function SellSmart() {
                         {/* <Checkbox
                         onClick={() => handleVoucherClick(voucher)}
                       /> */}
-                        <Button type="text" danger>
+                        <Button
+                          type="text"
+                          danger
+                          onClick={() => handleVoucherFreeShipClick(voucher)}
+                        >
                           Áp dụng
                         </Button>
                         <br />
-                        <Button type="text" danger>
+                        <Button
+                          type="text"
+                          danger
+                          onClick={() => handleClearVoucherFreeShip(voucher.id)}
+                        >
                           Hủy
                         </Button>
                       </strong>
@@ -968,11 +1114,19 @@ export default function SellSmart() {
                         </p>
                       </span>
                       <strong>
-                        <Button type="text" danger>
+                        <Button
+                          type="text"
+                          danger
+                          onClick={() => handleVoucherClick(voucher)}
+                        >
                           Áp dụng
                         </Button>
                         <br />
-                        <Button type="text" danger>
+                        <Button
+                          type="text"
+                          danger
+                          onClick={() => handleClearVoucher(voucher.id)}
+                        >
                           Hủy
                         </Button>
                       </strong>
