@@ -27,3 +27,19 @@ export const addToCart = (newCart) => {
 export const getQuantityCartDetailBySku = (idsku,idAccount) => {
   return httpClient.get(`/customer/cart-detail/getCartDetail/${idsku}?idAccount=${idAccount}`);
 };
+
+export const addToCartOffline = (newCart) => {
+  return httpClient.post("/admin/cart/addToCartOff", newCart);
+};
+
+export const readAllCartOff = (idAccount) => {
+  return httpClient.get(`/admin/cart/${idAccount}`);
+};
+
+export const deleteCartDetailOff = (id) => {
+  return httpClient.delete(`/admin/cart-detail/${id}`);
+};
+
+export const updateQuantityOff = (id, newQuantity) => {
+  return httpClient.put(`/admin/cart-detail/update-quantity/${id}?quantity=${newQuantity}`);
+};

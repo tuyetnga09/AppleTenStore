@@ -4,7 +4,6 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
-import com.example.backend.controller.order_management.model.bill.response.BillResponse;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.AddressRepository;
@@ -110,7 +109,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = Bill.builder()
                 .code(new Random().randomToString("Bill"))
                 .phoneNumber(request.getPhoneNumber())
-                .address(request.getAddress() + ',' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
+                .address(request.getAddress() + '-' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
                 .itemDiscount(request.getItemDiscount())
@@ -254,6 +253,7 @@ public class BillServiceImpl implements BillService {
 
         return "Finished";
     }
+
     public boolean billWait(BillRequestOffline request) {
         return false;
     }

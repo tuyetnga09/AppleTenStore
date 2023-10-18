@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/admin/billDetail")
-public  class BillDetailController {
+public class BillDetailController {
 
     @Autowired
     private BillDetailService billDetailService;
@@ -22,4 +22,5 @@ public  class BillDetailController {
     public ResponseEntity getAll(Pageable pageable){
         return new ResponseEntity(billDetailService.getAll(null, pageable), HttpStatus.OK);
     }
+
 }

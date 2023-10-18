@@ -20,6 +20,7 @@ import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
 import { get } from "jquery";
 import { Link } from "react-router-dom";
+import { createBill } from "../../../service/Bill/bill.service";
 
 const Checkout = () => {
   const [isLogin, setIsGLogin] = useState([false]);
@@ -47,13 +48,41 @@ const Checkout = () => {
     insuranceValue: null,
     quantity: 1,
   });
+  const [bill, setBill] = useState({
+    userName: "",
+    phoneNumber: "",
+    email: "",
+    address: "",
+    province: "",
+    district: "",
+    moneyShip: 0,
+    itemDiscount: 0,
+    totalMoney: 0,
+    paymentMethod: "ONLINE",
+    billDetail: [],
+    afterPrice: 0,
+    idVoucher: null,
+    wards: "",
+  });
 
   useEffect(() => {
     //hiển thị giỏ hàng
     readAll(1)
       .then((response) => {
-        console.log(response.data);
-        setProducts(response.data);
+        const list = response.data;
+        setProducts(list);
+        const adidaphat = [];
+        list.map((item) => {
+          adidaphat.push({
+            idProductDetail: item.idProduct,
+            price: item.price,
+            quantity: item.quantity,
+          });
+        });
+        setBill({
+          ...bill,
+          billDetail: adidaphat,
+        });
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -102,7 +131,6 @@ const Checkout = () => {
     readAllWard(district_id)
       .then((response) => {
         setWards(response.data.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -111,7 +139,6 @@ const Checkout = () => {
       getFee(transportationFeeDTO)
         .then((response) => {
           setFee(response.data.data);
-          console.log(response.data);
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -334,10 +361,10 @@ const Checkout = () => {
       quantity: quantityCart,
     };
     setTransportationFeeDTO(item);
-    // setBill({
-    //   ...bill,
-    //   province: document.getElementById(value).innerText,
-    // });
+    setBill({
+      ...bill,
+      province: document.getElementById(value).innerText,
+    });
   };
 
   const handleDistrict = (event) => {
@@ -348,10 +375,11 @@ const Checkout = () => {
     item["toDistrictId"] = parseInt(value);
     item["insuranceValue"] = parseInt(soTienThanhToan);
     setTransportationFeeDTO(item);
-    // setBill({
-    //   ...bill,
-    //   district: document.getElementById(value).innerText,
-    // });
+    console.log(transportationFeeDTO);
+    setBill({
+      ...bill,
+      district: document.getElementById(value).innerText,
+    });
   };
 
   const handleWard = (event) => {
@@ -360,11 +388,44 @@ const Checkout = () => {
     let item = { ...transportationFeeDTO };
     item["toWardCode"] = value;
     setTransportationFeeDTO(item);
-    // setBill({
-    //   ...bill,
-    //   wards: document.getElementById(value).innerText,
-    // });
+    console.log(transportationFeeDTO);
+    setBill({
+      ...bill,
+      wards: document.getElementById(value).innerText,
+    });
+    console.log(bill);
   };
+
+  function hanldeName(event) {
+    setBill({
+      ...bill,
+      userName: event.target.value,
+    });
+  }
+
+  function hanldPhone(event) {
+    setBill({
+      ...bill,
+      phoneNumber: event.target.value,
+    });
+  }
+
+  function hanldeMail(event) {
+    setBill({
+      ...bill,
+      email: event.target.value,
+    });
+  }
+
+  function handleSubmit() {
+    createBill(bill)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   return (
     <>
@@ -372,354 +433,347 @@ const Checkout = () => {
       <button onClick={() => test()}>test</button>
       <main role="main">
         <div class="container mt-4">
-          {/* <form
+          <form
             class="needs-validation"
             name="frmthanhtoan"
-            method="post"
-            action="#"
-          > */}
-          <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
-          <div class="py-5 text-center">
-            <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
-            <h2>Thanh toán</h2>
-            <p class="lead">
-              Vui lòng kiểm tra thông tin Khách hàng, thông tin Giỏ hàng trước
-              khi Đặt hàng.
-            </p>
-          </div>
-          <div class="row">
-            <div class="col-md-4 order-md-2 mb-4">
-              <h4 class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted">Giỏ hàng</span>
-                <span class="badge badge-secondary badge-pill">
-                  {quantityCart}
-                </span>
-              </h4>
-              <ul class="list-group mb-3">
-                {products.map((product) => (
-                  <li class="list-group-item d-flex justify-content-between lh-condensed">
-                    <div>
-                      <h6 class="my-0">
-                        {product.nameProduct} {product.capacity} {product.color}
-                      </h6>
-                      <small class="text-muted">
-                        {product.price} x {product.quantity}
-                      </small>
-                    </div>
-                    <span class="text-muted">
-                      {parseFloat(product.total).toLocaleString("vi-VN", {
+            onSubmit={handleSubmit}
+          >
+            <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
+            <div class="py-5 text-center">
+              <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
+              <h2>Thanh toán</h2>
+              <p class="lead">
+                Vui lòng kiểm tra thông tin Khách hàng, thông tin Giỏ hàng trước
+                khi Đặt hàng.
+              </p>
+            </div>
+            <div class="row">
+              <div class="col-md-4 order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-muted">Giỏ hàng</span>
+                  <span class="badge badge-secondary badge-pill">
+                    {quantityCart}
+                  </span>
+                </h4>
+                <ul class="list-group mb-3">
+                  {products.map((product) => (
+                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                      <div>
+                        <h6 class="my-0">
+                          {product.nameProduct} {product.capacity}{" "}
+                          {product.color}
+                        </h6>
+                        <small class="text-muted">
+                          {product.price} x {product.quantity}
+                        </small>
+                      </div>
+                      <span class="text-muted">
+                        {parseFloat(product.total).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </span>
+                    </li>
+                  ))}
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>Tổng thành tiền</span>
+                    <strong>
+                      {totalPrice?.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })}
-                    </span>
+                    </strong>
                   </li>
-                ))}
-                <li class="list-group-item d-flex justify-content-between">
-                  <span>Tổng thành tiền</span>
-                  <strong>
-                    {totalPrice?.toLocaleString("vi-VN", {
+                </ul>
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>Voucher của Shop</span>
+                    <strong>
+                      <GiftOutlined onClick={() => handleEditClick()} />
+                    </strong>
+                  </li>
+                </ul>
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Giảm giá Voucher:</p>
+                  <p className="fw-bold">
+                    -
+                    {selecteVoucher && selecteVoucher.valueVoucher
+                      ? selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : 0?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                  </p>
+                </div>
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Tiền vận chuyển:</p>
+                  <p className="fw-bold">
+                    {fee == null
+                      ? 0 + "₫"
+                      : fee?.total?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                  </p>
+                </div>
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Giảm giá tiền vận chuyển:</p>
+                  <p className="fw-bold">
+                    -
+                    {selecteVoucherFreeShip &&
+                    selecteVoucherFreeShip.valueVoucher
+                      ? selecteVoucherFreeShip?.valueVoucher?.toLocaleString(
+                          "vi-VN",
+                          {
+                            style: "currency",
+                            currency: "VND",
+                          }
+                        )
+                      : 0?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                  </p>
+                </div>
+                <div
+                  className="d-flex justify-content-between p-2 mb-2"
+                  style={{ backgroundColor: "#e1f5fe" }}
+                >
+                  <h5 className="fw-bold mb-0">THANH TOÁN:</h5>
+                  <h5 className="fw-bold mb-0" style={{ color: "red" }}>
+                    {soTienThanhToan?.toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND",
                     })}
-                  </strong>
-                </li>
-              </ul>
-              <ul class="list-group mb-3">
-                <li class="list-group-item d-flex justify-content-between">
-                  <span>Voucher của Shop</span>
-                  <strong>
-                    <GiftOutlined onClick={() => handleEditClick()} />
-                  </strong>
-                </li>
-              </ul>
-              <div className="d-flex justify-content-between px-x">
-                <p className="fw-bold">Giảm giá Voucher:</p>
-                <p className="fw-bold">
-                  -
-                  {selecteVoucher && selecteVoucher.valueVoucher
-                    ? selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : 0?.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                </p>
-              </div>
-              <div className="d-flex justify-content-between px-x">
-                <p className="fw-bold">Tiền vận chuyển:</p>
-                <p className="fw-bold">
-                  {fee == null
-                    ? 0 + "₫"
-                    : fee?.total?.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                </p>
-              </div>
-              <div className="d-flex justify-content-between px-x">
-                <p className="fw-bold">Giảm giá tiền vận chuyển:</p>
-                <p className="fw-bold">
-                  -
-                  {selecteVoucherFreeShip && selecteVoucherFreeShip.valueVoucher
-                    ? selecteVoucherFreeShip?.valueVoucher?.toLocaleString(
-                        "vi-VN",
-                        {
-                          style: "currency",
-                          currency: "VND",
-                        }
-                      )
-                    : 0?.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                </p>
-              </div>
-              <div
-                className="d-flex justify-content-between p-2 mb-2"
-                style={{ backgroundColor: "#e1f5fe" }}
-              >
-                <h5 className="fw-bold mb-0">THANH TOÁN:</h5>
-                <h5 className="fw-bold mb-0" style={{ color: "red" }}>
-                  {soTienThanhToan?.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-                </h5>
-              </div>
-            </div>
-            <div class="col-md-8 order-md-1">
-              <h4 class="mb-3">Thông tin khách hàng</h4>
-              <div class="row">
-                <div class="col-md-12">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Tên"
-                  ></input>
-                  <br />
+                  </h5>
                 </div>
-                <div className="row">
-                  <div class="col-md-6">
+              </div>
+              <div class="col-md-8 order-md-1">
+                <h4 class="mb-3">Thông tin khách hàng</h4>
+                <div class="row">
+                  <div class="col-md-12">
                     <input
                       type="text"
                       class="form-control"
-                      placeholder="Số điện thoại"
+                      placeholder="Tên"
+                      onChange={hanldeName}
                     ></input>
-                  </div>
-                  <div class="col-md-6">
-                    <input
-                      type="email"
-                      class="form-control"
-                      placeholder="Email"
-                    ></input>
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <br />
-                  <b for="kh_ngaysinh">Hình thức nhận hàng</b>
-                  <div class="custom-control custom-radio">
-                    <input
-                      id="htnn_4"
-                      name="htnn_ma"
-                      type="radio"
-                      class="custom-control-input"
-                      required=""
-                      value="1"
-                      checked
-                      onClick={() => nhanTaiCuaHang()}
-                    ></input>
-                    <label class="custom-control-label" for="htnn_4">
-                      Nhận tại cửa hàng
-                    </label>
-                  </div>
-                  <div class="custom-control custom-radio">
-                    <input
-                      id="htnn_5"
-                      name="htnn_ma"
-                      type="radio"
-                      class="custom-control-input"
-                      required=""
-                      value="2"
-                      onClick={() => giaoTanNoi()}
-                    ></input>
-                    <label class="custom-control-label" for="htnn_5">
-                      Giao tận nơi
-                    </label>
-                  </div>
-                  <div class="custom-control custom-radio" id="dcmd" hidden>
-                    <input
-                      id="htnn_6"
-                      name="htnn_ma"
-                      type="radio"
-                      class="custom-control-input"
-                      required=""
-                      value="3"
-                      onClick={() => diaChiMacDinh()}
-                      hidden
-                    ></input>
-                    <label class="custom-control-label" for="htnn_6">
-                      Địa chỉ mặc định
-                    </label>
-                  </div>
-                </div>
-                <div className="row" id="notDcmd">
-                  <div class="col-md-4">
                     <br />
-                    <label for="kh_cmnd">Tỉnh, thành phố:</label>
-                    <select
-                      class="form-select"
-                      id="floatingSelect"
-                      aria-label="Floating label select example"
-                      onChange={handleProvince}
-                    >
-                      <option value={"undefined"} selected></option>
-                      {provinces.map((pr) => {
-                        return (
-                          <option
-                            id={pr.ProvinceID}
-                            key={pr.ProvinceID}
-                            value={pr.ProvinceID}
-                          >
-                            {pr.ProvinceName}
-                          </option>
-                        );
-                      })}
-                    </select>
                   </div>
-                  <div class="col-md-4">
-                    <br />
-                    <label for="kh_cmnd">Quận, huyện:</label>
-                    <select
-                      class="form-select"
-                      id="floatingSelect"
-                      aria-label="Floating label select example"
-                      onChange={handleDistrict}
-                    >
-                      <option selected></option>
-                      {districts.map((dt) => {
-                        return (
-                          <option
-                            id={dt.DistrictID}
-                            key={dt.DistrictID}
-                            value={dt.DistrictID}
-                          >
-                            {dt.DistrictName}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <br />
-                    <label for="kh_cmnd">Phường, xã:</label>
-                    <select
-                      class="form-select"
-                      id="floatingSelect"
-                      aria-label="Floating label select example"
-                      onChange={handleWard}
-                    >
-                      <option selected></option>
-                      {wards.map((w) => {
-                        return (
-                          <option
-                            id={w.WardCode}
-                            key={w.WardID}
-                            value={w.WardCode}
-                          >
-                            {w.WardName}
-                          </option>
-                        );
-                      })}
-                    </select>
+                  <div className="row">
+                    <div class="col-md-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Số điện thoại"
+                        onChange={hanldPhone}
+                      ></input>
+                    </div>
+                    <div class="col-md-6">
+                      <input
+                        type="email"
+                        class="form-control"
+                        placeholder="Email"
+                        onChange={hanldeMail}
+                      ></input>
+                    </div>
                   </div>
                   <div class="col-md-12">
                     <br />
+                    <b for="kh_ngaysinh">Hình thức nhận hàng</b>
+                    <div class="custom-control custom-radio">
+                      <input
+                        id="htnn_4"
+                        name="htnn_ma"
+                        type="radio"
+                        class="custom-control-input"
+                        required=""
+                        value="1"
+                        checked
+                        onClick={() => nhanTaiCuaHang()}
+                      ></input>
+                      <label class="custom-control-label" for="htnn_4">
+                        Nhận tại cửa hàng
+                      </label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                      <input
+                        id="htnn_5"
+                        name="htnn_ma"
+                        type="radio"
+                        class="custom-control-input"
+                        required=""
+                        value="2"
+                        onClick={() => giaoTanNoi()}
+                      ></input>
+                      <label class="custom-control-label" for="htnn_5">
+                        Giao tận nơi
+                      </label>
+                    </div>
+                    <div class="custom-control custom-radio" id="dcmd" hidden>
+                      <input
+                        id="htnn_6"
+                        name="htnn_ma"
+                        type="radio"
+                        class="custom-control-input"
+                        required=""
+                        value="3"
+                        onClick={() => diaChiMacDinh()}
+                        hidden
+                      ></input>
+                      <label class="custom-control-label" for="htnn_6">
+                        Địa chỉ mặc định
+                      </label>
+                    </div>
+                  </div>
+                  <div className="row" id="notDcmd">
+                    <div class="col-md-4">
+                      <br />
+                      <label for="kh_cmnd">Tỉnh, thành phố:</label>
+                      <select
+                        class="form-select"
+                        id="provinces"
+                        aria-label="Floating label select example"
+                        onChange={handleProvince}
+                      >
+                        <option value={"undefined"} selected></option>
+                        {provinces.map((pr) => {
+                          return (
+                            <option key={pr.ProvinceID} value={pr.ProvinceID}>
+                              {pr.ProvinceName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <br />
+                      <label for="kh_cmnd">Quận, huyện:</label>
+                      <select
+                        class="form-select"
+                        id="districts"
+                        aria-label="Floating label select example"
+                        onChange={handleDistrict}
+                      >
+                        <option selected></option>
+                        {districts.map((dt) => {
+                          return (
+                            <option key={dt.DistrictID} value={dt.DistrictID}>
+                              {dt.DistrictName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <br />
+                      <label for="kh_cmnd">Phường, xã:</label>
+                      <select
+                        class="form-select"
+                        id="wards"
+                        aria-label="Floating label select example"
+                        onChange={handleWard}
+                      >
+                        <option selected></option>
+                        {wards.map((w) => {
+                          return (
+                            <option key={w.WardID} value={w.WardID}>
+                              {w.WardName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    <div class="col-md-12">
+                      <br />
+                      <select
+                        class="form-select"
+                        id="floatingSelect1"
+                        aria-label="Floating label select example"
+                      >
+                        <option selected>Mời bạn chọn địa chỉ cửa hàng</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                      </select>
+                    </div>
+                    <div class="col-md-12">
+                      <input
+                        hidden
+                        id="floatingSelect2"
+                        class="form-control"
+                        type="text"
+                        placeholder="Địa chỉ cụ thể"
+                        aria-label="default input example"
+                      />
+                    </div>
+                  </div>
+                  <div id="dcmd2" hidden>
+                    <br />
+                    <label for="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
                     <select
                       class="form-select"
-                      id="floatingSelect1"
+                      id="floatingSelect"
                       aria-label="Floating label select example"
                     >
-                      <option selected>Mời bạn chọn địa chỉ cửa hàng</option>
+                      <option selected>Chọn tỉnh, thành phố</option>
                       <option value="1">One</option>
                       <option value="2">Two</option>
                       <option value="3">Three</option>
                     </select>
                   </div>
-                  <div class="col-md-12">
+                </div>
+                <br />
+                <h4 class="mb-3">Hình thức thanh toán</h4>
+                <div class="d-block my-3">
+                  <div class="custom-control custom-radio">
                     <input
-                      hidden
-                      id="floatingSelect2"
-                      class="form-control"
-                      type="text"
-                      placeholder="Địa chỉ cụ thể"
-                      aria-label="default input example"
+                      id="httt-1"
+                      name="httt_ma"
+                      type="radio"
+                      class="custom-control-input"
+                      required=""
+                      value="1"
+                      checked={isChecked}
+                      onChange={datHang}
                     />
+                    <label class="custom-control-label" for="httt-1">
+                      Tiền mặt
+                    </label>
                   </div>
-                </div>
-                <div id="dcmd2" hidden>
-                  <br />
-                  <label for="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
-                  <select
-                    class="form-select"
-                    id="floatingSelect"
-                    aria-label="Floating label select example"
-                  >
-                    <option selected>Chọn tỉnh, thành phố</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                  </select>
-                </div>
-              </div>
-              <br />
-              <h4 class="mb-3">Hình thức thanh toán</h4>
-              <div class="d-block my-3">
-                <div class="custom-control custom-radio">
-                  <input
-                    id="httt-1"
-                    name="httt_ma"
-                    type="radio"
-                    class="custom-control-input"
-                    required=""
-                    value="1"
-                    checked={isChecked}
-                    onChange={datHang}
-                  />
-                  <label class="custom-control-label" for="httt-1">
-                    Tiền mặt
-                  </label>
-                </div>
-                <div class="custom-control custom-radio">
-                  <input
-                    id="httt-2"
-                    name="httt_ma"
-                    type="radio"
-                    class="custom-control-input"
-                    required=""
-                    value="2"
-                    checked={!isChecked}
-                    onChange={datHang}
-                  />
-                  <label class="custom-control-label" for="httt-2">
-                    VN Pay
-                  </label>
-                </div>
-                <hr class="mb-4" />
-                <a href={linkPay}>
+                  <div class="custom-control custom-radio">
+                    <input
+                      id="httt-2"
+                      name="httt_ma"
+                      type="radio"
+                      class="custom-control-input"
+                      required=""
+                      value="2"
+                      checked={!isChecked}
+                      onChange={datHang}
+                    />
+                    <label class="custom-control-label" for="httt-2">
+                      VN Pay
+                    </label>
+                  </div>
+                  <hr class="mb-4" />
+                  {/*<Link to={linkPay}>*/}
                   <button
                     class="btn btn-primary btn-lg btn-block"
                     // type="submit"
                     name="btnDatHang"
+                    type="submit"
                   >
                     Đặt hàng
                   </button>
-                </a>
+                  {/*</Link>*/}
+                </div>
               </div>
             </div>
-          </div>
-          {/* </form> */}
+          </form>
         </div>
       </main>
       <Footer />

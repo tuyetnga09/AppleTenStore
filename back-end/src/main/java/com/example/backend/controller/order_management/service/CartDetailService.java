@@ -13,4 +13,8 @@ public interface CartDetailService {
     String changeQuantity(ChangeQuantity changeQuantity);
     void updateQuantity(Integer id, Integer newQuantity);
     Integer getQuantityCartDetailBySku(Long id,Integer idAccount);
+
+
+    void updateQuantityCartOff(Integer id, Integer newQuantity);
+    Boolean deleteCartDetailOff(Integer id);
 }

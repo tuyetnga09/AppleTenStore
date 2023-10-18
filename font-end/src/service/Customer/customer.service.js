@@ -9,3 +9,8 @@ const config = {
 export const add = (customer) => {
   return httpClient.post(`/admin/customer/create`, customer);
 };
+
+
+export const addCustomerOffline = (customer) => {
+  return httpClient.post(`/admin/customer/add`, customer);
+};
