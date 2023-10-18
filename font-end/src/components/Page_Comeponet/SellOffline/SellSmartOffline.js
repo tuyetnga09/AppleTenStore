@@ -609,12 +609,14 @@ export default function SellSmart() {
                         sorter={(a, b) => a.quantitySKU - b.quantitySKU}
                       />
                       <Table.Column
-                        render={() => {
+                        render={(record) => {
                           return (
                             <button
                               className="btn btn-primary btn-sm trash"
                               type="button"
-                              title="Xóa"
+                              onClick={() =>
+                                handleAddToCart(record.idSKU, record.price)
+                              }
                             >
                               <ShoppingCartOutlined />
                             </button>

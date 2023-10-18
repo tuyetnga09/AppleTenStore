@@ -208,6 +208,10 @@ const Checkout = () => {
     // }
     if (fee != null) {
       priceS = fee?.total;
+      // setBill({
+      //   ...bill,
+      //   moneyShip: priceS,
+      // });
     }
     setPriceShip(priceS);
     //tính số tiền cẩn thanh toán
@@ -234,6 +238,12 @@ const Checkout = () => {
       price = total + priceS;
     }
     setSoTienThanhToan(price);
+    setBill({
+      ...bill,
+      totalMoney: total,
+      moneyShip: priceS,
+      afterPrice: price,
+    });
   };
   //click Voucher
   const handleVoucherClick = (voucher) => {
@@ -414,6 +424,20 @@ const Checkout = () => {
     setBill({
       ...bill,
       email: event.target.value,
+    });
+  }
+
+  function handleAddress(event) {
+    setBill({
+      ...bill,
+      address:
+        event.target.value +
+        ", " +
+        bill.wards +
+        ", " +
+        bill.district +
+        ", " +
+        bill.province,
     });
   }
 
@@ -642,7 +666,11 @@ const Checkout = () => {
                         <option value={"undefined"} selected></option>
                         {provinces.map((pr) => {
                           return (
-                            <option key={pr.ProvinceID} value={pr.ProvinceID}>
+                            <option
+                              id={pr.ProvinceID}
+                              key={pr.ProvinceID}
+                              value={pr.ProvinceID}
+                            >
                               {pr.ProvinceName}
                             </option>
                           );
@@ -661,7 +689,11 @@ const Checkout = () => {
                         <option selected></option>
                         {districts.map((dt) => {
                           return (
-                            <option key={dt.DistrictID} value={dt.DistrictID}>
+                            <option
+                              id={dt.DistrictID}
+                              key={dt.DistrictID}
+                              value={dt.DistrictID}
+                            >
                               {dt.DistrictName}
                             </option>
                           );
@@ -680,7 +712,11 @@ const Checkout = () => {
                         <option selected></option>
                         {wards.map((w) => {
                           return (
-                            <option key={w.WardID} value={w.WardID}>
+                            <option
+                              id={w.WardCode}
+                              key={w.WardID}
+                              value={w.WardCode}
+                            >
                               {w.WardName}
                             </option>
                           );
@@ -708,6 +744,7 @@ const Checkout = () => {
                         type="text"
                         placeholder="Địa chỉ cụ thể"
                         aria-label="default input example"
+                        onChange={handleAddress}
                       />
                     </div>
                   </div>
@@ -760,16 +797,16 @@ const Checkout = () => {
                     </label>
                   </div>
                   <hr class="mb-4" />
-                  {/*<Link to={linkPay}>*/}
-                  <button
-                    class="btn btn-primary btn-lg btn-block"
-                    // type="submit"
-                    name="btnDatHang"
-                    type="submit"
-                  >
-                    Đặt hàng
-                  </button>
-                  {/*</Link>*/}
+                  <a href={linkPay}>
+                    <button
+                      class="btn btn-primary btn-lg btn-block"
+                      // type="submit"
+                      name="btnDatHang"
+                      type="submit"
+                    >
+                      Đặt hàng
+                    </button>
+                  </a>
                 </div>
               </div>
             </div>
