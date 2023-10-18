@@ -12,8 +12,8 @@ import java.util.List;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
-    @Query(value = "SELECT id, full_name, email, phone_number, date_create, date_update\n" +
-            "FROM customer WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    @Query(value = "SELECT id, status, date_create, date_update, email, full_name, person_create, person_update, phone_number\n" +
+            "            FROM customer WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Customer> findAll(Pageable pageable);
 
     @Query(value = "SELECT id, full_name, email, phone_number, date_create, date_update\n" +
@@ -22,7 +22,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     Customer findByPhoneNumber(String phoneNumber);
 
-    @Query(value = "SELECT id, full_name, email, phone_number, date_create, date_update " +
-            "FROM customer WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    @Query(value = "SELECT id, status, date_create, date_update, email, full_name, person_create, person_update, phone_number\n" +
+            "            FROM customer WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     List<Customer> getAll();
 }
