@@ -32,6 +32,8 @@ import {
   deleteCartDetailOff,
 } from "../../../service/cart.service";
 import { getOneSKU } from "../../../service/sku.service";
+import { addCustomerOffline } from "../../../service/Customer/customer.service";
+import { useHistory } from 'react-router-dom';
 const { Header, Sider, Content } = Layout;
 
 export default function SellSmart() {
@@ -48,7 +50,11 @@ export default function SellSmart() {
   const [skuProduct, setSkuProduct] = useState([]);
   const [cartIemts, setCartItems] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
-
+  const [customer, setCustomer] = useState({
+    fullName: '', // Đổi từ 'full_name' thành 'fullName'
+    email: '', // Giữ nguyên
+    phoneNumber: '', // Đổi từ 'phone_number' thành 'phoneNumber'
+  });
   const [pagination, setPagination] = useState({
     page: 0,
     limit: 5,
@@ -128,7 +134,29 @@ export default function SellSmart() {
   const handleCancelVoucher = () => {
     setIsModalVisibleVoucher(false);
   };
-
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCustomer((prevCustomer) => ({
+      ...prevCustomer,
+      [name]: value,
+    }));
+  };
+  const history = useHistory();
+  const handleSave = () => {
+    addCustomerOffline(customer)
+        .then((response) => {
+          alert('Thêm khách hàng thành công');
+          history.push('/sell');
+          setCustomer({
+            fullName: '',
+            email: '',
+            phoneNumber: '',
+          });
+        })
+        .catch((error) => {
+          alert('Thêm khách hàng thất bại');
+        });
+  };
   function giaoTanNoi() {
     const select = document.getElementById("floatingSelect2");
     select.hidden = false;
@@ -310,7 +338,7 @@ export default function SellSmart() {
                           class="btn btn-secondary"
                           style={{ marginRight: "10px" }}
                         >
-                          {/* <FallOutlined /> */}TẠO HÓA ĐƠN
+                          {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
                         </button>
                         {/* <button type="button" class="btn btn-secondary">
                                     {/* <RiseOutlined /> */}
@@ -837,29 +865,42 @@ export default function SellSmart() {
                 <h5>Tạo mới khách hàng</h5>
               </span>
             </div>
-            <div clclassNameass="form-group col-md-12">
+            <div className="form-group col-md-12">
               <label className="control-label">Họ và tên</label>
-              <input className="form-control" type="text" required />
-            </div>
-            <div className="form-group col-md-6">
-              <label className="control-label">Địa chỉ</label>
-              <input className="form-control" type="text" required />
+              <input
+                  className="form-control"
+                  type="text"
+                  name="fullName"
+                  value={customer.fullName}
+                  onChange={handleChange}
+                  required
+              />
             </div>
             <div className="form-group col-md-6">
               <label className="control-label">Email</label>
-              <input className="form-control" type="text" required />
-            </div>
-            <div className="form-group col-md-6">
-              <label className="control-label">Ngày sinh</label>
-              <input className="form-control" type="date" required />
+              <input
+                  className="form-control"
+                  type="text"
+                  name="email"
+                  value={customer.email}
+                  onChange={handleChange}
+                  required
+              />
             </div>
             <div className="form-group col-md-6">
               <label className="control-label">Số điện thoại</label>
-              <input className="form-control" type="number" required />
+              <input
+                  className="form-control"
+                  type="number"
+                  name="phoneNumber"
+                  value={customer.phoneNumber}
+                  onChange={handleChange}
+                  required
+              />
             </div>
           </div>
           <br />
-          <button class="btn btn-save" type="button">
+          <button className="btn btn-save" type="button" onClick={handleSave}>
             Lưu lại
           </button>
           <a class="btn btn-cancel" data-dismiss="modal" href="#">
