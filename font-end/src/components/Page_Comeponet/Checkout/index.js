@@ -334,6 +334,10 @@ const Checkout = () => {
       quantity: quantityCart,
     };
     setTransportationFeeDTO(item);
+    // setBill({
+    //   ...bill,
+    //   province: document.getElementById(value).innerText,
+    // });
   };
 
   const handleDistrict = (event) => {
@@ -344,7 +348,10 @@ const Checkout = () => {
     item["toDistrictId"] = parseInt(value);
     item["insuranceValue"] = parseInt(soTienThanhToan);
     setTransportationFeeDTO(item);
-    console.log(transportationFeeDTO);
+    // setBill({
+    //   ...bill,
+    //   district: document.getElementById(value).innerText,
+    // });
   };
 
   const handleWard = (event) => {
@@ -353,7 +360,10 @@ const Checkout = () => {
     let item = { ...transportationFeeDTO };
     item["toWardCode"] = value;
     setTransportationFeeDTO(item);
-    console.log(transportationFeeDTO);
+    // setBill({
+    //   ...bill,
+    //   wards: document.getElementById(value).innerText,
+    // });
   };
 
   return (
@@ -567,7 +577,11 @@ const Checkout = () => {
                       <option value={"undefined"} selected></option>
                       {provinces.map((pr) => {
                         return (
-                          <option key={pr.ProvinceID} value={pr.ProvinceID}>
+                          <option
+                            id={pr.ProvinceID}
+                            key={pr.ProvinceID}
+                            value={pr.ProvinceID}
+                          >
                             {pr.ProvinceName}
                           </option>
                         );
@@ -586,7 +600,11 @@ const Checkout = () => {
                       <option selected></option>
                       {districts.map((dt) => {
                         return (
-                          <option key={dt.DistrictID} value={dt.DistrictID}>
+                          <option
+                            id={dt.DistrictID}
+                            key={dt.DistrictID}
+                            value={dt.DistrictID}
+                          >
                             {dt.DistrictName}
                           </option>
                         );
@@ -605,7 +623,11 @@ const Checkout = () => {
                       <option selected></option>
                       {wards.map((w) => {
                         return (
-                          <option key={w.WardID} value={w.WardCode}>
+                          <option
+                            id={w.WardCode}
+                            key={w.WardID}
+                            value={w.WardCode}
+                          >
                             {w.WardName}
                           </option>
                         );
@@ -685,7 +707,7 @@ const Checkout = () => {
                   </label>
                 </div>
                 <hr class="mb-4" />
-                <Link to={linkPay}>
+                <a href={linkPay}>
                   <button
                     class="btn btn-primary btn-lg btn-block"
                     // type="submit"
@@ -693,7 +715,7 @@ const Checkout = () => {
                   >
                     Đặt hàng
                   </button>
-                </Link>
+                </a>
               </div>
             </div>
           </div>
