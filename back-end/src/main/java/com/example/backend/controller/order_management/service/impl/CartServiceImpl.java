@@ -4,14 +4,14 @@ import com.example.backend.controller.order_management.model.cart.AddCart;
 import com.example.backend.controller.order_management.model.cart.AddCartOffline;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.model.cart.ListCartOffline;
+import com.example.backend.controller.order_management.service.CartService;
+import com.example.backend.entity.Cart;
+import com.example.backend.entity.CartDetail;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.CartDetailRepository;
 import com.example.backend.repository.CartRepository;
-import com.example.backend.controller.order_management.service.CartService;
 import com.example.backend.repository.ProductRepository;
-import com.example.backend.entity.Cart;
-import com.example.backend.entity.CartDetail;
 import com.example.backend.repository.SKURepositoty;
 import com.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +38,9 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.getCartByAccount_Id(listAddToCart.getIdAccount());
         SKU sku = skuRepositoty.getOne(listAddToCart.getIdSKU());
 
-        CartDetail cartDetailQuan = cartDetailRepository.getCartDetailBySku(listAddToCart.getIdSKU(), cart.getId());
+        CartDetail cartDetailQuan = cartDetailRepository.getCartDetailBySku(listAddToCart.getIdSKU(), cart != null ? cart.getId() : null);
 
-        if(cart != null && cartDetailQuan != null && sku.getQuantity() <= cartDetailQuan.getQuantity() || sku.getQuantity() <= 0 ){
+        if (cart != null && cartDetailQuan != null && sku.getQuantity() <= cartDetailQuan.getQuantity() || sku.getQuantity() <= 0) {
             System.out.println("Số lượng sản phẩm không đủ");
         }else{
             if (cart == null) {
@@ -128,9 +128,9 @@ public class CartServiceImpl implements CartService {
             Cart cart = cartRepository.getCartByAccount_Id(listAddToCart.getIdAccount());
             SKU sku = skuRepositoty.getOne(listAddToCart.getIdSKU());
 
-            CartDetail cartDetailQuan = cartDetailRepository.getCartDetailBySku(listAddToCart.getIdSKU(), cart.getId());
+        CartDetail cartDetailQuan = cartDetailRepository.getCartDetailBySku(listAddToCart.getIdSKU(), cart != null ? cart.getId() : null);
 
-        if(cartDetailQuan != null && cart != null && sku.getQuantity() <= cartDetailQuan.getQuantity() || sku.getQuantity() <= 0 ){
+        if (cart != null && cartDetailQuan != null && sku.getQuantity() <= cartDetailQuan.getQuantity() || sku.getQuantity() <= 0) {
             System.out.println("Số lượng sản phẩm không đủ");
         }else {
             if (cart == null) {

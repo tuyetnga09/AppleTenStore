@@ -28,6 +28,6 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     List<SKU> findByProductAndColor(Product product, String color);
 
     @Query(value = "select s.price AS 'Price SKU', p.id AS 'Product ID', s.id AS 'SKU ID', s.quantity 'SKU Quantity', s.capacity AS 'Capacity', s.color AS 'Color', p.name AS 'Name Product'\n" +
-            "from sku s join product p on p.id = s.product_id;", nativeQuery = true)
+            "from sku s join product p on p.id = s.product_id where p.status = 0 ORDER BY date_create DESC", nativeQuery = true)
     Page<ListSkuProduct> getSkuProductFormSellOffline(Pageable pageable);
 }
