@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -31,13 +32,13 @@ public class BillServerController {
     }
 
     @GetMapping("/searchNoDate")
-    public Page<Bill> searchNoDate(Pageable pageable, @RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("user") String user){
-        return billService.searchNoDate(pageable, key, status, user);
+    public List<Bill> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("user") String user){
+        return billService.searchNoDate(key, status, user);
     }
 
     @GetMapping("/searchWithDate")
-    public Page<Bill> searchWithDate(Pageable pageable, @RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("user") String user, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
-        return billService.searchWithDate(pageable, key, status, user, dateStart, dateEnd);
+    public List<Bill> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("user") String user, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
+        return billService.searchWithDate(key, status, user, dateStart, dateEnd);
     }
 
 //    @RestController

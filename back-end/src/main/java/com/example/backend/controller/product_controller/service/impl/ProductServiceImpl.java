@@ -239,8 +239,8 @@ public class ProductServiceImpl {
         return productRepository.filterProductByDecreasePrice(pageable, key);
     }
 
-    public Page<Product> listProductByCategories(Pageable pageable, Integer id) {
-        return productRepository.listProductByCategories(pageable, id);
+    public List<Product> listProductByCategories(Integer id) {
+        return productRepository.listProductByCategories(id);
     }
 
     public CreateProduct getOne1(Integer id) {

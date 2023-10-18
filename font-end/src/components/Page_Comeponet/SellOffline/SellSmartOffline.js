@@ -20,11 +20,16 @@ import {
   getVoucher,
   getVoucherFreeShip,
 } from "../../../service/Voucher/voucher.service";
-import { getSKUProductFormSell } from "../../../service/sku.service";
+import {
+  getSKUProductFormSell,
+  getSKUProductFormSellByCateogory,
+} from "../../../service/sku.service";
+import { readAllCategory } from "../../../service/product.service";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import queryString from "query-string";
 import Pagination from "./Paging";
+import { NumberField } from "@refinedev/antd";
 import {
   addToCartOffline,
   readAllCartOff,
@@ -45,13 +50,15 @@ export default function SellSmart() {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal khách hàng
+  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+  // const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal khách hàng
   const [isModalVisibleVoucher, setIsModalVisibleVoucher] = useState(false); // Trạng thái hiển thị Modal Voucher
   const [voucher, setVoucher] = useState([]);
   const [selecteVoucher, setSelectedVoucher] = useState(0);
   const [voucherFreeShip, setVoucherFreeShip] = useState([true]);
   const [selecteVoucherFreeShip, setSelectedVoucherFreeShip] = useState(0);
   const [skuProduct, setSkuProduct] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [cartIemts, setCartItems] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0); //tổng tiền sản phẩm
@@ -59,6 +66,7 @@ export default function SellSmart() {
   const [soTienThanhToan, setSoTienThanhToan] = useState([]); //số tiền khách cần trả
   const [tienThua, setTienThua] = useState([]); //tiền thiếu
   const [khachHang, setKhachHang] = useState([]);
+
   const [customer, setCustomer] = useState({
     fullName: "", // Đổi từ 'full_name' thành 'fullName'
     email: "", // Giữ nguyên
@@ -73,8 +81,14 @@ export default function SellSmart() {
     page: 0,
     key: "",
   });
+  const [filtersCategory, setFiltersCategory] = useState({
+    page: 0,
+    key: "",
+    id: null,
+  });
 
   useEffect(() => {
+    const phanloai = document.getElementById("exampleSelect1");
     //lấy danh sách voucher
     getVoucher()
       .then((response) => {
@@ -94,20 +108,39 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`${error}`);
       });
-
-    //lấy danh sách sanr phaam
-    const paramsString = queryString.stringify(filters);
-    getSKUProductFormSell(paramsString)
+    // lay danh sach category
+    readAllCategory()
       .then((response) => {
-        console.log(response.data.content);
-        setSkuProduct(response.data.content);
-        setPagination(response.data.content);
+        console.log(response.data);
+        setCategories(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
       });
 
-    //lấy danh sách giỏ hàng
+    if (phanloai.value != -1) {
+      const paramsString2 = queryString.stringify(filtersCategory);
+      getSKUProductFormSellByCateogory(paramsString2)
+        .then((res) => {
+          console.log(res.data);
+          setSkuProduct(res.data);
+          setPagination(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      const paramsString = queryString.stringify(filters);
+      getSKUProductFormSell(paramsString)
+        .then((response) => {
+          console.log(response.data.content);
+          setSkuProduct(response.data);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
     readAllCartOff(idNhanVien)
       .then((response) => {
         setCartItems(response.data);
@@ -124,15 +157,52 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, [filters]);
+  }, [filters, filtersCategory]);
 
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
-    setFilters({
-      ...filters,
-      page: newPage,
-    });
+    const phanloai = document.getElementById("exampleSelect1");
+    if (phanloai.value != -1) {
+      setFiltersCategory({
+        ...filtersCategory,
+        page: newPage,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        page: newPage,
+      });
+    }
   }
+
+  function handleChangeOne(event) {
+    const phanloai = document.getElementById("exampleSelect1");
+    if (phanloai.value != -1) {
+      const target = event.target;
+      const value = target.value;
+      const name = target.name;
+      let item = { ...filtersCategory, key: "" };
+      item[name] = value;
+      setFiltersCategory(item);
+    } else {
+      const target = event.target;
+      const value = target.value;
+      const name = target.name;
+      let item = { page: 0, key: "" };
+      item[name] = value;
+      setFilters(item);
+    }
+  }
+
+  function handleChangeCategory(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, id: null, key: "" };
+    item[name] = parseInt(value);
+    setFiltersCategory(item);
+  }
+
   // Hàm để hiển thị Modal khi cần
   const handleEditClick = (record) => {
     setIsModalVisible(true);
@@ -152,6 +222,7 @@ export default function SellSmart() {
   const handleCancelVoucher = () => {
     setIsModalVisibleVoucher(false);
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCustomer((prevCustomer) => ({
@@ -463,6 +534,8 @@ export default function SellSmart() {
                           className="form-control"
                           type="text"
                           placeholder="Tìm kiếm sản phẩm"
+                          name="key"
+                          onChange={handleChangeOne}
                         />
                       </div>
                       <div className="col-md-4">
@@ -472,8 +545,22 @@ export default function SellSmart() {
                         >
                           Phân loại sản phẩm
                         </label>
-                        <select className="form-control" id="exampleSelect1">
-                          <option>--- Chọn sản phẩm ---</option>
+                        <select
+                          className="form-control"
+                          id="exampleSelect1"
+                          name="id"
+                          onChange={handleChangeCategory}
+                        >
+                          <option value={-1} selected>
+                            --- Chọn sản phẩm ---
+                          </option>
+                          {categories.map((ct) => {
+                            return (
+                              <option key={ct?.id} value={ct?.id}>
+                                {ct?.name}
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                       <div className="col-md-4">
@@ -500,7 +587,76 @@ export default function SellSmart() {
                     <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
                       Sản phẩm
                     </h5>
-                    <table className="table">
+                    <Table
+                      rowKey="idSKU"
+                      dataSource={skuProduct}
+                      pagination={{
+                        pageSize: 5,
+                        showSizeChanger: false,
+                        showTotal: (total) => `Tổng số ${total} mục`,
+                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                      }}
+                    >
+                      <Table.Column
+                        dataIndex="images"
+                        render={(text, record) => (
+                          <AvtProduct product={record.idProduct} />
+                        )}
+                      />
+                      <Table.Column
+                        key="nameProduct"
+                        dataIndex="nameProduct"
+                        title="Tên sản phẩm"
+                        render={(text, record) => {
+                          return `${record.nameProduct} - ${record.nameCapacity} - ${record.nameColor}`;
+                        }}
+                      />
+                      <Table.Column
+                        align="right"
+                        key="price"
+                        dataIndex="price"
+                        title="Giá bán"
+                        render={(value) => {
+                          return (
+                            <NumberField
+                              options={{
+                                currency: "VND",
+                                style: "currency",
+                                //   notation: "compact",
+                              }}
+                              value={value}
+                            />
+                          );
+                        }}
+                        sorter={(a, b) => a.price - b.price}
+                      />
+                      <Table.Column
+                        align="right"
+                        key="quantitySKU"
+                        dataIndex="quantitySKU"
+                        title="Kho"
+                        render={(value) => {
+                          return <NumberField value={value} />;
+                        }}
+                        sorter={(a, b) => a.quantitySKU - b.quantitySKU}
+                      />
+                      <Table.Column
+                        render={(record) => {
+                          return (
+                            <button
+                              className="btn btn-primary btn-sm trash"
+                              type="button"
+                              onClick={() =>
+                                handleAddToCart(record.idSKU, record.price)
+                              }
+                            >
+                              <ShoppingCartOutlined />
+                            </button>
+                          );
+                        }}
+                      />
+                    </Table>
+                    {/* <table className="table">
                       <thead className="thead-dark">
                         <tr>
                           <th className="so--luong">Ảnh</th>
@@ -510,7 +666,7 @@ export default function SellSmart() {
                           <th className="so--luong text-center" />
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody style={{ position: "relative", height: "100px" }}>
                         {skuProduct.map((product) => (
                           <tr>
                             <td style={{ width: "200px" }}>
@@ -538,9 +694,7 @@ export default function SellSmart() {
                               <button
                                 className="btn btn-primary btn-sm trash"
                                 type="button"
-                                onClick={() =>
-                                  handleAddToCart(product.idSKU, product.price)
-                                }
+                                title="Xóa"
                               >
                                 <ShoppingCartOutlined />
                               </button>
@@ -548,11 +702,11 @@ export default function SellSmart() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
-                    <Pagination
+                    </table> */}
+                    {/* <Pagination
                       pagination={pagination}
                       onPageChange={handlePageChange}
-                    />
+                    /> */}
 
                     <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
                       Giỏ hàng
