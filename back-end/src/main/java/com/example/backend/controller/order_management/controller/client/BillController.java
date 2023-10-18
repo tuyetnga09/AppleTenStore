@@ -7,6 +7,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.service.BillService;
+import com.example.backend.entity.Bill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -110,6 +111,11 @@ public class BillController {
     @PutMapping(value = "/update-status/{id}")
     public void updateStatusBill(@PathVariable int id){
         this.billService.updateStatusBill(id);
+    }
+
+    @GetMapping(value = "/paydone/{id}")
+    public Bill paydone(@PathVariable int id){
+        return this.billService.findById(id);
     }
 
 

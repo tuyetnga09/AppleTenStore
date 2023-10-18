@@ -203,7 +203,7 @@ function App() {
           <Route path="/categories" exact component={CategoryDisplay} />
           <Route path="/account" exact component={AccountList} />
           <Route path="/sell" exact component={SellOffline} />
-          <Route path="/paydone" exact component={Paydone} />
+          <Route path="/paydone/:id" exact component={Paydone} />
         </Switch>
       </Router>
     </div>

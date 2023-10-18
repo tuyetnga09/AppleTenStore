@@ -26,4 +26,6 @@ public interface BillService {
 
     void updateStatusBill(int id);
 
+    Bill findById(int id);
+
 }

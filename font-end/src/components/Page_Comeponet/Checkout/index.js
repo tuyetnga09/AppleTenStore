@@ -19,7 +19,7 @@ import {readAllDistrict} from "../../../service/AddressAPI/district.service";
 import {readAllProvince} from "../../../service/AddressAPI/province.service";
 import {getFee} from "../../../service/AddressAPI/fee.service";
 import {get} from "jquery";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {createBill} from "../../../service/Bill/bill.service";
 
 const Checkout = () => {
@@ -64,6 +64,7 @@ const Checkout = () => {
         idVoucher: null,
         wards: ''
     });
+    const history = useHistory();
 
     useEffect(() => {
         //hiển thị giỏ hàng
@@ -435,6 +436,7 @@ const Checkout = () => {
     function handleSubmit() {
         createBill(bill).then((response) => {
             console.log(response.data)
+            history.push(`/customer/bill/paydone/${response.data.id}`);
         }).catch((error) => {
             console.log(error)
         })

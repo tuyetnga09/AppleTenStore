@@ -93,4 +93,6 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
             "    ORDER BY month ", nativeQuery = true)
     List<AnnualRevenue> annualRevenueYear();
 
+    Bill findById(int id);
+
 }

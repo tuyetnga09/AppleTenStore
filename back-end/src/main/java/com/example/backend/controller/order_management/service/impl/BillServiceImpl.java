@@ -283,4 +283,9 @@ public class BillServiceImpl implements BillService {
         this.billRepository.updateBillStatus(id);
     }
 
+    @Override
+    public Bill findById(int id) {
+        return billRepository.findById(id);
+    }
+
 }
