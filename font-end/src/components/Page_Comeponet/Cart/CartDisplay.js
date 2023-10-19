@@ -19,13 +19,14 @@ import { DateField } from "@refinedev/antd";
 import queryString from "query-string";
 
 export default function CartDisplay() {
+  const idAccount = 1; //sau khi đăng nhập thì truyền idAccount vào đây
   const history = useHistory();
   const [products, setProducts] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
   // const [number, setNumber] = useState(0);
 
   useEffect(() => {
-    readAll(1)
+    readAll(idAccount)
       .then((response) => {
         console.log(response.data);
         setProducts(response.data);
