@@ -55,9 +55,6 @@ export default function CartDisplay() {
         message: "ADD TO CART",
         description: "Không được nhập số lượng âm",
       });
-      // console.log();
-      // deleteCartDetail(cartItemId);
-      // window.location.reload();
     } else {
       update(cartItemId, newQuantity)
         .then((response) => {
@@ -65,20 +62,6 @@ export default function CartDisplay() {
           readAll(1)
             .then((response) => {
               console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-              // getOneSKU(idSKU)
-              //   .then((response) => {
-              //     console.log(response.data);
-              //     setSKU(response.data);
-              //     // if (newQuantity > sku.quantity) {
-              //     //   notification.error({
-              //     //     message: "ADD TO CART",
-              //     //     description: "Không được nhập quá số lượng sản phẩm",
-              //     //   });
-              //     // }
-              //   })
-              //   .catch((error) => {
-              //     console.log(`${error}`);
-              //   });
               setProducts(response.data);
             })
             .catch((error) => {

@@ -54,22 +54,18 @@ public class CartController {
             if (cartItemList == null) {
                 cartItemList = new ArrayList<>();
             }
-            // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
             boolean productExists = false;
             for (AddCart itemcart : cartItemList) {
                 if (itemcart.getIdSKU().equals(item.getIdSKU())) {
-                    // Sản phẩm đã tồn tại, tăng số lượng
                     itemcart.setQuantity(itemcart.getQuantity() + 1);
                     productExists = true;
                     break;
                 }
             }
             if (!productExists) {
-                // Sản phẩm chưa tồn tại trong giỏ hàng, thêm mới
                 cartItemList.add(item);
             }
             session.setAttribute("cartItems", cartItemList);
-//        session.setAttribute("myCartNum", cartItemList.size());
         }
             return ResponseEntity.ok("hi");
     }
