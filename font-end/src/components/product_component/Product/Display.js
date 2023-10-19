@@ -6,11 +6,7 @@ import { readImportImei, ImportImeiExcel } from "../../../service/imei.service";
 import { detailCreateProduct, update } from "../../../service/product.service";
 import {
   readFilterProductByAscendingPrice,
-  readFilterProductByCategory,
   readFilterProductByDecreasePrice,
-  readFilterProductByPrice,
-  readProductCheap,
-  readProductNew,
 } from "../../../service/product.service";
 import {
   Typography,
@@ -177,11 +173,25 @@ const StoreProducts = ({}) => {
     key: "",
   });
 
+  const [filtersAcendingPrice, setFiltersAcendingPrice] = useState({
+    page: 0,
+    key: "",
+  });
+
+  const [filtersDecreasePrice, setFiltersDecreasePrice] = useState({
+    page: 0,
+    key: "",
+  });
+
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
   useEffect(() => {
     const paramsString = queryString.stringify(filters);
+    const paramsStringAcendingPrice =
+      queryString.stringify(filtersAcendingPrice);
+    const paramsStringDecreasePrice =
+      queryString.stringify(filtersDecreasePrice);
     readAll(paramsString)
       .then((response) => {
         console.log(response.data);
@@ -191,7 +201,25 @@ const StoreProducts = ({}) => {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, [filters]);
+    readFilterProductByAscendingPrice(paramsStringAcendingPrice)
+      .then((response) => {
+        console.log(response.data);
+        setDisplay(response.data.content);
+        setPagination(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    readFilterProductByDecreasePrice(paramsStringDecreasePrice)
+      .then((response) => {
+        console.log(response.data);
+        setDisplay(response.data.content);
+        setPagination(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, [filters, filtersAcendingPrice, filtersDecreasePrice]);
 
   function handleChange(event) {
     const target = event.target;
@@ -238,36 +266,20 @@ const StoreProducts = ({}) => {
 
   // sắp xếp theo giá
   // const paramsStringDecreasePrice = queryString.stringify(filtersDecreasePrice);
-
-  const [filtersDecreasePrice, setFiltersDecreasePrice] = useState({
-    page: 0,
-    key: "",
-  });
   const [productFilter, setProductFilter] = useState([]);
   // sắp xếp theo giá
   function ascendingPrice() {
     let item = { page: 0, key: "" };
-    // setFilters(null);
-    // // setFiltersPrice(null);
-    // // setFiltersCategory(null);
-    // setFiltersAcendingPrice(item);
-    // setFiltersDecreasePrice(null);
-    // setFiltersNew(null);
-    // setFiltersCheap(null);
-    // const keyword = document.getElementById("key");
-    // keyword.value = "";
+    setFilters(null);
+    setFiltersAcendingPrice(item);
+    setFiltersDecreasePrice(null);
   }
 
-  //xoá bộ lọc
-  function unShowContainProducts() {
-    // const deleteAllFilter = document.getElementById("deleteAllFilter");
-    // deleteAllFilter.style.display = "none";
-    // let item = { page: 0, key: "" };
-    // setFilters(item);
-    // // setFiltersNew(item);
-    // // setFiltersCheap(item);
-    // const keyword = document.getElementById("key");
-    // keyword.value = "";
+  function decreasePrice() {
+    let item = { page: 0, key: "" };
+    setFilters(null);
+    setFiltersAcendingPrice(null);
+    setFiltersDecreasePrice(item);
   }
 
   return (
@@ -362,24 +374,35 @@ const StoreProducts = ({}) => {
                               class="dropdown-content"
                               // onClick={() => showContainProducts()}
                             >
-                              <Link
+                              {/* <Link
                                 to={`/product`}
-                                // onClick={() => ascendingPrice()}
+                                onClick={() => ascendingPrice()}
                               >
                                 Giá tăng dần
                               </Link>
-                              <Link to={`/product`}>Giá giảm dần</Link>
+                              <Link
+                                to={`/product`}
+                                onClick={() => decreasePrice()}
+                              >
+                                Giá giảm dần
+                              </Link> */}
+                              <button
+                                type="button"
+                                class="btn btn-outline-dark"
+                                onClick={() => ascendingPrice()}
+                                style={{ width: "100%" }}
+                              >
+                                Giá tăng dần
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-outline-dark"
+                                onClick={() => decreasePrice()}
+                                style={{ width: "100%" }}
+                              >
+                                Giá giảm dần
+                              </button>
                             </div>
-                          </div>
-                          <div className="choosedFilter flexContain">
-                            <Link
-                              id="deleteAllFilter"
-                              style={{ display: "none" }}
-                              to={"/product"}
-                              // onClick={() => unShowContainProducts()}
-                            >
-                              Xóa bộ lọc
-                            </Link>
                           </div>{" "}
                         </StyledStoreProducts>
 
