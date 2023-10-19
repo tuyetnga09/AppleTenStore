@@ -131,7 +131,7 @@ public class VoucherServiceImpl implements VoucherService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        Page<Voucher> voucherPage = voucherRepository.findAll(pageable, request);
+        Page<Voucher> voucherPage = voucherRepository.findAllVoucher(pageable, request);
          return voucherPage;
     }
 

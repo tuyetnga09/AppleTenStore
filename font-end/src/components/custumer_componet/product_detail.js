@@ -17,6 +17,14 @@ import {
 import { getSKUProduct } from "../../service/sku.service";
 import queryString from "query-string";
 import AvtProduct from "./avtProduct";
+import {
+  readAll,
+} from "../../service/product.service";
+import Pagination from "../../components/product_component/Size/Paging";
+import ImageProduct from "../../components/Page_Comeponet/page/ImageProduct";
+import "bootstrap/dist/js/bootstrap";
+import "bootstrap/dist/js/bootstrap.bundle";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/topnav.css";
 import "../../css/header.css";
 import "../../css/banner.css";
@@ -48,7 +56,31 @@ export default function ProductDetail() {
     idProduct: "",
   });
 
+  const [filters, setFilters] = useState({
+    page: 0,
+    key: "",
+  });
+
   const history = useHistory();
+
+  const [display, setDisplay] = useState([]);
+
+  const [productFilter, setProductFilter] = useState([]);
+
+  const [quantityNoiBat, setQuantityNoiBat] = useState([]);
+  function goToTop() {
+    window.scrollTo({
+      top: 0, // Cuộn lên vị trí đầu trang
+      behavior: "smooth", // Hiệu ứng cuộn mượt
+    });
+    window.location.reload();
+  }
+
+  const [pagination, setPagination] = useState({
+    page: 0,
+    limit: 5,
+    totalRows: 1,
+  });
 
   useEffect(() => {
     detail(id)
@@ -65,6 +97,59 @@ export default function ProductDetail() {
       .then((response) => {
         setItem2(response.data);
         console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+      const paramsStringProduct = queryString.stringify(filters);
+      readAll(paramsStringProduct)
+      .then((response) => {
+        setDisplay(response.data.content);
+        setProductFilter(
+          response.data.content.map((dl) => {
+            return (
+              <li className="sanPham" onClick={() => goToTop()}>
+                <Link to={`/product/${dl.id}`}>
+                  <ImageProduct product={dl.id}></ImageProduct>
+                  <h3>{dl.name}</h3>
+                  <div className="price">
+                    <strong>
+                      {dl.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </strong>
+                  </div>
+                  <div className="ratingresult">
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <i className="fa fa-star" />
+                    <span>9999 đánh giá</span>
+                  </div>
+                  <label className="giamgia">
+                    <i className="fa fa-bolt" /> Giảm 1.000₫
+                  </label>
+                  <div className="tooltip">
+                    <button
+                      className="themvaogio"
+                      onclick="themVaoGioHang('Nok1', 'Nokia black future'); return false;"
+                    >
+                      <span className="tooltiptext" style={{ fontSize: 15 }}>
+                        Thêm vào giỏ
+                      </span>
+                      +
+                    </button>
+                  </div>
+                </Link>
+              </li>
+            );
+          })
+        );
+        setQuantityNoiBat(response.data.totalElements);
+        setPagination(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -143,7 +228,7 @@ export default function ProductDetail() {
           .catch((error) => {
             console.log(`${error}`);
           });
-      } else{
+      } else {
         // Nếu người dùng chưa đăng nhập, sử dụng API thêm vào session
         addToCartSession(addToCartData)
           .then((response) => {
@@ -164,6 +249,53 @@ export default function ProductDetail() {
       });
     }
   };
+
+  function noiBatNhat() {
+    let item = { page: 0, key: "" };
+    setFilters(item);
+  }
+
+  const outstandingProducts = display.map((dl) => {
+    return (
+      <li className="sanPham" onClick={() => goToTop()}>
+        <Link to={`/product/${dl.id}`}>
+          <ImageProduct product={dl.id}></ImageProduct>
+          <h3>{dl.name}</h3>
+          <div className="price">
+            <strong>
+              {dl.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </strong>
+          </div>
+          <div className="ratingresult">
+            <i className="fa fa-star" />
+            <i className="fa fa-star" />
+            <i className="fa fa-star" />
+            <i className="fa fa-star" />
+            <i className="fa fa-star" />
+            <span>9999 đánh giá</span>
+          </div>
+          <label className="giamgia">
+            <i className="fa fa-bolt" /> Giảm 1.000₫
+          </label>
+          <div className="tooltip">
+            <button
+              className="themvaogio"
+              onclick="themVaoGioHang('Nok1', 'Nokia black future'); return false;"
+            >
+              <span className="tooltiptext" style={{ fontSize: 15 }}>
+                Thêm vào giỏ
+              </span>
+              +
+            </button>
+          </div>
+        </Link>
+      </li>
+    
+    );
+  });
 
   return (
     <React.Fragment>
@@ -511,307 +643,19 @@ export default function ProductDetail() {
               * Bạn có thể thích *
             </h3>
             <div className="listSpTrongKhung flexContain">
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Xiaomi-Redmi-5-Plus-4GB">
-                  <img
-                    src="img/products/xiaomi-redmi-5-plus-600x600.jpg"
-                    alt=""
-                  />
-                  <h3>Xiaomi Redmi 5 Plus 4GB</h3>
-                  <div className="price">
-                    <strong>4.790.000₫</strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star-o" />
-                    <span>347 đánh giá</span>
-                  </div>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Xia3', 'Xiaomi Redmi 5 Plus 4GB'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Realme-2-Pro-4GB/64GB">
-                  <img
-                    src="https://cdn.tgdd.vn/Products/Images/42/193464/realme-2-pro-4gb-64gb-blue-600x600.jpg"
-                    alt=""
-                  />
-                  <h3>Realme 2 Pro 4GB/64GB</h3>
-                  <div className="price">
-                    <strong>5.590.000₫</strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star-o" />
-                    <span>11 đánh giá</span>
-                  </div>
-                  <label className="moiramat">Mới ra mắt</label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Rea3', 'Realme 2 Pro 4GB/64GB'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Nokia-5.1-Plus">
-                  <img
-                    src="img/products/nokia-51-plus-black-18thangbh-400x400.jpg"
-                    alt=""
-                  />
-                  <h3>Nokia 5.1 Plus</h3>
-                  <div className="price">
-                    <strong>4.790.000₫</strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>7 đánh giá</span>
-                  </div>
-                  <label className="giamgia">
-                    <i className="fa fa-bolt" /> Giảm 250.000₫
-                  </label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Nok0', 'Nokia 5.1 Plus'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Vivo-Y85">
-                  <img
-                    src="https://cdn.tgdd.vn/Products/Images/42/156205/vivo-y85-red-docquyen-600x600.jpg"
-                    alt=""
-                  />
-                  <h3>Vivo Y85</h3>
-                  <div className="price">
-                    <strong>4.990.000₫</strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star-o" />
-                    <span>60 đánh giá</span>
-                  </div>
-                  <label className="giamgia">
-                    <i className="fa fa-bolt" /> Giảm 500.000₫
-                  </label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Viv2', 'Vivo Y85'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?HTC-U12-life">
-                  <img
-                    src="https://cdn.tgdd.vn/Products/Images/42/186397/htc-u12-life-1-600x600.jpg"
-                    alt=""
-                  />
-                  <h3>HTC U12 life</h3>
-                  <div className="price">
-                    <strong>7.690.000₫</strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star-o" />
-                    <span>12 đánh giá</span>
-                  </div>
-                  <label className="moiramat">Mới ra mắt</label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('HTC0', 'HTC U12 life'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Samsung-Galaxy-J8">
-                  <img
-                    src="img/products/samsung-galaxy-j8-600x600-600x600.jpg"
-                    alt=""
-                  />
-                  <h3>Samsung Galaxy J8</h3>
-                  <div className="price">
-                    <strong>6.290.000₫</strong>
-                  </div>
-                  <div className="ratingresult"></div>
-                  <label className="giamgia">
-                    <i className="fa fa-bolt" /> Giảm 500.000₫
-                  </label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Sam2', 'Samsung Galaxy J8'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Xiaomi-Mi-8-Lite">
-                  <img
-                    src="img/products/xiaomi-mi-8-lite-black-1-600x600.jpg"
-                    alt=""
-                  />
-                  <h3>Xiaomi Mi 8 Lite</h3>
-                  <div className="price">
-                    <strong>6.690.000₫</strong>
-                  </div>
-                  <div className="ratingresult"></div>
-                  <label className="tragop">Trả góp 0%</label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Xia0', 'Xiaomi Mi 8 Lite'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Xiaomi-Mi-8">
-                  <img src="img/products/xiaomi-mi-8-1-600x600.jpg" alt="" />
-                  <h3>Xiaomi Mi 8</h3>
-                  <div className="price">
-                    <strong>12.990.000₫</strong>
-                  </div>
-                  <div className="ratingresult"></div>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Xia1', 'Xiaomi Mi 8'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Realme-2-4GB/64GB">
-                  <img
-                    src="https://cdn.tgdd.vn/Products/Images/42/193462/realme-2-4gb-64gb-docquyen-600x600.jpg"
-                    alt=""
-                  />
-                  <h3>Realme 2 4GB/64GB</h3>
-                  <div className="price">
-                    <strong>4.490.000₫</strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>7 đánh giá</span>
-                  </div>
-                  <label className="moiramat">Mới ra mắt</label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Rea1', 'Realme 2 4GB/64GB'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
-              <li className="sanPham">
-                <a href="chitietsanpham.html?Mobiistar-Zumbo-S2-Dual">
-                  <img
-                    src="img/products/mobiistar-zumbo-s2-dual-300x300.jpg"
-                    alt=""
-                  />
-                  <h3>Mobiistar Zumbo S2 Dual</h3>
-                  <div className="price">
-                    <strong>2.850.000₫</strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star-o" />
-                    <span>104 đánh giá</span>
-                  </div>
-                  <label className="moiramat">Mới ra mắt</label>
-                  <div className="tooltip">
-                    <button
-                      className="themvaogio"
-                      onclick="themVaoGioHang('Mob1', 'Mobiistar Zumbo S2 Dual'); return false;"
-                    >
-                      <span className="tooltiptext" style={{ fontSize: 15 }}>
-                        Thêm vào giỏ
-                      </span>
-                      +
-                    </button>
-                  </div>
-                </a>
-              </li>
+              {outstandingProducts}
             </div>
+            <Link
+              className="xemTatCa"
+              to="/"
+              onClick={() => noiBatNhat()}
+              style={{
+                borderLeft: "2px solid #ff9c00",
+                borderRight: "2px solid #ff9c00",
+              }}
+            >
+              Xem tất cả {quantityNoiBat} sản phẩm
+            </Link>
           </div>
         </div>
       </section>

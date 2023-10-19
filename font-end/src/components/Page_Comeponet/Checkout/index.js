@@ -21,6 +21,7 @@ import { getFee } from "../../../service/AddressAPI/fee.service";
 import { get } from "jquery";
 import { Link } from "react-router-dom";
 import { createBill } from "../../../service/Bill/bill.service";
+import { DateField } from "@refinedev/antd";
 
 const Checkout = () => {
   const [isLogin, setIsGLogin] = useState([false]);
@@ -255,6 +256,11 @@ const Checkout = () => {
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
       });
+    } else if(voucher.quantity <= 0) {
+      notification.error({
+        message: "VOUCHER",
+        description: "Voucher đã hết lượt sử dụng",
+      });
     } else {
       setSelectedVoucher(voucher);
       readAll(1)
@@ -292,6 +298,11 @@ const Checkout = () => {
       notification.error({
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
+      });
+    } else if(voucher.quantity <= 0) {
+      notification.error({
+        message: "VOUCHER",
+        description: "Voucher đã hết lượt sử dụng",
       });
     } else {
       setSelectedVoucherFreeShip(voucher);
@@ -463,8 +474,8 @@ const Checkout = () => {
             onSubmit={handleSubmit}
           >
             <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
-            <div class="py-5 text-center">
-              <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
+            <div class="py-5 text-center" style={{color: "#f68f2c", marginBottom: "50px"}}>
+              <i class="fa fa-credit-card fa-4x" aria-hidden="true" ></i>
               <h2>Thanh toán</h2>
               <p class="lead">
                 Vui lòng kiểm tra thông tin Khách hàng, thông tin Giỏ hàng trước
@@ -831,7 +842,7 @@ const Checkout = () => {
             >
               <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
             </div>
-            <p style={{ marginTop: "10px" }}>Mã FreeShip</p>
+            <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã FreeShip</p>
             <div
               className="card-body"
               data-mdb-perfect-scrollbar="true"
@@ -851,17 +862,39 @@ const Checkout = () => {
                     <span style={{ paddingLeft: "10px" }}>
                       {voucher.name}
                       <br />
-                      <p style={{ color: "red", fontSize: "15px" }}>
+                      <p style={{ color: "red", fontSize: "15px", fontWeight: "bold" }}>
                         Giảm{" "}
                         {voucher?.valueVoucher?.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
                       </p>
-                      <p>
-                        Đơn giá trị tối thiểu {voucher.valueMinimum}
-                        <br />
-                        Đơn giá trị tối đa {voucher.valueMaximum}
+                      <p style={{fontSize: "13px" }}>
+                        Cho đơn hàng giá trị từ{" "}
+                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}{" "}
+                        đến{" "}
+                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ color: "red", fontSize: "10px" }}>
+                        Từ{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateStart}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        đến{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateEnd}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        - SL: {voucher.quantity}
                       </p>
                     </span>
                     <strong>
@@ -888,7 +921,7 @@ const Checkout = () => {
                 </ul>
               ))}
             </div>
-            <p style={{ marginTop: "10px" }}>Mã Giảm giá</p>
+            <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã Giảm giá</p>
             <div
               className="card-body"
               data-mdb-perfect-scrollbar="true"
@@ -908,17 +941,39 @@ const Checkout = () => {
                     <span style={{ paddingLeft: "10px" }}>
                       {voucher.name}
                       <br />
-                      <p style={{ color: "red", fontSize: "15px" }}>
+                      <p style={{ color: "red", fontSize: "15px" , fontWeight: "bold" }}>
                         Giảm{" "}
                         {voucher?.valueVoucher?.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
                       </p>
-                      <p>
-                        Đơn giá trị tối thiểu {voucher.valueMinimum}
-                        <br />
-                        Đơn giá trị tối đa {voucher.valueMaximum}
+                      <p style={{fontSize: "13px" }}>
+                        Cho đơn hàng giá trị từ{" "}
+                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}{" "}
+                        đến{" "}
+                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ color: "red", fontSize: "10px" }}>
+                        Từ{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateStart}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        đến{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateEnd}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        - SL: {voucher.quantity}
                       </p>
                     </span>
                     <strong>
