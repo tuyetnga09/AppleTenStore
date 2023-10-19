@@ -116,6 +116,7 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
+                .dateCreate(LocalDate.now())
                 .account(account).build();
         billRepository.save(bill);
 

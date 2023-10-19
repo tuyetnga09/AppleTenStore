@@ -96,9 +96,9 @@ public class Bill  {
     private String personUpdate;
 
     @Column(name = "date_create")
-    private Date dateCreate;
+    private LocalDate dateCreate;
 
     @Column(name = "date_update")
-    private Date dateUpdate;
+    private LocalDate dateUpdate;
 
 }
