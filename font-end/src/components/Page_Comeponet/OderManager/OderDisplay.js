@@ -560,7 +560,7 @@ const OderDisplay = ({}) => {
                       render={(text, record) => (
                         // <span>{record.dateUpdate}</span>
                         <DateField
-                          value={record.dateUpdate}
+                          value={record.phoneNumber}
                           format="DD/MM/YYYY"
                         />
                       )}
