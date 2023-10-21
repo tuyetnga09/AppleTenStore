@@ -29,6 +29,7 @@ import com.example.backend.entity.VoucherDetail;
 import com.example.backend.untils.Message;
 import com.example.backend.untils.Random;
 import com.example.backend.untils.RestAPIRunTime;
+import com.example.backend.untils.Roles;
 import com.example.backend.untils.Status;
 import com.example.backend.untils.StatusBill;
 import com.example.backend.untils.StatusPayment;
@@ -116,6 +117,7 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
+                .dateCreate(LocalDate.now())
                 .account(account).build();
         billRepository.save(bill);
 
@@ -168,33 +170,6 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public String createBillCustomerOfflineRequest(BillRequestOffline request) {
-        User user = User.builder()
-                .fullName(request.getUserName())
-                .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
-                .status(Status.DANG_SU_DUNG)
-                .points(0).build();
-        userRepository.save(user);
-        // account khách hàng
-        Account account = Account.builder()
-                .user(user)
-                .email(request.getEmail())
-                .status(Status.DANG_SU_DUNG)
-                .password(new Random().randomPassword())
-                // sau cho them roles vao day nua
-                .build();
-        acountRepository.save(account);
-
-        // địa chỉ giao hàng của khách hàng mua hàng
-        Address address = Address.builder()
-                .status(Status.DANG_SU_DUNG)
-                .user(user)
-                .address(request.getAddress())
-                .quanHuyen(request.getDistrict())
-                .tinhThanhPho(request.getProvince())
-                .xaPhuong(request.getWards()).build();
-        addressRepository.save(address);
-
         // thông tin hoá đơn
         Bill bill = Bill.builder()
                 .code(new Random().randomToString("Bill"))
@@ -205,7 +180,7 @@ public class BillServiceImpl implements BillService {
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.OFFLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
-                .account(account).build();
+                .build();
         billRepository.save(bill);
 
         // lịch sử thông tin hoá đơn
@@ -269,13 +244,13 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Page<Bill> searchNoDate(Pageable pageable, String key, String status, String user) {
-        return billRepository.searchNoDate(pageable, key, status, user);
+    public List<Bill> searchNoDate(String key, String status, String user) {
+        return billRepository.searchNoDate(key, status, user);
     }
 
     @Override
-    public Page<Bill> searchWithDate(Pageable pageable, String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
-        return billRepository.searchWithDate(pageable, key, status, user, dateStart, dateEnd);
+    public List<Bill> searchWithDate(String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
+        return billRepository.searchWithDate(key, status, user, dateStart, dateEnd);
     }
 
     @Override

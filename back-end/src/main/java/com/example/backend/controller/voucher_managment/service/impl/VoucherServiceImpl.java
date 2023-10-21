@@ -131,7 +131,7 @@ public class VoucherServiceImpl implements VoucherService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        Page<Voucher> voucherPage = voucherRepository.findAll(pageable, request);
+        Page<Voucher> voucherPage = voucherRepository.findAllVoucher(pageable, request);
          return voucherPage;
     }
 
@@ -149,13 +149,14 @@ public class VoucherServiceImpl implements VoucherService {
     public List<Voucher> getVoucherFreeShip(Voucher voucher) {
         return voucherRepository.getVoucherFreeShip(voucher);
     }
-    public Page<Voucher> searchNoDate(Pageable pageable, String key, String status) {
-        return voucherRepository.searchNoDate(pageable, key, status);
-    }
 
     @Override
-    public Page<Voucher> searchWithDate(Pageable pageable, String key, String status, LocalDate dateStart, LocalDate dateEnd) {
-        return voucherRepository.searchWithDate(pageable, key, status, dateStart, dateEnd);
+    public List<Voucher> searchNoDate(String key, String status) {
+        return voucherRepository.searchNoDate(key, status);
+    }
+    @Override
+    public List<Voucher> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd) {
+        return voucherRepository.searchWithDate(key, status, dateStart, dateEnd);
     }
 
 

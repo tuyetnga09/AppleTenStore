@@ -105,4 +105,7 @@ public class CategoryServiceImpl implements Iservice<Category> {
         return categoryRepository.search(search ,pageable);
     }
 
+    public List<Category> viewAllDashboard(){
+        return categoryRepository.getAll();
+    }
 }

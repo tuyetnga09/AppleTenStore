@@ -19,13 +19,14 @@ import { DateField } from "@refinedev/antd";
 import queryString from "query-string";
 
 export default function CartDisplay() {
+  const idAccount = 1; //sau khi đăng nhập thì truyền idAccount vào đây
   const history = useHistory();
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useaccState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
   // const [number, setNumber] = useState(0);
 
   useEffect(() => {
-    readAll(1)
+    readAll(idAccount)
       .then((response) => {
         console.log(response.data);
         setProducts(response.data);
@@ -55,9 +56,6 @@ export default function CartDisplay() {
         message: "ADD TO CART",
         description: "Không được nhập số lượng âm",
       });
-      // console.log();
-      // deleteCartDetail(cartItemId);
-      // window.location.reload();
     } else {
       update(cartItemId, newQuantity)
         .then((response) => {
@@ -65,20 +63,6 @@ export default function CartDisplay() {
           readAll(1)
             .then((response) => {
               console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-              // getOneSKU(idSKU)
-              //   .then((response) => {
-              //     console.log(response.data);
-              //     setSKU(response.data);
-              //     // if (newQuantity > sku.quantity) {
-              //     //   notification.error({
-              //     //     message: "ADD TO CART",
-              //     //     description: "Không được nhập quá số lượng sản phẩm",
-              //     //   });
-              //     // }
-              //   })
-              //   .catch((error) => {
-              //     console.log(`${error}`);
-              //   });
               setProducts(response.data);
             })
             .catch((error) => {

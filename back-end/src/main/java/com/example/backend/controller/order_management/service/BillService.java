@@ -20,9 +20,9 @@ public interface BillService {
     Bill  saveBillOffline(Integer id,  BillRequestOffline request);
     Bill detail(Integer id);
 
-    Page<Bill> searchNoDate(Pageable pageable, String key, String status, String user);
+    List<Bill> searchNoDate(String key, String status, String user);
 
-    Page<Bill> searchWithDate(Pageable pageable, String key, String status, String user, LocalDate dateStart, LocalDate dateEnd);
+    List<Bill> searchWithDate(String key, String status, String user, LocalDate dateStart, LocalDate dateEnd);
 
     void updateStatusBill(int id);
 

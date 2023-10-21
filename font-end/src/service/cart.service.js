@@ -43,3 +43,7 @@ export const deleteCartDetailOff = (id) => {
 export const updateQuantityOff = (id, newQuantity) => {
   return httpClient.put(`/admin/cart-detail/update-quantity/${id}?quantity=${newQuantity}`);
 };
+//API add cart session
+export const addToCartSession = (newCartSession) => {
+  return httpClient.post("/customer/cart/addSession", newCartSession);
+};

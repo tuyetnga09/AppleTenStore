@@ -1,4 +1,4 @@
-package com.example.backend.controller.address.district.controller;
+package com.example.backend.controller.ghn.district.controller;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

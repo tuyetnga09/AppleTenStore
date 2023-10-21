@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.voucher_managment.model.request.FindVoucherRequest;
 import com.example.backend.controller.voucher_managment.model.response.VoucherResponse;
 import com.example.backend.entity.User;
 import com.example.backend.entity.Voucher;
@@ -44,17 +45,35 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
 
     Voucher findByCode(String code);
 
+    @Query(value = "SELECT\n" +
+            "    conditions_apply, date_end, date_start, id, quantity, status,\n" +
+            "    type_voucher, value_maximum, value_minimum, value_voucher,\n" +
+            "    date_create, date_update, code, name, person_create, person_update\n" +
+            "FROM voucher WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    Page<Voucher> findAllVoucher(Pageable pageable, FindVoucherRequest request);
 
-    @Query(value = "select * from voucher where value_voucher > 100000", nativeQuery = true)
+    @Query(value = "SELECT\n" +
+            "    conditions_apply, date_end, date_start, id, quantity, status,\n" +
+            "    type_voucher, value_maximum, value_minimum, value_voucher,\n" +
+            "    date_create, date_update, code, name, person_create, person_update\n" +
+            "FROM voucher\n" +
+            "WHERE value_voucher > 100000\n" +
+            "  AND CURRENT_DATE BETWEEN date_start AND date_end;", nativeQuery = true)
     List<Voucher> getVoucherGiamGia(Voucher voucher);
 
-    @Query(value = "select * from voucher where value_voucher < 100000", nativeQuery = true)
+    @Query(value = "SELECT\n" +
+            "    conditions_apply, date_end, date_start, id, quantity, status,\n" +
+            "    type_voucher, value_maximum, value_minimum, value_voucher,\n" +
+            "    date_create, date_update, code, name, person_create, person_update\n" +
+            "FROM voucher\n" +
+            "WHERE value_voucher < 100000\n" +
+            "  AND CURRENT_DATE BETWEEN date_start AND date_end;", nativeQuery = true)
     List<Voucher> getVoucherFreeShip(Voucher voucher);
 
     @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2%", nativeQuery = true)
-    Page<Voucher> searchNoDate(Pageable pageable, String key, String status);
+    List<Voucher> searchNoDate(String key, String status);
 
     @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2% and (date_start = ?3 and date_end = ?4)", nativeQuery = true)
-    Page<Voucher> searchWithDate(Pageable pageable, String key, String status, LocalDate dateStart, LocalDate dateEnd);
+    List<Voucher> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
 }
