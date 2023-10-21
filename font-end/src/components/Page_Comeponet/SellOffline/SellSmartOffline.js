@@ -33,7 +33,7 @@ import {
 } from "../../../service/cart.service";
 import { getOneSKU } from "../../../service/sku.service";
 import { addCustomerOffline } from "../../../service/Customer/customer.service";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
 export default function SellSmart() {
@@ -51,15 +51,15 @@ export default function SellSmart() {
   const [skuProduct, setSkuProduct] = useState([]);
   const [cartIemts, setCartItems] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);//tổng tiền sản phẩm
-  const [priceShip, setPriceShip] = useState([]);//tiền ship
-  const [soTienThanhToan, setSoTienThanhToan] = useState([]);//số tiền khách cần trả
-  const[tienThua, setTienThua] = useState([]);//tiền thiếu
+  const [totalPrice, setTotalPrice] = useState(0); //tổng tiền sản phẩm
+  const [priceShip, setPriceShip] = useState([]); //tiền ship
+  const [soTienThanhToan, setSoTienThanhToan] = useState([]); //số tiền khách cần trả
+  const [tienThua, setTienThua] = useState([]); //tiền thiếu
 
   const [customer, setCustomer] = useState({
-    fullName: '', // Đổi từ 'full_name' thành 'fullName'
-    email: '', // Giữ nguyên
-    phoneNumber: '', // Đổi từ 'phone_number' thành 'phoneNumber'
+    fullName: "", // Đổi từ 'full_name' thành 'fullName'
+    email: "", // Giữ nguyên
+    phoneNumber: "", // Đổi từ 'phone_number' thành 'phoneNumber'
   });
   const [pagination, setPagination] = useState({
     page: 0,
@@ -150,18 +150,18 @@ export default function SellSmart() {
   const history = useHistory();
   const handleSave = () => {
     addCustomerOffline(customer)
-        .then((response) => {
-          alert('Thêm khách hàng thành công');
-          history.push('/sell');
-          setCustomer({
-            fullName: '',
-            email: '',
-            phoneNumber: '',
-          });
-        })
-        .catch((error) => {
-          alert('Thêm khách hàng thất bại');
+      .then((response) => {
+        alert("Thêm khách hàng thành công");
+        history.push("/sell");
+        setCustomer({
+          fullName: "",
+          email: "",
+          phoneNumber: "",
         });
+      })
+      .catch((error) => {
+        alert("Thêm khách hàng thất bại");
+      });
   };
   function giaoTanNoi() {
     const select = document.getElementById("floatingSelect2");
@@ -260,7 +260,7 @@ export default function SellSmart() {
     });
   }
 
-// TÍNH TIỀN TỔNG SẢN PHẨN - ADD VOUCHER
+  // TÍNH TIỀN TỔNG SẢN PHẨN - ADD VOUCHER
   useEffect(() => {
     calculateTotalPrice();
     calculateChange();
@@ -304,15 +304,17 @@ export default function SellSmart() {
     setSoTienThanhToan(price);
   };
 
- // TÍNH TIỀN Thiếu
+  // TÍNH TIỀN Thiếu
   function calculateChange() {
     // Lấy giá trị số tiền khách đưa
-    const amountGiven = parseFloat(document.getElementById("amountGiven").value);
+    const amountGiven = parseFloat(
+      document.getElementById("amountGiven").value
+    );
     // Lấy giá trị số tiền cần trả (bạn có thể sử dụng biến soTienThanhToan)
     const amountToReturn = parseFloat(soTienThanhToan);
     // Tính số tiền thừa
-    const change =  amountToReturn - amountGiven;
-    setTienThua(change)
+    const change = amountToReturn - amountGiven;
+    setTienThua(change);
   }
 
   //click Voucher
@@ -432,7 +434,7 @@ export default function SellSmart() {
                           placeholder="Tìm kiếm sản phẩm"
                         />
                       </div>
-                      <div className="col-md-4">
+                      <div className="col-md-3">
                         <label
                           className="control-label"
                           style={{ fontWeight: "bold" }}
@@ -443,7 +445,7 @@ export default function SellSmart() {
                           <option>--- Chọn sản phẩm ---</option>
                         </select>
                       </div>
-                      <div className="col-md-4">
+                      <div className="col-md-3">
                         <label
                           className="control-label"
                           style={{ fontWeight: "bold" }}
@@ -454,9 +456,29 @@ export default function SellSmart() {
                         <button
                           type="button"
                           class="btn btn-secondary"
-                          style={{ marginRight: "10px" }}
+                          // style={{ marginRight: "10px" }}
                         >
                           {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
+                        </button>
+                        {/* <button type="button" class="btn btn-secondary">
+                                    {/* <RiseOutlined /> */}
+                        {/* </button> */}
+                      </div>
+                      <div className="col-md-2">
+                        <label
+                          className="control-label"
+                          style={{ fontWeight: "bold" }}
+                        >
+                          +
+                        </label>{" "}
+                        <br />
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          style={{ backgroundColor: "green" }}
+                          // onClick={() => startBill()}
+                        >
+                          {/* <FallOutlined /> */}Tạo Hoá Đơn
                         </button>
                         {/* <button type="button" class="btn btn-secondary">
                                     {/* <RiseOutlined /> */}
@@ -932,10 +954,11 @@ export default function SellSmart() {
                           </label>
                           <p className="control-all-money">
                             {" "}
-                            = {soTienThanhToan?.toLocaleString("vi-VN", {
-                                            style: "currency",
-                                            currency: "VND",
-                                        })}
+                            ={" "}
+                            {soTienThanhToan?.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
                           </p>
                         </div>
                         <div
@@ -946,9 +969,9 @@ export default function SellSmart() {
                           <p className="control-all-money">
                             {" "}
                             {tienThua?.toLocaleString("vi-VN", {
-                                            style: "currency",
-                                            currency: "VND",
-                                        })}
+                              style: "currency",
+                              currency: "VND",
+                            })}
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
@@ -958,6 +981,7 @@ export default function SellSmart() {
                             style={{
                               marginRight: "10px",
                               marginBottom: "10px",
+                              backgroundColor: "orange",
                             }}
                           >
                             {" "}
@@ -1007,34 +1031,34 @@ export default function SellSmart() {
             <div className="form-group col-md-12">
               <label className="control-label">Họ và tên</label>
               <input
-                  className="form-control"
-                  type="text"
-                  name="fullName"
-                  value={customer.fullName}
-                  onChange={handleChange}
-                  required
+                className="form-control"
+                type="text"
+                name="fullName"
+                value={customer.fullName}
+                onChange={handleChange}
+                required
               />
             </div>
             <div className="form-group col-md-6">
               <label className="control-label">Email</label>
               <input
-                  className="form-control"
-                  type="text"
-                  name="email"
-                  value={customer.email}
-                  onChange={handleChange}
-                  required
+                className="form-control"
+                type="text"
+                name="email"
+                value={customer.email}
+                onChange={handleChange}
+                required
               />
             </div>
             <div className="form-group col-md-6">
               <label className="control-label">Số điện thoại</label>
               <input
-                  className="form-control"
-                  type="number"
-                  name="phoneNumber"
-                  value={customer.phoneNumber}
-                  onChange={handleChange}
-                  required
+                className="form-control"
+                type="number"
+                name="phoneNumber"
+                value={customer.phoneNumber}
+                onChange={handleChange}
+                required
               />
             </div>
           </div>

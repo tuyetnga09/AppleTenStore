@@ -20,7 +20,8 @@ import {
   GiftOutlined,
   LogoutOutlined,
   ShopOutlined,
-  UnorderedListOutlined,FileDoneOutlined
+  UnorderedListOutlined,
+  FileDoneOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 const { Text } = Typography;
@@ -38,12 +39,12 @@ const DashboardPage = () => {
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <Menu theme="dark" mode="inline" defaultSelectedKeys={["1"]}>
-          <Menu.Item key="0" >
-            <img
+            <Menu.Item key="0">
+              <img
                 src="/img/logo.jpg"
                 alt="Trang chủ Smartphone Store"
                 title="Trang chủ Smartphone Store"
-                style={{width: "150px"}}
+                style={{ width: "150px" }}
               />
             </Menu.Item>
             <Menu.Item key="0" icon={<FileDoneOutlined />}>
@@ -166,7 +167,7 @@ const DashboardPage = () => {
                     <Text
                       strong /* style={{ fontSize: 24, fontWeight: 800 }} */
                     >
-                      Previous year's income
+                      Annual Revenue
                     </Text>
                   }
                 >
@@ -189,12 +190,16 @@ const DashboardPage = () => {
                 </Card>
               </Col>
               <Col xl={17} lg={16} md={24} sm={24} xs={24}>
-                <Card title={<Text strong>Recent Orders</Text>}>
+                <Card
+                  title={
+                    <Text strong>The Order Was Successfully Placed Today</Text>
+                  }
+                >
                   <RecentOrders />
                 </Card>
               </Col>
               <Col xl={7} lg={8} md={24} sm={24} xs={24}>
-                <Card title={<Text strong>Daily Trending Menus</Text>}>
+                <Card title={<Text strong>Trending Menu For 30 Days</Text>}>
                   <TrendingMenu />
                 </Card>
               </Col>
