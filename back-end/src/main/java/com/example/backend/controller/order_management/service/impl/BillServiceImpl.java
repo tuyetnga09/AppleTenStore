@@ -4,13 +4,20 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequest;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.cart.ListCart;
+import com.example.backend.entity.Cart;
+import com.example.backend.entity.CartDetail;
+import com.example.backend.entity.SKU;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.AddressRepository;
 import com.example.backend.repository.BillDetailRepository;
 import com.example.backend.repository.BillHistoryRepository;
 import com.example.backend.repository.BillRepository;
+import com.example.backend.repository.CartDetailRepository;
+import com.example.backend.repository.CartRepository;
 import com.example.backend.repository.PaymentsRepository;
+import com.example.backend.repository.SKURepositoty;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.repository.VoucherDetailRepository;
 import com.example.backend.controller.order_management.service.BillService;
@@ -75,6 +82,13 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private VoucherDetailRepository voucherDetailRepository;
 
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private CartDetailRepository cartDetailRepository;
+    @Autowired
+    private SKURepositoty skuRepositoty;
+
     // CLIENT
     @Override
     public String createBillCustomerOnlineRequest(BillRequestOnline request) {
@@ -129,10 +143,10 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
-            Product productDetail = productRepository.findById(x.getIdProductDetail()).get();
+            SKU productDetail = skuRepositoty.findById(x.getIdProductDetail()).get();
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .product(productDetail)
+                    .sku(productDetail)
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
                     .bill(bill).build();
@@ -169,6 +183,83 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public String createBillAccountOnlineRequest(BillRequestOnlineAccount request) {
+        Optional<Account> accountOptional = acountRepository.findById(request.getIdAccount());
+
+        if (accountOptional.isPresent()) {
+            Account account = accountOptional.get();
+            Bill bill = Bill.builder()
+                    .code(new Random().randomToString("BillAccount "))
+                    .phoneNumber(request.getPhoneNumber())
+                    .address(request.getAddress())
+                    .userName(request.getUserName())
+                    .moneyShip(request.getMoneyShip())
+                    .itemDiscount(request.getItemDiscount())
+                    .totalMoney(request.getTotalMoney())
+                    .typeBill(TypeBill.ONLINE)
+                    .statusBill(StatusBill.DA_THANH_TOAN)
+                    .account(account)
+                    .build();
+            billRepository.save(bill);
+
+            BillHistory billHistory = BillHistory.builder()
+                    .bill(bill)
+                    .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                    .actionDescription("Đã thanh toán").build();
+            billHistoryRepository.save(billHistory);
+
+            for (BillAskClient d : request.getBillDetail()) {
+                SKU productDetail = skuRepositoty.findById(d.getIdProductDetail()).get();
+                BillDetails billDetail = BillDetails.builder()
+                        .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                        .sku(productDetail)
+                        .price(d.getPrice())
+                        .quantity(d.getQuantity())
+                        .bill(bill).build();
+                billDetailRepository.save(billDetail);
+            }
+
+            Payments payments = Payments.builder()
+                    .method(request.getPaymentMethod().equals("paymentReceive") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
+                    .bill(bill)
+                    .moneyPayment(request.getTotalMoney())
+                    .typePayment(StatusPayment.THANH_TOAN).build();
+            paymentsRepository.save(payments);
+
+            if(request.getIdVoucher().equals("")){
+                VoucherDetail voucherDetail = VoucherDetail.builder()
+                        .voucher(null)
+                        .bill(bill)
+                        .beforePrice(request.getTotalMoney())
+                        .afterPrice(request.getAfterPrice())
+                        .discountPrice(request.getItemDiscount())
+                        .build();
+                voucherDetailRepository.save(voucherDetail);
+            }else{
+                Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
+
+                VoucherDetail voucherDetail = VoucherDetail.builder()
+                        .voucher(voucher)
+                        .bill(bill)
+                        .beforePrice(request.getTotalMoney())
+                        .afterPrice(request.getAfterPrice())
+                        .discountPrice(request.getItemDiscount())
+                        .build();
+                voucherDetailRepository.save(voucherDetail);
+            }
+
+            Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
+            for (BillAskClient x : request.getBillDetail()) {
+                List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndSku_Id(cart.getId(), x.getIdProductDetail());
+                cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
+            }
+            return "thanh toán ok";
+        }
+
+        return null;
+    }
+
+    @Override
     public String createBillCustomerOfflineRequest(BillRequestOffline request) {
         // thông tin hoá đơn
         Bill bill = Bill.builder()
@@ -191,10 +282,10 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient cart : request.getBillDetail()) {
-            Product productDetail = productRepository.findById(cart.getIdProductDetail()).get();
+            SKU productDetail = skuRepositoty.findById(cart.getIdProductDetail()).get();
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .product(productDetail)
+                    .sku(productDetail)
                     .price(cart.getPrice())
                     .quantity(cart.getQuantity())
                     .bill(bill).build();

@@ -17,5 +17,7 @@ public interface CartDetailRepository extends JpaRepository<CartDetail,Integer> 
 
     @Query(value = "select cart_detail.quantity from cart_detail JOIN sku s on s.id = cart_detail.id_sku JOIN cart c on c.id = cart_detail.id_cart where s.id = ?1 and id_account = ?2", nativeQuery = true)
     Integer getQuantityCartDetailBySku(@Param("idSku") Long idSku, @Param("idAccount") Integer idAccount);
+
+    List<CartDetail> getCartDetailByCart_IdAndSku_Id(Integer idCart, Long idSku);
 }
 

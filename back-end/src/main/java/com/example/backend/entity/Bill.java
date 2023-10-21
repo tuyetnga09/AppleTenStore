@@ -84,9 +84,6 @@ public class Bill  {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "id_employees",referencedColumnName = "id")
-    private Account employees;
-    @ManyToOne
     @JoinColumn(name = "id_account",referencedColumnName = "id")
     private Account account;
     @Column(name = "person_create")
