@@ -5,6 +5,7 @@ import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.model.bill.request.BillAskClient;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.service.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,12 @@ public class BillController {
     public void updateStatusBill(@PathVariable int id){
         this.billService.updateStatusBill(id);
     }
+
+    @PostMapping("/account")
+    public ResponseObj create(@RequestBody BillRequestOnlineAccount request)  {
+        return new ResponseObj(billService.createBillAccountOnlineRequest(request));
+    }
+
 
 
 }
