@@ -184,7 +184,6 @@ public class AdminBillController {
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
-    //
     //    //số khách hàng đã thanh toán hôm nay
     @GetMapping("/customer/already-paid")
     public ResponseEntity<Integer> countCustomersPaidToday() {
