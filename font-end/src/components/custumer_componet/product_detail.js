@@ -17,9 +17,7 @@ import {
 import { getSKUProduct } from "../../service/sku.service";
 import queryString from "query-string";
 import AvtProduct from "./avtProduct";
-import {
-  readAll,
-} from "../../service/product.service";
+import { readAll } from "../../service/product.service";
 import Pagination from "../../components/product_component/Size/Paging";
 import ImageProduct from "../../components/Page_Comeponet/page/ImageProduct";
 import "bootstrap/dist/js/bootstrap";
@@ -42,7 +40,8 @@ import "../../css/style2.css";
 import "../../css/owl.theme.default.min.css";
 
 export default function ProductDetail() {
-  const idAccount = 1; //sau khi đăng nhập thì truyền idAccount vào đây
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const idAccount = storedUser.id; //sau khi đăng nhập thì truyền idAccount vào đây
 
   const { id } = useParams();
 
@@ -102,8 +101,8 @@ export default function ProductDetail() {
         console.log(`${error}`);
       });
 
-      const paramsStringProduct = queryString.stringify(filters);
-      readAll(paramsStringProduct)
+    const paramsStringProduct = queryString.stringify(filters);
+    readAll(paramsStringProduct)
       .then((response) => {
         setDisplay(response.data.content);
         setProductFilter(
@@ -293,7 +292,6 @@ export default function ProductDetail() {
           </div>
         </Link>
       </li>
-    
     );
   });
 

@@ -3,7 +3,8 @@ import {
   readAll,
   deleteCartDetail,
   updateQuantity,
-  update, getQuantityCartDetailBySku,
+  update,
+  getQuantityCartDetailBySku,
 } from "../../../service/cart.service";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
@@ -19,7 +20,8 @@ import { DateField } from "@refinedev/antd";
 import queryString from "query-string";
 
 export default function CartDisplay() {
-  const idAccount = 1; //sau khi đăng nhập thì truyền idAccount vào đây
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const idAccount = storedUser?.id; //sau khi đăng nhập thì truyền idAccount vào đây
   const history = useHistory();
   const [products, setProducts] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
@@ -60,7 +62,7 @@ export default function CartDisplay() {
       update(cartItemId, newQuantity)
         .then((response) => {
           console.log("Phản hồi từ máy chủ:", response.data);
-          readAll(1)
+          readAll(idAccount)
             .then((response) => {
               console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
               setProducts(response.data);
@@ -92,15 +94,15 @@ export default function CartDisplay() {
 
   //check tien hanh đặt hàng
   const handleClickTienHangDH = () => {
-    if(products === null || products.length === 0){
+    if (products === null || products.length === 0) {
       notification.error({
         message: "ĐẶT HÀNG",
         description: "Vui lòng thêm sản phẩm vào giỏ hàng",
       });
-    }else{
+    } else {
       history.push("/checkout");
     }
-  }
+  };
 
   return (
     <React.Fragment>
@@ -258,7 +260,7 @@ export default function CartDisplay() {
                                           );
                                         } else if (
                                           event.target.value >
-                                          parseInt(quantitySKU) 
+                                          parseInt(quantitySKU)
                                           // +
                                           //   parseInt(product.quantity)
                                         ) {
@@ -302,7 +304,7 @@ export default function CartDisplay() {
                                             parseInt(product.quantity) + 1;
                                           if (
                                             quantity.value >
-                                            parseInt(res.data.quantity) 
+                                            parseInt(res.data.quantity)
                                             // + parseInt(product.quantity)
                                           ) {
                                             notification.error({
@@ -310,10 +312,11 @@ export default function CartDisplay() {
                                               description:
                                                 "Không thể nhập quá số lượng đang có",
                                             });
-                                            quantity.value =
-                                              parseInt(res.data.quantity) 
-                                              // +
-                                              // parseInt(product.quantity);
+                                            quantity.value = parseInt(
+                                              res.data.quantity
+                                            );
+                                            // +
+                                            // parseInt(product.quantity);
                                           }
                                         });
                                         handleUpdateQuantity(
@@ -325,7 +328,7 @@ export default function CartDisplay() {
                                       className="plus"
                                     />
                                   </div>
-                                  <p style={{fontSize: "10px", color: "red"}}>
+                                  <p style={{ fontSize: "10px", color: "red" }}>
                                     Còn {product.quantitySKU} sản phẩm
                                   </p>
                                 </td>
@@ -412,13 +415,13 @@ export default function CartDisplay() {
 
                         <div class="d-grid gap-2 col-6 mx-auto">
                           {/* <Link to={"/checkout"}> */}
-                            <button
-                              type="button"
-                              className="btn btn-danger btn-block btn-lg"
-                              onClick={() => handleClickTienHangDH()}
-                            >
-                              TIẾN HÀNH ĐẶT HÀNG
-                            </button>
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-block btn-lg"
+                            onClick={() => handleClickTienHangDH()}
+                          >
+                            TIẾN HÀNH ĐẶT HÀNG
+                          </button>
                           {/* </Link> */}
                         </div>
                         <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>

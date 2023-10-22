@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 
 export default function Header() {
   const [quantity, setQuantity] = useState([]);
+  const storedUser = JSON.parse(localStorage.getItem("account"));
 
   useEffect(() => {
-    readQuantityInCart(1)
+    readQuantityInCart(storedUser?.id)
       .then((response) => {
         console.log(response.data);
         setQuantity(response.data);
@@ -136,9 +137,12 @@ export default function Header() {
             {/* End Search header */}
             <div className="tools-member">
               <div className="cart">
-                <Link to="/signup" >
+                <Link to={storedUser !== null ? "/profile" : "/login"}>
                   <i className="fa fa-user" />
-                  Tài khoản
+                  {/* {account == null ? "Tài khoản" : account.user.fullName} */}
+                  {localStorage.getItem("account") !== null
+                    ? storedUser?.user.fullName
+                    : "Tài khoản"}
                 </Link>
                 {/* <div className="menuMember hide">
             <a href="nguoidung.html">Trang người dùng</a>
@@ -157,7 +161,7 @@ export default function Header() {
               </div>{" "}
               {/* End Cart */}
               <div class="check-order">
-                <Link to = "/oderUserAll">
+                <Link to="/oderUserAll">
                   <i class="fa fa-truck"></i>
                   <span>Đơn hàng</span>
                 </Link>

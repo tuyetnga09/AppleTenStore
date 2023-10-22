@@ -258,4 +258,29 @@ public class BillServiceImpl implements BillService {
         this.billRepository.updateBillStatus(id);
     }
 
+    @Override
+    public List<Bill> listBillByIdAccount(Integer id) {
+        return billRepository.listBillByIdAccount(id);
+    }
+
+    @Override
+    public List<Bill> listBillByIdAccountCXN(Integer id) {
+        return billRepository.listBillByIdAccountCXN(id);
+    }
+
+    @Override
+    public List<Bill> listBillByIdAccountVC(Integer id) {
+        return billRepository.listBillByIdAccountVC(id);
+    }
+
+    @Override
+    public List<Bill> listBillByIdAccountDTT(Integer id) {
+        return billRepository.listBillByIdAccountDTT(id);
+    }
+
+    @Override
+    public List<Bill> listBillByIdAccountDH(Integer id) {
+        return billRepository.listBillByIdAccountDH(id);
+    }
+
 }

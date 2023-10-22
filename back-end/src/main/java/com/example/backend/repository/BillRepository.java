@@ -93,4 +93,18 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
             "    ORDER BY month ", nativeQuery = true)
     List<AnnualRevenue> annualRevenueYear();
 
+    @Query(value = "select * from bill where id_account = ?1", nativeQuery = true)
+    List<Bill> listBillByIdAccount(Integer id);
+
+    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'CHO_XAC_NHAN'", nativeQuery = true)
+    List<Bill> listBillByIdAccountCXN(Integer id);
+
+    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'VAN_CHUYEN'", nativeQuery = true)
+    List<Bill> listBillByIdAccountVC(Integer id);
+
+    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_THANH_TOAN'", nativeQuery = true)
+    List<Bill> listBillByIdAccountDTT(Integer id);
+
+    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_HUY'", nativeQuery = true)
+    List<Bill> listBillByIdAccountDH(Integer id);
 }

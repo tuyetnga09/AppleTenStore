@@ -11,3 +11,13 @@ export const numberOfCustomersThisMonth = () => {
 export const listRoles = (role) => {
   return httpClient.get(`/admin/account/roles`);
 };
+
+export const login = (email, password) => {
+  return httpClient.get(
+    `/admin/account/login?email=${email}&password=${password}`
+  );
+};
+
+export const detail = (email) => {
+  return httpClient.get(`/admin/account/get-email?email=${email}`);
+};

@@ -24,7 +24,8 @@ import { createBill } from "../../../service/Bill/bill.service";
 import { DateField } from "@refinedev/antd";
 
 const Checkout = () => {
-  const [isLogin, setIsGLogin] = useState([false]);
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const idAccount = storedUser?.id; //sau khi đăng nhập thì truyền idAccount vào đây
   const [products, setProducts] = useState([]);
   const [quantityCart, setQuantity] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -68,7 +69,7 @@ const Checkout = () => {
 
   useEffect(() => {
     //hiển thị giỏ hàng
-    readAll(1)
+    readAll(idAccount)
       .then((response) => {
         const list = response.data;
         setProducts(list);
@@ -89,7 +90,7 @@ const Checkout = () => {
         console.log(`${error}`);
       });
     //số lượng sản phẩm tỏng giỏ hàng
-    readQuantityInCart(1)
+    readQuantityInCart(idAccount)
       .then((response) => {
         console.log(response.data);
         setQuantity(response.data);
@@ -145,7 +146,7 @@ const Checkout = () => {
           console.log(`${error}`);
         });
     }
-  }, [isLogin, province_id, district_id, transportationFeeDTO, priceShip]);
+  }, [province_id, district_id, transportationFeeDTO, priceShip]);
 
   function giaoTanNoi() {
     const select = document.getElementById("floatingSelect1");
@@ -176,13 +177,6 @@ const Checkout = () => {
     notDcmd.hidden = true;
   }
 
-  function test() {
-    setIsGLogin(true);
-    if (isLogin == true) {
-      const divDcmd = document.getElementById("dcmd");
-      divDcmd.hidden = false;
-    }
-  }
   useEffect(() => {
     calculatePriceSucsses();
   }, [products, fee]);
@@ -256,7 +250,7 @@ const Checkout = () => {
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
       });
-    } else if(voucher.quantity <= 0) {
+    } else if (voucher.quantity <= 0) {
       notification.error({
         message: "VOUCHER",
         description: "Voucher đã hết lượt sử dụng",
@@ -299,7 +293,7 @@ const Checkout = () => {
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
       });
-    } else if(voucher.quantity <= 0) {
+    } else if (voucher.quantity <= 0) {
       notification.error({
         message: "VOUCHER",
         description: "Voucher đã hết lượt sử dụng",
@@ -465,7 +459,6 @@ const Checkout = () => {
   return (
     <>
       <Header />
-      <button onClick={() => test()}>test</button>
       <main role="main">
         <div class="container mt-4">
           <form
@@ -474,8 +467,11 @@ const Checkout = () => {
             onSubmit={handleSubmit}
           >
             <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
-            <div class="py-5 text-center" style={{color: "#f68f2c", marginBottom: "50px"}}>
-              <i class="fa fa-credit-card fa-4x" aria-hidden="true" ></i>
+            <div
+              class="py-5 text-center"
+              style={{ color: "#f68f2c", marginBottom: "50px" }}
+            >
+              <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
               <h2>Thanh toán</h2>
               <p class="lead">
                 Vui lòng kiểm tra thông tin Khách hàng, thông tin Giỏ hàng trước
@@ -648,7 +644,11 @@ const Checkout = () => {
                         Giao tận nơi
                       </label>
                     </div>
-                    <div class="custom-control custom-radio" id="dcmd" hidden>
+                    <div
+                      class="custom-control custom-radio"
+                      id="dcmd"
+                      hidden={storedUser !== null ? false : true}
+                    >
                       <input
                         id="htnn_6"
                         name="htnn_ma"
@@ -862,14 +862,20 @@ const Checkout = () => {
                     <span style={{ paddingLeft: "10px" }}>
                       {voucher.name}
                       <br />
-                      <p style={{ color: "red", fontSize: "15px", fontWeight: "bold" }}>
+                      <p
+                        style={{
+                          color: "red",
+                          fontSize: "15px",
+                          fontWeight: "bold",
+                        }}
+                      >
                         Giảm{" "}
                         {voucher?.valueVoucher?.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
                       </p>
-                      <p style={{fontSize: "13px" }}>
+                      <p style={{ fontSize: "13px" }}>
                         Cho đơn hàng giá trị từ{" "}
                         {voucher?.valueMinimum?.toLocaleString("vi-VN", {
                           style: "currency",
@@ -941,14 +947,20 @@ const Checkout = () => {
                     <span style={{ paddingLeft: "10px" }}>
                       {voucher.name}
                       <br />
-                      <p style={{ color: "red", fontSize: "15px" , fontWeight: "bold" }}>
+                      <p
+                        style={{
+                          color: "red",
+                          fontSize: "15px",
+                          fontWeight: "bold",
+                        }}
+                      >
                         Giảm{" "}
                         {voucher?.valueVoucher?.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
                       </p>
-                      <p style={{fontSize: "13px" }}>
+                      <p style={{ fontSize: "13px" }}>
                         Cho đơn hàng giá trị từ{" "}
                         {voucher?.valueMinimum?.toLocaleString("vi-VN", {
                           style: "currency",

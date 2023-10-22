@@ -26,4 +26,13 @@ public interface BillService {
 
     void updateStatusBill(int id);
 
+    List<Bill> listBillByIdAccount(Integer id);
+
+    List<Bill> listBillByIdAccountCXN(Integer id);
+
+    List<Bill> listBillByIdAccountVC(Integer id);
+
+    List<Bill> listBillByIdAccountDTT(Integer id);
+
+    List<Bill> listBillByIdAccountDH(Integer id);
 }

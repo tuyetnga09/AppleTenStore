@@ -7,6 +7,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.service.BillService;
+import com.example.backend.entity.Bill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -112,5 +113,28 @@ public class BillController {
         this.billService.updateStatusBill(id);
     }
 
+    @GetMapping("/getAll")
+    public List<Bill> listBillByIdAccount(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccount(id);
+    }
 
+    @GetMapping("/CXN")
+    public List<Bill> listBillByIdAccountCXN(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountCXN(id);
+    }
+
+    @GetMapping("/VC")
+    public List<Bill> listBillByIdAccountVC(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountVC(id);
+    }
+
+    @GetMapping("/DTT")
+    public List<Bill> listBillByIdAccountDTT(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountDTT(id);
+    }
+
+    @GetMapping("/DH")
+    public List<Bill> listBillByIdAccountDH(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountDH(id);
+    }
 }
