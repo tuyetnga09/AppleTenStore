@@ -43,7 +43,16 @@ export const deleteCartDetailOff = (id) => {
 export const updateQuantityOff = (id, newQuantity) => {
   return httpClient.put(`/admin/cart-detail/update-quantity/${id}?quantity=${newQuantity}`);
 };
+
+export const getbysku = (idSku) => {
+  return httpClient.get(`/customer/cart/session/${idSku}`);
+};
+
 //API add cart session
 export const addToCartSession = (newCartSession) => {
   return httpClient.post("/customer/cart/addSession", newCartSession);
+};
+
+export const getCartSession = () => {
+  return httpClient.get("/customer/cart/items");
 };

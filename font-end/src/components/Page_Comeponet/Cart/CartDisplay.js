@@ -5,6 +5,8 @@ import {
   updateQuantity,
   update,
   getQuantityCartDetailBySku,
+  getCartSession,
+  getbysku,
 } from "../../../service/cart.service";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
@@ -21,22 +23,50 @@ import queryString from "query-string";
 
 export default function CartDisplay() {
   const storedUser = JSON.parse(localStorage.getItem("account"));
-  const idAccount = storedUser?.id; //sau khi đăng nhập thì truyền idAccount vào đây
+  const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
   const history = useHistory();
   const [products, setProducts] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
   // const [number, setNumber] = useState(0);
 
+  // Sử dụng dữ liệu cartItems để hiển thị giỏ hàng
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+
+  const skuIds = cartItems.map((item) => item.idSKU); // Lấy danh sách idSKU từ mảng cartItems
+
+  const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
+
   useEffect(() => {
-    readAll(idAccount)
-      .then((response) => {
-        console.log(response.data);
-        setProducts(response.data);
-        // setNumber(response.data.total);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+    if (idAccount !== null && idAccount !== "") {
+      readAll(idAccount)
+        .then((response) => {
+          console.log(response.data);
+          setProducts(response.data);
+          // setNumber(response.data.total);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      Promise.all(requests)
+        .then((responses) => {
+          const productsData = responses.map((response, index) => {
+            const productInfo = response.data[0];
+            const cartItem = cartItems[index];
+            // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
+            return {
+              ...productInfo,
+              quantity: cartItem.quantity,
+              price: cartItem.price,
+              total: cartItem.quantity * cartItem.price,
+            };
+          });
+          setProducts(productsData);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, []);
 
   async function remove(id) {
@@ -45,6 +75,26 @@ export default function CartDisplay() {
       setProducts(newArr);
       window.location.reload();
     });
+  }
+
+  // Hàm xóa sản phẩm lưu session bằng idSKU
+  function removeBySku(idSKU) {
+    // Tìm vị trí của sản phẩm cần xóa trong danh sách
+    const productIndex = cartItems.findIndex((item) => item.idSKU === idSKU);
+
+    if (productIndex !== -1) {
+      // Xóa sản phẩm khỏi danh sách
+      cartItems.splice(productIndex, 1);
+
+      // Lưu danh sách sản phẩm đã cập nhật trở lại vào sessionStorage
+      sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+      // Cập nhật trạng thái trong ứng dụng React
+      setProducts(cartItems);
+
+      // Reload trang hoặc thực hiện các thao tác cần thiết
+      // window.location.reload();
+    }
   }
 
   const [sku, setSKU] = useState([]);
@@ -358,7 +408,16 @@ export default function CartDisplay() {
                                     className="close"
                                     data-dismiss="alert"
                                     aria-label="Close"
-                                    onClick={() => remove(product.idCartDetail)}
+                                    onClick={() => {
+                                      if (
+                                        idAccount !== null &&
+                                        idAccount !== ""
+                                      ) {
+                                        remove(product.idCartDetail); // Sử dụng hàm remove nếu có idAccount
+                                      } else {
+                                        removeBySku(product.idSKU); // Sử dụng hàm removeBySku nếu không có idAccount
+                                      }
+                                    }}
                                   >
                                     <span aria-hidden="true">
                                       <FontAwesomeIcon

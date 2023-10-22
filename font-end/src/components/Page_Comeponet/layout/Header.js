@@ -3,18 +3,30 @@ import { readQuantityInCart } from "../../../service/cart.service";
 import { Link } from "react-router-dom";
 
 export default function Header() {
-  const [quantity, setQuantity] = useState([]);
   const storedUser = JSON.parse(localStorage.getItem("account"));
+  const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
+  const [quantity, setQuantity] = useState([]);
+
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 
   useEffect(() => {
-    readQuantityInCart(storedUser?.id)
-      .then((response) => {
-        console.log(response.data);
-        setQuantity(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+    if (idAccount !== null && idAccount !== "") {
+      readQuantityInCart(idAccount)
+        .then((response) => {
+          console.log(response.data);
+          setQuantity(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      // Tính tổng số lượng sản phẩm trong giỏ hàng
+      const totalQuantity = cartItems.reduce(
+        (total, product) => total + product.quantity,
+        0
+      );
+      setQuantity(totalQuantity);
+    }
   }, []);
 
   // const fetchQuantity = () => {

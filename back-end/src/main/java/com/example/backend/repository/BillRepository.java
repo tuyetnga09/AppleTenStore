@@ -86,13 +86,38 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     // lấy ra list imei máy bán ra trong 30 ngày gần đây
 //    @Transactional
 //    @Modifying
-    @Query(value = "SELECT MONTH(date_create)  AS month, SUM(total_money) AS total_money, COUNT(code)  as quantity\n" +
-            "    FROM bill " +
-            "    WHERE YEAR(date_create) = 2023 AND status_bill = 'DA_THANH_TOAN' " +
-            "    GROUP BY month " +
-            "    ORDER BY month ", nativeQuery = true)
-    List<AnnualRevenue> annualRevenueYear();
+    @Query(value = "SELECT \n" +
+            "          MONTH(date_create) AS  month , \n" +
+            "              SUM(total_money) AS totalMoney, \n" +
+            "              count(code) as quantity\n" +
+            "              FROM bill \n" +
+            "                WHERE YEAR(date_create) = 2023 and status_bill = 'DA_THANH_TOAN' \n" +
+            "              GROUP BY month\n" +
+            "               ORDER BY month", nativeQuery = true)
+    List<AnnualRevenueIon> annualRevenueYear();
 
+    //Customers
+
+    // lấy râ số khách hàng đã đặt hàng hôm nay,
+    @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='CHO_XAC_NHAN'", nativeQuery = true)
+    List<Integer> countCustomersOrderToday();
+
+    //số khác hàng đã huỷ đơn hôm nay
+    @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='DA_HUY'", nativeQuery = true)
+    List<Integer> countCustomersCanceledToday();
+    //số khách hàng đã thanh toán hôm nay
+
+    @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='DA_HUY'", nativeQuery = true)
+    List<Integer> countCustomersPaidToday();
+
+    // số khách hàng trả đơn trong hôm nay
+
+    @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='TRA_HANG'", nativeQuery = true)
+    List<Integer> countCustomersReturnedToday();
     @Query(value = "select * from bill where id_account = ?1", nativeQuery = true)
     List<Bill> listBillByIdAccount(Integer id);
 

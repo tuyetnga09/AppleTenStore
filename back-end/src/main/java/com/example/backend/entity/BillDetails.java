@@ -66,3 +66,5 @@ public class BillDetails{
     @JoinColumn(name = "id_sku",referencedColumnName = "id")
     private SKU sku;
 }
+
+

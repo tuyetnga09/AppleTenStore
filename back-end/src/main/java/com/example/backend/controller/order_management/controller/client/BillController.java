@@ -7,7 +7,6 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.service.BillService;
-import com.example.backend.entity.Bill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -112,6 +111,12 @@ public class BillController {
     public void updateStatusBill(@PathVariable int id){
         this.billService.updateStatusBill(id);
     }
+
+    @PostMapping("/account")
+    public ResponseObj create(@RequestBody BillRequestOnlineAccount request)  {
+        return new ResponseObj(billService.createBillAccountOnlineRequest(request));
+    }
+
 
     @GetMapping("/getAll")
     public List<Bill> listBillByIdAccount(@RequestParam("id") Integer id){

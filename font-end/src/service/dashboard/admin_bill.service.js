@@ -102,3 +102,22 @@ export const monthlyTrendingMenus = () => {
 export const revenue = () => {
   return httpClient.get(`/admin/bill/revenue-year`);
 };
+
+//count khách hàng đặt hàng hôm nay
+export const countCustomersOrderToday = () => {
+  return httpClient.get(`/admin/bill/customer/unconfimred`);
+};
+//    //số khác hàng đã huỷ đơn hôm nay
+export const countCustomersCanceledToday = () => {
+  return httpClient.get(`/admin/bill/customer/cancel-order`);
+};
+//    //số khách hàng đã thanh toán hôm nay
+export const countCustomersPaidToday = () => {
+  return httpClient.get(`/admin/bill/customer/already-paid`);
+};
+
+//    // số khách hàng trả đơn trong hôm nay
+
+export const countCustomersReturnedToday = () => {
+  return httpClient.get(`/admin/bill/customer/returns`);
+};
