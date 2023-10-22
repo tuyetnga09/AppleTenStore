@@ -2,6 +2,7 @@ package com.example.backend.repository;
 
 import com.example.backend.controller.product_controller.model.request.AnnualRevenue;
 import com.example.backend.entity.Bill;
+import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
