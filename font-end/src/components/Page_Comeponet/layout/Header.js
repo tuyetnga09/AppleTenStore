@@ -153,7 +153,7 @@ export default function Header() {
                   <i className="fa fa-user" />
                   {/* {account == null ? "Tài khoản" : account.user.fullName} */}
                   {localStorage.getItem("account") !== null
-                    ? storedUser?.user.fullName
+                    ? storedUser?.user?.fullName
                     : "Tài khoản"}
                 </Link>
                 {/* <div className="menuMember hide">

@@ -61,7 +61,7 @@ const ProfileCustomer = () => {
                       class="form-control"
                       id="inputUsername"
                       type="text"
-                      placeholder={data?.data?.user.fullName}
+                      placeholder={data?.data?.user?.fullName}
                     />
                   </div>
                   <div class="mb-3">
@@ -112,7 +112,7 @@ const ProfileCustomer = () => {
                         class="form-control"
                         id="inputPhone"
                         type="tel"
-                        placeholder={data?.data?.user.phoneNumber}
+                        placeholder={data?.data?.user?.phoneNumber}
                       />
                     </div>
                     <div class="col-md-6">
@@ -132,7 +132,7 @@ const ProfileCustomer = () => {
                         type="text"
                         required
                         defaultValue={dayjs(
-                          data?.data?.user.dateOfBirth
+                          data?.data?.user?.dateOfBirth
                         ).locale("vi-VN")}
                         // onChange={(date, dateString) =>
                         // handleChangeDatePicker(dateString, "dateStart")
