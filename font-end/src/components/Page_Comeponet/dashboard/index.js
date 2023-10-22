@@ -167,7 +167,7 @@ const DashboardPage = () => {
                     <Text
                       strong /* style={{ fontSize: 24, fontWeight: 800 }} */
                     >
-                      Previous year's income
+                      Annual Revenue
                     </Text>
                   }
                 >
@@ -190,12 +190,16 @@ const DashboardPage = () => {
                 </Card>
               </Col>
               <Col xl={17} lg={16} md={24} sm={24} xs={24}>
-                <Card title={<Text strong>Recent Orders</Text>}>
+                <Card
+                  title={
+                    <Text strong>The Order Was Successfully Placed Today</Text>
+                  }
+                >
                   <RecentOrders />
                 </Card>
               </Col>
               <Col xl={7} lg={8} md={24} sm={24} xs={24}>
-                <Card title={<Text strong>Daily Trending Menus</Text>}>
+                <Card title={<Text strong>Trending Menu For 30 Days</Text>}>
                   <TrendingMenu />
                 </Card>
               </Col>

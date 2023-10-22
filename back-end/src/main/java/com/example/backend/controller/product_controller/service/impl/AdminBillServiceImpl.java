@@ -1,16 +1,17 @@
 package com.example.backend.controller.product_controller.service.impl;
 
-import com.example.backend.controller.product_controller.model.request.AnnualRevenue;
 import com.example.backend.controller.product_controller.model.request.Top8ProductMonthlyTrending;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.SKU;
+import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import com.example.backend.repository.BillRepository;
 import com.example.backend.repository.ImeiRepository;
 import com.example.backend.untils.StatusBill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -132,10 +133,46 @@ public class AdminBillServiceImpl {
     }
 
     // daonh thu 2023
-    public List<AnnualRevenue> annualRevenue() {
-        List<AnnualRevenue> list = billRepository.annualRevenueYear();
+    public List<AnnualRevenueIon> annualRevenue() {
+        List<AnnualRevenueIon> list = billRepository.annualRevenueYear();
         System.out.println(list.size());
         return billRepository.annualRevenueYear();
     }
 
+    //Customers
+    // lấy râ số khách hàng đã đặt hàng hôm nay,
+    public Integer countCustomersOrderToday() {
+        List<Integer> list = billRepository.countCustomersOrderToday();
+        if (list != null || !list.isEmpty()) {
+            return list.size();
+        }
+        return 0;
+    }
+
+    //    //số khác hàng đã huỷ đơn hôm nay
+    public Integer countCustomersCanceledToday() {
+        List<Integer> list = billRepository.countCustomersCanceledToday();
+        if (list != null || !list.isEmpty()) {
+            return list.size();
+        }
+        return 0;
+    }
+
+    //    //số khách hàng đã thanh toán hôm nay
+    public Integer countCustomersPaidToday() {
+        List<Integer> list = billRepository.countCustomersPaidToday();
+        if (list != null || !list.isEmpty()) {
+            return list.size();
+        }
+        return 0;
+    }
+
+    //    // số khách hàng trả đơn trong hôm nay
+    public Integer countCustomersReturnedToday() {
+        List<Integer> list = billRepository.countCustomersReturnedToday();
+        if (list != null || !list.isEmpty()) {
+            return list.size();
+        }
+        return 0;
+    }
 }

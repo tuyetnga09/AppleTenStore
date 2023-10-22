@@ -92,72 +92,72 @@ export default function SellSmart() {
     const phanloai = document.getElementById("exampleSelect1");
     //lấy danh sách voucher
     getVoucher()
-      .then((response) => {
-        console.log(response.data);
-        setVoucher(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-
-    //lấy danh sách voucher
-    getVoucherFreeShip()
-      .then((response) => {
-        console.log(response.data);
-        setVoucherFreeShip(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    // lay danh sach category
-    readAllCategory()
-      .then((response) => {
-        console.log(response.data);
-        setCategories(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-
-    if (phanloai.value != -1) {
-      const paramsString2 = queryString.stringify(filtersCategory);
-      getSKUProductFormSellByCateogory(paramsString2)
-        .then((res) => {
-          console.log(res.data);
-          setSkuProduct(res.data);
-          setPagination(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      const paramsString = queryString.stringify(filters);
-      getSKUProductFormSell(paramsString)
         .then((response) => {
-          console.log(response.data.content);
-          setSkuProduct(response.data);
-          setPagination(response.data);
+          console.log(response.data);
+          setVoucher(response.data);
         })
         .catch((error) => {
           console.log(`${error}`);
         });
+
+    //lấy danh sách voucher
+    getVoucherFreeShip()
+        .then((response) => {
+          console.log(response.data);
+          setVoucherFreeShip(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    // lay danh sach category
+    readAllCategory()
+        .then((response) => {
+          console.log(response.data);
+          setCategories(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+
+    if (phanloai.value != -1) {
+      const paramsString2 = queryString.stringify(filtersCategory);
+      getSKUProductFormSellByCateogory(paramsString2)
+          .then((res) => {
+            console.log(res.data);
+            setSkuProduct(res.data);
+            setPagination(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    } else {
+      const paramsString = queryString.stringify(filters);
+      getSKUProductFormSell(paramsString)
+          .then((response) => {
+            console.log(response.data.content);
+            setSkuProduct(response.data);
+            setPagination(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
     }
     readAllCartOff(idNhanVien)
-      .then((response) => {
-        setCartItems(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+        .then((response) => {
+          setCartItems(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
 
     //lấy danh sách khach hang
     getCustomer()
-      .then((response) => {
-        setKhachHang(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+        .then((response) => {
+          setKhachHang(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
   }, [filters, filtersCategory]);
 
   function handlePageChange(newPage) {
@@ -234,18 +234,18 @@ export default function SellSmart() {
   const history = useHistory();
   const handleSave = () => {
     addCustomerOffline(customer)
-      .then((response) => {
-        alert("Thêm khách hàng thành công");
-        history.push("/sell");
-        setCustomer({
-          fullName: "",
-          email: "",
-          phoneNumber: "",
+        .then((response) => {
+          alert("Thêm khách hàng thành công");
+          history.push("/sell");
+          setCustomer({
+            fullName: "",
+            email: "",
+            phoneNumber: "",
+          });
+        })
+        .catch((error) => {
+          alert("Thêm khách hàng thất bại");
         });
-      })
-      .catch((error) => {
-        alert("Thêm khách hàng thất bại");
-      });
   };
   function giaoTanNoi() {
     const select = document.getElementById("floatingSelect2");
@@ -294,19 +294,19 @@ export default function SellSmart() {
       quantity: 1,
     };
     addToCartOffline(addToCartData)
-      .then((response) => {
-        console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
-        readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
-          .then((response) => {
-            setCartItems(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-      })
-      .catch((error) => {
-        console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
-      });
+        .then((response) => {
+          console.log("Sản phẩm đã được thêm vào giỏ hàng.", response.data);
+          readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
+              .then((response) => {
+                setCartItems(response.data);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+        })
+        .catch((error) => {
+          console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
+        });
   };
 
   const handleUpdateQuantity = (cartItemId, newQuantity, idSKU) => {
@@ -320,19 +320,19 @@ export default function SellSmart() {
       });
     } else {
       updateQuantityOff(cartItemId, newQuantity)
-        .then((response) => {
-          console.log("Phản hồi từ máy chủ:", response.data);
-          readAllCartOff(idNhanVien)
-            .then((response) => {
-              setCartItems(response.data);
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
-        })
-        .catch((error) => {
-          console.log(`Lỗi khi cập nhật số lượng: ${error}`);
-        });
+          .then((response) => {
+            console.log("Phản hồi từ máy chủ:", response.data);
+            readAllCartOff(idNhanVien)
+                .then((response) => {
+                  setCartItems(response.data);
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
+          })
+          .catch((error) => {
+            console.log(`Lỗi khi cập nhật số lượng: ${error}`);
+          });
     }
   };
 
@@ -368,7 +368,7 @@ export default function SellSmart() {
     if (selecteVoucherFreeShip && selecteVoucher) {
       const voucherValue = parseFloat(selecteVoucher.valueVoucher);
       const voucherVoucherFree = parseFloat(
-        selecteVoucherFreeShip.valueVoucher
+          selecteVoucherFreeShip.valueVoucher
       );
       price = total + priceS - (voucherValue + voucherVoucherFree);
     } else if (selecteVoucher) {
@@ -378,7 +378,7 @@ export default function SellSmart() {
     } else if (selecteVoucherFreeShip) {
       // Nếu chỉ có selectedVoucherFreeShip có giá trị, sử dụng giá trị voucherfreeship
       const voucherVoucherFree = parseFloat(
-        selecteVoucherFreeShip.valueVoucher
+          selecteVoucherFreeShip.valueVoucher
       );
       price = total + priceS - voucherVoucherFree;
     } else {
@@ -392,7 +392,7 @@ export default function SellSmart() {
   function calculateChange() {
     // Lấy giá trị số tiền khách đưa
     const amountGiven = parseFloat(
-      document.getElementById("amountGiven").value
+        document.getElementById("amountGiven").value
     );
     // Lấy giá trị số tiền cần trả (bạn có thể sử dụng biến soTienThanhToan)
     const amountToReturn = parseFloat(soTienThanhToan);
@@ -503,171 +503,171 @@ export default function SellSmart() {
   };
 
   return (
-    <React.Fragment>
-      <>
-        <Layout>
+      <React.Fragment>
+        <>
           <Layout>
-            <Content
-              style={{
-                margin: "24px 16px",
-                padding: 24,
-                minHeight: 280,
-                background: colorBgContainer,
-              }}
-            >
-              <main className="app app-ban-hang">
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="app-title">
-                      <ul className="app-breadcrumb breadcrumb">
-                        <li className="breadcrumb-item">
-                          <a href="#">
-                            <b>POS bán hàng</b>
-                          </a>
-                        </li>
-                      </ul>
-                      <div id="clock" />
+            <Layout>
+              <Content
+                  style={{
+                    margin: "24px 16px",
+                    padding: 24,
+                    minHeight: 280,
+                    background: colorBgContainer,
+                  }}
+              >
+                <main className="app app-ban-hang">
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="app-title">
+                        <ul className="app-breadcrumb breadcrumb">
+                          <li className="breadcrumb-item">
+                            <a href="#">
+                              <b>POS bán hàng</b>
+                            </a>
+                          </li>
+                        </ul>
+                        <div id="clock" />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-9">
-                    {/* <div className="tile"> */}
-                    <div className="row">
-                      <div className="col-md-4">
-                        <label
-                          className="control-label"
-                          style={{ fontWeight: "bold" }}
-                        >
-                          Tìm kiếm sản phẩm
-                        </label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          placeholder="Tìm kiếm sản phẩm"
-                          name="key"
-                          onChange={handleChangeOne}
-                        />
-                      </div>
-                      <div className="col-md-4">
-                        <label
-                          className="control-label"
-                          style={{ fontWeight: "bold" }}
-                        >
-                          Phân loại sản phẩm
-                        </label>
-                        <select
-                          className="form-control"
-                          id="exampleSelect1"
-                          name="id"
-                          onChange={handleChangeCategory}
-                        >
-                          <option value={-1} selected>
-                            --- Chọn sản phẩm ---
-                          </option>
-                          {categories.map((ct) => {
-                            return (
-                              <option key={ct?.id} value={ct?.id}>
-                                {ct?.name}
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </div>
-                      <div className="col-md-4">
-                        <label
-                          className="control-label"
-                          style={{ fontWeight: "bold" }}
-                        >
-                          +
-                        </label>{" "}
-                        <br />
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          style={{ marginRight: "10px" }}
-                        >
-                          {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
-                        </button>
-                        {/* <button type="button" class="btn btn-secondary">
-                                    {/* <RiseOutlined /> */}
-                        {/* </button> */}
-                      </div>
-                    </div>
-
-                    <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
-                      Sản phẩm
-                    </h5>
-                    <Table
-                      rowKey="idSKU"
-                      dataSource={skuProduct}
-                      pagination={{
-                        pageSize: 5,
-                        showSizeChanger: false,
-                        showTotal: (total) => `Tổng số ${total} mục`,
-                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
-                      }}
-                    >
-                      <Table.Column
-                        dataIndex="images"
-                        render={(text, record) => (
-                          <AvtProduct product={record.idProduct} />
-                        )}
-                      />
-                      <Table.Column
-                        key="nameProduct"
-                        dataIndex="nameProduct"
-                        title="Tên sản phẩm"
-                        render={(text, record) => {
-                          return `${record.nameProduct} - ${record.nameCapacity} - ${record.nameColor}`;
-                        }}
-                      />
-                      <Table.Column
-                        align="right"
-                        key="price"
-                        dataIndex="price"
-                        title="Giá bán"
-                        render={(value) => {
-                          return (
-                            <NumberField
-                              options={{
-                                currency: "VND",
-                                style: "currency",
-                                //   notation: "compact",
-                              }}
-                              value={value}
-                            />
-                          );
-                        }}
-                        sorter={(a, b) => a.price - b.price}
-                      />
-                      <Table.Column
-                        align="right"
-                        key="quantitySKU"
-                        dataIndex="quantitySKU"
-                        title="Kho"
-                        render={(value) => {
-                          return <NumberField value={value} />;
-                        }}
-                        sorter={(a, b) => a.quantitySKU - b.quantitySKU}
-                      />
-                      <Table.Column
-                        render={(record) => {
-                          return (
-                            <button
-                              className="btn btn-primary btn-sm trash"
+                  <div className="row">
+                    <div className="col-md-9">
+                      {/* <div className="tile"> */}
+                      <div className="row">
+                        <div className="col-md-4">
+                          <label
+                              className="control-label"
+                              style={{ fontWeight: "bold" }}
+                          >
+                            Tìm kiếm sản phẩm
+                          </label>
+                          <input
+                              className="form-control"
+                              type="text"
+                              placeholder="Tìm kiếm sản phẩm"
+                              name="key"
+                              onChange={handleChangeOne}
+                          />
+                        </div>
+                        <div className="col-md-4">
+                          <label
+                              className="control-label"
+                              style={{ fontWeight: "bold" }}
+                          >
+                            Phân loại sản phẩm
+                          </label>
+                          <select
+                              className="form-control"
+                              id="exampleSelect1"
+                              name="id"
+                              onChange={handleChangeCategory}
+                          >
+                            <option value={-1} selected>
+                              --- Chọn sản phẩm ---
+                            </option>
+                            {categories.map((ct) => {
+                              return (
+                                  <option key={ct?.id} value={ct?.id}>
+                                    {ct?.name}
+                                  </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        <div className="col-md-4">
+                          <label
+                              className="control-label"
+                              style={{ fontWeight: "bold" }}
+                          >
+                            +
+                          </label>{" "}
+                          <br />
+                          <button
                               type="button"
-                              onClick={() =>
-                                handleAddToCart(record.idSKU, record.price)
-                              }
-                            >
-                              <ShoppingCartOutlined />
-                            </button>
-                          );
-                        }}
-                      />
-                    </Table>
-                    {/* <table className="table">
+                              class="btn btn-secondary"
+                              style={{ marginRight: "10px" }}
+                          >
+                            {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
+                          </button>
+                          {/* <button type="button" class="btn btn-secondary">
+                                    {/* <RiseOutlined /> */}
+                          {/* </button> */}
+                        </div>
+                      </div>
+
+                      <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
+                        Sản phẩm
+                      </h5>
+                      <Table
+                          rowKey="idSKU"
+                          dataSource={skuProduct}
+                          pagination={{
+                            pageSize: 5,
+                            showSizeChanger: false,
+                            showTotal: (total) => `Tổng số ${total} mục`,
+                            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                          }}
+                      >
+                        <Table.Column
+                            dataIndex="images"
+                            render={(text, record) => (
+                                <AvtProduct product={record.idProduct} />
+                            )}
+                        />
+                        <Table.Column
+                            key="nameProduct"
+                            dataIndex="nameProduct"
+                            title="Tên sản phẩm"
+                            render={(text, record) => {
+                              return `${record.nameProduct} - ${record.nameCapacity} - ${record.nameColor}`;
+                            }}
+                        />
+                        <Table.Column
+                            align="right"
+                            key="price"
+                            dataIndex="price"
+                            title="Giá bán"
+                            render={(value) => {
+                              return (
+                                  <NumberField
+                                      options={{
+                                        currency: "VND",
+                                        style: "currency",
+                                        //   notation: "compact",
+                                      }}
+                                      value={value}
+                                  />
+                              );
+                            }}
+                            sorter={(a, b) => a.price - b.price}
+                        />
+                        <Table.Column
+                            align="right"
+                            key="quantitySKU"
+                            dataIndex="quantitySKU"
+                            title="Kho"
+                            render={(value) => {
+                              return <NumberField value={value} />;
+                            }}
+                            sorter={(a, b) => a.quantitySKU - b.quantitySKU}
+                        />
+                        <Table.Column
+                            render={(record) => {
+                              return (
+                                  <button
+                                      className="btn btn-primary btn-sm trash"
+                                      type="button"
+                                      onClick={() =>
+                                          handleAddToCart(record.idSKU, record.price)
+                                      }
+                                  >
+                                    <ShoppingCartOutlined />
+                                  </button>
+                              );
+                            }}
+                        />
+                      </Table>
+                      {/* <table className="table">
                       <thead className="thead-dark">
                         <tr>
                           <th className="so--luong">Ảnh</th>
@@ -714,16 +714,16 @@ export default function SellSmart() {
                         ))}
                       </tbody>
                     </table> */}
-                    {/* <Pagination
+                      {/* <Pagination
                       pagination={pagination}
                       onPageChange={handlePageChange}
                     /> */}
 
-                    <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
-                      Giỏ hàng
-                    </h5>
-                    <table class="table">
-                      <thead class="thead-dark">
+                      <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
+                        Giỏ hàng
+                      </h5>
+                      <table class="table">
+                        <thead class="thead-dark">
                         <tr>
                           <th className="so--luong">Ảnh</th>
                           <th className="so--luong">Tên sản phẩm</th>
@@ -732,500 +732,500 @@ export default function SellSmart() {
                           <th className="so--luong">Thành tiền</th>
                           <th className="so--luong">Emei</th>
                         </tr>
-                      </thead>
-                      <tbody>
+                        </thead>
+                        <tbody>
                         {cartIemts.map((cart, index) => (
-                          <tr>
-                            <td style={{ width: "200px" }}>
-                              <AvtProduct product={cart.idProduct}></AvtProduct>
-                            </td>
-                            <td>
-                              <h6 className="text-primary">
-                                {cart.nameProduct} {cart.capacity} {cart.color}
-                              </h6>
-                            </td>
-                            <td>
-                              {parseFloat(cart.price).toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
-                            </td>
-                            <td>
-                              <div
-                                className="def-number-input number-input safari_only"
-                                style={{ paddingRight: "10px" }}
-                              >
-                                <button
-                                  onClick={() => {
-                                    const quantity = document.getElementById(
-                                      `quantity-${index}`
-                                    );
-                                    quantity.value = cart.quantity - 1;
-                                    console.log(quantity.value);
-                                    if (quantity.value <= 0) {
-                                      notification.error({
-                                        message: "ADD TO CART",
-                                        description: "Số lượng phải lớn hơn 0",
-                                      });
-                                      quantity.value = 1;
-                                    }
-                                    handleUpdateQuantity(
-                                      cart.idCartDetail,
-                                      cart.quantity - 1,
-                                      cart.idSKU
-                                    );
-                                  }}
-                                  className="minus"
-                                />
-                                <input
-                                  id={`quantity-${index}`}
-                                  className="quantity fw-bold text-black"
-                                  min={0}
-                                  name="quantity"
-                                  // value={product.quantity}
-                                  type="number"
-                                  placeholder={cart.quantity}
-                                  onChange={() => {
-                                    getOneSKU(cart.idSKU).then((res) => {
-                                      setQuantitySKU(res.data.quantity);
-                                    });
-                                  }}
-                                  onBlur={(event) => {
-                                    if (event.target.value <= 0) {
-                                      notification.error({
-                                        message: "ADD TO CART",
-                                        description: "Số lượng phải lớn hơn 0",
-                                      });
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value = cart.quantity;
-                                      handleUpdateQuantity(
-                                        cart.idCartDetail,
-                                        cart.quantity,
-                                        cart.idSKU
-                                      );
-                                    } else if (
-                                      event.target.value > parseInt(quantitySKU)
-                                      // +
-                                      //   parseInt(product.quantity)
-                                    ) {
-                                      notification.error({
-                                        message: "ADD TO CART",
-                                        description:
-                                          "Không thể nhập quá số lượng đang có",
-                                      });
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value = cart.quantity;
-                                      handleUpdateQuantity(
-                                        cart.idCartDetail,
-                                        cart.quantity,
-                                        cart.idSKU
-                                      );
-                                    } else {
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value = event.target.value;
-                                      handleUpdateQuantity(
-                                        cart.idCartDetail,
-                                        event.target.value,
-                                        cart.idSKU
-                                      );
-                                    }
-                                  }}
-                                />
-                                <button
-                                  onClick={() => {
-                                    getOneSKU(cart.idSKU).then((res) => {
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value =
-                                        parseInt(cart.quantity) + 1;
-                                      if (
-                                        quantity.value >
-                                        parseInt(res.data.quantity)
-                                        // + parseInt(product.quantity)
-                                      ) {
-                                        notification.error({
-                                          message: "ADD TO CART",
-                                          description:
-                                            "Không thể nhập quá số lượng đang có",
-                                        });
-                                        quantity.value = parseInt(
-                                          res.data.quantity
-                                        );
-                                      }
-                                    });
-                                    handleUpdateQuantity(
-                                      cart.idCartDetail,
-                                      parseInt(cart.quantity) + 1,
-                                      cart.idSKU
-                                    );
-                                  }}
-                                  className="plus"
-                                />
-                              </div>
-                            </td>
-                            <td>
-                              {parseFloat(cart.total).toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
-                            </td>
-
-                            <td
-                              style={{
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <button
-                                type="button"
-                                className="close"
-                                data-dismiss="alert"
-                                aria-label="Close"
-                                onClick={() => remove(cart.idCartDetail)}
-                              >
-                                <span aria-hidden="true">
-                                  <FontAwesomeIcon
-                                    icon={faTimes}
-                                    style={{ paddingRight: "10px" }}
-                                  />
-                                </span>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {/* </div> */}
-                  </div>
-                  <div className="col-md-3">
-                    <div className="tile">
-                      <h3 className="tile-title">Thông tin thanh toán</h3>
-                      <div className="row">
-                        <div className="form-group  col-md-10">
-                          <label
-                            className="control-label"
-                            style={{ fontWeight: "bold" }}
-                          >
-                            Họ tên khách hàng
-                            <span aria-hidden="true" onClick={handleClear}>
-                              <FontAwesomeIcon
-                                icon={faTimes}
-                                style={{ paddingLeft: "10px", color: "red" }}
-                              />
-                            </span>
-                          </label>
-                          <Select
-                            mode="single"
-                            style={{
-                              width: "100%",
-                              maxHeight: "100px",
-                              overflowY: "auto",
-                            }}
-                            showSearch
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            onSearch={handleSearch}
-                            onChange={handleSelect}
-                            value={selectedValues}
-                          >
-                            {khachHang.map((khachHang) => {
-                              return (
-                                <Select.Option
-                                  key={khachHang.id}
-                                  value={khachHang.id}
-                                >
-                                  {`${khachHang.fullName} - ${khachHang.phoneNumber}`}
-                                </Select.Option>
-                              );
-                            })}
-                          </Select>
-                           
-                        </div>
-                        <div className="form-group  col-md-2">
-                          <label
-                            style={{ textAlign: "center" }}
-                            className="control-label"
-                          >
-                            NEW
-                          </label>
-                          <button
-                            className="btn btn-secondary btn-them"
-                            data-toggle="modal"
-                            data-target="#exampleModalCenter"
-                            onClick={() => handleEditClick()}
-                          >
-                            +
-                          </button>
-                        </div>
-                        <div className="form-group  col-md-12">
-                          <label
-                            className="control-label"
-                            style={{ fontWeight: "bold" }}
-                          >
-                            Nhân viên bán hàng
-                          </label>
-                          <input
-                            className="form-control"
-                            type="text"
-                            disabled
-                          />
-                        </div>
-                        <div className="form-group  col-md-12">
-                          <label
-                            className="control-label"
-                            style={{ fontWeight: "bold" }}
-                          >
-                            Ghi chú đơn hàng
-                          </label>
-                          <textarea
-                            className="form-control"
-                            rows={4}
-                            placeholder="Ghi chú thêm đơn hàng"
-                            defaultValue={""}
-                          />
-                        </div>
-                        <div className="form-group  col-md-12">
-                          <label
-                            className="control-label"
-                            style={{ fontWeight: "bold" }}
-                          >
-                            Địa chỉ nhận hàng
-                          </label>
-                          <br />
-                          <div class="form-check form-check-inline">
-                            <input
-                              class="form-check-input"
-                              type="radio"
-                              name="inlineRadioOptions"
-                              id="inlineRadio1"
-                              value="option1"
-                              checked
-                              onClick={() => taiCuaHang()}
-                            />
-                            <label class="form-check-label" for="inlineRadio1">
-                              Tại cửa hàng
-                            </label>
-                          </div>
-                          <div class="form-check form-check-inline">
-                            <input
-                              class="form-check-input"
-                              type="radio"
-                              name="inlineRadioOptions"
-                              id="inlineRadio2"
-                              value="option2"
-                              onClick={() => giaoTanNoi()}
-                            />
-                            <label class="form-check-label" for="inlineRadio2">
-                              Ship hàng
-                            </label>
-                          </div>
-                          <input
-                            hidden
-                            id="floatingSelect2"
-                            class="form-control"
-                            type="text"
-                            placeholder="Địa chỉ cụ thể"
-                            aria-label="default input example"
-                          />
-                        </div>
-                        <div
-                          className="form-group  col-md-12"
-                          hidden
-                          id="floatingSelect3"
-                        >
-                          <label
-                            className="control-label"
-                            style={{ fontWeight: "bold" }}
-                          >
-                            Phí vận chuyển:{" "}
-                          </label>
-                          <input
-                            className="form-control"
-                            type="number"
-                            defaultValue={0}
-                          />
-                        </div>
-                        <div
-                          className="form-group  col-md-12"
-                          hidden
-                          id="floatingSelect4"
-                        >
-                          <label
-                            className="control-label"
-                            style={{ fontWeight: "bold" }}
-                          >
-                            Ngày giao hàng:{" "}
-                          </label>
-                          <DatePicker
-                            id="dateFilter"
-                            style={{ width: "100%" }}
-                            // onChange={handleChangeDate}
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="form-group  col-md-12">
-                          <label
-                            className="control-label"
-                            style={{ fontWeight: "bold" }}
-                          >
-                            Hình thức thanh toán
-                          </label>
-                          {/* <select className="form-control" id="exampleSelect2" mode="multiple">
-                                <option>Thanh toán chuyển khoản</option>
-                                <option>Trả tiền mặt tại quầy</option>
-                            </select> */}
-                          <Select mode="multiple" style={{ width: "100%" }}>
-                            <Select.Option>
-                              Thanh toán chuyển khoản
-                            </Select.Option>
-                            <Select.Option>Trả tiền mặt tại quầy</Select.Option>
-                          </Select>
-                        </div>
-                        <div
-                          className="form-group  col-md-6"
-                          style={{ color: "red" }}
-                        >
-                          <label className="control-label">
-                            Tổng tiền hàng:{" "}
-                          </label>
-                          <p className="control-all-money-tamtinh">
-                            ={" "}
-                            {totalPrice?.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
-                          </p>
-                        </div>
-                        <div className="form-group  col-md-6">
-                          <label className="control-label">Giảm giá: </label>
-                          <p
-                            className="control-all-money-tamtinh"
-                            onClick={() => handleEditClickVoucher()}
-                          >
-                            Chọn Voucher
-                          </p>
-                        </div>
-                        <div
-                          className="form-group  col-md-6"
-                          style={{ color: "red" }}
-                        >
-                          <label className="control-label">
-                            Giảm giá Voucher:{" "}
-                          </label>
-                          <p className="control-all-money-total">
-                            ={" "}
-                            {selecteVoucher && selecteVoucher.valueVoucher
-                              ? selecteVoucher?.valueVoucher?.toLocaleString(
-                                  "vi-VN",
-                                  {
-                                    style: "currency",
-                                    currency: "VND",
-                                  }
-                                )
-                              : 0?.toLocaleString("vi-VN", {
+                            <tr>
+                              <td style={{ width: "200px" }}>
+                                <AvtProduct product={cart.idProduct}></AvtProduct>
+                              </td>
+                              <td>
+                                <h6 className="text-primary">
+                                  {cart.nameProduct} {cart.capacity} {cart.color}
+                                </h6>
+                              </td>
+                              <td>
+                                {parseFloat(cart.price).toLocaleString("vi-VN", {
                                   style: "currency",
                                   currency: "VND",
                                 })}
-                          </p>
-                        </div>
-                        <div className="form-group  col-md-6">
-                          <label className="control-label">
-                            Khách hàng đưa tiền:{" "}
-                          </label>
-                          <input
-                            id="amountGiven"
-                            className="form-control"
-                            type="number"
-                            // defaultValue={290000}
-                            onChange={calculateChange}
-                          />
-                        </div>
-                        <div
-                          className="form-group  col-md-6"
-                          style={{ color: "red" }}
-                        >
-                          <label className="control-label">
-                            Khách cần trả:{" "}
-                          </label>
-                          <p className="control-all-money">
-                            {" "}
-                            ={" "}
-                            {soTienThanhToan?.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
-                          </p>
-                        </div>
-                        <div
-                          className="form-group  col-md-6"
-                          style={{ fontWeight: "bold" }}
-                        >
-                          <label className="control-label">Thiếu: </label>
-                          <p className="control-all-money">
-                            {" "}
-                            {tienThua?.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
-                          </p>
-                        </div>
-                        <div className="tile-footer col-md-12">
-                          <button
-                            className="btn btn-danger luu-san-pham"
-                            type="button"
-                            style={{
-                              marginRight: "10px",
-                              marginBottom: "10px",
-                            }}
+                              </td>
+                              <td>
+                                <div
+                                    className="def-number-input number-input safari_only"
+                                    style={{ paddingRight: "10px" }}
+                                >
+                                  <button
+                                      onClick={() => {
+                                        const quantity = document.getElementById(
+                                            `quantity-${index}`
+                                        );
+                                        quantity.value = cart.quantity - 1;
+                                        console.log(quantity.value);
+                                        if (quantity.value <= 0) {
+                                          notification.error({
+                                            message: "ADD TO CART",
+                                            description: "Số lượng phải lớn hơn 0",
+                                          });
+                                          quantity.value = 1;
+                                        }
+                                        handleUpdateQuantity(
+                                            cart.idCartDetail,
+                                            cart.quantity - 1,
+                                            cart.idSKU
+                                        );
+                                      }}
+                                      className="minus"
+                                  />
+                                  <input
+                                      id={`quantity-${index}`}
+                                      className="quantity fw-bold text-black"
+                                      min={0}
+                                      name="quantity"
+                                      // value={product.quantity}
+                                      type="number"
+                                      placeholder={cart.quantity}
+                                      onChange={() => {
+                                        getOneSKU(cart.idSKU).then((res) => {
+                                          setQuantitySKU(res.data.quantity);
+                                        });
+                                      }}
+                                      onBlur={(event) => {
+                                        if (event.target.value <= 0) {
+                                          notification.error({
+                                            message: "ADD TO CART",
+                                            description: "Số lượng phải lớn hơn 0",
+                                          });
+                                          const quantity = document.getElementById(
+                                              `quantity-${index}`
+                                          );
+                                          quantity.value = cart.quantity;
+                                          handleUpdateQuantity(
+                                              cart.idCartDetail,
+                                              cart.quantity,
+                                              cart.idSKU
+                                          );
+                                        } else if (
+                                            event.target.value > parseInt(quantitySKU)
+                                            // +
+                                            //   parseInt(product.quantity)
+                                        ) {
+                                          notification.error({
+                                            message: "ADD TO CART",
+                                            description:
+                                                "Không thể nhập quá số lượng đang có",
+                                          });
+                                          const quantity = document.getElementById(
+                                              `quantity-${index}`
+                                          );
+                                          quantity.value = cart.quantity;
+                                          handleUpdateQuantity(
+                                              cart.idCartDetail,
+                                              cart.quantity,
+                                              cart.idSKU
+                                          );
+                                        } else {
+                                          const quantity = document.getElementById(
+                                              `quantity-${index}`
+                                          );
+                                          quantity.value = event.target.value;
+                                          handleUpdateQuantity(
+                                              cart.idCartDetail,
+                                              event.target.value,
+                                              cart.idSKU
+                                          );
+                                        }
+                                      }}
+                                  />
+                                  <button
+                                      onClick={() => {
+                                        getOneSKU(cart.idSKU).then((res) => {
+                                          const quantity = document.getElementById(
+                                              `quantity-${index}`
+                                          );
+                                          quantity.value =
+                                              parseInt(cart.quantity) + 1;
+                                          if (
+                                              quantity.value >
+                                              parseInt(res.data.quantity)
+                                              // + parseInt(product.quantity)
+                                          ) {
+                                            notification.error({
+                                              message: "ADD TO CART",
+                                              description:
+                                                  "Không thể nhập quá số lượng đang có",
+                                            });
+                                            quantity.value = parseInt(
+                                                res.data.quantity
+                                            );
+                                          }
+                                        });
+                                        handleUpdateQuantity(
+                                            cart.idCartDetail,
+                                            parseInt(cart.quantity) + 1,
+                                            cart.idSKU
+                                        );
+                                      }}
+                                      className="plus"
+                                  />
+                                </div>
+                              </td>
+                              <td>
+                                {parseFloat(cart.total).toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
+                              </td>
+
+                              <td
+                                  style={{
+                                    textAlign: "center",
+                                    verticalAlign: "middle",
+                                  }}
+                              >
+                                <button
+                                    type="button"
+                                    className="close"
+                                    data-dismiss="alert"
+                                    aria-label="Close"
+                                    onClick={() => remove(cart.idCartDetail)}
+                                >
+                                <span aria-hidden="true">
+                                  <FontAwesomeIcon
+                                      icon={faTimes}
+                                      style={{ paddingRight: "10px" }}
+                                  />
+                                </span>
+                                </button>
+                              </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                      </table>
+                      {/* </div> */}
+                    </div>
+                    <div className="col-md-3">
+                      <div className="tile">
+                        <h3 className="tile-title">Thông tin thanh toán</h3>
+                        <div className="row">
+                          <div className="form-group  col-md-10">
+                            <label
+                                className="control-label"
+                                style={{ fontWeight: "bold" }}
+                            >
+                              Họ tên khách hàng
+                              <span aria-hidden="true" onClick={handleClear}>
+                              <FontAwesomeIcon
+                                  icon={faTimes}
+                                  style={{ paddingLeft: "10px", color: "red" }}
+                              />
+                            </span>
+                            </label>
+                            <Select
+                                mode="single"
+                                style={{
+                                  width: "100%",
+                                  maxHeight: "100px",
+                                  overflowY: "auto",
+                                }}
+                                showSearch
+                                optionFilterProp="children"
+                                filterOption={filterOption}
+                                onSearch={handleSearch}
+                                onChange={handleSelect}
+                                value={selectedValues}
+                            >
+                              {khachHang.map((khachHang) => {
+                                return (
+                                    <Select.Option
+                                        key={khachHang.id}
+                                        value={khachHang.id}
+                                    >
+                                      {`${khachHang.fullName} - ${khachHang.phoneNumber}`}
+                                    </Select.Option>
+                                );
+                              })}
+                            </Select>
+
+                          </div>
+                          <div className="form-group  col-md-2">
+                            <label
+                                style={{ textAlign: "center" }}
+                                className="control-label"
+                            >
+                              NEW
+                            </label>
+                            <button
+                                className="btn btn-secondary btn-them"
+                                data-toggle="modal"
+                                data-target="#exampleModalCenter"
+                                onClick={() => handleEditClick()}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <div className="form-group  col-md-12">
+                            <label
+                                className="control-label"
+                                style={{ fontWeight: "bold" }}
+                            >
+                              Nhân viên bán hàng
+                            </label>
+                            <input
+                                className="form-control"
+                                type="text"
+                                disabled
+                            />
+                          </div>
+                          <div className="form-group  col-md-12">
+                            <label
+                                className="control-label"
+                                style={{ fontWeight: "bold" }}
+                            >
+                              Ghi chú đơn hàng
+                            </label>
+                            <textarea
+                                className="form-control"
+                                rows={4}
+                                placeholder="Ghi chú thêm đơn hàng"
+                                defaultValue={""}
+                            />
+                          </div>
+                          <div className="form-group  col-md-12">
+                            <label
+                                className="control-label"
+                                style={{ fontWeight: "bold" }}
+                            >
+                              Địa chỉ nhận hàng
+                            </label>
+                            <br />
+                            <div class="form-check form-check-inline">
+                              <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  name="inlineRadioOptions"
+                                  id="inlineRadio1"
+                                  value="option1"
+                                  checked
+                                  onClick={() => taiCuaHang()}
+                              />
+                              <label class="form-check-label" for="inlineRadio1">
+                                Tại cửa hàng
+                              </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  name="inlineRadioOptions"
+                                  id="inlineRadio2"
+                                  value="option2"
+                                  onClick={() => giaoTanNoi()}
+                              />
+                              <label class="form-check-label" for="inlineRadio2">
+                                Ship hàng
+                              </label>
+                            </div>
+                            <input
+                                hidden
+                                id="floatingSelect2"
+                                class="form-control"
+                                type="text"
+                                placeholder="Địa chỉ cụ thể"
+                                aria-label="default input example"
+                            />
+                          </div>
+                          <div
+                              className="form-group  col-md-12"
+                              hidden
+                              id="floatingSelect3"
                           >
-                            {" "}
-                            Chờ thanh toán
-                          </button>
-                          <button
-                            className="btn btn-danger luu-va-in"
-                            type="button"
-                            style={{
-                              marginRight: "10px",
-                              marginBottom: "10px",
-                            }}
-                            onClick={() => confirm2()}
+                            <label
+                                className="control-label"
+                                style={{ fontWeight: "bold" }}
+                            >
+                              Phí vận chuyển:{" "}
+                            </label>
+                            <input
+                                className="form-control"
+                                type="number"
+                                defaultValue={0}
+                            />
+                          </div>
+                          <div
+                              className="form-group  col-md-12"
+                              hidden
+                              id="floatingSelect4"
                           >
-                            Lưu hóa đơn
-                          </button>
-                          <a
-                            className="btn btn-secondary luu-va-in"
-                            href="/dashboard"
-                            style={{ marginBottom: "10px" }}
+                            <label
+                                className="control-label"
+                                style={{ fontWeight: "bold" }}
+                            >
+                              Ngày giao hàng:{" "}
+                            </label>
+                            <DatePicker
+                                id="dateFilter"
+                                style={{ width: "100%" }}
+                                // onChange={handleChangeDate}
+                            />
+                          </div>
+                        </div>
+                        <div className="row">
+                          <div className="form-group  col-md-12">
+                            <label
+                                className="control-label"
+                                style={{ fontWeight: "bold" }}
+                            >
+                              Hình thức thanh toán
+                            </label>
+                            {/* <select className="form-control" id="exampleSelect2" mode="multiple">
+                                <option>Thanh toán chuyển khoản</option>
+                                <option>Trả tiền mặt tại quầy</option>
+                            </select> */}
+                            <Select mode="multiple" style={{ width: "100%" }}>
+                              <Select.Option>
+                                Thanh toán chuyển khoản
+                              </Select.Option>
+                              <Select.Option>Trả tiền mặt tại quầy</Select.Option>
+                            </Select>
+                          </div>
+                          <div
+                              className="form-group  col-md-6"
+                              style={{ color: "red" }}
                           >
-                            Quay về
-                          </a>
+                            <label className="control-label">
+                              Tổng tiền hàng:{" "}
+                            </label>
+                            <p className="control-all-money-tamtinh">
+                              ={" "}
+                              {totalPrice?.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </p>
+                          </div>
+                          <div className="form-group  col-md-6">
+                            <label className="control-label">Giảm giá: </label>
+                            <p
+                                className="control-all-money-tamtinh"
+                                onClick={() => handleEditClickVoucher()}
+                            >
+                              Chọn Voucher
+                            </p>
+                          </div>
+                          <div
+                              className="form-group  col-md-6"
+                              style={{ color: "red" }}
+                          >
+                            <label className="control-label">
+                              Giảm giá Voucher:{" "}
+                            </label>
+                            <p className="control-all-money-total">
+                              ={" "}
+                              {selecteVoucher && selecteVoucher.valueVoucher
+                                  ? selecteVoucher?.valueVoucher?.toLocaleString(
+                                      "vi-VN",
+                                      {
+                                        style: "currency",
+                                        currency: "VND",
+                                      }
+                                  )
+                                  : 0?.toLocaleString("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  })}
+                            </p>
+                          </div>
+                          <div className="form-group  col-md-6">
+                            <label className="control-label">
+                              Khách hàng đưa tiền:{" "}
+                            </label>
+                            <input
+                                id="amountGiven"
+                                className="form-control"
+                                type="number"
+                                // defaultValue={290000}
+                                onChange={calculateChange}
+                            />
+                          </div>
+                          <div
+                              className="form-group  col-md-6"
+                              style={{ color: "red" }}
+                          >
+                            <label className="control-label">
+                              Khách cần trả:{" "}
+                            </label>
+                            <p className="control-all-money">
+                              {" "}
+                              ={" "}
+                              {soTienThanhToan?.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </p>
+                          </div>
+                          <div
+                              className="form-group  col-md-6"
+                              style={{ fontWeight: "bold" }}
+                          >
+                            <label className="control-label">Thiếu: </label>
+                            <p className="control-all-money">
+                              {" "}
+                              {tienThua?.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </p>
+                          </div>
+                          <div className="tile-footer col-md-12">
+                            <button
+                                className="btn btn-danger luu-san-pham"
+                                type="button"
+                                style={{
+                                  marginRight: "10px",
+                                  marginBottom: "10px",
+                                }}
+                            >
+                              {" "}
+                              Chờ thanh toán
+                            </button>
+                            <button
+                                className="btn btn-danger luu-va-in"
+                                type="button"
+                                style={{
+                                  marginRight: "10px",
+                                  marginBottom: "10px",
+                                }}
+                                onClick={() => confirm2()}
+                            >
+                              Lưu hóa đơn
+                            </button>
+                            <a
+                                className="btn btn-secondary luu-va-in"
+                                href="/dashboard"
+                                style={{ marginBottom: "10px" }}
+                            >
+                              Quay về
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </main>
-            </Content>
+                </main>
+              </Content>
+            </Layout>
           </Layout>
-        </Layout>
-        <Modal
-          visible={isModalVisible}
-          onCancel={handleCancel}
-          width={1000}
-          footer={null}
-          bodyStyle={{ minHeight: "400px" }}
-        >
-          {/* <div className="modal-body"> */}
-          <div className="row">
-            <div className="form-group  col-md-12">
+          <Modal
+              visible={isModalVisible}
+              onCancel={handleCancel}
+              width={1000}
+              footer={null}
+              bodyStyle={{ minHeight: "400px" }}
+          >
+            {/* <div className="modal-body"> */}
+            <div className="row">
+              <div className="form-group  col-md-12">
               <span className="thong-tin-thanh-toan">
                 <h5>Tạo mới khách hàng</h5>
               </span>
