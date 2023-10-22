@@ -21,7 +21,7 @@ import queryString from "query-string";
 export default function CartDisplay() {
   const idAccount = 1; //sau khi đăng nhập thì truyền idAccount vào đây
   const history = useHistory();
-  const [products, setProducts] = useaccState([]);
+  const [products, setProducts] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
   // const [number, setNumber] = useState(0);
 
