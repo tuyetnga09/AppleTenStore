@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.cart.AddCart;
 import com.example.backend.controller.order_management.model.cart.AddCartOffline;
+import com.example.backend.controller.order_management.model.cart.LisCartSession;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.model.cart.ListCartOffline;
 import com.example.backend.controller.order_management.service.CartService;
@@ -185,5 +186,10 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<ListCartOffline> getListCartOffline(Integer idAccount) {
         return  cartRepository.getListCartOffline(idAccount);
+    }
+
+    @Override
+    public List<LisCartSession> getListCartSession(Long idSku) {
+        return cartRepository.getListCartSession(idSku);
     }
 }

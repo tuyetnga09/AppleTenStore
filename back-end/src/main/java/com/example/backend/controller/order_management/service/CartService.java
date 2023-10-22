@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.service;
 
 import com.example.backend.controller.order_management.model.cart.AddCart;
 import com.example.backend.controller.order_management.model.cart.AddCartOffline;
+import com.example.backend.controller.order_management.model.cart.LisCartSession;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.model.cart.ListCartOffline;
 import com.example.backend.entity.Cart;
@@ -16,4 +17,7 @@ public interface CartService {
 
     Cart addToCartOffline(AddCartOffline listAddToCart);
     List<ListCartOffline> getListCartOffline(Integer idAccount);
+
+    List<LisCartSession> getListCartSession(Long idSku);
+
 }

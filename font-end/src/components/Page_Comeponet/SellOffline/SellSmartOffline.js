@@ -42,6 +42,7 @@ import {
   getCustomer,
 } from "../../../service/Customer/customer.service";
 import { useHistory } from "react-router-dom";
+import { DateField } from "@refinedev/antd";
 const { Header, Sider, Content } = Layout;
 
 export default function SellSmart() {
@@ -400,77 +401,87 @@ export default function SellSmart() {
     setTienThua(change);
   }
 
-  //click Voucher
-  const handleVoucherClick = (voucher) => {
-    if (
-      totalPrice < voucher.valueMinimum ||
-      totalPrice > voucher.valueMaximum
-    ) {
-      notification.error({
-        message: "VOUCHER",
-        description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
-      });
-    } else {
-      setSelectedVoucher(voucher);
-      readAllCartOff(idNhanVien)
+    //click Voucher
+    const handleVoucherClick = (voucher) => {
+      if (
+        totalPrice < voucher.valueMinimum ||
+        totalPrice > voucher.valueMaximum
+      ) {
+        notification.error({
+          message: "VOUCHER",
+          description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
+        });
+      } else if(voucher.quantity <= 0) {
+        notification.error({
+          message: "VOUCHER",
+          description: "Voucher đã hết lượt sử dụng",
+        });
+      } else {
+        setSelectedVoucher(voucher);
+        readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
           setCartItems(response.data);
         })
         .catch((error) => {
           console.log(`${error}`);
         });
-    }
-  };
-
-  //clear voucher
-  const handleClearVoucher = (id) => {
-    if (selecteVoucher.id === id) {
-      setSelectedVoucher(null);
-      readAllCartOff(idNhanVien)
+      }
+    };
+  
+    //clear voucher
+    const handleClearVoucher = (id) => {
+      if (selecteVoucher.id === id) {
+        setSelectedVoucher(null);
+        readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
           setCartItems(response.data);
         })
         .catch((error) => {
           console.log(`${error}`);
         });
-    }
-  };
-
-  //click Voucher freeship
-  const handleVoucherFreeShipClick = (voucher) => {
-    if (
-      totalPrice < voucher.valueMinimum ||
-      totalPrice > voucher.valueMaximum
-    ) {
-      notification.error({
-        message: "VOUCHER",
-        description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
-      });
-    } else {
-      setSelectedVoucherFreeShip(voucher);
-      readAllCartOff(idNhanVien)
+      }
+    };
+  
+    //click Voucher freeship
+    const handleVoucherFreeShipClick = (voucher) => {
+      if (
+        totalPrice < voucher.valueMinimum ||
+        totalPrice > voucher.valueMaximum
+      ) {
+        notification.error({
+          message: "VOUCHER",
+          description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
+        });
+      } else if(voucher.quantity <= 0) {
+        notification.error({
+          message: "VOUCHER",
+          description: "Voucher đã hết lượt sử dụng",
+        });
+      } else {
+        setSelectedVoucherFreeShip(voucher);
+        readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
           setCartItems(response.data);
         })
         .catch((error) => {
           console.log(`${error}`);
         });
-    }
-  };
-
-  //clear voucher freeship
-  const handleClearVoucherFreeShip = (id) => {
-    if (selecteVoucherFreeShip.id === id) {
-      setSelectedVoucherFreeShip(null);
-      readAllCartOff(idNhanVien)
+      }
+    };
+  
+    //clear voucher freeship
+    const handleClearVoucherFreeShip = (id) => {
+      if (selecteVoucherFreeShip.id === id) {
+        setSelectedVoucherFreeShip(null);
+        readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
           setCartItems(response.data);
         })
         .catch((error) => {
           console.log(`${error}`);
         });
-    }
-  };
+      }
+    };
 
   const [searchValue, setSearchValue] = useState("");
   const [selectedValues, setSelectedValues] = useState([]);
@@ -1265,135 +1276,179 @@ export default function SellSmart() {
         </Modal>
 
         <Modal
-          visible={isModalVisibleVoucher}
-          onCancel={handleCancelVoucher}
-          width={550}
-          footer={null}
-          bodyStyle={{ minHeight: "700px" }}
-        >
-          <div className="container py-5">
-            <div className="row d-flex justify-content-center">
-              {/* <div className="card"> */}
-              <div
-                className="card-header d-flex justify-content-between align-items-center p-3"
-                style={{ borderTop: "4px solid #ffa900" }}
-              >
-                <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
-              </div>
-              <p style={{ marginTop: "10px" }}>Mã FreeShip</p>
-              <div
-                className="card-body"
-                data-mdb-perfect-scrollbar="true"
-                style={{ position: "relative", height: 200, overflowY: "auto" }}
-              >
-                {voucherFreeShip.map((voucher) => (
-                  <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>
-                        <Image
-                          style={{
-                            width: "100px",
-                          }}
-                          src="https://bizweb.dktcdn.net/100/377/231/articles/freeship.png?v=1588928233387"
-                        />
-                      </span>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {voucher.name}
-                        <br />
-                        <p style={{ color: "red", fontSize: "15px" }}>
-                          Giảm{" "}
-                          {voucher?.valueVoucher?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </p>
-                        <p>
-                          Đơn giá trị tối thiểu {voucher.valueMinimum}
-                          <br />
-                          Đơn giá trị tối đa {voucher.valueMaximum}
-                        </p>
-                      </span>
-                      <strong>
-                        {/* <Checkbox
+        visible={isModalVisibleVoucher}
+        onCancel={handleCancelVoucher}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "700px" }}
+      >
+        <div className="container py-5">
+          <div className="row d-flex justify-content-center">
+            {/* <div className="card"> */}
+            <div
+              className="card-header d-flex justify-content-between align-items-center p-3"
+              style={{ borderTop: "4px solid #ffa900" }}
+            >
+              <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
+            </div>
+            <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã FreeShip</p>
+            <div
+              className="card-body"
+              data-mdb-perfect-scrollbar="true"
+              style={{ position: "relative", height: 200, overflowY: "auto" }}
+            >
+              {voucherFreeShip.map((voucher) => (
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>
+                      <Image
+                        style={{
+                          width: "100px",
+                        }}
+                        src="https://bizweb.dktcdn.net/100/377/231/articles/freeship.png?v=1588928233387"
+                      />
+                    </span>
+                    <span style={{ paddingLeft: "10px" }}>
+                      {voucher.name}
+                      <br />
+                      <p style={{ color: "red", fontSize: "15px", fontWeight: "bold" }}>
+                        Giảm{" "}
+                        {voucher?.valueVoucher?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{fontSize: "13px" }}>
+                        Cho đơn hàng giá trị từ{" "}
+                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}{" "}
+                        đến{" "}
+                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ color: "red", fontSize: "10px" }}>
+                        Từ{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateStart}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        đến{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateEnd}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        - SL: {voucher.quantity}
+                      </p>
+                    </span>
+                    <strong>
+                      {/* <Checkbox
                         onClick={() => handleVoucherClick(voucher)}
                       /> */}
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => handleVoucherFreeShipClick(voucher)}
-                        >
-                          Áp dụng
-                        </Button>
-                        <br />
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => handleClearVoucherFreeShip(voucher.id)}
-                        >
-                          Hủy
-                        </Button>
-                      </strong>
-                    </li>
-                  </ul>
-                ))}
-              </div>
-              <p style={{ marginTop: "10px" }}>Mã Giảm giá</p>
-              <div
-                className="card-body"
-                data-mdb-perfect-scrollbar="true"
-                style={{ position: "relative", height: 330, overflowY: "auto" }}
-              >
-                {voucher.map((voucher) => (
-                  <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>
-                        <Image
-                          style={{
-                            width: "100px",
-                          }}
-                          src="https://help.turitop.com/hc/article_attachments/360007926459/voucher.png"
-                        />
-                      </span>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {voucher.name}
-                        <br />
-                        <p style={{ color: "red", fontSize: "15px" }}>
-                          Giảm{" "}
-                          {voucher?.valueVoucher?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </p>
-                        <p>
-                          Đơn giá trị tối thiểu {voucher.valueMinimum}
-                          <br />
-                          Đơn giá trị tối đa {voucher.valueMaximum}
-                        </p>
-                      </span>
-                      <strong>
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => handleVoucherClick(voucher)}
-                        >
-                          Áp dụng
-                        </Button>
-                        <br />
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => handleClearVoucher(voucher.id)}
-                        >
-                          Hủy
-                        </Button>
-                      </strong>
-                    </li>
-                  </ul>
-                ))}
-              </div>
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleVoucherFreeShipClick(voucher)}
+                      >
+                        Áp dụng
+                      </Button>
+                      <br />
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleClearVoucherFreeShip(voucher.id)}
+                      >
+                        Hủy
+                      </Button>
+                    </strong>
+                  </li>
+                </ul>
+              ))}
+            </div>
+            <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã Giảm giá</p>
+            <div
+              className="card-body"
+              data-mdb-perfect-scrollbar="true"
+              style={{ position: "relative", height: 330, overflowY: "auto" }}
+            >
+              {voucher.map((voucher) => (
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>
+                      <Image
+                        style={{
+                          width: "100px",
+                        }}
+                        src="https://help.turitop.com/hc/article_attachments/360007926459/voucher.png"
+                      />
+                    </span>
+                    <span style={{ paddingLeft: "10px" }}>
+                      {voucher.name}
+                      <br />
+                      <p style={{ color: "red", fontSize: "15px" , fontWeight: "bold" }}>
+                        Giảm{" "}
+                        {voucher?.valueVoucher?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{fontSize: "13px" }}>
+                        Cho đơn hàng giá trị từ{" "}
+                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}{" "}
+                        đến{" "}
+                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ color: "red", fontSize: "10px" }}>
+                        Từ{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateStart}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        đến{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateEnd}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        - SL: {voucher.quantity}
+                      </p>
+                    </span>
+                    <strong>
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleVoucherClick(voucher)}
+                      >
+                        Áp dụng
+                      </Button>
+                      <br />
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleClearVoucher(voucher.id)}
+                      >
+                        Hủy
+                      </Button>
+                    </strong>
+                  </li>
+                </ul>
+              ))}
             </div>
           </div>
-        </Modal>
+        </div>
+      </Modal>
       </>
     </React.Fragment>
   );

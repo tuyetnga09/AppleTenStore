@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.order_management.model.cart.LisCartSession;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.model.cart.ListCartOffline;
 import com.example.backend.entity.Cart;
@@ -26,5 +27,8 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
             "                                join sku p on cd.id_sku = p.id join product p2 on p.product_id = p2.id\n" +
             "                          where a.id = :idAccount order by cd.date_create desc", nativeQuery = true)
     List<ListCartOffline> getListCartOffline(@Param("idAccount") Integer idAccount);
+
+    @Query(value = "select p.name as 'nameProduct', sku.capacity as 'capacity', sku.color as 'color', sku.price as 'price', p.id as 'idProduct', sku.quantity AS 'QuantitySKU' from sku join product p on p.id = sku.product_id where sku.id = :idSku", nativeQuery = true)
+    List<LisCartSession> getListCartSession(@Param("idSku") Long idSku);
 
 }
