@@ -5,7 +5,7 @@ import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.model.bill.request.BillAskClient;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
-import com.example.backend.controller.order_management.model.cart.ListCart;
+import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.SKU;
@@ -92,7 +92,7 @@ public class BillController {
         message.append("<p>Chi tiết hoá đơn:</p>");
         message.append("<table border='1'>");
         message.append("<tr><th>Tên sản phẩm</th><th>Số lượng</th><th>Giá tiền</th></tr>");
-        for (SKU cart : request.getBillDetail()) {
+        for (BillAskClient cart : request.getBillDetail()) {
             message.append("<tr>");
             message.append("<td>").append(cart.getQuantity()).append("</td>");
             message.append("<td>").append(cart.getPrice()).append("</td>");
@@ -119,5 +119,34 @@ public class BillController {
         return this.billService.findByCode(code);
     }
 
+    @PostMapping("/account")
+    public ResponseObj create(@RequestBody BillRequestOnlineAccount request)  {
+        return new ResponseObj(billService.createBillAccountOnlineRequest(request));
+    }
 
+
+    @GetMapping("/getAll")
+    public List<Bill> listBillByIdAccount(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccount(id);
+    }
+
+    @GetMapping("/CXN")
+    public List<Bill> listBillByIdAccountCXN(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountCXN(id);
+    }
+
+    @GetMapping("/VC")
+    public List<Bill> listBillByIdAccountVC(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountVC(id);
+    }
+
+    @GetMapping("/DTT")
+    public List<Bill> listBillByIdAccountDTT(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountDTT(id);
+    }
+
+    @GetMapping("/DH")
+    public List<Bill> listBillByIdAccountDH(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountDH(id);
+    }
 }

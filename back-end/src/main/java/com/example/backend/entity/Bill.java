@@ -84,9 +84,6 @@ public class Bill  {
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "id_employees",referencedColumnName = "id")
-    private Account employees;
-    @ManyToOne
     @JoinColumn(name = "id_account",referencedColumnName = "id")
     private Account account;
     @Column(name = "person_create")
@@ -96,9 +93,9 @@ public class Bill  {
     private String personUpdate;
 
     @Column(name = "date_create")
-    private Date dateCreate;
+    private LocalDate dateCreate;
 
     @Column(name = "date_update")
-    private Date dateUpdate;
+    private LocalDate dateUpdate;
 
 }

@@ -14,3 +14,7 @@ export const add = (customer) => {
 export const addCustomerOffline = (customer) => {
   return httpClient.post(`/admin/customer/add`, customer);
 };
+
+export const getCustomer = () => {
+  return httpClient.get(`/admin/customer/get-all-customer`);
+};

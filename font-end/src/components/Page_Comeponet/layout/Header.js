@@ -3,17 +3,30 @@ import { readQuantityInCart } from "../../../service/cart.service";
 import { Link } from "react-router-dom";
 
 export default function Header() {
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
   const [quantity, setQuantity] = useState([]);
 
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+
   useEffect(() => {
-    readQuantityInCart(1)
-      .then((response) => {
-        console.log(response.data);
-        setQuantity(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+    if (idAccount !== null && idAccount !== "") {
+      readQuantityInCart(idAccount)
+        .then((response) => {
+          console.log(response.data);
+          setQuantity(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      // Tính tổng số lượng sản phẩm trong giỏ hàng
+      const totalQuantity = cartItems.reduce(
+        (total, product) => total + product.quantity,
+        0
+      );
+      setQuantity(totalQuantity);
+    }
   }, []);
 
   // const fetchQuantity = () => {
@@ -136,9 +149,12 @@ export default function Header() {
             {/* End Search header */}
             <div className="tools-member">
               <div className="cart">
-                <Link to="/signup" >
+                <Link to={storedUser !== null ? "/profile" : "/login"}>
                   <i className="fa fa-user" />
-                  Tài khoản
+                  {/* {account == null ? "Tài khoản" : account.user.fullName} */}
+                  {localStorage.getItem("account") !== null
+                    ? storedUser?.user?.fullName
+                    : "Tài khoản"}
                 </Link>
                 {/* <div className="menuMember hide">
             <a href="nguoidung.html">Trang người dùng</a>
@@ -157,10 +173,10 @@ export default function Header() {
               </div>{" "}
               {/* End Cart */}
               <div class="check-order">
-                <a>
+                <Link to="/oderUserAll">
                   <i class="fa fa-truck"></i>
                   <span>Đơn hàng</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

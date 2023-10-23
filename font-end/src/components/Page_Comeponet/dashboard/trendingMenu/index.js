@@ -1,9 +1,21 @@
 import { NumberField } from "@refinedev/antd";
-import { Typography, Avatar, Space, List as AntdList, Tag } from "antd";
+import {
+  Typography,
+  Avatar,
+  Space,
+  List as AntdList,
+  Tag,
+  Row,
+  Col,
+} from "antd";
 import { Container, AvatarWrapper, AvatarCircle, TextWrapper } from "./styled";
 import React, { useEffect, useState } from "react";
 import { readAll } from "../../../../service/product.service";
 import { monthlyTrendingMenus } from "../../../../service/dashboard/admin_bill.service";
+// import AvtProduct from "../../../custumer_componet/avtProduct";
+import AvtProduct from "./AvtProduct";
+
+import { Column } from "@antv/g2plot";
 const { Text } = Typography;
 
 const TrendingMenu = () => {
@@ -35,29 +47,17 @@ const TrendingMenu = () => {
           <Container key={entry.id}>
             {/* <Text>{entry.keys.SKU.color} ooooop</Text> */}
             <Space size="large">
-              <AvatarWrapper className="menu-item__avatar">
-                <Avatar
-                  size={{
-                    xs: 30,
-                    sm: 30,
-                    md: 30,
-                    lg: 70,
-                    xl: 100,
-                    xxl: 70,
-                    // xs: 64,
-                    // sm: 64,
-                    // md: 64,
-                    // lg: 108,
-                    // xl: 132,
-                    // xxl: 108,
-                  }}
-                  // src={dl.name}
-                  src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                />
-                {/* <AvatarCircle>
+              {/* <AvatarWrapper className="menu-item__avatar"> */}
+              {<AvtProduct product={entry.product.id}></AvtProduct>}
+
+              {/* <AvtProduct
+                    product={entry.product.id}
+                  ></AvtProduct> */}
+              {/* <AvatarProduct product={entry.product.id}></AvatarProduct> */}
+              {/* <AvatarCircle>
                   <span>#{index + 1}</span>
                 </AvatarCircle> */}
-              </AvatarWrapper>
+              {/* </AvatarWrapper> */}
               <TextWrapper>
                 <Text strong>{entry.product.name}</Text>
                 <NumberField

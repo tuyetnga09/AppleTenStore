@@ -24,7 +24,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getOneByEmail(String email) {
-       return null;
+       return accountRepository.getOneByEmail(email);
     }
 
     @Override

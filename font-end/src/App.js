@@ -69,6 +69,12 @@ import AccountList from "./components/Page_Comeponet/Account/index";
 import SellOffline from "./components/Page_Comeponet/SellOffline/SellSmartOffline";
 import Paydone from "./components/Page_Comeponet/Paydone";
 import SignUpAdmin from "./components/Page_Comeponet/Login/signupAdmin";
+import OderUserAll from "./components/Page_Comeponet/OderUser/TatCa";
+import OderUserChoThanhToan from "./components/Page_Comeponet/OderUser/ChoXacNhan";
+import OderUserVanChuyen from "./components/Page_Comeponet/OderUser/VanChuyen";
+import OderUserHoanThanh from "./components/Page_Comeponet/OderUser/HoanThanh";
+import OderUserDaHuy from "./components/Page_Comeponet/OderUser/DaHuy";
+import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
 
 function App() {
   return (
@@ -206,6 +212,12 @@ function App() {
           <Route path="/sell" exact component={SellOffline} />
           <Route path="/paydone/:code" exact component={Paydone} />
           <Route path="/signup/admin" exact component={SignUpAdmin} />
+          <Route path="/oderUserAll" exact component={OderUserAll} />
+          <Route path="/oderUserCTT" exact component={OderUserChoThanhToan} />
+          <Route path="/oderUserVC" exact component={OderUserVanChuyen} />
+          <Route path="/oderUserHT" exact component={OderUserHoanThanh} />
+          <Route path="/oderUserDH" exact component={OderUserDaHuy} />
+          <Route path="/profile" exact component={ProfileCustomer} />
         </Switch>
       </Router>
     </div>

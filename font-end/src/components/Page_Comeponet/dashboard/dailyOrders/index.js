@@ -82,7 +82,7 @@
 
 // export default DailyOrders;
 
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { Typography } from "antd";
 import { Column } from "@ant-design/charts";
@@ -123,6 +123,7 @@ const DailyOrders = () => {
   const [dataSumNoReturn, setDataSumNoReturn] = useState();
   const [dataSumReturns, setDataSumReturns] = useState();
   const [dataSumCancelOrder, setDataSumCancelOrder] = useState();
+  const [dataOrder, setDataOrder] = useState([]);
   // Simulate data from the backend
 
   useEffect(() => {
@@ -148,6 +149,7 @@ const DailyOrders = () => {
       .then((response) => {
         console.log(response.data);
         setDataSumUnconfimred(response.data);
+        // setDataOrder([...dataOrder, response.data]);
         unconfirmedData = response.data;
       })
       .catch((error) => {
@@ -159,6 +161,7 @@ const DailyOrders = () => {
         console.log(response.data);
         setDataSumConfimred(response.data);
         confirmedData = response.data;
+        // setDataOrder(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -170,6 +173,7 @@ const DailyOrders = () => {
         console.log(response.data);
         setDataSumAreDelivering(response.data);
         areDeliveringData = response.data;
+        // setDataOrder(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -180,6 +184,7 @@ const DailyOrders = () => {
         console.log(response.data);
         setDataSumAlreadyPaid(response.data);
         alreadyPaidData = response.data;
+        // setDataOrder(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -190,6 +195,7 @@ const DailyOrders = () => {
         console.log(response.data);
         setDataSumNoReturn(response.data);
         noReturnData = response.data;
+        // setDataOrder(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -200,6 +206,7 @@ const DailyOrders = () => {
         console.log(response.data);
         setDataSumReturns(response.data);
         returnsData = response.data;
+        // setDataOrder(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -210,6 +217,7 @@ const DailyOrders = () => {
         console.log(response.data);
         setDataSumCancelOrder(response.data);
         cancelOrderData = response.data;
+        // setDataOrder(response.data);
         // Gọi fetchDataFromBackend sau khi nhận được cả hai dữ liệu
         fetchDataFromBackend(
           unconfirmedData,
@@ -228,6 +236,7 @@ const DailyOrders = () => {
 
   const fetchDataFromBackend = (a, b, c, d, e, f, g) => {
     console.log(a + " " + b + " " + c + " " + d + " " + e + " " + f + " " + g);
+    console.log(dataOrder + " -------oder 2 : ");
     // Replace this with actual API call to your backend
     const dataFromBackend = [
       { name: "1U", orders: a },
@@ -255,6 +264,9 @@ const DailyOrders = () => {
           {/* <DecreaseIcon /> */}
         </TitleAreNumber>
       </TitleArea>
+      <div>
+        <Text strong>-</Text>
+      </div>
 
       <LineChart width={330} height={150} data={data}>
         <XAxis dataKey="name" />

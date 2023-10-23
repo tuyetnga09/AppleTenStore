@@ -11,6 +11,9 @@ export const searchWithDate = (page) => {
 export const createBill = (bill) => {
   return httpClient.post(`/customer/bill`, bill);
 }
+export const createBillAccount = (billAccount) => {
+  return httpClient.post(`/customer/bill/account`, billAccount);
+}
 
 export const updateStatusBill = (id) => {
   return httpClient.put(`/customer/bill/update-status/${id}`);

@@ -3,7 +3,10 @@ import {
   readAll,
   deleteCartDetail,
   updateQuantity,
-  update, getQuantityCartDetailBySku,
+  update,
+  getQuantityCartDetailBySku,
+  getCartSession,
+  getbysku,
 } from "../../../service/cart.service";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
@@ -19,21 +22,51 @@ import { DateField } from "@refinedev/antd";
 import queryString from "query-string";
 
 export default function CartDisplay() {
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
   const history = useHistory();
   const [products, setProducts] = useState([]);
   const [quantitySKU, setQuantitySKU] = useState(0);
   // const [number, setNumber] = useState(0);
 
+  // Sử dụng dữ liệu cartItems để hiển thị giỏ hàng
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+
+  const skuIds = cartItems.map((item) => item.idSKU); // Lấy danh sách idSKU từ mảng cartItems
+
+  const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
+
   useEffect(() => {
-    readAll(1)
-      .then((response) => {
-        console.log(response.data);
-        setProducts(response.data);
-        // setNumber(response.data.total);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+    if (idAccount !== null && idAccount !== "") {
+      readAll(idAccount)
+        .then((response) => {
+          console.log(response.data);
+          setProducts(response.data);
+          // setNumber(response.data.total);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      Promise.all(requests)
+        .then((responses) => {
+          const productsData = responses.map((response, index) => {
+            const productInfo = response.data[0];
+            const cartItem = cartItems[index];
+            // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
+            return {
+              ...productInfo,
+              quantity: cartItem.quantity,
+              price: cartItem.price,
+              total: cartItem.quantity * cartItem.price,
+            };
+          });
+          setProducts(productsData);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, []);
 
   async function remove(id) {
@@ -42,6 +75,26 @@ export default function CartDisplay() {
       setProducts(newArr);
       window.location.reload();
     });
+  }
+
+  // Hàm xóa sản phẩm lưu session bằng idSKU
+  function removeBySku(idSKU) {
+    // Tìm vị trí của sản phẩm cần xóa trong danh sách
+    const productIndex = cartItems.findIndex((item) => item.idSKU === idSKU);
+
+    if (productIndex !== -1) {
+      // Xóa sản phẩm khỏi danh sách
+      cartItems.splice(productIndex, 1);
+
+      // Lưu danh sách sản phẩm đã cập nhật trở lại vào sessionStorage
+      sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+      // Cập nhật trạng thái trong ứng dụng React
+      setProducts(cartItems);
+
+      // Reload trang hoặc thực hiện các thao tác cần thiết
+      // window.location.reload();
+    }
   }
 
   const [sku, setSKU] = useState([]);
@@ -55,30 +108,13 @@ export default function CartDisplay() {
         message: "ADD TO CART",
         description: "Không được nhập số lượng âm",
       });
-      // console.log();
-      // deleteCartDetail(cartItemId);
-      // window.location.reload();
     } else {
       update(cartItemId, newQuantity)
         .then((response) => {
           console.log("Phản hồi từ máy chủ:", response.data);
-          readAll(1)
+          readAll(idAccount)
             .then((response) => {
               console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-              // getOneSKU(idSKU)
-              //   .then((response) => {
-              //     console.log(response.data);
-              //     setSKU(response.data);
-              //     // if (newQuantity > sku.quantity) {
-              //     //   notification.error({
-              //     //     message: "ADD TO CART",
-              //     //     description: "Không được nhập quá số lượng sản phẩm",
-              //     //   });
-              //     // }
-              //   })
-              //   .catch((error) => {
-              //     console.log(`${error}`);
-              //   });
               setProducts(response.data);
             })
             .catch((error) => {
@@ -108,15 +144,15 @@ export default function CartDisplay() {
 
   //check tien hanh đặt hàng
   const handleClickTienHangDH = () => {
-    if(products === null || products.length === 0){
+    if (products === null || products.length === 0) {
       notification.error({
         message: "ĐẶT HÀNG",
         description: "Vui lòng thêm sản phẩm vào giỏ hàng",
       });
-    }else{
+    } else {
       history.push("/checkout");
     }
-  }
+  };
 
   return (
     <React.Fragment>
@@ -274,7 +310,7 @@ export default function CartDisplay() {
                                           );
                                         } else if (
                                           event.target.value >
-                                          parseInt(quantitySKU) 
+                                          parseInt(quantitySKU)
                                           // +
                                           //   parseInt(product.quantity)
                                         ) {
@@ -318,7 +354,7 @@ export default function CartDisplay() {
                                             parseInt(product.quantity) + 1;
                                           if (
                                             quantity.value >
-                                            parseInt(res.data.quantity) 
+                                            parseInt(res.data.quantity)
                                             // + parseInt(product.quantity)
                                           ) {
                                             notification.error({
@@ -326,10 +362,11 @@ export default function CartDisplay() {
                                               description:
                                                 "Không thể nhập quá số lượng đang có",
                                             });
-                                            quantity.value =
-                                              parseInt(res.data.quantity) 
-                                              // +
-                                              // parseInt(product.quantity);
+                                            quantity.value = parseInt(
+                                              res.data.quantity
+                                            );
+                                            // +
+                                            // parseInt(product.quantity);
                                           }
                                         });
                                         handleUpdateQuantity(
@@ -341,7 +378,7 @@ export default function CartDisplay() {
                                       className="plus"
                                     />
                                   </div>
-                                  <p style={{fontSize: "10px", color: "red"}}>
+                                  <p style={{ fontSize: "10px", color: "red" }}>
                                     Còn {product.quantitySKU} sản phẩm
                                   </p>
                                 </td>
@@ -371,7 +408,16 @@ export default function CartDisplay() {
                                     className="close"
                                     data-dismiss="alert"
                                     aria-label="Close"
-                                    onClick={() => remove(product.idCartDetail)}
+                                    onClick={() => {
+                                      if (
+                                        idAccount !== null &&
+                                        idAccount !== ""
+                                      ) {
+                                        remove(product.idCartDetail); // Sử dụng hàm remove nếu có idAccount
+                                      } else {
+                                        removeBySku(product.idSKU); // Sử dụng hàm removeBySku nếu không có idAccount
+                                      }
+                                    }}
                                   >
                                     <span aria-hidden="true">
                                       <FontAwesomeIcon
@@ -428,13 +474,13 @@ export default function CartDisplay() {
 
                         <div class="d-grid gap-2 col-6 mx-auto">
                           {/* <Link to={"/checkout"}> */}
-                            <button
-                              type="button"
-                              className="btn btn-danger btn-block btn-lg"
-                              onClick={() => handleClickTienHangDH()}
-                            >
-                              TIẾN HÀNH ĐẶT HÀNG
-                            </button>
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-block btn-lg"
+                            onClick={() => handleClickTienHangDH()}
+                          >
+                            TIẾN HÀNH ĐẶT HÀNG
+                          </button>
                           {/* </Link> */}
                         </div>
                         <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>

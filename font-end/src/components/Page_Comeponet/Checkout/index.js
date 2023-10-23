@@ -779,14 +779,14 @@ const Checkout = () => {
                                     </div>
                                     <hr class="mb-4"/>
                                     {/*<Link to={linkPay}>*/}
-                                        <button
-                                            class="btn btn-primary btn-lg btn-block"
-                                            // type="submit"
-                                            name="btnDatHang"
-                                            type="submit"
-                                        >
-                                            Đặt hàng
-                                        </button>
+                                    <button
+                                        class="btn btn-primary btn-lg btn-block"
+                                        // type="submit"
+                                        name="btnDatHang"
+                                        type="submit"
+                                    >
+                                        Đặt hàng
+                                    </button>
                                     {/*</Link>*/}
                                 </div>
                             </div>

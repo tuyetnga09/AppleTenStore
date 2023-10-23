@@ -27,7 +27,7 @@ public class BillRequestOffline {
 
     private BigDecimal totalMoney;
 
-    private List<SKU> billDetail;
+    private List<BillAskClient> billDetail;
 
     private String paymentMethod;
 

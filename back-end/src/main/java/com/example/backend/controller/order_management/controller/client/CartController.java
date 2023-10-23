@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.controller.client;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.model.cart.AddCart;
+import com.example.backend.controller.order_management.model.cart.LisCartSession;
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.service.CartService;
 import com.example.backend.entity.SKU;
@@ -39,6 +40,11 @@ public class CartController {
         return cartService.getListCart(idAccount);
     }
 
+    @GetMapping("/session/{idSku}")
+    public List<LisCartSession> getListCartSession(@PathVariable("idSku") Long idSku) {
+        return cartService.getListCartSession(idSku);
+    }
+
     @GetMapping("/quantityInCart/{idAccount}")
     public Integer getQuantityInCart(@PathVariable("idAccount") Integer idAccount) {
         return cartService.quantityInCart(idAccount);
@@ -54,22 +60,18 @@ public class CartController {
             if (cartItemList == null) {
                 cartItemList = new ArrayList<>();
             }
-            // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
             boolean productExists = false;
             for (AddCart itemcart : cartItemList) {
                 if (itemcart.getIdSKU().equals(item.getIdSKU())) {
-                    // Sản phẩm đã tồn tại, tăng số lượng
                     itemcart.setQuantity(itemcart.getQuantity() + 1);
                     productExists = true;
                     break;
                 }
             }
             if (!productExists) {
-                // Sản phẩm chưa tồn tại trong giỏ hàng, thêm mới
                 cartItemList.add(item);
             }
             session.setAttribute("cartItems", cartItemList);
-//        session.setAttribute("myCartNum", cartItemList.size());
         }
             return ResponseEntity.ok("hi");
     }

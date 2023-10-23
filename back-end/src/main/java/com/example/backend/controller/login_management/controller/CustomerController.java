@@ -62,7 +62,7 @@ public class CustomerController {
         return new ResponseObj(customerService.add(user, address, account));
     }
 
-    @GetMapping("get-all-customer")
+    @GetMapping("/get-all-customer")
     public ResponseEntity<List<Customer>> getAllCustomer() {
         return new ResponseEntity<>(customerServiceSellOffline.getAll(), HttpStatus.OK);
     }
