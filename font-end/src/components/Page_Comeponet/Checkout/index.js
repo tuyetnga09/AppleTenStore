@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import { useState } from "react";
-import { readAll } from "../../../service/cart.service";
+import { readAll, getbysku } from "../../../service/cart.service";
 import { readQuantityInCart } from "../../../service/cart.service";
 import { GiftOutlined } from "@ant-design/icons";
 import { Image, Checkbox, Modal, notification, Button, Input } from "antd";
@@ -25,7 +25,7 @@ import { DateField } from "@refinedev/antd";
 
 const Checkout = () => {
   const storedUser = JSON.parse(localStorage.getItem("account"));
-  const idAccount = storedUser?.id; //sau khi đăng nhập thì truyền idAccount vào đây
+  const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
   const [products, setProducts] = useState([]);
   const [quantityCart, setQuantity] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -67,28 +67,56 @@ const Checkout = () => {
     wards: "",
   });
 
+  // Sử dụng dữ liệu cartItems để hiển thị giỏ hàng
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+
+  const skuIds = cartItems.map((item) => item.idSKU); // Lấy danh sách idSKU từ mảng cartItems
+
+  const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
+
   useEffect(() => {
     //hiển thị giỏ hàng
-    readAll(idAccount)
-      .then((response) => {
-        const list = response.data;
-        setProducts(list);
-        const adidaphat = [];
-        list.map((item) => {
-          adidaphat.push({
-            idProductDetail: item.idProduct,
-            price: item.price,
-            quantity: item.quantity,
+    if (idAccount !== null && idAccount !== "") {
+      readAll(idAccount)
+        .then((response) => {
+          const list = response.data;
+          setProducts(list);
+          const adidaphat = [];
+          list.map((item) => {
+            adidaphat.push({
+              idProductDetail: item.idProduct,
+              price: item.price,
+              quantity: item.quantity,
+            });
           });
+          setBill({
+            ...bill,
+            billDetail: adidaphat,
+          });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
         });
-        setBill({
-          ...bill,
-          billDetail: adidaphat,
+    } else {
+      Promise.all(requests)
+        .then((responses) => {
+          const productsData = responses.map((response, index) => {
+            const productInfo = response.data[0];
+            const cartItem = cartItems[index];
+            // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
+            return {
+              ...productInfo,
+              quantity: cartItem.quantity,
+              price: cartItem.price,
+              total: cartItem.quantity * cartItem.price,
+            };
+          });
+          setProducts(productsData);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
         });
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+    }
     //số lượng sản phẩm tỏng giỏ hàng
     readQuantityInCart(idAccount)
       .then((response) => {
@@ -495,7 +523,11 @@ const Checkout = () => {
                           {product.color}
                         </h6>
                         <small class="text-muted">
-                          {product.price} x {product.quantity}
+                          {product?.price?.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}{" "}
+                          x {product.quantity}
                         </small>
                       </div>
                       <span class="text-muted">
