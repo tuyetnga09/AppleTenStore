@@ -8,6 +8,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
+import com.example.backend.entity.SKU;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -91,7 +92,7 @@ public class BillController {
         message.append("<p>Chi tiết hoá đơn:</p>");
         message.append("<table border='1'>");
         message.append("<tr><th>Tên sản phẩm</th><th>Số lượng</th><th>Giá tiền</th></tr>");
-        for (BillAskClient cart : request.getBillDetail()) {
+        for (SKU cart : request.getBillDetail()) {
             message.append("<tr>");
             message.append("<td>").append(cart.getQuantity()).append("</td>");
             message.append("<td>").append(cart.getPrice()).append("</td>");
@@ -113,9 +114,9 @@ public class BillController {
         this.billService.updateStatusBill(id);
     }
 
-    @GetMapping(value = "/paydone/{id}")
-    public Bill paydone(@PathVariable int id){
-        return this.billService.findById(id);
+    @GetMapping(value = "/search/{code}")
+    public Bill paydone(@PathVariable String code){
+        return this.billService.findByCode(code);
     }
 
 

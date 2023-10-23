@@ -1,26 +1,24 @@
 package com.example.backend.controller.login_management.controller;
 
-import com.example.backend.controller.login_management.model.request.CreateAddressRequest;
-import com.example.backend.controller.login_management.model.request.CreateCustomerRequest;
 import com.example.backend.controller.login_management.model.request.CustomerDTO;
 import com.example.backend.controller.login_management.service.CustomerService;
 import com.example.backend.controller.order_management.model.ResponseObj;
+import com.example.backend.controller.product_controller.service.impl.CustomerServiceImplOffline;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Address;
+import com.example.backend.entity.Customer;
 import com.example.backend.entity.User;
-import com.example.backend.untils.Status;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -28,6 +26,10 @@ import java.time.LocalDate;
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
+
+
+    @Autowired
+    private CustomerServiceImplOffline customerServiceSellOffline;
 
 //    @PostMapping("/create")
 //    public ResponseObj add(@RequestParam(value = "request", required = false) String req,
@@ -59,4 +61,18 @@ public class CustomerController {
         Account account = customerDTO.getAccount();
         return new ResponseObj(customerService.add(user, address, account));
     }
+
+    @GetMapping("get-all-customer")
+    public ResponseEntity<List<Customer>> getAllCustomer() {
+        return new ResponseEntity<>(customerServiceSellOffline.getAll(), HttpStatus.OK);
+    }
+
+    @PostMapping("add")
+    public ResponseEntity<String> add(@RequestBody Customer customer) {
+        customerServiceSellOffline.insert(customer);
+        return new ResponseEntity<>("Add ok", HttpStatus.CREATED);
+    }
+
+
+
 }

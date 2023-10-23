@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/public/product/")
@@ -51,6 +53,7 @@ public class PublicController {
         Page<Product> listProduct = productService.filterProductByPrice(pageable, key, minPrice, maxPrice);
         return listProduct;
     }
+
     @GetMapping("display/filterProductbyCategory")
     public Page<Product> filterProductbyCategory(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key, @RequestParam("nameCategory") String nameCategory) {
         Pageable pageable = PageRequest.of(page, 10);
@@ -72,10 +75,14 @@ public class PublicController {
         return listProduct;
     }
 
+    //    @GetMapping("display/listProductByCategories")
+//    public Page<Product> listProductByCategories(Pageable pageable, @RequestParam("id") Integer id) {
+////        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.listProductByCategories(pageable, id);
+//        return listProduct;
+//    }
     @GetMapping("display/listProductByCategories")
-    public Page<Product> listProductByCategories(Pageable pageable, @RequestParam("id") Integer id) {
-//        Pageable pageable = PageRequest.of(page, 10);
-        Page<Product> listProduct = productService.listProductByCategories(pageable, id);
-        return listProduct;
+    public List<Product> listProductByCategories(@RequestParam("id") Integer id) {
+        return productService.listProductByCategories(id);
     }
 }

@@ -63,7 +63,16 @@ public class SKUServiceImpl implements Iservice<SKU> {
     public List<SKU> getAllSkuFindByProduct(Product product) {
         return skuRepositoty.findByProduct(product);
     }
-    public Page<ListSkuProduct> getSKUProductFormSellOff(Pageable pageable){
-        return skuRepositoty.getSkuProductFormSellOffline(pageable);
+//    public Page<ListSkuProduct> getSKUProductFormSellOff(Pageable pageable){
+//        return skuRepositoty.getSkuProductFormSellOffline(pageable);
+//    }
+
+    public List<ListSkuProduct> getSKUProductFormSellOff(String key){
+        return skuRepositoty.getSkuProductFormSellOffline(key);
     }
+
+    public List<ListSkuProduct> getSKUProductFormSellOffByCategory(Integer id, String key){
+        return skuRepositoty.getSkuProductFormSellOfflineByCategory(id, key);
+    }
+
 }

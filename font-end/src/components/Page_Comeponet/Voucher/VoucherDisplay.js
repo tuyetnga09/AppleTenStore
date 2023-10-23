@@ -120,7 +120,7 @@ const VoucherDisplay = ({}) => {
       searchNoDate(paramsString)
         .then((response) => {
           // console.log(response.data);
-          setVoucher(response.data.content);
+          setVoucher(response.data);
           // setEditedVoucher(response.data);
         })
         .catch((error) => {
@@ -130,7 +130,7 @@ const VoucherDisplay = ({}) => {
       searchWithDate(paramsString2)
         .then((response) => {
           // console.log(response.data);
-          setVoucher(response.data.content);
+          setVoucher(response.data);
           // setEditedVoucher(response.data);
         })
         .catch((error) => {
@@ -232,7 +232,7 @@ const VoucherDisplay = ({}) => {
     searchNoDate(paramsString)
       .then((response) => {
         // console.log(response.data);
-        setVoucher(response.data.content);
+        setVoucher(response.data);
         // setEditedVoucher(response.data);
       })
       .catch((error) => {
@@ -245,7 +245,7 @@ const VoucherDisplay = ({}) => {
     searchWithDate(paramsString)
       .then((response) => {
         // console.log(response.data);
-        setVoucher(response.data.content);
+        setVoucher(response.data);
         // setEditedVoucher(response.data);
       })
       .catch((error) => {
@@ -423,6 +423,12 @@ const VoucherDisplay = ({}) => {
                     rowKey="id"
                     dataSource={voucher}
                     scroll={{ x: "max-content" }}
+                    pagination={{
+                      pageSize: 5,
+                      showSizeChanger: false,
+                      showTotal: (total) => `Tổng số ${total} mục`,
+                      showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                    }}
                   >
                     <Table.Column
                       key="id"

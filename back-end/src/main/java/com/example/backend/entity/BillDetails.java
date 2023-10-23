@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -43,8 +45,9 @@ public class BillDetails{
     private StatusBill statusBill ;
 
     @ManyToOne
-    @JoinColumn(name = "id_product")
-    private Product product;
+    @Cascade(CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "id_sku")
+    private SKU sku;
 
     @ManyToOne
     @JoinColumn(name = "id_bill")

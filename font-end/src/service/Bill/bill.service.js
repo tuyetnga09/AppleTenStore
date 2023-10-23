@@ -16,6 +16,6 @@ export const updateStatusBill = (id) => {
   return httpClient.put(`/customer/bill/update-status/${id}`);
 }
 
-export const findBillById = (id) => {
-  return httpClient.get(`/customer/bill/paydone/${id}`);
+export const findBillByCode = (code) => {
+  return httpClient.get(`/customer/bill/search/${code}`);
 }

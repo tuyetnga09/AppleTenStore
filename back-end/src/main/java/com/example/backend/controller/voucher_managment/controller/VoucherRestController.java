@@ -79,13 +79,13 @@ public class VoucherRestController {
 
 
     @GetMapping("/searchNoDate")
-    public Page<Voucher> searchNoDate(Pageable pageable, @RequestParam("key") String key, @RequestParam("status") String status){
-        return voucherService.searchNoDate(pageable, key, status);
+    public List<Voucher> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status){
+        return voucherService.searchNoDate(key, status);
     }
 
     @GetMapping("/searchWithDate")
-    public Page<Voucher> searchWithDate(Pageable pageable, @RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
-        return voucherService.searchWithDate(pageable, key, status, dateStart, dateEnd);
+    public List<Voucher> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
+        return voucherService.searchWithDate(key, status, dateStart, dateEnd);
     }
 
 }

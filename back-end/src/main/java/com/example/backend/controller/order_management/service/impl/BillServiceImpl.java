@@ -5,27 +5,10 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.cart.ListCart;
-import com.example.backend.repository.AccountRepository;
-import com.example.backend.repository.AddressRepository;
-import com.example.backend.repository.BillDetailRepository;
-import com.example.backend.repository.BillHistoryRepository;
-import com.example.backend.repository.BillRepository;
-import com.example.backend.repository.PaymentsRepository;
-import com.example.backend.repository.UserRepository;
-import com.example.backend.repository.VoucherDetailRepository;
+import com.example.backend.controller.product_controller.service.impl.SKUServiceImpl;
+import com.example.backend.entity.*;
+import com.example.backend.repository.*;
 import com.example.backend.controller.order_management.service.BillService;
-import com.example.backend.repository.ProductRepository;
-import com.example.backend.repository.VoucherRepository;
-import com.example.backend.entity.Account;
-import com.example.backend.entity.Address;
-import com.example.backend.entity.Bill;
-import com.example.backend.entity.BillDetails;
-import com.example.backend.entity.BillHistory;
-import com.example.backend.entity.Payments;
-import com.example.backend.entity.Product;
-import com.example.backend.entity.User;
-import com.example.backend.entity.Voucher;
-import com.example.backend.entity.VoucherDetail;
 import com.example.backend.untils.Message;
 import com.example.backend.untils.Random;
 import com.example.backend.untils.RestAPIRunTime;
@@ -40,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.text.ParseException;import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -62,11 +46,13 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private BillHistoryRepository billHistoryRepository;
     @Autowired
-    private ProductRepository productRepository;
+    private CartDetailRepository cartDetailRepository;
     @Autowired
     private BillDetailRepository billDetailRepository;
     @Autowired
     private PaymentsRepository paymentsRepository;
+    @Autowired
+    private SKURepositoty skuRepositoty;
 
     @Autowired
     private VoucherRepository voucherRepository;
@@ -107,13 +93,14 @@ public class BillServiceImpl implements BillService {
 
         // thông tin hoá đơn
         Bill bill = Bill.builder()
-                .code(new Random().randomToString("Bill"))
+                .code(request.getCode())
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + '-' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
                 .itemDiscount(request.getItemDiscount())
                 .totalMoney(request.getTotalMoney())
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .account(account).build();
@@ -123,18 +110,21 @@ public class BillServiceImpl implements BillService {
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
-            Product productDetail = productRepository.findById(x.getIdProductDetail()).get();
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .product(productDetail)
+                    .sku(skuRepositoty.findById(x.getSku()).orElse(null))
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
+                    .dateCreate(new Date(new java.util.Date().getTime()))
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
+            skuRepositoty.updateQuantity(x.getSku(), x.getQuantity());
+            cartDetailRepository.deleteByIdSku(x.getSku());
         }
 
         // hình thức thanh toán của hoá đơn
@@ -142,6 +132,7 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                 .bill(bill)
                 .moneyPayment(request.getTotalMoney())
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .typePayment(StatusPayment.THANH_TOAN).build();
         paymentsRepository.save(payments);
 
@@ -215,13 +206,12 @@ public class BillServiceImpl implements BillService {
                 .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
-        for (BillAskClient cart : request.getBillDetail()) {
-            Product productDetail = productRepository.findById(cart.getIdProductDetail()).get();
+        for (SKU x : request.getBillDetail()) {
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .product(productDetail)
-                    .price(cart.getPrice())
-                    .quantity(cart.getQuantity())
+                    .sku(x)
+                    .price(x.getPrice())
+                    .quantity(x.getQuantity())
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
         }
@@ -269,13 +259,13 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Page<Bill> searchNoDate(Pageable pageable, String key, String status, String user) {
-        return billRepository.searchNoDate(pageable, key, status, user);
+    public List<Bill> searchNoDate(String key, String status, String user) {
+        return billRepository.searchNoDate(key, status, user);
     }
 
     @Override
-    public Page<Bill> searchWithDate(Pageable pageable, String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
-        return billRepository.searchWithDate(pageable, key, status, user, dateStart, dateEnd);
+    public List<Bill> searchWithDate(String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
+        return billRepository.searchWithDate(key, status, user, dateStart, dateEnd);
     }
 
     @Override
@@ -284,8 +274,8 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Bill findById(int id) {
-        return billRepository.findById(id);
+    public Bill findByCode(String code) {
+        return billRepository.findByCode(code).orElse(null);
     }
 
 }

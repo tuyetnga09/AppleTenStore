@@ -1,5 +1,6 @@
 package com.example.backend.controller.order_management.model.bill.request;
 
+import com.example.backend.entity.SKU;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 public class BillRequestOnline {
+    private String code;
     private String userName;
     private String phoneNumber;
     private String email;
@@ -22,6 +24,8 @@ public class BillRequestOnline {
     private String paymentMethod;
 
     private List<BillAskClient> billDetail;
+
+    private Integer quantity;
 
     private BigDecimal afterPrice;
 

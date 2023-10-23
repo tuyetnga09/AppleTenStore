@@ -19,8 +19,9 @@ import {readAllDistrict} from "../../../service/AddressAPI/district.service";
 import {readAllProvince} from "../../../service/AddressAPI/province.service";
 import {getFee} from "../../../service/AddressAPI/fee.service";
 import {get} from "jquery";
-import {Link, useHistory} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom/cjs/react-router-dom.min";
 import {createBill} from "../../../service/Bill/bill.service";
+import {getOneSKU} from "../../../service/sku.service";
 
 const Checkout = () => {
     const [isLogin, setIsGLogin] = useState([false]);
@@ -49,6 +50,7 @@ const Checkout = () => {
         quantity: 1,
     });
     const [bill, setBill] = useState({
+        code: Math.floor(Math.random() * 100000000000000000001) + '',
         userName: '',
         phoneNumber: '',
         email: '',
@@ -60,11 +62,13 @@ const Checkout = () => {
         totalMoney: 0,
         paymentMethod: 'ONLINE',
         billDetail: [],
+        quantity: 0,
         afterPrice: 0,
         idVoucher: null,
         wards: ''
     });
     const history = useHistory();
+    const [codeBill, setCodeBill] = useState('');
 
     useEffect(() => {
         //hiển thị giỏ hàng
@@ -72,27 +76,32 @@ const Checkout = () => {
             .then((response) => {
                 const list = response.data;
                 setProducts(list);
-                const adidaphat = []
+                let temp = []
                 list.map((item) => {
-                    adidaphat.push({
-                        idProductDetail: item.idProduct,
+                    temp.push({
+                        sku: item.idSKU,
                         price: item.price,
                         quantity: item.quantity
                     })
                 })
                 setBill({
                     ...bill,
-                    billDetail: adidaphat
+                    billDetail: temp
                 })
             })
             .catch((error) => {
                 console.log(`${error}`);
             });
+        setCodeBill(bill.code);
         //số lượng sản phẩm tỏng giỏ hàng
         readQuantityInCart(1)
             .then((response) => {
                 console.log(response.data);
                 setQuantity(response.data);
+                setBill({
+                    ...bill,
+                    quantity: quantityCart
+                })
             })
             .catch((error) => {
                 console.log(`${error}`);
@@ -109,7 +118,6 @@ const Checkout = () => {
         //lấy danh sách voucher
         getVoucherFreeShip()
             .then((response) => {
-                console.log(response.data);
                 setVoucherFreeShip(response.data);
             })
             .catch((error) => {
@@ -182,6 +190,7 @@ const Checkout = () => {
             const divDcmd = document.getElementById("dcmd");
             divDcmd.hidden = false;
         }
+        console.log(bill)
     }
 
     useEffect(() => {
@@ -433,13 +442,9 @@ const Checkout = () => {
         })
     }
 
-    function handleSubmit() {
-        createBill(bill).then((response) => {
-            console.log(response.data)
-            history.push(`/customer/bill/paydone/${response.data.id}`);
-        }).catch((error) => {
-            console.log(error)
-        })
+    async function handleSubmit() {
+        createBill(bill)
+        history.push(`/paydone/${codeBill}`);
     }
 
     return (

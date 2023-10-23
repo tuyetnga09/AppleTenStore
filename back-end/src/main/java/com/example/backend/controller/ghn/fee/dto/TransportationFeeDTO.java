@@ -1,4 +1,4 @@
-package com.example.backend.controller.address.fee.dto;
+package com.example.backend.controller.ghn.fee.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

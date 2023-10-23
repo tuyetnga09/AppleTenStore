@@ -52,9 +52,9 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
     List<Voucher> getVoucherFreeShip(Voucher voucher);
 
     @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2%", nativeQuery = true)
-    Page<Voucher> searchNoDate(Pageable pageable, String key, String status);
+    List<Voucher> searchNoDate(String key, String status);
 
     @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2% and (date_start = ?3 and date_end = ?4)", nativeQuery = true)
-    Page<Voucher> searchWithDate(Pageable pageable, String key, String status, LocalDate dateStart, LocalDate dateEnd);
+    List<Voucher> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
 }

@@ -66,8 +66,9 @@ import ChatManager from "./components/Page_Comeponet/Chat/ChatManger";
 import SkuDisplay from "./components/product_component/SKU/SkuDisplay";
 import CategoryDisplay from "./components/Page_Comeponet/Categories/index";
 import AccountList from "./components/Page_Comeponet/Account/index";
-import SellOffline from "./components/Page_Comeponet/SellOffline/SellSmartOffline"
+import SellOffline from "./components/Page_Comeponet/SellOffline/SellSmartOffline";
 import Paydone from "./components/Page_Comeponet/Paydone";
+import SignUpAdmin from "./components/Page_Comeponet/Login/signupAdmin";
 
 function App() {
   return (
@@ -203,7 +204,8 @@ function App() {
           <Route path="/categories" exact component={CategoryDisplay} />
           <Route path="/account" exact component={AccountList} />
           <Route path="/sell" exact component={SellOffline} />
-          <Route path="/paydone/:id" exact component={Paydone} />
+          <Route path="/paydone/:code" exact component={Paydone} />
+          <Route path="/signup/admin" exact component={SignUpAdmin} />
         </Switch>
       </Router>
     </div>
