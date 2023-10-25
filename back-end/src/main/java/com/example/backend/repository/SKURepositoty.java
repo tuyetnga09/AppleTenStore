@@ -4,9 +4,11 @@ import com.example.backend.controller.product_controller.model.request.ListSkuPr
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
 import com.example.backend.entity.Size;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -36,4 +38,10 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
 
     @Query(value = "select sku.price AS 'Price SKU', product.id AS 'Product ID', sku.id AS 'SKU ID', sku.quantity 'SKU Quantity', sku.capacity AS 'Capacity', sku.color AS 'Color', product.name AS 'Name Product' from sku join product on sku.product_id = product.id join category on product.id_category = category.id where category.id = ?1 and (product.name like %?2% or sku.capacity like %?2% or sku.color like %?2% or sku.price like %?2% or sku.quantity like %?2% )", nativeQuery = true)
     List<ListSkuProduct> getSkuProductFormSellOfflineByCategory(Integer id, String key);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update sku set quantity = quantity - ?2 where id = ?1", nativeQuery = true)
+    void updateQuantity(Long id, Integer number);
+
 }
