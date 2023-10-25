@@ -102,10 +102,9 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
-            SKU productDetail = skuRepositoty.findById(x.getSku()).get();
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .sku(productDetail)
+                    .sku(skuRepositoty.findById(x.getSku()).orElse(null))
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
                     .dateCreate(new Date(new java.util.Date().getTime()))
@@ -147,7 +146,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public String createBillAccountOnlineRequest(BillRequestOnlineAccount request) {
-        Optional<Account> accountOptional = acountRepository.findById(request.getIdAccount());
+        Optional<Account> accountOptional = acountRepository.findById(request.getAccount());
 
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
@@ -158,7 +157,7 @@ public class BillServiceImpl implements BillService {
                     .userName(request.getUserName())
                     .moneyShip(request.getMoneyShip())
                     .itemDiscount(request.getItemDiscount())
-                    .totalMoney(request.getTotalMoney())
+                    .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
                     .statusBill(StatusBill.DA_THANH_TOAN)
                     .account(account)
@@ -172,14 +171,15 @@ public class BillServiceImpl implements BillService {
             billHistoryRepository.save(billHistory);
 
             for (BillAskClient d : request.getBillDetail()) {
-                SKU productDetail = skuRepositoty.findById(d.getSku()).get();
                 BillDetails billDetail = BillDetails.builder()
                         .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
-                        .sku(productDetail)
+                        .sku(skuRepositoty.findById(d.getSku()).orElse(null))
                         .price(d.getPrice())
                         .quantity(d.getQuantity())
                         .bill(bill).build();
                 billDetailRepository.save(billDetail);
+                skuRepositoty.updateQuantity(d.getSku(), d.getQuantity());
+                cartDetailRepository.deleteByIdSku(d.getSku(), request.getAccount());
             }
 
             Payments payments = Payments.builder()
@@ -189,7 +189,7 @@ public class BillServiceImpl implements BillService {
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
-            if(request.getIdVoucher().equals("")){
+            if(request.getIdVoucher().equals(null)){
                 VoucherDetail voucherDetail = VoucherDetail.builder()
                         .voucher(null)
                         .bill(bill)
@@ -211,7 +211,7 @@ public class BillServiceImpl implements BillService {
                 voucherDetailRepository.save(voucherDetail);
             }
 
-            Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
+            Cart cart = cartRepository.getCartByAccount_Id(request.getAccount());
             for (BillAskClient x : request.getBillDetail()) {
                 List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndSku_Id(cart.getId(), x.getSku());
                 cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
@@ -245,10 +245,9 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient cart : request.getBillDetail()) {
-            SKU productDetail = skuRepositoty.findById(cart.getSku()).get();
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .sku(productDetail)
+                    .sku(skuRepositoty.findById(cart.getSku()).orElse(null))
                     .price(cart.getPrice())
                     .quantity(cart.getQuantity())
                     .bill(bill).build();

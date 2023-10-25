@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import {useState} from "react";
-import {readAll} from "../../../service/cart.service";
+import {readAll, getbysku} from "../../../service/cart.service";
 import {readQuantityInCart} from "../../../service/cart.service";
 import {GiftOutlined} from "@ant-design/icons";
 import {Image, Checkbox, Modal, notification, Button, Input} from "antd";
@@ -19,17 +19,18 @@ import {readAllDistrict} from "../../../service/AddressAPI/district.service";
 import {readAllProvince} from "../../../service/AddressAPI/province.service";
 import {getFee} from "../../../service/AddressAPI/fee.service";
 import {get} from "jquery";
-import {Link, useHistory} from "react-router-dom/cjs/react-router-dom.min";
-import {createBill} from "../../../service/Bill/bill.service";
-import {getOneSKU} from "../../../service/sku.service";
+import {Link} from "react-router-dom";
+import {createBillAccount} from "../../../service/Bill/bill.service";
+import {DateField} from "@refinedev/antd";
 
 const Checkout = () => {
-    const [isLogin, setIsGLogin] = useState([false]);
+    const storedUser = JSON.parse(localStorage.getItem("account"));
+    const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
     const [products, setProducts] = useState([]);
     const [quantityCart, setQuantity] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [priceShip, setPriceShip] = useState([]);
-    const [soTienThanhToan, setSoTienThanhToan] = useState([]);
+    const [priceShip, setPriceShip] = useState(0);
+    const [soTienThanhToan, setSoTienThanhToan] = useState(0);
     const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
     const [voucher, setVoucher] = useState([]);
     const [selecteVoucher, setSelectedVoucher] = useState(0);
@@ -52,8 +53,8 @@ const Checkout = () => {
     const [bill, setBill] = useState({
         code: Math.floor(Math.random() * 100000000000000000001) + '',
         userName: '',
-        phoneNumber: '',
         email: '',
+        phoneNumber: '',
         address: '',
         province: '',
         district: '',
@@ -65,43 +66,65 @@ const Checkout = () => {
         quantity: 0,
         afterPrice: 0,
         idVoucher: null,
+        account: idAccount,
         wards: ''
     });
-    const history = useHistory();
-    const [codeBill, setCodeBill] = useState('');
+
+    // Sử dụng dữ liệu cartItems để hiển thị giỏ hàng
+    const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+
+    const skuIds = cartItems.map((item) => item.idSKU); // Lấy danh sách idSKU từ mảng cartItems
+
+    const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
 
     useEffect(() => {
         //hiển thị giỏ hàng
-        readAll(1)
-            .then((response) => {
-                const list = response.data;
-                setProducts(list);
-                let temp = []
-                list.map((item) => {
-                    temp.push({
-                        sku: item.idSKU,
-                        price: item.price,
-                        quantity: item.quantity
-                    })
+        if (idAccount !== null && idAccount !== "") {
+            readAll(idAccount)
+                .then((response) => {
+                    const list = response.data;
+                    setProducts(list);
+                    const adidaphat = [];
+                    list.map((item) => {
+                        adidaphat.push({
+                            sku: item.idSKU,
+                            price: item.price,
+                            quantity: item.quantity,
+                        });
+                    });
+                    setBill({
+                        ...bill,
+                        billDetail: adidaphat,
+                    });
                 })
-                setBill({
-                    ...bill,
-                    billDetail: temp
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+        } else {
+            Promise.all(requests)
+                .then((responses) => {
+                    const productsData = responses.map((response, index) => {
+                        const productInfo = response.data[0];
+                        const cartItem = cartItems[index];
+                        // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
+                        return {
+                            ...productInfo,
+                            quantity: cartItem.quantity,
+                            price: cartItem.price,
+                            total: cartItem.quantity * cartItem.price,
+                        };
+                    });
+                    setProducts(productsData);
                 })
-            })
-            .catch((error) => {
-                console.log(`${error}`);
-            });
-        setCodeBill(bill.code);
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+        }
         //số lượng sản phẩm tỏng giỏ hàng
-        readQuantityInCart(1)
+        readQuantityInCart(idAccount)
             .then((response) => {
                 console.log(response.data);
                 setQuantity(response.data);
-                setBill({
-                    ...bill,
-                    quantity: quantityCart
-                })
             })
             .catch((error) => {
                 console.log(`${error}`);
@@ -118,6 +141,7 @@ const Checkout = () => {
         //lấy danh sách voucher
         getVoucherFreeShip()
             .then((response) => {
+                console.log(response.data);
                 setVoucherFreeShip(response.data);
             })
             .catch((error) => {
@@ -153,7 +177,7 @@ const Checkout = () => {
                     console.log(`${error}`);
                 });
         }
-    }, [isLogin, province_id, district_id, transportationFeeDTO, priceShip]);
+    }, [province_id, district_id, transportationFeeDTO, priceShip]);
 
     function giaoTanNoi() {
         const select = document.getElementById("floatingSelect1");
@@ -184,17 +208,14 @@ const Checkout = () => {
         notDcmd.hidden = true;
     }
 
-    function test() {
-        setIsGLogin(true);
-        if (isLogin == true) {
-            const divDcmd = document.getElementById("dcmd");
-            divDcmd.hidden = false;
-        }
-        console.log(bill)
-    }
-
     useEffect(() => {
         calculatePriceSucsses();
+        setBill({
+            ...bill,
+            totalMoney: totalPrice,
+            moneyShip: priceShip,
+            afterPrice: soTienThanhToan,
+        });
     }, [products, fee]);
     //tính số tiền cẩn thanh toán
     const calculatePriceSucsses = () => {
@@ -206,7 +227,6 @@ const Checkout = () => {
             total += productTotal;
         });
         setTotalPrice(total);
-
         //tính phí ship
         let priceS = 0;
         // if (total <= 20000000) {
@@ -220,6 +240,10 @@ const Checkout = () => {
         // }
         if (fee != null) {
             priceS = fee?.total;
+            // setBill({
+            //   ...bill,
+            //   moneyShip: priceS,
+            // });
         }
         setPriceShip(priceS);
         //tính số tiền cẩn thanh toán
@@ -246,12 +270,9 @@ const Checkout = () => {
             price = total + priceS;
         }
         setSoTienThanhToan(price);
-        setBill({
-            ...bill,
-            totalMoney: total,
-            moneyShip: priceS,
-            afterPrice: price
-        })
+        console.log(soTienThanhToan);
+        console.log(priceShip);
+        console.log(totalPrice);
     };
     //click Voucher
     const handleVoucherClick = (voucher) => {
@@ -263,9 +284,14 @@ const Checkout = () => {
                 message: "VOUCHER",
                 description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
             });
+        } else if (voucher.quantity <= 0) {
+            notification.error({
+                message: "VOUCHER",
+                description: "Voucher đã hết lượt sử dụng",
+            });
         } else {
             setSelectedVoucher(voucher);
-            readAll(1)
+            readAll(idAccount)
                 .then((response) => {
                     console.log(response.data);
                     setProducts(response.data);
@@ -275,13 +301,11 @@ const Checkout = () => {
                 });
         }
     };
-
     //clear voucher
     const handleClearVoucher = (id) => {
         if (selecteVoucher.id === id) {
             setSelectedVoucher(null);
-            readAll(1)
-                .then((response) => {
+            readAll(idAccount).then((response) => {
                     console.log(response.data);
                     setProducts(response.data);
                 })
@@ -301,9 +325,14 @@ const Checkout = () => {
                 message: "VOUCHER",
                 description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
             });
+        } else if (voucher.quantity <= 0) {
+            notification.error({
+                message: "VOUCHER",
+                description: "Voucher đã hết lượt sử dụng",
+            });
         } else {
             setSelectedVoucherFreeShip(voucher);
-            readAll(1)
+            readAll(idAccount)
                 .then((response) => {
                     console.log(response.data);
                     setProducts(response.data);
@@ -318,7 +347,7 @@ const Checkout = () => {
     const handleClearVoucherFreeShip = (id) => {
         if (selecteVoucherFreeShip.id === id) {
             setSelectedVoucherFreeShip(null);
-            readAll(1)
+            readAll(idAccount)
                 .then((response) => {
                     console.log(response.data);
                     setProducts(response.data);
@@ -351,10 +380,6 @@ const Checkout = () => {
         if (tienMat.checked === true) {
             setIsChecked(true);
             setLinkPay("/paydone");
-            setBill({
-                ...bill,
-                paymentMethod: 'OFFLINE'
-            })
         }
         const vnpay = document.getElementById("httt-2");
         if (vnpay.checked == true) {
@@ -366,10 +391,6 @@ const Checkout = () => {
                 .catch((err) => {
                     console.log(err);
                 });
-            setBill({
-                ...bill,
-                paymentMethod: 'ONLINE'
-            })
         }
     }
 
@@ -377,6 +398,7 @@ const Checkout = () => {
         const target = event.target;
         const value = target.value;
         setProvince_id(value);
+        console.log(value);
         setDistrict_id(null);
         setWards([]);
         let item = {
@@ -388,7 +410,7 @@ const Checkout = () => {
         setTransportationFeeDTO(item);
         setBill({
             ...bill,
-            province: 'Bắc Giang'
+            province: document.getElementById(value).innerText
         });
     };
 
@@ -403,8 +425,8 @@ const Checkout = () => {
         console.log(transportationFeeDTO);
         setBill({
             ...bill,
-            district: 'Hiệp Hòa'
-        })
+            district: document.getElementById(value).innerText,
+        });
     };
 
     const handleWard = (event) => {
@@ -416,41 +438,59 @@ const Checkout = () => {
         console.log(transportationFeeDTO);
         setBill({
             ...bill,
-            wards: 'Bắc Lý'
-        })
-        console.log(bill)
+            wards: document.getElementById(value).innerText,
+        });
+        console.log(bill);
     };
 
     function hanldeName(event) {
         setBill({
             ...bill,
-            userName: event.target.value
-        })
+            userName: event.target.value,
+        });
     }
 
     function hanldPhone(event) {
         setBill({
             ...bill,
-            phoneNumber: event.target.value
-        })
+            phoneNumber: event.target.value,
+        });
     }
 
     function hanldeMail(event) {
         setBill({
             ...bill,
-            email: event.target.value
-        })
+            email: event.target.value,
+        });
     }
 
-    async function handleSubmit() {
-        createBill(bill)
-        history.push(`/paydone/${codeBill}`);
+    function handleAddress(event) {
+        setBill({
+            ...bill,
+            address:
+                event.target.value +
+                ", " +
+                bill.wards +
+                ", " +
+                bill.district +
+                ", " +
+                bill.province,
+        });
+    }
+
+    function handleSubmit() {
+        createBillAccount(bill)
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     return (
         <>
             <Header/>
-            <button onClick={() => test()}>test</button>
             <main role="main">
                 <div class="container mt-4">
                     <form
@@ -459,7 +499,10 @@ const Checkout = () => {
                         onSubmit={handleSubmit}
                     >
                         <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
-                        <div class="py-5 text-center">
+                        <div
+                            class="py-5 text-center"
+                            style={{color: "#f68f2c", marginBottom: "50px"}}
+                        >
                             <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
                             <h2>Thanh toán</h2>
                             <p class="lead">
@@ -472,26 +515,31 @@ const Checkout = () => {
                                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-muted">Giỏ hàng</span>
                                     <span class="badge badge-secondary badge-pill">
-                  {quantityCart}
-                </span>
+                    {quantityCart}
+                  </span>
                                 </h4>
                                 <ul class="list-group mb-3">
                                     {products.map((product) => (
                                         <li class="list-group-item d-flex justify-content-between lh-condensed">
                                             <div>
                                                 <h6 class="my-0">
-                                                    {product.nameProduct} {product.capacity} {product.color}
+                                                    {product.nameProduct} {product.capacity}{" "}
+                                                    {product.color}
                                                 </h6>
                                                 <small class="text-muted">
-                                                    {product.price} x {product.quantity}
+                                                    {product?.price?.toLocaleString("vi-VN", {
+                                                        style: "currency",
+                                                        currency: "VND",
+                                                    })}{" "}
+                                                    x {product.quantity}
                                                 </small>
                                             </div>
                                             <span class="text-muted">
-                      {parseFloat(product.total).toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                      })}
-                    </span>
+                        {parseFloat(product.total).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                        })}
+                      </span>
                                         </li>
                                     ))}
                                     <li class="list-group-item d-flex justify-content-between">
@@ -542,7 +590,8 @@ const Checkout = () => {
                                     <p className="fw-bold">Giảm giá tiền vận chuyển:</p>
                                     <p className="fw-bold">
                                         -
-                                        {selecteVoucherFreeShip && selecteVoucherFreeShip.valueVoucher
+                                        {selecteVoucherFreeShip &&
+                                        selecteVoucherFreeShip.valueVoucher
                                             ? selecteVoucherFreeShip?.valueVoucher?.toLocaleString(
                                                 "vi-VN",
                                                 {
@@ -631,7 +680,11 @@ const Checkout = () => {
                                                 Giao tận nơi
                                             </label>
                                         </div>
-                                        <div class="custom-control custom-radio" id="dcmd" hidden>
+                                        <div
+                                            class="custom-control custom-radio"
+                                            id="dcmd"
+                                            hidden={storedUser !== null ? false : true}
+                                        >
                                             <input
                                                 id="htnn_6"
                                                 name="htnn_ma"
@@ -660,7 +713,11 @@ const Checkout = () => {
                                                 <option value={"undefined"} selected></option>
                                                 {provinces.map((pr) => {
                                                     return (
-                                                        <option key={pr.ProvinceID} value={pr.ProvinceID}>
+                                                        <option
+                                                            id={pr.ProvinceID}
+                                                            key={pr.ProvinceID}
+                                                            value={pr.ProvinceID}
+                                                        >
                                                             {pr.ProvinceName}
                                                         </option>
                                                     );
@@ -679,7 +736,11 @@ const Checkout = () => {
                                                 <option selected></option>
                                                 {districts.map((dt) => {
                                                     return (
-                                                        <option key={dt.DistrictID} value={dt.DistrictID}>
+                                                        <option
+                                                            id={dt.DistrictID}
+                                                            key={dt.DistrictID}
+                                                            value={dt.DistrictID}
+                                                        >
                                                             {dt.DistrictName}
                                                         </option>
                                                     );
@@ -698,7 +759,11 @@ const Checkout = () => {
                                                 <option selected></option>
                                                 {wards.map((w) => {
                                                     return (
-                                                        <option key={w.WardID} value={w.WardID}>
+                                                        <option
+                                                            id={w.WardCode}
+                                                            key={w.WardID}
+                                                            value={w.WardCode}
+                                                        >
                                                             {w.WardName}
                                                         </option>
                                                     );
@@ -726,6 +791,7 @@ const Checkout = () => {
                                                 type="text"
                                                 placeholder="Địa chỉ cụ thể"
                                                 aria-label="default input example"
+                                                onChange={handleAddress}
                                             />
                                         </div>
                                     </div>
@@ -778,16 +844,17 @@ const Checkout = () => {
                                         </label>
                                     </div>
                                     <hr class="mb-4"/>
-                                    {/*<Link to={linkPay}>*/}
-                                    <button
-                                        class="btn btn-primary btn-lg btn-block"
-                                        // type="submit"
-                                        name="btnDatHang"
-                                        type="submit"
-                                    >
-                                        Đặt hàng
-                                    </button>
-                                    {/*</Link>*/}
+
+                                    <a href={linkPay}>
+                                        <button
+                                            class="btn btn-primary btn-lg btn-block"
+                                            // type="submit"
+                                            name="btnDatHang"
+                                            type="submit"
+                                        >
+                                            Đặt hàng
+                                        </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -812,7 +879,8 @@ const Checkout = () => {
                         >
                             <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
                         </div>
-                        <p style={{marginTop: "10px"}}>Mã FreeShip</p>
+
+                        <p style={{marginTop: "10px", fontWeight: "bold"}}>Mã FreeShip</p>
                         <div
                             className="card-body"
                             data-mdb-perfect-scrollbar="true"
@@ -832,17 +900,45 @@ const Checkout = () => {
                                         <span style={{paddingLeft: "10px"}}>
                       {voucher.name}
                                             <br/>
-                      <p style={{color: "red", fontSize: "15px"}}>
+                      <p
+                          style={{
+                              color: "red",
+                              fontSize: "15px",
+                              fontWeight: "bold",
+                          }}
+                      >
                         Giảm{" "}
                           {voucher?.valueVoucher?.toLocaleString("vi-VN", {
                               style: "currency",
                               currency: "VND",
                           })}
                       </p>
-                      <p>
-                        Đơn giá trị tối thiểu {voucher.valueMinimum}
-                          <br/>
-                        Đơn giá trị tối đa {voucher.valueMaximum}
+                      <p style={{fontSize: "13px"}}>
+                        Cho đơn hàng giá trị từ{" "}
+                          {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                          })}{" "}
+                          đến{" "}
+                          {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                          })}
+                      </p>
+                      <p style={{color: "red", fontSize: "10px"}}>
+                        Từ{" "}
+                          <DateField
+                              style={{color: "red", fontSize: "10px"}}
+                              value={voucher.dateStart}
+                              format="DD/MM/YYYY"
+                          />{" "}
+                          đến{" "}
+                          <DateField
+                              style={{color: "red", fontSize: "10px"}}
+                              value={voucher.dateEnd}
+                              format="DD/MM/YYYY"
+                          />{" "}
+                          - SL: {voucher.quantity}
                       </p>
                     </span>
                                         <strong>
@@ -869,7 +965,7 @@ const Checkout = () => {
                                 </ul>
                             ))}
                         </div>
-                        <p style={{marginTop: "10px"}}>Mã Giảm giá</p>
+                        <p style={{marginTop: "10px", fontWeight: "bold"}}>Mã Giảm giá</p>
                         <div
                             className="card-body"
                             data-mdb-perfect-scrollbar="true"
@@ -889,17 +985,45 @@ const Checkout = () => {
                                         <span style={{paddingLeft: "10px"}}>
                       {voucher.name}
                                             <br/>
-                      <p style={{color: "red", fontSize: "15px"}}>
+                      <p
+                          style={{
+                              color: "red",
+                              fontSize: "15px",
+                              fontWeight: "bold",
+                          }}
+                      >
                         Giảm{" "}
                           {voucher?.valueVoucher?.toLocaleString("vi-VN", {
                               style: "currency",
                               currency: "VND",
                           })}
                       </p>
-                      <p>
-                        Đơn giá trị tối thiểu {voucher.valueMinimum}
-                          <br/>
-                        Đơn giá trị tối đa {voucher.valueMaximum}
+                      <p style={{fontSize: "13px"}}>
+                        Cho đơn hàng giá trị từ{" "}
+                          {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                          })}{" "}
+                          đến{" "}
+                          {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                          })}
+                      </p>
+                      <p style={{color: "red", fontSize: "10px"}}>
+                        Từ{" "}
+                          <DateField
+                              style={{color: "red", fontSize: "10px"}}
+                              value={voucher.dateStart}
+                              format="DD/MM/YYYY"
+                          />{" "}
+                          đến{" "}
+                          <DateField
+                              style={{color: "red", fontSize: "10px"}}
+                              value={voucher.dateEnd}
+                              format="DD/MM/YYYY"
+                          />{" "}
+                          - SL: {voucher.quantity}
                       </p>
                     </span>
                                         <strong>

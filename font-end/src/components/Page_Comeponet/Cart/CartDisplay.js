@@ -69,31 +69,21 @@ export default function CartDisplay() {
     }
   }, []);
 
-  async function remove(id) {
-    deleteCartDetail(id).then(() => {
-      let newArr = [...products].filter((s) => s.id !== id);
-      setProducts(newArr);
-      window.location.reload();
-    });
-  }
-
-  // Hàm xóa sản phẩm lưu session bằng idSKU
-  function removeBySku(idSKU) {
-    // Tìm vị trí của sản phẩm cần xóa trong danh sách
-    const productIndex = cartItems.findIndex((item) => item.idSKU === idSKU);
-
-    if (productIndex !== -1) {
-      // Xóa sản phẩm khỏi danh sách
-      cartItems.splice(productIndex, 1);
-
-      // Lưu danh sách sản phẩm đã cập nhật trở lại vào sessionStorage
-      sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+  async function remove(id, idSKU) {
+    if (idAccount !== null && idAccount !== "") {
+      deleteCartDetail(id).then(() => {
+        let newArr = [...products].filter((s) => s.id !== id);
+        setProducts(newArr);
+        window.location.reload();
+      });
+    } else {
+      // Xóa sản phẩm khỏi sessionStorage nếu không có idAccount
+      const updatedCartItems = cartItems.filter((item) => item.idSKU !== idSKU);
+      sessionStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
 
       // Cập nhật trạng thái trong ứng dụng React
-      setProducts(cartItems);
-
-      // Reload trang hoặc thực hiện các thao tác cần thiết
-      // window.location.reload();
+      setProducts(updatedCartItems);
+      calculateTotalPrice();
     }
   }
 
@@ -109,21 +99,39 @@ export default function CartDisplay() {
         description: "Không được nhập số lượng âm",
       });
     } else {
-      update(cartItemId, newQuantity)
-        .then((response) => {
-          console.log("Phản hồi từ máy chủ:", response.data);
-          readAll(idAccount)
-            .then((response) => {
-              console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-              setProducts(response.data);
-            })
-            .catch((error) => {
-              console.log("Lỗi khi đọc lại giỏ hàng:", error);
-            });
-        })
-        .catch((error) => {
-          console.log(`Lỗi khi cập nhật số lượng: ${error}`);
+      if (idAccount !== null && idAccount !== "") {
+        update(cartItemId, newQuantity)
+          .then((response) => {
+            console.log("Phản hồi từ máy chủ:", response.data);
+            readAll(idAccount)
+              .then((response) => {
+                console.log(
+                  "Dữ liệu giỏ hàng sau khi cập nhật:",
+                  response.data
+                );
+                setProducts(response.data);
+              })
+              .catch((error) => {
+                console.log("Lỗi khi đọc lại giỏ hàng:", error);
+              });
+          })
+          .catch((error) => {
+            console.log(`Lỗi khi cập nhật số lượng: ${error}`);
+          });
+      } else {
+        // Cập nhật số lượng sản phẩm trong sessionStorage nếu không có idAccount
+        const updatedCartItems = cartItems.map((item) => {
+          if (item.idSKU === idSKU) {
+            item.quantity = newQuantity;
+            item.total = newQuantity * item.price;
+          }
+          return item;
         });
+
+        sessionStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+        setProducts(updatedCartItems);
+        calculateTotalPrice();
+      }
     }
   };
 
@@ -409,14 +417,10 @@ export default function CartDisplay() {
                                     data-dismiss="alert"
                                     aria-label="Close"
                                     onClick={() => {
-                                      if (
-                                        idAccount !== null &&
-                                        idAccount !== ""
-                                      ) {
-                                        remove(product.idCartDetail); // Sử dụng hàm remove nếu có idAccount
-                                      } else {
-                                        removeBySku(product.idSKU); // Sử dụng hàm removeBySku nếu không có idAccount
-                                      }
+                                      remove(
+                                        product.idCartDetail,
+                                        product.idSKU
+                                      );
                                     }}
                                   >
                                     <span aria-hidden="true">
