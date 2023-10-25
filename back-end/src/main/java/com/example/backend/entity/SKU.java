@@ -45,7 +45,7 @@ public class SKU {
 
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
 
 }

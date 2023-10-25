@@ -107,9 +107,9 @@ public class BillServiceImpl implements BillService {
             if (productDetail.getQuantity() < x.getQuantity()) {
                 throw new RestAPIRunTime(Message.ERROR_QUANTITY);
             }
-            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
-                throw new RestAPIRunTime(Message.NOT_PAYMENT_PRODUCT);
-            }
+//            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+//                throw new RestAPIRunTime(Message.NOT_PAYMENT_PRODUCT);
+//            }
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
                     .sku(skuRepositoty.findById(x.getSku()).orElse(null))
