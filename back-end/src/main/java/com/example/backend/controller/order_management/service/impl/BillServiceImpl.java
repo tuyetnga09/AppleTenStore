@@ -8,6 +8,7 @@ import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.*;
 import com.example.backend.repository.*;
 import com.example.backend.untils.*;
+import com.example.backend.untils.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,6 +103,13 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
+            SKU productDetail = skuRepositoty.findById(x.getSku()).get();
+            if (productDetail.getQuantity() < x.getQuantity()) {
+                throw new RestAPIRunTime(Message.ERROR_QUANTITY);
+            }
+            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+                throw new RestAPIRunTime(Message.NOT_PAYMENT_PRODUCT);
+            }
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
                     .sku(skuRepositoty.findById(x.getSku()).orElse(null))
