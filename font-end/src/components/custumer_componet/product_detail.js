@@ -193,16 +193,16 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (selectedDungLuong && selectedMauSac) {
       // Tạo một đối tượng AddCart để gửi lên API
-      const addToCartData = {
-        idAccount: idAccount,
-        idSKU: item2.id,
-        price: item2.price,
-        quantity: 1,
-      };
       // Kiểm tra xem người dùng đã đăng nhập hay chưa
       if (idAccount !== null && idAccount !== "") {
+        const addToCartData = {
+          idAccount: idAccount,
+          idSKU: item2.id,
+          price: item2.price,
+          quantity: 1,
+        };
         // Nếu người dùng đã đăng nhập, sử dụng API để thêm vào DB
-        getQuantityCartDetailBySku(item2.id, 1)
+        getQuantityCartDetailBySku(item2.id, idAccount)
           .then((response) => {
             console.log(response.data);
             if (item2.quantity <= response.data) {
@@ -228,6 +228,18 @@ export default function ProductDetail() {
             console.log(`${error}`);
           });
       } else {
+        const addToCartData = {
+          idAccount: idAccount,
+          idSKU: item2.id,
+          price: item2.price,
+          quantity: 1,
+          nameProduct: item.name,
+          capacity: item2.capacity,
+          color: item2.color,
+          idProduct: item.id,
+          total: item2.price,
+          quantitySKU: item2.quantity,
+        };
         // Nếu chưa đăng nhập, lưu vào Session Storage
         const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
         let found = false;
@@ -240,13 +252,26 @@ export default function ProductDetail() {
             break;
           }
         }
-
         if (!found) {
           // Không tìm thấy sản phẩm, thêm sản phẩm vào giỏ hàng
           cartItems.push(addToCartData);
         }
-        sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
-        history.push("/cart");
+        // Kiểm tra số lượng sản phẩm trong giỏ hàng
+        const existingCartItem = cartItems.find(
+          (item) => item.idSKU === addToCartData.idSKU
+        );
+        if (
+          item2.quantity <= 0 ||
+          existingCartItem.quantity - addToCartData.quantity >= item2.quantity
+        ) {
+          notification.error({
+            message: "ADD TO CART",
+            description: "Số lượng trong kho không đủ" ,
+          });
+        } else {
+          sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+          history.push("/cart");
+        }
       }
     } else {
       notification.warning({

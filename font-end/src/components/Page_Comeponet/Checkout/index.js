@@ -195,7 +195,7 @@ const Checkout = () => {
     const divDcmd = document.getElementById("dcmd2");
     divDcmd.hidden = true;
     const notDcmd = document.getElementById("notDcmd");
-    notDcmd.hidden = false;
+    notDcmd.hidden = true;
   }
 
   function diaChiMacDinh() {
@@ -285,7 +285,7 @@ const Checkout = () => {
       });
     } else {
       setSelectedVoucher(voucher);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -300,7 +300,7 @@ const Checkout = () => {
   const handleClearVoucher = (id) => {
     if (selecteVoucher.id === id) {
       setSelectedVoucher(null);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -328,7 +328,7 @@ const Checkout = () => {
       });
     } else {
       setSelectedVoucherFreeShip(voucher);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -343,7 +343,7 @@ const Checkout = () => {
   const handleClearVoucherFreeShip = (id) => {
     if (selecteVoucherFreeShip.id === id) {
       setSelectedVoucherFreeShip(null);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -571,7 +571,7 @@ const Checkout = () => {
                         })}
                   </p>
                 </div>
-                <div className="d-flex justify-content-between px-x">
+                <div className="d-flex justify-content-between px-x" >
                   <p className="fw-bold">Tiền vận chuyển:</p>
                   <p className="fw-bold">
                     {fee == null
@@ -696,7 +696,7 @@ const Checkout = () => {
                       </label>
                     </div>
                   </div>
-                  <div className="row" id="notDcmd">
+                  <div hidden className="row" id="notDcmd">
                     <div class="col-md-4">
                       <br />
                       <label for="kh_cmnd">Tỉnh, thành phố:</label>
