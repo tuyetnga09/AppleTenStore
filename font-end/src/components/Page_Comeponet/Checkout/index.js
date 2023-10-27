@@ -68,6 +68,12 @@ const Checkout = () => {
     wards: "",
   });
   const [defaultAddress, setDefaultAddress] = useState([]);
+  const [transportationFeeDTO2, setTransportationFeeDTO2] = useState({
+    toDistrictId: null,
+    toWardCode: null,
+    insuranceValue: null,
+    quantity: 1,
+  });
   const [showDistricts, setShowDistricts] = useState(true);
   const [showWards, setShowWards] = useState(true);
   useEffect(() => {

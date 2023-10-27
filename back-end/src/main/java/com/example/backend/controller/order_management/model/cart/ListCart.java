@@ -29,16 +29,16 @@ public interface ListCart {
     Date getDateCreate();
 
     @Value("#{target['Price']}")
-    String getPrice();
+    Integer getPrice();
 
     @Value("#{target['Quantity']}")
-    String getQuantity();
+    Integer getQuantity();
 
     @Value("#{target['QuantitySKU']}")
-    String getQuantitySKU();
+    Integer getQuantitySKU();
 
     @Value("#{target['Total']}")
-    String getTotal();
+    Integer getTotal();
 
     @Value("#{target['Id Product']}")
     Integer getIdProduct();
