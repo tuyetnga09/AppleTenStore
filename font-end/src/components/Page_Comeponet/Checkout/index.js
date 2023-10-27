@@ -22,6 +22,7 @@ import { get } from "jquery";
 import { Link } from "react-router-dom";
 import { createBill } from "../../../service/Bill/bill.service";
 import { DateField } from "@refinedev/antd";
+import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
 
 const Checkout = () => {
   const storedUser = JSON.parse(localStorage.getItem("account"));
@@ -66,7 +67,9 @@ const Checkout = () => {
     idVoucher: null,
     wards: "",
   });
-
+  const [defaultAddress, setDefaultAddress] = useState([]);
+  const [showDistricts, setShowDistricts] = useState(true);
+  const [showWards, setShowWards] = useState(true);
   useEffect(() => {
     //hiển thị giỏ hàng
     readAll(idAccount)
@@ -125,14 +128,24 @@ const Checkout = () => {
       });
     readAllDistrict(province_id)
       .then((response) => {
-        setDistricts(response.data.data);
+        // setDistricts(response.data.data);
+        if (showDistricts === true) {
+          setDistricts(response.data.data);
+        } else {
+          setDistricts([]);
+        }
       })
       .catch((error) => {
         console.log(`${error}`);
       });
     readAllWard(district_id)
       .then((response) => {
-        setWards(response.data.data);
+        // setWards(response.data.data);
+        if (showWards === true) {
+          setWards(response.data.data);
+        } else {
+          setWards([]);
+        }
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -146,6 +159,14 @@ const Checkout = () => {
           console.log(`${error}`);
         });
     }
+    readAllByIdUser(storedUser?.user?.id)
+      .then((res) => {
+        setDefaultAddress(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [province_id, district_id, transportationFeeDTO, priceShip]);
 
   function giaoTanNoi() {
@@ -363,52 +384,82 @@ const Checkout = () => {
   }
 
   const handleProvince = (event) => {
-    const target = event.target;
-    const value = target.value;
-    setProvince_id(value);
-    console.log(value);
-    setDistrict_id(null);
-    setWards([]);
-    let item = {
-      toDistrictId: null,
-      toWardCode: null,
-      insuranceValue: null,
-      quantity: quantityCart,
-    };
-    setTransportationFeeDTO(item);
-    setBill({
-      ...bill,
-      province: document.getElementById(value).innerText,
-    });
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setProvince_id(value);
+      console.log(value);
+      setDistrict_id(null);
+      setWards([]);
+      let item = {
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: null,
+        quantity: quantityCart,
+      };
+      setTransportationFeeDTO(item);
+      setBill({
+        ...bill,
+        province: document.getElementById(value).innerText,
+      });
+      setShowDistricts(true);
+    } else {
+      setShowDistricts(false);
+      setShowWards(false);
+      setTransportationFeeDTO({
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: soTienThanhToan,
+        quantity: quantityCart,
+      });
+    }
   };
 
   const handleDistrict = (event) => {
-    const target = event.target;
-    const value = target.value;
-    setDistrict_id(value);
-    let item = { ...transportationFeeDTO };
-    item["toDistrictId"] = parseInt(value);
-    item["insuranceValue"] = parseInt(soTienThanhToan);
-    setTransportationFeeDTO(item);
-    console.log(transportationFeeDTO);
-    setBill({
-      ...bill,
-      district: document.getElementById(value).innerText,
-    });
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setDistrict_id(value);
+      let item = { ...transportationFeeDTO };
+      item["toDistrictId"] = parseInt(value);
+      item["insuranceValue"] = parseInt(soTienThanhToan);
+      setTransportationFeeDTO(item);
+      console.log(transportationFeeDTO);
+      setBill({
+        ...bill,
+        district: document.getElementById(value).innerText,
+      });
+      setShowWards(true);
+    } else {
+      setShowWards(false);
+      setTransportationFeeDTO({
+        toDistrictId: event.target.value,
+        toWardCode: null,
+        insuranceValue: soTienThanhToan,
+        quantity: quantityCart,
+      });
+    }
   };
 
   const handleWard = (event) => {
-    const target = event.target;
-    const value = target.value;
-    let item = { ...transportationFeeDTO };
-    item["toWardCode"] = value;
-    setTransportationFeeDTO(item);
-    console.log(transportationFeeDTO);
-    setBill({
-      ...bill,
-      wards: document.getElementById(value).innerText,
-    });
-    console.log(bill);
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      let item = { ...transportationFeeDTO };
+      item["toWardCode"] = value;
+      setTransportationFeeDTO(item);
+      console.log(transportationFeeDTO);
+      setBill({
+        ...bill,
+        wards: document.getElementById(value).innerText,
+      });
+      console.log(bill);
+    } else {
+      setTransportationFeeDTO({
+        ...transportationFeeDTO,
+        toWardCode: event.target.value,
+      });
+    }
   };
 
   function hanldeName(event) {
@@ -454,6 +505,55 @@ const Checkout = () => {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  function handleDefaultAddress(event) {
+    const inputString = document.getElementById(event.target.value).innerText;
+    if (inputString !== "") {
+      const dataArray = inputString.split(",").map((item) => item.trim());
+      let province_id = [...provinces].filter(
+        (pr) => pr.ProvinceName === dataArray[dataArray.length - 1]
+      )[0].ProvinceID;
+      readAllDistrict(province_id)
+        .then((response) => {
+          let district_id = [...response.data.data].filter(
+            (dt) => dt.DistrictName === dataArray[dataArray.length - 2]
+          )[0].DistrictID;
+
+          readAllWard(district_id)
+            .then((response) => {
+              let ward_code = [...response.data.data].filter(
+                (w) => w.WardName === dataArray[dataArray.length - 3]
+              )[0].WardCode;
+              setTransportationFeeDTO({
+                toDistrictId: district_id,
+                toWardCode: ward_code,
+                insuranceValue: soTienThanhToan,
+                quantity: quantityCart,
+              });
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      getFee(transportationFeeDTO)
+        .then((response) => {
+          setFee(response.data.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      setTransportationFeeDTO({
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: soTienThanhToan,
+        quantity: quantityCart,
+      });
+    }
   }
 
   return (
@@ -674,7 +774,7 @@ const Checkout = () => {
                         aria-label="Floating label select example"
                         onChange={handleProvince}
                       >
-                        <option value={"undefined"} selected></option>
+                        <option selected></option>
                         {provinces.map((pr) => {
                           return (
                             <option
@@ -766,11 +866,17 @@ const Checkout = () => {
                       class="form-select"
                       id="floatingSelect"
                       aria-label="Floating label select example"
+                      onChange={handleDefaultAddress}
                     >
-                      <option selected>Chọn tỉnh, thành phố</option>
-                      <option value="1">One</option>
-                      <option value="2">Two</option>
-                      <option value="3">Three</option>
+                      <option selected id="0" value={0}></option>
+                      {defaultAddress.map((da) => {
+                        return (
+                          <option id={da.id} key={da.id} value={da.id}>
+                            {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}
+                            {da.tinhThanhPho}
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
                 </div>
