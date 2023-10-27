@@ -8,9 +8,13 @@ import java.util.List;
 @Getter
 @Setter
 public class BillRequestOnlineAccount {
+    private String code;
     private String userName;
+    private String email;
     private String phoneNumber;
     private String address;
+    private String province;
+    private String district;
 
     private BigDecimal moneyShip;
     private BigDecimal itemDiscount;
@@ -19,8 +23,10 @@ public class BillRequestOnlineAccount {
     private String paymentMethod;
 
     private List<BillAskClient> billDetail;
+    private Integer quantity;
     private BigDecimal afterPrice;
 
     private Integer idVoucher;
-    private Integer idAccount;
+    private Integer account;
+    private String wards;
 }
