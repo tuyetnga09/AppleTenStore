@@ -63,4 +63,9 @@ public class AccountController {
         }
         return null;
     }
+
+    @GetMapping("/get-id")
+    public ResponseObj getOneById(@RequestParam("id") Integer id) {
+        return new ResponseObj(accountService.getOneById(id));
+    }
 }

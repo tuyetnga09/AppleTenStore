@@ -24,4 +24,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query("SELECT ac FROM Account ac WHERE ac.email =:email AND ac.user.phoneNumber =:phoneNumber")
     Account resetPassword(@Param("email") String email , @Param("phoneNumber") String phoneNumber);
 
+    Account findByUser_Id(Integer id);
 }

@@ -3,26 +3,165 @@ import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import { detail } from "../../../service/Account/account.service";
-import { DatePicker } from "antd";
-import dayjs from "dayjs";
+import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
+import { Modal } from "antd";
+import ChangePassword from "./ChangePassword";
+import AddressCustomer from "./AddressCustomer";
+import { update, updatePassword } from "../../../service/User/user.service";
+import { notification } from "antd";
+import { useHistory } from "react-router-dom";
 
 const ProfileCustomer = () => {
-  const [passwordVisible, setPasswordVisible] = useState(false);
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const [data, setData] = useState([]);
-  function togglePasswordVisibility() {
-    setPasswordVisible(!passwordVisible);
-  }
+  const [address, setAddress] = useState([]);
+  const [dateOfBirth, setDateOfBirth] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleAddress, setIsModalVisibleAddress] = useState(false); // Trạng thái hiển thị Modal
+  const year = storedUser?.user?.dateOfBirth[0];
+  const month = storedUser?.user?.dateOfBirth[1]?.toString().padStart(2, "0");
+  const day = storedUser?.user?.dateOfBirth[2]?.toString().padStart(2, "0");
+  const [editCustomer, setEditCustomer] = useState({
+    // fullName: "",
+    // email: "",
+    // phoneNumber: "",
+    // datOfBirth: "",
+    fullName: storedUser.user.fullName,
+    email: storedUser.user.email,
+    phoneNumber: storedUser.user.phoneNumber,
+    dateOfBirth: `${year}-${month}-${day}`,
+  });
+
+  const [editPassword, setEditPassword] = useState({
+    password: "",
+    passwordNew: "",
+    passwordRepeat: "",
+  });
+
+  const handleChangePassword = (event) => {
+    const value = event.target.value;
+    const name = event.target.name;
+    let item = { ...editPassword };
+    item[name] = value;
+    setEditPassword(item);
+    console.log(item);
+  };
+
+  const handleUpdatePassword = (event) => {
+    event.preventDefault();
+    updatePassword(data.data.user.id, editPassword)
+      .then((res) => {
+        if (res.data === true) {
+          notification.success({
+            message: "CẬP NHẬT",
+            description: "Cập nhật mật khẩu thành công",
+          });
+          setIsModalVisible(false);
+        } else {
+          notification.error({
+            message: "CẬP NHẬT",
+            description: "Cập nhật mật khẩu thất bại",
+          });
+        }
+      })
+      .catch((err) => {
+        notification.error({
+          message: "CẬP NHẬT",
+          description: "Cập nhật mật khẩu thất bại",
+        });
+        console.log(err);
+      });
+  };
+
+  const handleResetPassword = (record) => {
+    setData(record);
+    setIsModalVisible(true);
+    console.log(data);
+  };
+
+  const handleUpdateAddress = (record) => {
+    setData(record);
+    setIsModalVisibleAddress(true);
+    console.log(data);
+  };
+
+  // Hàm để ẩn Modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setIsModalVisibleAddress(false);
+  };
+
+  const handleChange = (event) => {
+    const value = event.target.value;
+    const name = event.target.name;
+    let item = { ...editCustomer };
+    item[name] = value;
+    setEditCustomer(item);
+    console.log(item);
+  };
+
+  const handleUpdate = (event) => {
+    event.preventDefault();
+    update(storedUser?.user?.id, editCustomer)
+      .then((res) => {
+        if (res.data === true) {
+          notification.success({
+            message: "CẬP NHẬT",
+            description: "Cập nhật thông tin thành công",
+          });
+          storedUser.user.fullName = editCustomer.fullName;
+          storedUser.email = editCustomer.email;
+          storedUser.user.email = editCustomer.email;
+          storedUser.user.phoneNumber = editCustomer.phoneNumber;
+          storedUser.user.dateOfBirth = editCustomer.dateOfBirth;
+          localStorage.setItem("account", JSON.stringify(storedUser));
+        } else {
+          notification.error({
+            message: "CẬP NHẬT",
+            description: "Cập nhật thông tin thất bại",
+          });
+        }
+      })
+      .catch((err) => {
+        notification.error({
+          message: "CẬP NHẬT",
+          description: "Cập nhật thông tin thất bại",
+        });
+        console.log(err);
+      });
+  };
 
   useEffect(() => {
-    detail(storedUser?.email)
+    detail(storedUser?.id)
       .then((res) => {
         setData(res.data);
+        // Lấy năm, tháng và ngày từ mảng
+        const year = res.data.data.user.dateOfBirth[0];
+        const month = res.data.data.user.dateOfBirth[1]
+          ?.toString()
+          .padStart(2, "0");
+        const day = res.data.data.user.dateOfBirth[2]
+          ?.toString()
+          .padStart(2, "0");
+        setDateOfBirth(`${year}-${month}-${day}`);
+        setEditCustomer({
+          fullName: res.data.data.user.fullName,
+          email: res.data.data.user.email,
+          phoneNumber: res.data.data.user.phoneNumber,
+          dateOfBirth: `${year}-${month}-${day}`,
+        });
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+    readAllByIdUser(storedUser?.user?.id)
+      .then((res) => {
+        setAddress(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [isModalVisibleAddress]);
 
   return (
     <>
@@ -50,47 +189,52 @@ const ProfileCustomer = () => {
           </div>
           <div class="col-xl-8">
             <div class="card mb-4">
-              <div class="card-header">Account Details</div>
+              <div class="card-header">Thông tin tài khoản</div>
               <div class="card-body">
-                <form>
+                <form onSubmit={handleUpdate}>
                   <div class="mb-3">
                     <label class="small mb-1" for="inputUsername">
                       Họ và tên
                     </label>
                     <input
+                      required
                       class="form-control"
                       id="inputUsername"
                       type="text"
-                      placeholder={data?.data?.user?.fullName}
+                      name="fullName"
+                      onChange={handleChange}
+                      defaultValue={data?.data?.user?.fullName}
                     />
                   </div>
                   <div class="mb-3">
-                    <label class="small mb-1" for="inputUsername">
-                      Mật khẩu
-                    </label>
-                    <input
-                      class="form-control"
-                      id="inputUsername"
-                      type={passwordVisible ? "text" : "password"}
-                      placeholder="Enter your username"
-                      value="username"
-                    />
-                    <input
-                      type="checkbox"
-                      onClick={() => togglePasswordVisibility()}
-                    />
-                    Hiện thị mật khẩu
-                  </div>
-                  <div class="mb-3">
-                    <label class="small mb-1" for="inputUsername">
+                    <label class="small mb-1" for="inputAddress">
                       Địa chỉ
                     </label>
-                    <input
+                    {/* <input
+                      required
                       class="form-control"
-                      id="inputUsername"
+                      id="inputAddress"
                       type="text"
-                      // placeholder={data?.data?.user.fullName}
-                    />
+                      defaultValue={address}
+                    /> */}
+                    <select
+                      class="form-select"
+                      id="floatingSelect"
+                      aria-label="Floating label select example"
+                    >
+                      {address.map((da) => {
+                        return (
+                          <option
+                            id={da.id}
+                            key={da.id}
+                            // value={da}
+                          >
+                            {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}
+                            {da.tinhThanhPho}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </div>
                   <div class="mb-3">
                     <label class="small mb-1" for="inputEmailAddress">
@@ -100,7 +244,10 @@ const ProfileCustomer = () => {
                       class="form-control"
                       id="inputEmailAddress"
                       type="email"
-                      placeholder={data?.data?.email}
+                      name="email"
+                      required
+                      onChange={handleChange}
+                      defaultValue={data?.data?.email}
                     />
                   </div>
                   <div class="row gx-3 mb-3">
@@ -109,41 +256,46 @@ const ProfileCustomer = () => {
                         Phone number
                       </label>
                       <input
+                        required
                         class="form-control"
                         id="inputPhone"
                         type="tel"
-                        placeholder={data?.data?.user?.phoneNumber}
+                        name="phoneNumber"
+                        onChange={handleChange}
+                        defaultValue={data?.data?.user?.phoneNumber}
                       />
                     </div>
                     <div class="col-md-6">
                       <label class="small mb-1" for="inputBirthday">
                         Birthday
                       </label>
-                      {/* <input
+                      <input
+                        required
                         class="form-control"
                         id="inputBirthday"
                         type="date"
-                        name="birthday"
-                        // defaultValue={formattedDate}
-                        // value={formattedDate}
-                      /> */}
-                      <br />
-                      <DatePicker
-                        type="text"
-                        required
-                        defaultValue={dayjs(
-                          data?.data?.user?.dateOfBirth
-                        ).locale("vi-VN")}
-                        // onChange={(date, dateString) =>
-                        // handleChangeDatePicker(dateString, "dateStart")
-                        // }
-                        // id="dateStart"
-                        // name="dateStart"
+                        name="dateOfBirth"
+                        onChange={handleChange}
+                        defaultValue={dateOfBirth}
                       />
                     </div>
                   </div>
-                  <button class="btn btn-primary" type="button">
+                  <button class="btn btn-primary" type="submit">
                     Cập nhật
+                  </button>{" "}
+                  <button
+                    class="btn btn-warning"
+                    type="button"
+                    onClick={() => handleResetPassword(data)}
+                  >
+                    Đổi mật khẩu
+                  </button>{" "}
+                  <button
+                    class="btn btn-secondary"
+                    type="button"
+                    onClick={() => handleUpdateAddress(data)}
+                  >
+                    Cập nhật địa chỉ
                   </button>{" "}
                   <Link to="/login">
                     <button
@@ -160,6 +312,84 @@ const ProfileCustomer = () => {
           </div>
         </div>
       </div>
+      <section>
+        <Modal
+          visible={isModalVisible}
+          onCancel={handleCancel}
+          width={1000}
+          footer={null}
+          bodyStyle={{ minHeight: "350px" }}
+        >
+          {/* <ChangePassword changePassword={data} /> */}
+          <div class="container-xl px-4 mt-4">
+            <hr class="mt-0 mb-4" />
+            <div class="row">
+              <div class="col-xl-12">
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <form onSubmit={handleUpdatePassword}>
+                      <div class="mb-3">
+                        <label class="small mb-1" for="inputPassword">
+                          Mật khẩu hiện tại
+                        </label>
+                        <input
+                          required
+                          class="form-control"
+                          id="inputPassword"
+                          type="text"
+                          name="password"
+                          onChange={handleChangePassword}
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label class="small mb-1" for="inputPasswordNew">
+                          Mật khẩu mới
+                        </label>
+                        <input
+                          required
+                          class="form-control"
+                          id="inputPasswordNew"
+                          type="text"
+                          name="passwordNew"
+                          onChange={handleChangePassword}
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <label class="small mb-1" for="inputPasswordNewRepeat">
+                          Nhập lại mật khẩu
+                        </label>
+                        <input
+                          required
+                          class="form-control"
+                          id="inputPasswordNewRepeat"
+                          type="text"
+                          name="passwordRepeat"
+                          onChange={handleChangePassword}
+                        />
+                      </div>
+                      <button class="btn btn-warning" type="submit">
+                        Đổi mật khẩu
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      </section>
+      <section>
+        <Modal
+          visible={isModalVisibleAddress}
+          onCancel={handleCancel}
+          width={1000}
+          footer={null}
+          bodyStyle={{ minHeight: "350px" }}
+        >
+          <AddressCustomer data={data} />
+        </Modal>
+      </section>
+      <br />
       <Footer />
     </>
   );

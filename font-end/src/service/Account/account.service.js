@@ -18,6 +18,6 @@ export const login = (email, password) => {
   );
 };
 
-export const detail = (email) => {
-  return httpClient.get(`/admin/account/get-email?email=${email}`);
+export const detail = (id) => {
+  return httpClient.get(`/admin/account/get-id?id=${id}`);
 };

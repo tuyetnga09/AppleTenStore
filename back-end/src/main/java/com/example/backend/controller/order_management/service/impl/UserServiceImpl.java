@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -24,6 +25,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> findByRole(Pageable pageable, String role) {
         return userRepository.findByRole(pageable, role);
+    }
+
+    @Override
+    public Boolean updateUser(String fullName, String email, String phoneNumber, LocalDate dateOfBirth, Integer id) {
+        User user = userRepository.findById(id).orElse(null);
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setDateOfBirth(dateOfBirth);
+        userRepository.save(user);
+        return true;
     }
 
 }
