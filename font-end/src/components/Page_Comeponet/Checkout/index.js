@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import { useState } from "react";
-import { readAll } from "../../../service/cart.service";
+import { readAll, getbysku } from "../../../service/cart.service";
 import { readQuantityInCart } from "../../../service/cart.service";
 import { GiftOutlined } from "@ant-design/icons";
 import { Image, Checkbox, Modal, notification, Button, Input } from "antd";
@@ -20,18 +20,18 @@ import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
 import { get } from "jquery";
 import { Link } from "react-router-dom";
-import { createBill } from "../../../service/Bill/bill.service";
+import { createBillAccount } from "../../../service/Bill/bill.service";
 import { DateField } from "@refinedev/antd";
 import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
 
 const Checkout = () => {
   const storedUser = JSON.parse(localStorage.getItem("account"));
-  const idAccount = storedUser?.id; //sau khi đăng nhập thì truyền idAccount vào đây
+  const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
   const [products, setProducts] = useState([]);
   const [quantityCart, setQuantity] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [priceShip, setPriceShip] = useState([]);
-  const [soTienThanhToan, setSoTienThanhToan] = useState([]);
+  const [priceShip, setPriceShip] = useState(0);
+  const [soTienThanhToan, setSoTienThanhToan] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
   const [voucher, setVoucher] = useState([]);
   const [selecteVoucher, setSelectedVoucher] = useState(0);
@@ -52,9 +52,10 @@ const Checkout = () => {
     quantity: 1,
   });
   const [bill, setBill] = useState({
+    code: Math.floor(Math.random() * 100000000000000000001) + "",
     userName: "",
-    phoneNumber: "",
     email: "",
+    phoneNumber: "",
     address: "",
     province: "",
     district: "",
@@ -63,50 +64,81 @@ const Checkout = () => {
     totalMoney: 0,
     paymentMethod: "ONLINE",
     billDetail: [],
+    quantity: 0,
     afterPrice: 0,
     idVoucher: null,
+    account: idAccount,
     wards: "",
   });
   const [defaultAddress, setDefaultAddress] = useState([]);
-  const [transportationFeeDTO2, setTransportationFeeDTO2] = useState({
-    toDistrictId: null,
-    toWardCode: null,
-    insuranceValue: null,
-    quantity: 1,
-  });
   const [showDistricts, setShowDistricts] = useState(true);
   const [showWards, setShowWards] = useState(true);
+
+  // Sử dụng dữ liệu cartItems để hiển thị giỏ hàng
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
+
+  const skuIds = cartItems.map((item) => item.idSKU); // Lấy danh sách idSKU từ mảng cartItems
+
+  const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
+
   useEffect(() => {
     //hiển thị giỏ hàng
-    readAll(idAccount)
-      .then((response) => {
-        const list = response.data;
-        setProducts(list);
-        const adidaphat = [];
-        list.map((item) => {
-          adidaphat.push({
-            idProductDetail: item.idProduct,
-            price: item.price,
-            quantity: item.quantity,
+    if (idAccount !== null && idAccount !== "") {
+      readAll(idAccount)
+        .then((response) => {
+          const list = response.data;
+          setProducts(list);
+          const adidaphat = [];
+          list.map((item) => {
+            adidaphat.push({
+              sku: item.idSKU,
+              price: item.price,
+              quantity: item.quantity,
+            });
           });
+          setBill({
+            ...bill,
+            billDetail: adidaphat,
+          });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
         });
-        setBill({
-          ...bill,
-          billDetail: adidaphat,
+      //số lượng sản phẩm trong giỏ hàng
+      readQuantityInCart(idAccount)
+        .then((response) => {
+          console.log(response.data);
+          setQuantity(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
         });
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //số lượng sản phẩm tỏng giỏ hàng
-    readQuantityInCart(idAccount)
-      .then((response) => {
-        console.log(response.data);
-        setQuantity(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+    } else {
+      Promise.all(requests)
+        .then((responses) => {
+          const productsData = responses.map((response, index) => {
+            const productInfo = response.data[0];
+            const cartItem = cartItems[index];
+            // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
+            return {
+              ...productInfo,
+              quantity: cartItem.quantity,
+              price: cartItem.price,
+              total: cartItem.quantity * cartItem.price,
+            };
+          });
+          setProducts(productsData);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      const totalQuantity = cartItems.reduce(
+        (total, product) => total + product.quantity,
+        0
+      );
+      setQuantity(totalQuantity);
+    }
+
     //lấy danh sách voucher
     getVoucher()
       .then((response) => {
@@ -206,6 +238,12 @@ const Checkout = () => {
 
   useEffect(() => {
     calculatePriceSucsses();
+    setBill({
+      ...bill,
+      totalMoney: totalPrice,
+      moneyShip: priceShip,
+      afterPrice: soTienThanhToan,
+    });
   }, [products, fee]);
   //tính số tiền cẩn thanh toán
   const calculatePriceSucsses = () => {
@@ -260,12 +298,9 @@ const Checkout = () => {
       price = total + priceS;
     }
     setSoTienThanhToan(price);
-    setBill({
-      ...bill,
-      totalMoney: total,
-      moneyShip: priceS,
-      afterPrice: price,
-    });
+    console.log(soTienThanhToan);
+    console.log(priceShip);
+    console.log(totalPrice);
   };
   //click Voucher
   const handleVoucherClick = (voucher) => {
@@ -284,7 +319,7 @@ const Checkout = () => {
       });
     } else {
       setSelectedVoucher(voucher);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -299,7 +334,7 @@ const Checkout = () => {
   const handleClearVoucher = (id) => {
     if (selecteVoucher.id === id) {
       setSelectedVoucher(null);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -327,7 +362,7 @@ const Checkout = () => {
       });
     } else {
       setSelectedVoucherFreeShip(voucher);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -342,7 +377,7 @@ const Checkout = () => {
   const handleClearVoucherFreeShip = (id) => {
     if (selecteVoucherFreeShip.id === id) {
       setSelectedVoucherFreeShip(null);
-      readAll(1)
+      readAll(idAccount)
         .then((response) => {
           console.log(response.data);
           setProducts(response.data);
@@ -466,6 +501,7 @@ const Checkout = () => {
         toWardCode: event.target.value,
       });
     }
+    console.log(transportationFeeDTO);
   };
 
   function hanldeName(event) {
@@ -504,7 +540,7 @@ const Checkout = () => {
   }
 
   function handleSubmit() {
-    createBill(bill)
+    createBillAccount(bill)
       .then((response) => {
         console.log(response.data);
       })
@@ -517,6 +553,13 @@ const Checkout = () => {
     const inputString = document.getElementById(event.target.value).innerText;
     if (inputString !== "") {
       const dataArray = inputString.split(",").map((item) => item.trim());
+      setBill({
+        ...bill,
+        province: dataArray[dataArray.length - 1],
+        district: dataArray[dataArray.length - 2],
+        wards: dataArray[dataArray.length - 3],
+        address: dataArray[dataArray.length - 4],
+      });
       let province_id = [...provinces].filter(
         (pr) => pr.ProvinceName === dataArray[dataArray.length - 1]
       )[0].ProvinceID;
@@ -525,7 +568,6 @@ const Checkout = () => {
           let district_id = [...response.data.data].filter(
             (dt) => dt.DistrictName === dataArray[dataArray.length - 2]
           )[0].DistrictID;
-
           readAllWard(district_id)
             .then((response) => {
               let ward_code = [...response.data.data].filter(
@@ -552,6 +594,7 @@ const Checkout = () => {
         .catch((error) => {
           console.log(`${error}`);
         });
+      console.log(bill);
     } else {
       setTransportationFeeDTO({
         toDistrictId: null,
@@ -601,7 +644,11 @@ const Checkout = () => {
                           {product.color}
                         </h6>
                         <small class="text-muted">
-                          {product.price} x {product.quantity}
+                          {product?.price?.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}{" "}
+                          x {product.quantity}
                         </small>
                       </div>
                       <span class="text-muted">
