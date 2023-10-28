@@ -120,6 +120,7 @@ const Checkout = () => {
                         const productInfo = response.data[0];
                         const cartItem = cartItems[index];
                         // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
+                        console.log(productInfo)
                         return {
                             ...productInfo,
                             quantity: cartItem.quantity,
@@ -131,7 +132,7 @@ const Checkout = () => {
                     const list = [];
                     productsData.map((item) => {
                         list.push({
-                            sku: item.idSKU,
+                            sku: item.idSku,
                             price: item.price,
                             quantity: item.quantity,
                         });
@@ -269,21 +270,8 @@ const Checkout = () => {
         setTotalPrice(total);
         //tính phí ship
         let priceS = 0;
-        // if (total <= 20000000) {
-        //   priceS = 30000;
-        // } else if (total > 20000000 && total <= 60000000) {
-        //   priceS = 40000;
-        // } else if (total > 60000000 && total <= 100000000) {
-        //   priceS = 60000;
-        // } else if (total > 100000000) {
-        //   priceS = 80000;
-        // }
         if (fee != null) {
             priceS = fee?.total;
-            // setBill({
-            //   ...bill,
-            //   moneyShip: priceS,
-            // });
         }
         setPriceShip(priceS);
         //tính số tiền cẩn thanh toán
@@ -418,7 +406,7 @@ const Checkout = () => {
         const tienMat = document.getElementById("httt-1");
         if (tienMat.checked === true) {
             setIsChecked(true);
-            setLinkPay("/paydone");
+            setLinkPay(`/paydone/${bill.code}`);
         }
         const vnpay = document.getElementById("httt-2");
         if (vnpay.checked == true) {
@@ -525,7 +513,6 @@ const Checkout = () => {
             ...bill,
             phoneNumber: event.target.value,
         });
-        console.log(bill)
     }
 
     function hanldeMail(event) {
@@ -533,6 +520,7 @@ const Checkout = () => {
             ...bill,
             email: event.target.value,
         });
+        console.log(bill)
     }
 
     function handleAddress(event) {
@@ -566,6 +554,9 @@ const Checkout = () => {
                 .catch((error) => {
                     console.log(error);
                 });
+            sessionStorage.removeItem("cartItems");
+            setProducts([]);
+            setTotalPrice(0);
         }
     }
 

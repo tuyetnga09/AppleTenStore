@@ -2,6 +2,8 @@ package com.example.backend.controller.order_management.model.cart;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import java.math.BigDecimal;
+
 public interface LisCartSession {
     @Value("#{target['nameProduct']}")
     String getNameProduct();
@@ -13,11 +15,11 @@ public interface LisCartSession {
     String getCapacity();
 
     @Value("#{target['price']}")
-    String getPrice();
+    BigDecimal getPrice();
 
-    @Value("#{target['idProduct']}")
-    Integer getIdProduct();
+    @Value("#{target['idSku']}")
+    Integer getIdSku();
 
     @Value("#{target['QuantitySKU']}")
-    String getQuantitySKU();
+    Integer getQuantitySKU();
 }
