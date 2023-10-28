@@ -41,6 +41,11 @@ public class BillServerController {
         return billService.searchWithDate(key, status, user, dateStart, dateEnd);
     }
 
+    @GetMapping("/getBillCTT/{idAccount}")
+    public List<Bill> getBillChoThanhToan(@PathVariable("idAccount") Integer idAccount){
+        return billService.getListBillChoThanhToan(idAccount);
+    }
+
 //    @RestController
 //    @CrossOrigin("*")
 //    @RequestMapping("/admin/billDetail")

@@ -38,4 +38,6 @@ public interface BillService {
     List<Bill> listBillByIdAccountDTT(Integer id);
 
     List<Bill> listBillByIdAccountDH(Integer id);
+
+    List<Bill> getListBillChoThanhToan(Integer idAccount);
 }

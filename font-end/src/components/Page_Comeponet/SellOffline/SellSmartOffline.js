@@ -52,6 +52,7 @@ import {
   getBillDetailOfBill,
   getImeisOfSku,
   getOneSkuSelected,
+  getBillChoThanhToan,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -89,6 +90,9 @@ export default function SellSmart() {
   const [dataCheckAccount, setDataCheckAccount] = useState({}); // check account offline phongnh
   const [dataCheckRoleAccount, setDataCheckRoleAccount] = useState(); // check role account offline phongnh
   const [dataBillDetailOffline, setDataBillDetailOffline] = useState([]); // lấy ra list sp trong bill_detail của bill phongnh
+
+  const [hoaDonCho, setHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
+  const [slHoaDonCho, setDlHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
 
   const [customer, setCustomer] = useState({
     fullName: "", // Đổi từ 'full_name' thành 'fullName'
@@ -224,6 +228,20 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`${error}`);
       });
+
+    //lấy danh sách hóa đơn chờ
+    getBillChoThanhToan(idAccount)
+      .then((response) => {
+        setHoaDonCho(response.data);
+        console.log(response.data + "jfhsjdhajfhsdu");
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+      const totalQuantity = hoaDonCho.length;
+      setDlHoaDonCho(totalQuantity);
+
   }, [filters, filtersCategory]);
 
   function handlePageChange(newPage) {
@@ -809,7 +827,7 @@ export default function SellSmart() {
                         }}
                         sorter={(a, b) => a.quantitySKU - b.quantitySKU}
                       />
-                     
+
                       {/* test nút mới add sp vào bill detai */}
                       <Table.Column
                         render={(record) => {
@@ -839,7 +857,6 @@ export default function SellSmart() {
                               }}
                             >
                               <ShoppingCartOutlined />
-                              
                             </button>
                           );
                         }}
@@ -1443,9 +1460,9 @@ export default function SellSmart() {
                             Quay về
                           </a>
                         </div>
-                     
+
                         <Space size="middle">
-                          <Badge count={11} overflowCount={10}>
+                          <Badge count={slHoaDonCho} overflowCount={10}>
                             <button
                               className="btn btn-success luu-va-in"
                               type="button"
@@ -1851,7 +1868,8 @@ export default function SellSmart() {
                 placeholder="Tìm kiếm hóa đơn"
                 name="key"
                 style={{
-                  marginBottom: "10px", borderTop: "4px solid red"
+                  marginBottom: "10px",
+                  borderTop: "4px solid red",
                 }}
               />
               <div
@@ -1859,61 +1877,19 @@ export default function SellSmart() {
                 data-mdb-perfect-scrollbar="true"
                 style={{ position: "relative", height: 330, overflowY: "auto" }}
               >
-                <button
-                  className="btn btn-danger luu-va-in"
-                  type="button"
-                  style={{
-                    width: "170px",
-                    height: "60px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  4365543654386754456755
-                </button>
-                <button
-                  className="btn btn-danger luu-va-in"
-                  type="button"
-                  style={{
-                    width: "170px",
-                    height: "60px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  43655436543
-                </button>
-                <button
-                  className="btn btn-danger luu-va-in"
-                  type="button"
-                  style={{
-                    width: "170px",
-                    height: "60px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  43655436543
-                </button>
-                <button
-                  className="btn btn-danger luu-va-in"
-                  type="button"
-                  style={{
-                    width: "170px",
-                    height: "60px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  43655436543
-                </button>
-                <button
-                  className="btn btn-danger luu-va-in"
-                  type="button"
-                  style={{
-                    width: "170px",
-                    height: "60px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  43655436543
-                </button>
+                {hoaDonCho.map((hoadon) => (
+                  <button
+                    className="btn btn-danger luu-va-in"
+                    type="button"
+                    style={{
+                      width: "170px",
+                      height: "60px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {hoadon.code}
+                  </button>
+                ))}
               </div>
             </div>
           </div>

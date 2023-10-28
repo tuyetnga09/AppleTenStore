@@ -137,4 +137,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     //lấy ra bill mới nhất trong ngày
     @Query(value = "select * from bill where date_create = CURDATE() ORDER BY date_create DESC, Id DESC limit 1", nativeQuery = true)
     Bill newBillOfNow();
+
+    @Query(value = "select * from bill where status_bill = 'CHO_XAC_NHAN' and type = 'OFFLINE' and id_account = ?1  ORDER BY date_create DESC", nativeQuery = true)
+    List<Bill> listBillChoThanhToan(Integer id);
 }

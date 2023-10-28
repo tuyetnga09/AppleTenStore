@@ -46,3 +46,8 @@ export const getImeisOfSku = (idSKU) => {
 export const getOneSkuSelected = (idSKU) => {
   return httpClient.get(`/admin/bill-offline/get-sku?idSKU=${idSKU}`);
 };
+
+
+export const getBillChoThanhToan = (id) => {
+  return httpClient.get(`http://localhost:8080/manager/bill/getBillCTT/${id}`)
+}
