@@ -20,7 +20,7 @@ import {readAllProvince} from "../../../service/AddressAPI/province.service";
 import {getFee} from "../../../service/AddressAPI/fee.service";
 import {get} from "jquery";
 import {Link} from "react-router-dom";
-import {createBillAccount} from "../../../service/Bill/bill.service";
+import {createBill, createBillAccount} from "../../../service/Bill/bill.service";
 import {DateField} from "@refinedev/antd";
 
 const Checkout = () => {
@@ -115,6 +115,18 @@ const Checkout = () => {
                         };
                     });
                     setProducts(productsData);
+                    const list = [];
+                    productsData.map((item) => {
+                        list.push({
+                            sku: item.idSKU,
+                            price: item.price,
+                            quantity: item.quantity,
+                        });
+                    });
+                    setBill({
+                        ...bill,
+                        billDetail: list,
+                    });
                 })
                 .catch((error) => {
                     console.log(`${error}`);
@@ -306,9 +318,9 @@ const Checkout = () => {
         if (selecteVoucher.id === id) {
             setSelectedVoucher(null);
             readAll(idAccount).then((response) => {
-                    console.log(response.data);
-                    setProducts(response.data);
-                })
+                console.log(response.data);
+                setProducts(response.data);
+            })
                 .catch((error) => {
                     console.log(`${error}`);
                 });
@@ -379,7 +391,7 @@ const Checkout = () => {
         const tienMat = document.getElementById("httt-1");
         if (tienMat.checked === true) {
             setIsChecked(true);
-            setLinkPay("/paydone");
+            setLinkPay(`/paydone/${bill.code}`);
         }
         const vnpay = document.getElementById("httt-2");
         if (vnpay.checked == true) {
@@ -479,13 +491,24 @@ const Checkout = () => {
     }
 
     function handleSubmit() {
-        createBillAccount(bill)
-            .then((response) => {
-                console.log(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        if (idAccount !== "") {
+            createBillAccount(bill)
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } else {
+            createBill(bill)
+                .then((response) => {
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+
     }
 
     return (

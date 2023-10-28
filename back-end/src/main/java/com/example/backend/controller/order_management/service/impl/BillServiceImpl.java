@@ -189,7 +189,7 @@ public class BillServiceImpl implements BillService {
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
-            if(request.getIdVoucher().equals(null)){
+            if(request.getIdVoucher().equals("")){
                 VoucherDetail voucherDetail = VoucherDetail.builder()
                         .voucher(null)
                         .bill(bill)
