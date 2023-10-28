@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import "../Login/login.css";
-import { Form, Space, Avatar, Typography, Upload } from "antd";
-import { useState } from "react";
+import { Form, Space, Avatar, Typography, Upload, notification } from "antd";
+import { useState, useEffect } from "react";
 import { add } from "../../../service/Employee/employee.service";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { readAllWard } from "../../../service/AddressAPI/ward.service";
+import { readAllDistrict } from "../../../service/AddressAPI/district.service";
+import { readAllProvince } from "../../../service/AddressAPI/province.service";
 
 const SignUpAdmin = () => {
   const { Text } = Typography;
@@ -34,6 +37,65 @@ const SignUpAdmin = () => {
       password: "",
     },
   });
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [province_id, setProvince_id] = useState();
+  const [district_id, setDistrict_id] = useState();
+  const [showDistricts, setShowDistricts] = useState(true);
+  const [showWards, setShowWards] = useState(true);
+
+  const handleProvince = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setProvince_id(value);
+      setDistrict_id(null);
+      setWards([]);
+      setData({
+        ...data, // Giữ nguyên các giá trị cũ của data
+        address: {
+          ...data.address, // Giữ nguyên các giá trị cũ của user
+          tinhThanhPho: document.getElementById(value).innerText, // Cập nhật theo giá trị từ ô input
+        },
+      });
+      setShowDistricts(true);
+    } else {
+      setShowDistricts(false);
+      setShowWards(false);
+    }
+  };
+
+  const handleDistrict = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setDistrict_id(value);
+      setData({
+        ...data, // Giữ nguyên các giá trị cũ của data
+        address: {
+          ...data.address, // Giữ nguyên các giá trị cũ của user
+          quanHuyen: document.getElementById(value).innerText, // Cập nhật theo giá trị từ ô input
+        },
+      });
+      setShowWards(true);
+    } else {
+      setShowWards(false);
+    }
+  };
+
+  const handleWard = (event) => {
+    const target = event.target;
+    const value = target.value;
+    setData({
+      ...data, // Giữ nguyên các giá trị cũ của data
+      address: {
+        ...data.address, // Giữ nguyên các giá trị cũ của user
+        xaPhuong: document.getElementById(value).innerText, // Cập nhật theo giá trị từ ô input
+      },
+    });
+    // console.log(addAddress);
+  };
 
   const handleUser = (event) => {
     const target = event.target;
@@ -103,18 +165,67 @@ const SignUpAdmin = () => {
 
     const items = { ...data };
 
-    add(items, role);
+    add(items, role)
+      .then((res) => {
+        if (res !== null) {
+          notification.success({
+            message: "ĐĂNG KÍ",
+            description: "Đăng kí thành công",
+          });
+          history.push("/login");
+        } else {
+          notification.error({
+            message: "ĐĂNG KÍ",
+            description: "Đăng kí thất bại",
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     console.log(items);
-
-    history.push("/login");
   };
+
+  useEffect(() => {
+    readAllProvince()
+      .then((response) => {
+        setProvinces(response.data.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    readAllDistrict(province_id)
+      .then((response) => {
+        // setDistricts(response.data.data);
+        if (showDistricts === true) {
+          setDistricts(response.data.data);
+        } else {
+          setDistricts([]);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    readAllWard(district_id)
+      .then((response) => {
+        // setWards(response.data.data);
+        if (showWards === true) {
+          setWards(response.data.data);
+        } else {
+          setWards([]);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, [province_id, district_id, showDistricts, showWards]);
 
   return (
     <>
       <div class="bgr">
         <div class="login-box">
-          <h2>Sing Up</h2>
+          <h2>Đăng ký</h2>
           <form onSubmit={handleSubmit}>
             <label style={{ color: "#03e9f4", fontSize: "12px" }}>
               Ảnh đại diện
@@ -168,7 +279,7 @@ const SignUpAdmin = () => {
                   <input
                     type="text"
                     name="fullName"
-                    required=""
+                    required
                     onChange={handleUser}
                   />
                   <label>Họ và tên</label>
@@ -179,7 +290,7 @@ const SignUpAdmin = () => {
                   <input
                     type="text"
                     name="phoneNumber"
-                    required=""
+                    required
                     onChange={handleUser}
                   />
                   <label>Số điện thoại</label>
@@ -192,7 +303,7 @@ const SignUpAdmin = () => {
                   <input
                     type="email"
                     name="email"
-                    required=""
+                    required
                     onChange={handleUser}
                   />
                   <label>Email</label>
@@ -203,7 +314,7 @@ const SignUpAdmin = () => {
                   <input
                     type="password"
                     name="password"
-                    required=""
+                    required
                     onChange={handleAccount}
                   />
                   <label>Password</label>
@@ -212,14 +323,16 @@ const SignUpAdmin = () => {
             </div>
             <div className="row">
               <div className="col-6">
+                <label style={{ color: "rgb(3, 233, 244)", fontSize: "12px" }}>
+                  Ngày sinh
+                </label>
                 <div class="user-box">
                   <input
                     type="date"
                     name="dateOfBirth"
-                    required=""
+                    required
                     onChange={handleUser}
                   />
-                  <label>Ngày sinh</label>
                 </div>
               </div>
               <div className="col-6">
@@ -271,44 +384,89 @@ const SignUpAdmin = () => {
                   <input
                     type="text"
                     name="address"
-                    required=""
+                    required
                     onChange={handleAddress}
                   />
                   <label>Địa chỉ</label>
                 </div>
               </div>
+
               <div className="col-6">
-                <div class="user-box">
-                  <input
-                    type="text"
-                    name="xaPhuong"
-                    required=""
-                    onChange={handleAddress}
-                  />
-                  <label>Xã, phường</label>
-                </div>
+                {/* <div class="user-box"> */}
+                <label style={{ color: "rgb(3, 233, 244)", fontSize: "12px" }}>
+                  Tỉnh, thành phố
+                </label>
+                <select
+                  class="form-select"
+                  id="provinces"
+                  aria-label="Floating label select example"
+                  onChange={handleProvince}
+                >
+                  <option value={"undefined"} selected></option>
+                  {provinces.map((pr) => {
+                    return (
+                      <option
+                        id={pr.ProvinceID}
+                        key={pr.ProvinceID}
+                        value={pr.ProvinceID}
+                      >
+                        {pr.ProvinceName}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* </div> */}
               </div>
               <div className="col-6">
-                <div class="user-box">
-                  <input
-                    type="text"
-                    name="quanHuyen"
-                    required=""
-                    onChange={handleAddress}
-                  />
-                  <label>Quận, huyện</label>
-                </div>
+                {/* <div class="user-box"> */}
+                <label style={{ color: "rgb(3, 233, 244)", fontSize: "12px" }}>
+                  Quận, huyện
+                </label>
+                <select
+                  class="form-select"
+                  id="districts"
+                  aria-label="Floating label select example"
+                  onChange={handleDistrict}
+                >
+                  <option selected></option>
+                  {districts.map((dt) => {
+                    return (
+                      <option
+                        id={dt.DistrictID}
+                        key={dt.DistrictID}
+                        value={dt.DistrictID}
+                      >
+                        {dt.DistrictName}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* </div> */}
               </div>
               <div className="col-6">
-                <div class="user-box">
-                  <input
-                    type="text"
-                    name="tinhThanhPho"
-                    required=""
-                    onChange={handleAddress}
-                  />
-                  <label>Tỉnh, thành phố</label>
-                </div>
+                {/* <div class="user-box"> */}
+                <label style={{ color: "rgb(3, 233, 244)", fontSize: "12px" }}>
+                  Xã, phường
+                </label>
+                <select
+                  class="form-select"
+                  id="wards"
+                  aria-label="Floating label select example"
+                  onChange={handleWard}
+                >
+                  <option selected></option>
+                  {wards.map((w) => {
+                    return (
+                      <option id={w.WardCode} key={w.WardID} value={w.WardCode}>
+                        {w.WardName}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* </div> */}
               </div>
             </div>
             <div className="row">
@@ -360,7 +518,7 @@ const SignUpAdmin = () => {
               <span></span>
               <span></span>
               <span></span>
-              Submit
+              Đăng ký
             </button>{" "}
             <Link to="/login">
               <button>
@@ -368,7 +526,7 @@ const SignUpAdmin = () => {
                 <span></span>
                 <span></span>
                 <span></span>
-                Sign in
+                Trở lại
               </button>
             </Link>
           </form>

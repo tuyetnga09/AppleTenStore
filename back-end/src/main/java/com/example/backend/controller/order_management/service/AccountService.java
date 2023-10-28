@@ -18,4 +18,10 @@ public interface AccountService {
     Integer numberOfCustomersThisMonth();
 
 //    Integer numberOfCustomers();
+
+    Boolean updateAccount(String email, Integer id);
+
+    Boolean updatePassword(String password, String passwordNew, String passwordRepeat, Integer id);
+
+    Account getOneById(Integer id);
 }

@@ -8,6 +8,7 @@ import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.*;
 import com.example.backend.repository.*;
 import com.example.backend.untils.*;
+import com.example.backend.untils.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +56,7 @@ public class BillServiceImpl implements BillService {
                 .phoneNumber(request.getPhoneNumber())
                 .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .points(0).build();
         userRepository.save(user);
         // account khách hàng
@@ -62,6 +64,7 @@ public class BillServiceImpl implements BillService {
                 .user(user)
                 .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .password(new Random().randomPassword())
                 // sau cho them roles vao day nua
                 .build();
@@ -74,6 +77,7 @@ public class BillServiceImpl implements BillService {
                 .address(request.getAddress())
                 .quanHuyen(request.getDistrict())
                 .tinhThanhPho(request.getProvince())
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .xaPhuong(request.getWards()).build();
         addressRepository.save(address);
 
@@ -85,7 +89,7 @@ public class BillServiceImpl implements BillService {
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
                 .itemDiscount(request.getItemDiscount())
-                .totalMoney(request.getTotalMoney())
+                .totalMoney(request.getAfterPrice())
                 .dateCreate(new Date(new java.util.Date().getTime()).toLocalDate())
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -102,6 +106,13 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
+            SKU productDetail = skuRepositoty.findById(x.getSku()).get();
+            if (productDetail.getQuantity() < x.getQuantity()) {
+                throw new RestAPIRunTime(Message.ERROR_QUANTITY);
+            }
+//            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+//                throw new RestAPIRunTime(Message.NOT_PAYMENT_PRODUCT);
+//            }
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
                     .sku(skuRepositoty.findById(x.getSku()).orElse(null))
@@ -111,7 +122,6 @@ public class BillServiceImpl implements BillService {
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
             skuRepositoty.updateQuantity(x.getSku(), x.getQuantity());
-            cartDetailRepository.deleteByIdSku(x.getSku());
         }
 
         // hình thức thanh toán của hoá đơn
@@ -179,7 +189,7 @@ public class BillServiceImpl implements BillService {
                         .bill(bill).build();
                 billDetailRepository.save(billDetail);
                 skuRepositoty.updateQuantity(d.getSku(), d.getQuantity());
-                cartDetailRepository.deleteByIdSku(d.getSku(), request.getAccount());
+                cartDetailRepository.deleteByIdSku(d.getSku());
             }
 
             Payments payments = Payments.builder()

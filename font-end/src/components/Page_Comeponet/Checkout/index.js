@@ -22,6 +22,7 @@ import {get} from "jquery";
 import {Link} from "react-router-dom";
 import {createBill, createBillAccount} from "../../../service/Bill/bill.service";
 import {DateField} from "@refinedev/antd";
+import {readAllByIdUser} from "../../../service/AddressAPI/address.service";
 
 const Checkout = () => {
     const storedUser = JSON.parse(localStorage.getItem("account"));
@@ -34,7 +35,7 @@ const Checkout = () => {
     const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
     const [voucher, setVoucher] = useState([]);
     const [selecteVoucher, setSelectedVoucher] = useState(0);
-    const [linkPay, setLinkPay] = useState(["/paydone"]);
+    const [linkPay, setLinkPay] = useState("/paydone");
     const [isChecked, setIsChecked] = useState([true]);
     const [voucherFreeShip, setVoucherFreeShip] = useState([true]);
     const [selecteVoucherFreeShip, setSelectedVoucherFreeShip] = useState(0);
@@ -51,24 +52,27 @@ const Checkout = () => {
         quantity: 1,
     });
     const [bill, setBill] = useState({
-        code: Math.floor(Math.random() * 100000000000000000001) + '',
-        userName: '',
-        email: '',
-        phoneNumber: '',
-        address: '',
-        province: '',
-        district: '',
+        code: Math.floor(Math.random() * 100000000000000000001) + "",
+        userName: "",
+        email: "",
+        phoneNumber: "",
+        address: "",
+        province: "",
+        district: "",
         moneyShip: 0,
         itemDiscount: 0,
         totalMoney: 0,
-        paymentMethod: 'ONLINE',
+        paymentMethod: "ONLINE",
         billDetail: [],
         quantity: 0,
         afterPrice: 0,
         idVoucher: null,
         account: idAccount,
-        wards: ''
+        wards: "",
     });
+    const [defaultAddress, setDefaultAddress] = useState([]);
+    const [showDistricts, setShowDistricts] = useState(true);
+    const [showWards, setShowWards] = useState(true);
 
     // Sử dụng dữ liệu cartItems để hiển thị giỏ hàng
     const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
@@ -96,6 +100,15 @@ const Checkout = () => {
                         ...bill,
                         billDetail: adidaphat,
                     });
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+            //số lượng sản phẩm trong giỏ hàng
+            readQuantityInCart(idAccount)
+                .then((response) => {
+                    console.log(response.data);
+                    setQuantity(response.data);
                 })
                 .catch((error) => {
                     console.log(`${error}`);
@@ -131,16 +144,13 @@ const Checkout = () => {
                 .catch((error) => {
                     console.log(`${error}`);
                 });
+            const totalQuantity = cartItems.reduce(
+                (total, product) => total + product.quantity,
+                0
+            );
+            setQuantity(totalQuantity);
         }
-        //số lượng sản phẩm tỏng giỏ hàng
-        readQuantityInCart(idAccount)
-            .then((response) => {
-                console.log(response.data);
-                setQuantity(response.data);
-            })
-            .catch((error) => {
-                console.log(`${error}`);
-            });
+
         //lấy danh sách voucher
         getVoucher()
             .then((response) => {
@@ -168,14 +178,24 @@ const Checkout = () => {
             });
         readAllDistrict(province_id)
             .then((response) => {
-                setDistricts(response.data.data);
+                // setDistricts(response.data.data);
+                if (showDistricts === true) {
+                    setDistricts(response.data.data);
+                } else {
+                    setDistricts([]);
+                }
             })
             .catch((error) => {
                 console.log(`${error}`);
             });
         readAllWard(district_id)
             .then((response) => {
-                setWards(response.data.data);
+                // setWards(response.data.data);
+                if (showWards === true) {
+                    setWards(response.data.data);
+                } else {
+                    setWards([]);
+                }
             })
             .catch((error) => {
                 console.log(`${error}`);
@@ -189,6 +209,14 @@ const Checkout = () => {
                     console.log(`${error}`);
                 });
         }
+        readAllByIdUser(storedUser?.user?.id)
+            .then((res) => {
+                setDefaultAddress(res.data);
+                console.log(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }, [province_id, district_id, transportationFeeDTO, priceShip]);
 
     function giaoTanNoi() {
@@ -210,7 +238,7 @@ const Checkout = () => {
         const divDcmd = document.getElementById("dcmd2");
         divDcmd.hidden = true;
         const notDcmd = document.getElementById("notDcmd");
-        notDcmd.hidden = false;
+        notDcmd.hidden = true;
     }
 
     function diaChiMacDinh() {
@@ -282,9 +310,6 @@ const Checkout = () => {
             price = total + priceS;
         }
         setSoTienThanhToan(price);
-        console.log(soTienThanhToan);
-        console.log(priceShip);
-        console.log(totalPrice);
     };
     //click Voucher
     const handleVoucherClick = (voucher) => {
@@ -313,14 +338,16 @@ const Checkout = () => {
                 });
         }
     };
+
     //clear voucher
     const handleClearVoucher = (id) => {
         if (selecteVoucher.id === id) {
             setSelectedVoucher(null);
-            readAll(idAccount).then((response) => {
-                console.log(response.data);
-                setProducts(response.data);
-            })
+            readAll(idAccount)
+                .then((response) => {
+                    console.log(response.data);
+                    setProducts(response.data);
+                })
                 .catch((error) => {
                     console.log(`${error}`);
                 });
@@ -391,7 +418,7 @@ const Checkout = () => {
         const tienMat = document.getElementById("httt-1");
         if (tienMat.checked === true) {
             setIsChecked(true);
-            setLinkPay(`/paydone/${bill.code}`);
+            setLinkPay("/paydone");
         }
         const vnpay = document.getElementById("httt-2");
         if (vnpay.checked == true) {
@@ -407,52 +434,83 @@ const Checkout = () => {
     }
 
     const handleProvince = (event) => {
-        const target = event.target;
-        const value = target.value;
-        setProvince_id(value);
-        console.log(value);
-        setDistrict_id(null);
-        setWards([]);
-        let item = {
-            toDistrictId: null,
-            toWardCode: null,
-            insuranceValue: null,
-            quantity: quantityCart,
-        };
-        setTransportationFeeDTO(item);
-        setBill({
-            ...bill,
-            province: document.getElementById(value).innerText
-        });
+        if (document.getElementById(event.target.value) !== null) {
+            const target = event.target;
+            const value = target.value;
+            setProvince_id(value);
+            console.log(value);
+            setDistrict_id(null);
+            setWards([]);
+            let item = {
+                toDistrictId: null,
+                toWardCode: null,
+                insuranceValue: null,
+                quantity: quantityCart,
+            };
+            setTransportationFeeDTO(item);
+            setBill({
+                ...bill,
+                province: document.getElementById(value).innerText,
+            });
+            setShowDistricts(true);
+        } else {
+            setShowDistricts(false);
+            setShowWards(false);
+            setTransportationFeeDTO({
+                toDistrictId: null,
+                toWardCode: null,
+                insuranceValue: soTienThanhToan,
+                quantity: quantityCart,
+            });
+        }
     };
 
     const handleDistrict = (event) => {
-        const target = event.target;
-        const value = target.value;
-        setDistrict_id(value);
-        let item = {...transportationFeeDTO};
-        item["toDistrictId"] = parseInt(value);
-        item["insuranceValue"] = parseInt(soTienThanhToan);
-        setTransportationFeeDTO(item);
-        console.log(transportationFeeDTO);
-        setBill({
-            ...bill,
-            district: document.getElementById(value).innerText,
-        });
+        if (document.getElementById(event.target.value) !== null) {
+            const target = event.target;
+            const value = target.value;
+            setDistrict_id(value);
+            let item = {...transportationFeeDTO};
+            item["toDistrictId"] = parseInt(value);
+            item["insuranceValue"] = parseInt(soTienThanhToan);
+            setTransportationFeeDTO(item);
+            console.log(transportationFeeDTO);
+            setBill({
+                ...bill,
+                district: document.getElementById(value).innerText,
+            });
+            setShowWards(true);
+        } else {
+            setShowWards(false);
+            setTransportationFeeDTO({
+                toDistrictId: event.target.value,
+                toWardCode: null,
+                insuranceValue: soTienThanhToan,
+                quantity: quantityCart,
+            });
+        }
     };
 
     const handleWard = (event) => {
-        const target = event.target;
-        const value = target.value;
-        let item = {...transportationFeeDTO};
-        item["toWardCode"] = value;
-        setTransportationFeeDTO(item);
+        if (document.getElementById(event.target.value) !== null) {
+            const target = event.target;
+            const value = target.value;
+            let item = {...transportationFeeDTO};
+            item["toWardCode"] = value;
+            setTransportationFeeDTO(item);
+            console.log(transportationFeeDTO);
+            setBill({
+                ...bill,
+                wards: document.getElementById(value).innerText,
+            });
+            console.log(bill);
+        } else {
+            setTransportationFeeDTO({
+                ...transportationFeeDTO,
+                toWardCode: event.target.value,
+            });
+        }
         console.log(transportationFeeDTO);
-        setBill({
-            ...bill,
-            wards: document.getElementById(value).innerText,
-        });
-        console.log(bill);
     };
 
     function hanldeName(event) {
@@ -508,7 +566,62 @@ const Checkout = () => {
                     console.log(error);
                 });
         }
+    }
 
+    function handleDefaultAddress(event) {
+        const inputString = document.getElementById(event.target.value).innerText;
+        if (inputString !== "") {
+            const dataArray = inputString.split(",").map((item) => item.trim());
+            setBill({
+                ...bill,
+                province: dataArray[dataArray.length - 1],
+                district: dataArray[dataArray.length - 2],
+                wards: dataArray[dataArray.length - 3],
+                address: dataArray[dataArray.length - 4],
+            });
+            let province_id = [...provinces].filter(
+                (pr) => pr.ProvinceName === dataArray[dataArray.length - 1]
+            )[0].ProvinceID;
+            readAllDistrict(province_id)
+                .then((response) => {
+                    let district_id = [...response.data.data].filter(
+                        (dt) => dt.DistrictName === dataArray[dataArray.length - 2]
+                    )[0].DistrictID;
+                    readAllWard(district_id)
+                        .then((response) => {
+                            let ward_code = [...response.data.data].filter(
+                                (w) => w.WardName === dataArray[dataArray.length - 3]
+                            )[0].WardCode;
+                            setTransportationFeeDTO({
+                                toDistrictId: district_id,
+                                toWardCode: ward_code,
+                                insuranceValue: soTienThanhToan,
+                                quantity: quantityCart,
+                            });
+                        })
+                        .catch((error) => {
+                            console.log(`${error}`);
+                        });
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+            getFee(transportationFeeDTO)
+                .then((response) => {
+                    setFee(response.data.data);
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+            console.log(bill);
+        } else {
+            setTransportationFeeDTO({
+                toDistrictId: null,
+                toWardCode: null,
+                insuranceValue: soTienThanhToan,
+                quantity: quantityCart,
+            });
+        }
     }
 
     return (
@@ -519,7 +632,6 @@ const Checkout = () => {
                     <form
                         class="needs-validation"
                         name="frmthanhtoan"
-                        onSubmit={handleSubmit}
                     >
                         <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
                         <div
@@ -538,7 +650,7 @@ const Checkout = () => {
                                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                                     <span class="text-muted">Giỏ hàng</span>
                                     <span class="badge badge-secondary badge-pill">
-                    {quantityCart}
+                                        {quantityCart}
                   </span>
                                 </h4>
                                 <ul class="list-group mb-3">
@@ -723,7 +835,7 @@ const Checkout = () => {
                                             </label>
                                         </div>
                                     </div>
-                                    <div className="row" id="notDcmd">
+                                    <div hidden className="row" id="notDcmd">
                                         <div class="col-md-4">
                                             <br/>
                                             <label for="kh_cmnd">Tỉnh, thành phố:</label>
@@ -733,7 +845,7 @@ const Checkout = () => {
                                                 aria-label="Floating label select example"
                                                 onChange={handleProvince}
                                             >
-                                                <option value={"undefined"} selected></option>
+                                                <option selected></option>
                                                 {provinces.map((pr) => {
                                                     return (
                                                         <option
@@ -825,11 +937,17 @@ const Checkout = () => {
                                             class="form-select"
                                             id="floatingSelect"
                                             aria-label="Floating label select example"
+                                            onChange={handleDefaultAddress}
                                         >
-                                            <option selected>Chọn tỉnh, thành phố</option>
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                            <option value="3">Three</option>
+                                            <option selected id="0" value={0}></option>
+                                            {defaultAddress.map((da) => {
+                                                return (
+                                                    <option id={da.id} key={da.id} value={da.id}>
+                                                        {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}
+                                                        {da.tinhThanhPho}
+                                                    </option>
+                                                );
+                                            })}
                                         </select>
                                     </div>
                                 </div>
@@ -867,13 +985,11 @@ const Checkout = () => {
                                         </label>
                                     </div>
                                     <hr class="mb-4"/>
-
-                                    <a href={linkPay}>
+                                    <a href={linkPay} onClick={handleSubmit}>
                                         <button
                                             class="btn btn-primary btn-lg btn-block"
                                             // type="submit"
                                             name="btnDatHang"
-                                            type="submit"
                                         >
                                             Đặt hàng
                                         </button>
@@ -902,7 +1018,6 @@ const Checkout = () => {
                         >
                             <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
                         </div>
-
                         <p style={{marginTop: "10px", fontWeight: "bold"}}>Mã FreeShip</p>
                         <div
                             className="card-body"

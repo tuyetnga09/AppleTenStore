@@ -24,7 +24,7 @@ public class BillController {
     private EmailService emailService;
 
     @PostMapping("")
-    public ResponseObj create(@RequestBody BillRequestOnlineAccount request) {
+    public ResponseObj create(@RequestBody BillRequestOnline request) {
         String userEmail = request.getEmail();
         String subject = "Hoá đơn của bạn đã được tạo thành công";
         StringBuilder message = new StringBuilder();
@@ -60,7 +60,7 @@ public class BillController {
         message.append("</body></html>");
 
         emailService.sendEmailWithHtml(userEmail, subject, message.toString());
-        return new ResponseObj(billService.createBillAccountOnlineRequest(request));
+        return new ResponseObj(billService.createBillCustomerOnlineRequest(request));
     }
 
     @PostMapping("/offline")
