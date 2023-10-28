@@ -20,11 +20,6 @@ public interface CartDetailRepository extends JpaRepository<CartDetail,Integer> 
     @Query(value = "select cart_detail.quantity from cart_detail JOIN sku s on s.id = cart_detail.id_sku JOIN cart c on c.id = cart_detail.id_cart where s.id = ?1 and id_account = ?2", nativeQuery = true)
     Integer getQuantityCartDetailBySku(@Param("idSku") Long idSku, @Param("idAccount") Integer idAccount);
 
-    @Modifying
-    @Transactional
-    @Query(value = "delete from cart_detail where id_sku = ?1 and id_cart = (select id from cart where id_account = 1)", nativeQuery = true)
-    void deleteByIdSku(Long idSku);
-
     List<CartDetail> getCartDetailByCart_IdAndSku_Id(Integer idCart, Long idSku);
 
 

@@ -106,16 +106,15 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
-            SKU productDetail = skuRepositoty.findById(x.getSku()).get();
-            if (productDetail.getQuantity() < x.getQuantity()) {
-                throw new RestAPIRunTime(Message.ERROR_QUANTITY);
-            }
+//            if (productDetail.getQuantity() < x.getQuantity()) {
+//                throw new RestAPIRunTime(Message.ERROR_QUANTITY);
+//            }
 //            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
 //                throw new RestAPIRunTime(Message.NOT_PAYMENT_PRODUCT);
 //            }
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .sku(skuRepositoty.findById(x.getSku()).orElse(null))
+                    .sku(skuRepositoty.findById(x.getSku()).get())
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
                     .dateCreate(new Date(new java.util.Date().getTime()))
@@ -161,7 +160,7 @@ public class BillServiceImpl implements BillService {
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
             Bill bill = Bill.builder()
-                    .code(new Random().randomToString("BillAccount "))
+                    .code(request.getCode())
                     .phoneNumber(request.getPhoneNumber())
                     .address(request.getAddress())
                     .userName(request.getUserName())
@@ -169,7 +168,7 @@ public class BillServiceImpl implements BillService {
                     .itemDiscount(request.getItemDiscount())
                     .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
-                    .statusBill(StatusBill.DA_THANH_TOAN)
+                    .statusBill(StatusBill.CHO_XAC_NHAN)
                     .account(account)
                     .build();
             billRepository.save(bill);
@@ -189,7 +188,7 @@ public class BillServiceImpl implements BillService {
                         .bill(bill).build();
                 billDetailRepository.save(billDetail);
                 skuRepositoty.updateQuantity(d.getSku(), d.getQuantity());
-                cartDetailRepository.deleteByIdSku(d.getSku());
+                cartDetailRepository.deleteByIdSku(d.getSku(), request.getAccount());
             }
 
             Payments payments = Payments.builder()

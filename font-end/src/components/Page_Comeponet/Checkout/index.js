@@ -525,6 +525,7 @@ const Checkout = () => {
             ...bill,
             phoneNumber: event.target.value,
         });
+        console.log(bill)
     }
 
     function hanldeMail(event) {
