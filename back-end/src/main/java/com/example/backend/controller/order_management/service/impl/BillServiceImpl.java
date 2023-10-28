@@ -90,7 +90,7 @@ public class BillServiceImpl implements BillService {
                 .moneyShip(request.getMoneyShip())
                 .itemDiscount(request.getItemDiscount())
                 .totalMoney(request.getAfterPrice())
-                .dateCreate(new Date(new java.util.Date().getTime()).toLocalDate())
+                .dateCreate(LocalDate.now())
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .dateCreate(LocalDate.now())
@@ -169,6 +169,7 @@ public class BillServiceImpl implements BillService {
                     .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
                     .statusBill(StatusBill.CHO_XAC_NHAN)
+                    .dateCreate(LocalDate.now())
                     .account(account)
                     .build();
             billRepository.save(bill);
