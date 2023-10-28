@@ -6,18 +6,18 @@ const ForgotPassword = () => {
     <>
       <div class="bgr">
         <div class="login-box">
-          <h2>Forgot Password</h2>
+          <h2>Quên mật khẩu</h2>
           <form>
             <div class="user-box">
-              <input type="email" name="" required="" />
+              <input type="email" name="" required />
               <label>Email</label>
             </div>
-            <button>
+            <button type="submit">
               <span></span>
               <span></span>
               <span></span>
               <span></span>
-              Submit
+              Gửi mật khẩu
             </button>{" "}
             <Link to="/login">
               <button>
@@ -25,7 +25,7 @@ const ForgotPassword = () => {
                 <span></span>
                 <span></span>
                 <span></span>
-                Cannel
+                Trở lại
               </button>
             </Link>
           </form>

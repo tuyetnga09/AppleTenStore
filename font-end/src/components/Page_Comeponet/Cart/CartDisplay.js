@@ -32,9 +32,9 @@ export default function CartDisplay() {
   // Sử dụng dữ liệu cartItems để hiển thị giỏ hàng
   const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 
-  const skuIds = cartItems.map((item) => item.idSKU); // Lấy danh sách idSKU từ mảng cartItems
+  const skuIds = cartItems ? cartItems.map((item) => item.idSKU) : []; // Lấy danh sách idSKU từ mảng cartItems
 
-  const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
+  const requests = cartItems ? skuIds.map((idSKU) => getbysku(idSKU)) : []; // Tạo mảng các promise từ việc gọi API
 
   useEffect(() => {
     if (idAccount !== null && idAccount !== "") {
@@ -69,37 +69,27 @@ export default function CartDisplay() {
     }
   }, []);
 
-  async function remove(id) {
-    deleteCartDetail(id).then(() => {
-      let newArr = [...products].filter((s) => s.id !== id);
-      setProducts(newArr);
-      window.location.reload();
-    });
-  }
-
-  // Hàm xóa sản phẩm lưu session bằng idSKU
-  function removeBySku(idSKU) {
-    // Tìm vị trí của sản phẩm cần xóa trong danh sách
-    const productIndex = cartItems.findIndex((item) => item.idSKU === idSKU);
-
-    if (productIndex !== -1) {
-      // Xóa sản phẩm khỏi danh sách
-      cartItems.splice(productIndex, 1);
-
-      // Lưu danh sách sản phẩm đã cập nhật trở lại vào sessionStorage
-      sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
+  async function remove(id, idSKU) {
+    if (idAccount !== null && idAccount !== "") {
+      deleteCartDetail(id).then(() => {
+        let newArr = [...products].filter((s) => s.id !== id);
+        setProducts(newArr);
+        window.location.reload();
+      });
+    } else {
+      // Xóa sản phẩm khỏi sessionStorage nếu không có idAccount
+      const updatedCartItems = cartItems.filter((item) => item.idSKU !== idSKU);
+      sessionStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
 
       // Cập nhật trạng thái trong ứng dụng React
-      setProducts(cartItems);
-
-      // Reload trang hoặc thực hiện các thao tác cần thiết
-      // window.location.reload();
+      setProducts(updatedCartItems);
+      calculateTotalPrice();
     }
   }
 
   const [sku, setSKU] = useState([]);
 
-  const handleUpdateQuantity = (cartItemId, newQuantity, idSKU) => {
+  const handleUpdateQuantity = (cartItemId, newQuantity, idSKUC) => {
     if (newQuantity == 0) {
       newQuantity = 1;
     } else if (newQuantity < 0) {
@@ -109,21 +99,33 @@ export default function CartDisplay() {
         description: "Không được nhập số lượng âm",
       });
     } else {
-      update(cartItemId, newQuantity)
-        .then((response) => {
-          console.log("Phản hồi từ máy chủ:", response.data);
-          readAll(idAccount)
-            .then((response) => {
-              console.log("Dữ liệu giỏ hàng sau khi cập nhật:", response.data);
-              setProducts(response.data);
-            })
-            .catch((error) => {
-              console.log("Lỗi khi đọc lại giỏ hàng:", error);
-            });
-        })
-        .catch((error) => {
-          console.log(`Lỗi khi cập nhật số lượng: ${error}`);
+      if (idAccount !== null && idAccount !== "") {
+        update(cartItemId, newQuantity)
+          .then((response) => {
+            readAll(idAccount)
+              .then((response) => {
+                setProducts(response.data);
+              })
+              .catch((error) => {
+                console.log("Lỗi khi đọc lại giỏ hàng:", error);
+              });
+          })
+          .catch((error) => {
+            console.log(`Lỗi khi cập nhật số lượng: ${error}`);
+          });
+      } else {
+        // Cập nhật số lượng sản phẩm trong sessionStorage nếu không có idAccount
+        const updatedCartItems = cartItems.map((item) => {
+          if (item.idSKU === idSKUC) {
+            item.quantity = newQuantity;
+            item.total = newQuantity * item.price;
+          }
+          return item;
         });
+        sessionStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+        setProducts(updatedCartItems);
+        calculateTotalPrice();
+      }
     }
   };
 
@@ -151,6 +153,21 @@ export default function CartDisplay() {
       });
     } else {
       history.push("/checkout");
+    }
+  };
+
+  //xóa all giỏ hàng
+  const handleRemoveAllFromCart = () => {
+    if (idAccount !== null && idAccount !== "") {
+
+    } else {
+      sessionStorage.removeItem("cartItems");
+      setProducts([]);
+      setTotalPrice(0);
+      notification.success({
+        message: "CART",
+        description: "Xóa thành công",
+      });
     }
   };
 
@@ -287,46 +304,148 @@ export default function CartDisplay() {
                                       type="number"
                                       placeholder={product.quantity}
                                       onChange={() => {
-                                        getOneSKU(product.idSKU).then((res) => {
-                                          setQuantitySKU(res.data.quantity);
-                                        });
+                                        if (
+                                          idAccount !== null &&
+                                          idAccount !== ""
+                                        ) {
+                                          getOneSKU(product.idSKU).then(
+                                            (res) => {
+                                              setQuantitySKU(res.data.quantity);
+                                            }
+                                          );
+                                        }
                                       }}
                                       onBlur={(event) => {
-                                        if (event.target.value <= 0) {
-                                          notification.error({
-                                            message: "ADD TO CART",
-                                            description:
-                                              "Số lượng phải lớn hơn 0",
-                                          });
-                                          const quantity =
-                                            document.getElementById(
-                                              `quantity-${index}`
-                                            );
-                                          quantity.value = product.quantity;
-                                          handleUpdateQuantity(
-                                            product.idCartDetail,
-                                            product.quantity,
-                                            product.idSKU
-                                          );
-                                        } else if (
-                                          event.target.value >
-                                          parseInt(quantitySKU)
-                                          // +
-                                          //   parseInt(product.quantity)
+                                        if (
+                                          idAccount !== null &&
+                                          idAccount !== ""
                                         ) {
-                                          notification.error({
-                                            message: "ADD TO CART",
-                                            description:
-                                              "Không thể nhập quá số lượng đang có",
-                                          });
-                                          const quantity =
-                                            document.getElementById(
-                                              `quantity-${index}`
+                                          if (event.target.value <= 0) {
+                                            notification.error({
+                                              message: "ADD TO CART",
+                                              description:
+                                                "Số lượng phải lớn hơn 0",
+                                            });
+                                            const quantity =
+                                              document.getElementById(
+                                                `quantity-${index}`
+                                              );
+                                            quantity.value = product.quantity;
+                                            handleUpdateQuantity(
+                                              product.idCartDetail,
+                                              product.quantity,
+                                              product.idSKU
                                             );
-                                          quantity.value = product.quantity;
+                                          } else if (
+                                            event.target.value >
+                                            parseInt(quantitySKU)
+                                            // +
+                                            //   parseInt(product.quantity)
+                                          ) {
+                                            notification.error({
+                                              message: "ADD TO CART",
+                                              description:
+                                                "Không thể nhập quá số lượng đang có",
+                                            });
+                                            const quantity =
+                                              document.getElementById(
+                                                `quantity-${index}`
+                                              );
+                                            quantity.value = product.quantity;
+                                            handleUpdateQuantity(
+                                              product.idCartDetail,
+                                              product.quantity,
+                                              product.idSKU
+                                            );
+                                          } else {
+                                            const quantity =
+                                              document.getElementById(
+                                                `quantity-${index}`
+                                              );
+                                            quantity.value = event.target.value;
+                                            handleUpdateQuantity(
+                                              product.idCartDetail,
+                                              event.target.value,
+                                              product.idSKU
+                                            );
+                                          }
+                                        } else {
+                                          const newQuantity = parseInt(
+                                            event.target.value
+                                          );
+                                          if (newQuantity < 1) {
+                                            // Kiểm tra số lượng không được nhỏ hơn 1
+                                            notification.error({
+                                              message: "ADD TO CART",
+                                              description:
+                                                "Số lượng phải lớn hơn 0",
+                                            });
+                                          } else {
+                                            // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
+                                            if (
+                                              newQuantity <= product.quantitySKU
+                                            ) {
+                                              handleUpdateQuantity(
+                                                product.idCartDetail,
+                                                newQuantity,
+                                                product.idSKU
+                                              );
+                                            } else {
+                                              notification.error({
+                                                message: "ADD TO CART",
+                                                description:
+                                                  "Không thể nhập quá số lượng đang có",
+                                              });
+                                              const quantity =
+                                                document.getElementById(
+                                                  `quantity-${index}`
+                                                );
+                                              quantity.value = product.quantity;
+                                              handleUpdateQuantity(
+                                                product.idCartDetail,
+                                                product.quantity,
+                                                product.idSKU
+                                              );
+                                            }
+                                          }
+                                        }
+                                      }}
+                                    />
+                                    <button
+                                      onClick={() => {
+                                        if (
+                                          idAccount !== null &&
+                                          idAccount !== ""
+                                        ) {
+                                          getOneSKU(product.idSKU).then(
+                                            (res) => {
+                                              const quantity =
+                                                document.getElementById(
+                                                  `quantity-${index}`
+                                                );
+                                              quantity.value =
+                                                parseInt(product.quantity) + 1;
+                                              if (
+                                                quantity.value >
+                                                parseInt(res.data.quantity)
+                                                // + parseInt(product.quantity)
+                                              ) {
+                                                notification.error({
+                                                  message: "ADD TO CART",
+                                                  description:
+                                                    "Không thể nhập quá số lượng đang có",
+                                                });
+                                                quantity.value = parseInt(
+                                                  res.data.quantity
+                                                );
+                                                // +
+                                                // parseInt(product.quantity);
+                                              }
+                                            }
+                                          );
                                           handleUpdateQuantity(
                                             product.idCartDetail,
-                                            product.quantity,
+                                            parseInt(product.quantity) + 1,
                                             product.idSKU
                                           );
                                         } else {
@@ -334,46 +453,27 @@ export default function CartDisplay() {
                                             document.getElementById(
                                               `quantity-${index}`
                                             );
-                                          quantity.value = event.target.value;
-                                          handleUpdateQuantity(
-                                            product.idCartDetail,
-                                            event.target.value,
-                                            product.idSKU
-                                          );
-                                        }
-                                      }}
-                                    />
-                                    <button
-                                      onClick={() => {
-                                        getOneSKU(product.idSKU).then((res) => {
-                                          const quantity =
-                                            document.getElementById(
-                                              `quantity-${index}`
-                                            );
-                                          quantity.value =
-                                            parseInt(product.quantity) + 1;
+                                          const newQuantity =
+                                            product.quantity + 1;
+
+                                          // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
                                           if (
-                                            quantity.value >
-                                            parseInt(res.data.quantity)
-                                            // + parseInt(product.quantity)
+                                            newQuantity <= product.quantitySKU
                                           ) {
+                                            quantity.value = newQuantity;
+                                            handleUpdateQuantity(
+                                              product.idCartDetail,
+                                              newQuantity,
+                                              product.idSKU
+                                            );
+                                          } else {
                                             notification.error({
                                               message: "ADD TO CART",
                                               description:
                                                 "Không thể nhập quá số lượng đang có",
                                             });
-                                            quantity.value = parseInt(
-                                              res.data.quantity
-                                            );
-                                            // +
-                                            // parseInt(product.quantity);
                                           }
-                                        });
-                                        handleUpdateQuantity(
-                                          product.idCartDetail,
-                                          parseInt(product.quantity) + 1,
-                                          product.idSKU
-                                        );
+                                        }
                                       }}
                                       className="plus"
                                     />
@@ -409,14 +509,10 @@ export default function CartDisplay() {
                                     data-dismiss="alert"
                                     aria-label="Close"
                                     onClick={() => {
-                                      if (
-                                        idAccount !== null &&
-                                        idAccount !== ""
-                                      ) {
-                                        remove(product.idCartDetail); // Sử dụng hàm remove nếu có idAccount
-                                      } else {
-                                        removeBySku(product.idSKU); // Sử dụng hàm removeBySku nếu không có idAccount
-                                      }
+                                      remove(
+                                        product.idCartDetail,
+                                        product.idSKU
+                                      );
                                     }}
                                   >
                                     <span aria-hidden="true">
@@ -445,6 +541,7 @@ export default function CartDisplay() {
                           <button
                             class="btn btn-outline-primary me-md-2"
                             type="button"
+                            onClick={() => handleRemoveAllFromCart()}
                           >
                             Xóa hết
                           </button>

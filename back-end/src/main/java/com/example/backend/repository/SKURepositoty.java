@@ -5,9 +5,11 @@ import com.example.backend.controller.product_controller.model.request.ListSkuPr
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
 import com.example.backend.entity.Size;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -42,4 +44,10 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     @Query(value = "select p.name as 'nameProduct', s.color as 'colorSKU' , s.capacity as 'capacitySKU' " +
             " from sku s join product p on s.product_id = p.id where s.id =?1", nativeQuery = true)
     SkuBillOffLineIonRespon getOneSkuSellOffLine (Long idSku);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update sku set quantity = quantity - ?2 where id = ?1", nativeQuery = true)
+    void updateQuantity(Long id, Integer number);
+
 }

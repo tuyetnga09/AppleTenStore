@@ -1,8 +1,11 @@
 package com.example.backend.entity;
 
+import com.example.backend.untils.Status;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,5 +45,8 @@ public class SKU {
     private Integer quantity;
 
     private BigDecimal price;
+
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
 
 }

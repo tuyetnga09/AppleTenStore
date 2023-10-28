@@ -15,12 +15,8 @@ const Login = () => {
     password: "",
   });
 
-  function checkLogin() {
-    document
-      .getElementById("myForm")
-      .addEventListener("submit", function (event) {
-        event.preventDefault(); // Ngăn form tự động submit
-      });
+  function checkLogin(event) {
+    event.preventDefault(); // Ngăn form tự động submit
     login(data.email, data.password)
       .then((res) => {
         console.log(res.data);
@@ -57,13 +53,13 @@ const Login = () => {
     <>
       <div class="bgr">
         <div class="login-box">
-          <h2>Login</h2>
-          <form id="myForm">
+          <h2>Đăng nhập</h2>
+          <form onSubmit={checkLogin}>
             <div class="user-box">
               <input
                 type="text"
                 name="email"
-                required=""
+                required
                 onChange={handleChange}
               />
               <label>Email</label>
@@ -72,17 +68,17 @@ const Login = () => {
               <input
                 type="password"
                 name="password"
-                required=""
+                required
                 onChange={handleChange}
               />
               <label>Password</label>
             </div>
-            <button onClick={() => checkLogin()}>
+            <button type="submit">
               <span></span>
               <span></span>
               <span></span>
               <span></span>
-              Submit
+              Đăng nhập
             </button>{" "}
             <Link to="/signup">
               <button>
@@ -90,7 +86,7 @@ const Login = () => {
                 <span></span>
                 <span></span>
                 <span></span>
-                Sign up
+                Đăng ký
               </button>
             </Link>
             <Link to="/forgotpassword">
@@ -99,7 +95,7 @@ const Login = () => {
                 <span></span>
                 <span></span>
                 <span></span>
-                Forgot password
+                Quên mật khẩu
               </button>
             </Link>
           </form>

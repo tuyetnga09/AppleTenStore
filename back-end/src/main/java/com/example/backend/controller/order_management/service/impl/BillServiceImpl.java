@@ -1,59 +1,19 @@
 package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.bill.request.BillAskClient;
-import com.example.backend.controller.order_management.model.bill.request.BillRequest;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
-import com.example.backend.controller.order_management.model.cart.ListCart;
-import com.example.backend.entity.Cart;
-import com.example.backend.entity.CartDetail;
-import com.example.backend.entity.SKU;
-import com.example.backend.repository.AccountRepository;
-import com.example.backend.repository.AddressRepository;
-import com.example.backend.repository.BillDetailRepository;
-import com.example.backend.repository.BillHistoryRepository;
-import com.example.backend.repository.BillRepository;
-import com.example.backend.repository.CartDetailRepository;
-import com.example.backend.repository.CartRepository;
-import com.example.backend.repository.PaymentsRepository;
-import com.example.backend.repository.SKURepositoty;
-import com.example.backend.repository.UserRepository;
-import com.example.backend.repository.VoucherDetailRepository;
 import com.example.backend.controller.order_management.service.BillService;
-import com.example.backend.repository.ProductRepository;
-import com.example.backend.repository.VoucherRepository;
-import com.example.backend.entity.Account;
-import com.example.backend.entity.Address;
-import com.example.backend.entity.Bill;
-import com.example.backend.entity.BillDetails;
-import com.example.backend.entity.BillHistory;
-import com.example.backend.entity.Payments;
-import com.example.backend.entity.Product;
-import com.example.backend.entity.User;
-import com.example.backend.entity.Voucher;
-import com.example.backend.entity.VoucherDetail;
+import com.example.backend.entity.*;
+import com.example.backend.repository.*;
+import com.example.backend.untils.*;
 import com.example.backend.untils.Message;
-import com.example.backend.untils.Random;
-import com.example.backend.untils.RestAPIRunTime;
-import com.example.backend.untils.Roles;
-import com.example.backend.untils.Status;
-import com.example.backend.untils.StatusBill;
-import com.example.backend.untils.StatusPayment;
-import com.example.backend.untils.TypeBill;
-import com.example.backend.untils.TypePayment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.text.ParseException;import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,12 +103,19 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
-            SKU productDetail = skuRepositoty.findById(x.getIdProductDetail()).get();
+            SKU productDetail = skuRepositoty.findById(x.getSku()).get();
+            if (productDetail.getQuantity() < x.getQuantity()) {
+                throw new RestAPIRunTime(Message.ERROR_QUANTITY);
+            }
+//            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
+//                throw new RestAPIRunTime(Message.NOT_PAYMENT_PRODUCT);
+//            }
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .sku(productDetail)
+                    .sku(skuRepositoty.findById(x.getSku()).orElse(null))
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
+                    .dateCreate(new Date(new java.util.Date().getTime()))
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
         }
@@ -184,7 +151,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public String createBillAccountOnlineRequest(BillRequestOnlineAccount request) {
-        Optional<Account> accountOptional = acountRepository.findById(request.getIdAccount());
+        Optional<Account> accountOptional = acountRepository.findById(request.getAccount());
 
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
@@ -195,7 +162,7 @@ public class BillServiceImpl implements BillService {
                     .userName(request.getUserName())
                     .moneyShip(request.getMoneyShip())
                     .itemDiscount(request.getItemDiscount())
-                    .totalMoney(request.getTotalMoney())
+                    .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
                     .statusBill(StatusBill.DA_THANH_TOAN)
                     .account(account)
@@ -209,14 +176,15 @@ public class BillServiceImpl implements BillService {
             billHistoryRepository.save(billHistory);
 
             for (BillAskClient d : request.getBillDetail()) {
-                SKU productDetail = skuRepositoty.findById(d.getIdProductDetail()).get();
                 BillDetails billDetail = BillDetails.builder()
                         .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
-                        .sku(productDetail)
+                        .sku(skuRepositoty.findById(d.getSku()).orElse(null))
                         .price(d.getPrice())
                         .quantity(d.getQuantity())
                         .bill(bill).build();
                 billDetailRepository.save(billDetail);
+                skuRepositoty.updateQuantity(d.getSku(), d.getQuantity());
+                cartDetailRepository.deleteByIdSku(d.getSku(), request.getAccount());
             }
 
             Payments payments = Payments.builder()
@@ -226,7 +194,7 @@ public class BillServiceImpl implements BillService {
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
-            if(request.getIdVoucher().equals("")){
+            if(request.getIdVoucher().equals(null)){
                 VoucherDetail voucherDetail = VoucherDetail.builder()
                         .voucher(null)
                         .bill(bill)
@@ -248,9 +216,9 @@ public class BillServiceImpl implements BillService {
                 voucherDetailRepository.save(voucherDetail);
             }
 
-            Cart cart = cartRepository.getCartByAccount_Id(request.getIdAccount());
+            Cart cart = cartRepository.getCartByAccount_Id(request.getAccount());
             for (BillAskClient x : request.getBillDetail()) {
-                List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndSku_Id(cart.getId(), x.getIdProductDetail());
+                List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndSku_Id(cart.getId(), x.getSku());
                 cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
             }
             return "thanh toán ok";
@@ -282,10 +250,9 @@ public class BillServiceImpl implements BillService {
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient cart : request.getBillDetail()) {
-            SKU productDetail = skuRepositoty.findById(cart.getIdProductDetail()).get();
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .sku(productDetail)
+                    .sku(skuRepositoty.findById(cart.getSku()).orElse(null))
                     .price(cart.getPrice())
                     .quantity(cart.getQuantity())
                     .bill(bill).build();
