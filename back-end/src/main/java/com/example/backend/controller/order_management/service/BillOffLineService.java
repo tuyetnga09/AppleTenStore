@@ -2,11 +2,15 @@ package com.example.backend.controller.order_management.service;
 
 import com.example.backend.controller.order_management.model.billOffLine.AddBillOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
+import com.example.backend.controller.order_management.model.billOffLine.ImeiDaBanOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.BillDetails;
+import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.SKU;
 
 import java.util.List;
@@ -27,4 +31,16 @@ public interface BillOffLineService {
 
     //lấy ra sku để hiển thị
     SkuBillOffLineIonRespon getOneSKU(Long idSKU);
+
+    //lấy ra list imei đã bán của sku trong bill_detail được chọn
+    List<ImeiDaBanOffLineIonRespon> getImeiDaBanOfSku(Integer idBillDetail, Long idSku);
+
+    //add imei vvào billDetail ( vào bảng imei_da_ban)
+     ImeiDaBan addImeiDaBanOffLine(ImeiDaBanOffLineRequest imeiDaBanOffLineRequest);
+
+    //xoa bảng imei_da_ban của sku được chọn trong bill_detail
+    Boolean deleteImeiDaBanOffLine(Long idImeiDaban);
+
+    //seach imei thất lạc
+     List<CheckImeiDaBanIonSellOffLine> checkImeiThatLac(String codeImei);
 }

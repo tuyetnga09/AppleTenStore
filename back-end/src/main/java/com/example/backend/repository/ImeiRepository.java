@@ -30,6 +30,6 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
             " s.quantity as 'quantityImei', s.capacity as 'capacitySKU', \n" +
             " s.color as 'colorSKU', p.name as 'nameProduct'\n" +
             " from imei i join sku s on i.sku_id = s.id join product p on s.product_id = p.id  " +
-            " where i.status = 'DANG_SU_DUNG' and s.id=?1", nativeQuery = true)
+            " where i.status = 0 and s.id=?1", nativeQuery = true)
     List<ImeiBillOffLineIonRespon> imeisSellOffLine(Long idSku);
 }

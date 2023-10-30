@@ -50,6 +50,9 @@ import {
   getBillDetailOfBill,
   getImeisOfSku,
   getOneSkuSelected,
+  addImeiDaBan,
+  getListImeiDaBanOfSku,
+  getListImeiThatLac,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -411,10 +414,21 @@ export default function SellSmart() {
 
   //lấy ra idBillDetail khi mở modal để thê imei vào bảng imei đã bán
   const [dataIdBillDetail, setDataIdBillDetail] = useState(null);
+  //lấy ra idSKU khi mở modal để thêm imei vào bảng imei đã bán
+  const [dataIdSKU, setDataIdSKU] = useState(null);
   // Hàm để hiển thị Modal imei khi cần
-  const handleImeiOpen = (idBillDetail) => {
+  const handleImeiOpen = (idBillDetail, idSKU) => {
     // load ra tất cả imei đã đucowj thêm vào bảng imei đã bán --->
+
     setDataIdBillDetail(idBillDetail);
+    setDataIdSKU(idSKU);
+    getListImeiDaBanOfSku(idBillDetail, idSKU)
+      .then((response) => {
+        setDataImeiSelected(response.data);
+      })
+      .catch((error) => {
+        console.log(`Lỗi đọc sku: ${error}`);
+      });
     setIsModalVisibleImei(true);
   };
 
@@ -423,6 +437,9 @@ export default function SellSmart() {
     setDataSKuSelected({});
     setDataImeiClick([]);
     setDataIdBillDetail([]);
+    setDataImeiSelected([]);
+    setDataIdSKU([]);
+    setDataImeiThatLac([]);
     setIsModalVisibleImei(false);
   };
 
@@ -433,18 +450,16 @@ export default function SellSmart() {
   //lấy ra sku được chọn
   const [dataSkuSelected, setDataSKuSelected] = useState({});
 
-  //add imei vào giỏ hàng off line
+  //phongnh -- lấy ra sku được chọn và danh sách imei  của sku đó
   async function handleAddImei(idSKU, idBillDetail) {
-    // Tạo một đối tượng imei để gửi lên API BE để load ra tất cả imei cả sku đó
     getImeisOfSku(idSKU)
       .then((response) => {
         setDataImeiClick(response.data);
-        console.log(response.data);
-        console.log(idSKU + " -------huhuhu");
       })
       .catch((error) => {
         console.log(`Lỗi đọc imei của sku: ${error}`);
       });
+
     getOneSkuSelected(idSKU)
       .then((response) => {
         setDataSKuSelected(response.data);
@@ -452,11 +467,73 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`Lỗi đọc sku: ${error}`);
       });
-    handleImeiOpen(idBillDetail);
+
+    handleImeiOpen(idBillDetail, idSKU);
   }
 
   //add imei vào bảng imei dã bán - phongnh
-  async function handleImeiClick(codeImei) {}
+  const handleImeiClick = (codeImei, idBillDetail) => {
+    // Tạo một đối tượng AddCart để gửi lên API
+    const item = {
+      codeImei: codeImei,
+      idBillDetail: idBillDetail,
+      codeAccount: idAccount,
+    };
+    addImeiDaBan(item)
+      .then((response) => {
+        if (response.data === "") {
+          notification.error({
+            message: "Thêm Imei Thất Bại!",
+            description: "imei đã có trong giỏ hàng hoặc đã bán!",
+          });
+        } else {
+          getListImeiDaBanOfSku(idBillDetail, dataIdSKU)
+            .then((response) => {
+              setDataImeiSelected(response.data);
+            })
+            .catch((error) => {
+              console.log(`Lỗi đọc sku: ${error}`);
+            });
+          getImeisOfSku(dataIdSKU)
+            .then((response) => {
+              setDataImeiClick(response.data);
+            })
+            .catch((error) => {
+              console.log(`Lỗi đọc imei của sku: ${error}`);
+            });
+          notification.success({
+            message: "Thêm Imei Thành Công",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(`Lỗi khi cập nhật số lượng: ${error}`);
+      });
+  };
+
+  const [dataImeiThatLac, setDataImeiThatLac] = useState([]);
+  //tìm kiếm imei thất lạc - phongnh
+  function handleChangeImeiThatLac(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(target + " check imei");
+    console.log(value + " check imei - name");
+
+    // let item = { key: "" };
+    // item[name] = value;
+    // setDataImeiThatLac(item);
+    if (value !== undefined) {
+      getListImeiThatLac(value)
+        .then((response) => {
+          setDataImeiThatLac(response.data);
+          console.log(response.data + " check imei - response.data");
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }
 
   const handleUpdateQuantity = (cartItemId, newQuantity, idSKU) => {
     if (newQuantity == 0) {
@@ -1286,7 +1363,7 @@ export default function SellSmart() {
                               })}
                             </td>
                             <td>
-                              <p>số imei</p>
+                              <p>số imei </p>
                               <p>{billDetail.idSKU}</p>
                               <p>
                                 <button
@@ -1924,7 +2001,7 @@ export default function SellSmart() {
           onCancel={handleCancelImei}
           width={550}
           footer={null}
-          bodyStyle={{ minHeight: "700px" }}
+          bodyStyle={{ minHeight: "800px" }}
         >
           <div className="container py-5">
             <div className="row d-flex justify-content-center">
@@ -1941,14 +2018,82 @@ export default function SellSmart() {
                 className="card-header d-flex justify-content-between align-items-center p-3"
                 style={{ borderTop: "4px solid #ffa900" }}
               ></div>
-              <p style={{ marginTop: "10px", fontWeight: "bold" }}>
+              <p
+                style={{
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  backgroundColor: "orange",
+                }}
+              >
+                Imei Thất Lạc
+              </p>
+              <input
+                className="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                name="key"
+                onChange={handleChangeImeiThatLac}
+              />
+              {dataImeiThatLac.length > 0 ? (
+                <ul class="list-group mb-3">
+                  <li
+                    class="list-group-item d-flex justify-content-between"
+                    style={{ backgroundColor: "yellowgreen" }}
+                  >
+                    <span>STT</span>
+                    <span style={{ paddingLeft: "10px" }}>Mã Hoá Đơn</span>
+                    <span style={{ paddingLeft: "10px" }}>Tên Sản Phẩm</span>
+                    <span style={{ paddingLeft: "10px" }}>Dung Lượng</span>
+                    <span style={{ paddingLeft: "10px" }}>Màu Sắc</span>
+                    <span style={{ paddingLeft: "10px" }}>Giá</span>
+                    <span style={{ paddingLeft: "10px" }}>Trạng Thái HĐ</span>
+                  </li>
+                  {dataImeiThatLac.map((imei, index) => (
+                    <ul class="list-group mb-3">
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span>{index + 1}:</span>
+                        <span>{imei.codeBill}</span>
+                        <span style={{ paddingLeft: "10px" }}>{""}</span>
+                        <span style={{ paddingLeft: "10px" }}>{""}</span>
+                        <span style={{ paddingLeft: "10px" }}>{""}</span>
+                        <span style={{ paddingLeft: "10px" }}>{""}</span>
+                        <span style={{ paddingLeft: "10px" }}>{""}</span>
+                        <span style={{ paddingLeft: "10px" }}>{""}</span>
+                        <span style={{ paddingLeft: "10px" }}>{""}</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span style={{ paddingLeft: "25px" }}>
+                          {" - "} {imei.nameProduct}
+                          {" - "}
+                          {imei.capacitySKU}
+                          {" - "} {imei.colorSKU}
+                          {" - "} {imei.priceSKU}
+                          {" - "}
+                          {imei.statusBill}
+                        </span>
+                      </li>
+                    </ul>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ color: "red" }}>* Không có dữ liệu!</p>
+              )}
+
+              <p
+                style={{
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  backgroundColor: "orange",
+                }}
+              >
                 Danh Sách Imei Đã Chọn Của {dataSkuSelected.nameProduct}{" "}
                 {dataSkuSelected.colorSKU} - {dataSkuSelected.capacitySKU}
               </p>
               <div
                 className="card-body"
                 data-mdb-perfect-scrollbar="true"
-                style={{ position: "relative", height: 200, overflowY: "auto" }}
+                style={{ position: "relative", height: 250, overflowY: "auto" }}
               >
                 {dataImeiSelected.map((imei, index) => (
                   <ul class="list-group mb-3">
@@ -1962,7 +2107,9 @@ export default function SellSmart() {
                         /> */}
                         {index + 1}
                       </span>
-                      <span style={{ paddingLeft: "10px" }}>{imei.name}</span>
+                      <span style={{ paddingLeft: "10px" }}>
+                        {imei.codeImeiDaBan}
+                      </span>
                       <strong>
                         {/* <Checkbox
                         onClick={() => handleVoucherClick(voucher)}
@@ -1991,7 +2138,13 @@ export default function SellSmart() {
                 className="card-header d-flex justify-content-between align-items-center p-3"
                 style={{ borderTop: "4px solid #ffa900" }}
               ></div>
-              <p style={{ marginTop: "10px", fontWeight: "bold" }}>
+              <p
+                style={{
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  backgroundColor: "orange",
+                }}
+              >
                 Danh Sách Imei Của {dataSkuSelected.nameProduct}{" "}
                 {dataSkuSelected.colorSKU} - {dataSkuSelected.capacitySKU}
               </p>
@@ -2020,7 +2173,9 @@ export default function SellSmart() {
                         <Button
                           type="text"
                           danger
-                          onClick={() => handleImeiClick(imei.codeImei)}
+                          onClick={() =>
+                            handleImeiClick(imei.codeImei, dataIdBillDetail)
+                          }
                         >
                           Chọn
                         </Button>

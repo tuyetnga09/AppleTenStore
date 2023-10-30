@@ -17,7 +17,6 @@ public interface BillDetailOffLineIon {
      @Value("#{target.price}")
      BigDecimal getPrice();
 
-
      @Value("#{target.statusBillDetail}")
      StatusBill getStatusBill();
 

@@ -46,3 +46,31 @@ export const getImeisOfSku = (idSKU) => {
 export const getOneSkuSelected = (idSKU) => {
   return httpClient.get(`/admin/bill-offline/get-sku?idSKU=${idSKU}`);
 };
+
+//lấy ra list imei đã bán của sku trong bill_detail được chọn
+export const getListImeiDaBanOfSku = (idBillDetail, idSKU) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-imei-da-ban?idBillDetail=${idBillDetail}&idSKU=${idSKU}`
+  );
+};
+
+//add imei vvào billDetail ( vào bảng imei_da_ban)
+export const addImeiDaBan = (imeiDaBanOffLineRequest) => {
+  return httpClient.post(
+    `/admin/bill-offline/add-imei-da-ban`,
+    imeiDaBanOffLineRequest
+  );
+};
+
+//delete imei_da_ban
+export const deleteImeiDaBan = (idImeiDaBan) => {
+  return httpClient.delete(
+    `/admin/bill-offline/delete-imei-da-ban?idImeiDaBan=${idImeiDaBan}`
+  );
+};
+
+export const getListImeiThatLac = (codeImei) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-imei-that-lac?codeImei=${codeImei}`
+  );
+};

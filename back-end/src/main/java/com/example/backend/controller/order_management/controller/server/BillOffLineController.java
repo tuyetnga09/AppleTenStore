@@ -2,22 +2,28 @@ package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.model.billOffLine.AddBillOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
+import com.example.backend.controller.order_management.model.billOffLine.ImeiDaBanOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.BillDetails;
+import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.SKU;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -73,4 +79,32 @@ public class BillOffLineController {
         return new ResponseEntity<>(sku, HttpStatus.OK);
     }
 
+    //lấy ra list imei đã bán của sku trong bill_detail được chọn
+    @GetMapping("/get-imei-da-ban")
+    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> getListImeiDaBanOfSku(@RequestParam("idBillDetail") Integer idBillDetail ,
+                                                                             @RequestParam("idSKU") Long idSKU) {
+        List<ImeiDaBanOffLineIonRespon> list = billOffLineService.getImeiDaBanOfSku(idBillDetail, idSKU);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //add imei vvào billDetail ( vào bảng imei_da_ban)
+    @PostMapping("/add-imei-da-ban")
+    public ResponseEntity<ImeiDaBan> addImeiDaBan(@RequestBody ImeiDaBanOffLineRequest imeiDaBanOffLineRequest) {
+        ImeiDaBan  imeiDaBan= billOffLineService.addImeiDaBanOffLine(imeiDaBanOffLineRequest);
+        return new ResponseEntity<>(imeiDaBan, HttpStatus.OK);
+    }
+
+    //delete imei_da_ban -> đang chưa hoà lại status cho imei...
+    @DeleteMapping("/delete-imei-da-ban")
+    public ResponseEntity<Boolean> deleteImeiDaBan(@RequestParam("idImeiDaBan") Long idImeiDaBan ) {
+        Boolean check = billOffLineService.deleteImeiDaBanOffLine(idImeiDaBan);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    // tìm imei thất lạc
+    @GetMapping("/get-imei-that-lac")
+    public ResponseEntity<List<CheckImeiDaBanIonSellOffLine>> getListImeiThatLac(@RequestParam("codeImei") String codeImei ) {
+        List<CheckImeiDaBanIonSellOffLine> list = billOffLineService.checkImeiThatLac(codeImei);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
 }

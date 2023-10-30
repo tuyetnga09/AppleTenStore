@@ -2,17 +2,23 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.billOffLine.AddBillOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
+import com.example.backend.controller.order_management.model.billOffLine.ImeiDaBanOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.BillDetails;
+import com.example.backend.entity.Imei;
+import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.BillDetailRepository;
 import com.example.backend.repository.BillRepository;
+import com.example.backend.repository.ImeiDaBanRepository;
 import com.example.backend.repository.ImeiRepository;
 import com.example.backend.repository.SKURepositoty;
 import com.example.backend.untils.Roles;
@@ -44,6 +50,9 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
     @Autowired
     private ImeiRepository imeiRepository;
+
+    @Autowired
+    private ImeiDaBanRepository imeiDaBanRepository;
 
     @Override
     public Account getAccount(Integer idAccount) {
@@ -276,10 +285,62 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         return imeis;
     }
 
+    //lấy ra thông tin sku được chọn
     @Override
     public SkuBillOffLineIonRespon getOneSKU(Long idSKU) {
         SkuBillOffLineIonRespon sku = skuRepositoty.getOneSkuSellOffLine(idSKU);
         return sku;
     }
 
+    //lấy ra list imei đã bán của sku trong bill_detail được chọn
+    @Override
+    public List<ImeiDaBanOffLineIonRespon> getImeiDaBanOfSku(Integer idBillDetail, Long idSku) {
+        List<ImeiDaBanOffLineIonRespon> list = imeiDaBanRepository.imeisDaBanSellOffLine(idBillDetail, idSku);
+        return list;
+    }
+
+    //add imei vvào billDetail ( vào bảng imei_da_ban)
+    @Override
+    public ImeiDaBan addImeiDaBanOffLine(ImeiDaBanOffLineRequest imeiDaBanOffLineRequest) {
+        //kiểm tra xem imei thêm vào imei_da_ban đã có trong bill detail nào chưa, có rồi retunr null
+        ImeiDaBan checkImeiDaBan = imeiDaBanRepository.findByCodeImei(imeiDaBanOffLineRequest.getCodeImei());
+        if (checkImeiDaBan != null) {
+            return null;
+        }
+        BillDetails billDetails = billDetailRepository.findById(imeiDaBanOffLineRequest.getIdBillDetail()).get();
+        ImeiDaBan imeiDaBan = new ImeiDaBan();
+        imeiDaBan.setCodeImei(imeiDaBanOffLineRequest.getCodeImei());
+        imeiDaBan.setBillDetail(billDetails);
+        imeiDaBan.setPersonSell(imeiDaBanOffLineRequest.getCodeAccount());
+        LocalDate now = LocalDate.now();
+        imeiDaBan.setDateSell(now);
+        imeiDaBan.setStatus(2); // 2 - imei đang trong giỏ hàng
+
+        //cập nhật lại imei trong bảng imei có status = 3 (3 là nằm trong giỏ hàng)
+        Imei imeiUpdate = imeiRepository.findByCodeImei(imeiDaBanOffLineRequest.getCodeImei());
+        imeiUpdate.setStatus(2);
+        imeiRepository.save(imeiUpdate);
+
+        return imeiDaBanRepository.save(imeiDaBan);
+    }
+
+    //delete imei_da_ban
+    @Override
+    public Boolean deleteImeiDaBanOffLine(Long idImeiDaban) {
+        Boolean isCheck = imeiDaBanRepository.existsById(idImeiDaban);
+        if (isCheck) {
+            imeiDaBanRepository.deleteById(idImeiDaban);
+            return true;
+        }
+        return false;
+    }
+
+    //seach imei thất lạc
+    public List<CheckImeiDaBanIonSellOffLine> checkImeiThatLac(String codeImei){
+        if (codeImei.trim().equals("")){
+            return null;
+        }
+        List<CheckImeiDaBanIonSellOffLine> list = imeiDaBanRepository.checkImeiDaBan(codeImei);
+        return list;
+    }
 }

@@ -39,4 +39,6 @@ public class Imei extends DuplicateAttribute implements Identify {
     @ManyToOne
     @JoinColumn(name = "sku_id")
     private SKU idSku;
+
+    //status của imei: 0 - hoạt động, 1 - đã xoá, 2 - giỏ hàng, 3 - đã bán
 }
