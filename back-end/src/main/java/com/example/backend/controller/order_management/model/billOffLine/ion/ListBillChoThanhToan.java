@@ -20,8 +20,8 @@ public interface ListBillChoThanhToan {
     @Value("#{target.statusBillDetail}")
     StatusBill getStatusBill();
 
-    @Value("#{target.product}")
-    Integer getProduct();
+//    @Value("#{target.product}")
+//    Integer getProduct();
 
     @Value("#{target.bill}")
     Integer getBill();

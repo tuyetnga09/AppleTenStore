@@ -100,6 +100,8 @@ export default function SellSmart() {
   const [hoaDonCho, setHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
   const [slHoaDonCho, setDlHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
 
+  const [dataTest, setDataTest] = useState(false); // tesst so luong
+
   const [customer, setCustomer] = useState({
     fullName: "", // Đổi từ 'full_name' thành 'fullName'
     email: "", // Giữ nguyên
@@ -245,7 +247,7 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, [filters, filtersCategory]);
+  }, [filters, filtersCategory, dataTest]);
 
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
@@ -382,7 +384,7 @@ export default function SellSmart() {
     });
   };
 
-  //test phongnh
+  // phongnh
   // thêm sp vào giỏ hàng bán off
   async function handleAddBillDetail(idSKU, priceSku, codeBill) {
     // Tạo một đối tượng AddCart để gửi lên API
@@ -400,7 +402,6 @@ export default function SellSmart() {
         getBillDetailOfBill(codeBill)
           .then((response) => {
             setDataBillDetailOffline(response.data);
-            console.log(response.data + " billdetail ------------");
           })
           .catch((error) => {
             console.log(`${error}`);
@@ -409,6 +410,7 @@ export default function SellSmart() {
       .catch((error) => {
         console.log("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
       });
+    setDataTest(!dataTest);
   }
 
   //phongnh - imei
@@ -443,6 +445,7 @@ export default function SellSmart() {
     setDataImeiSelected([]);
     setDataIdSKU([]);
     setDataImeiThatLac([]);
+    document.getElementById("id-imeithatlac").value = "";
     setIsModalVisibleImei(false);
   };
 
@@ -577,7 +580,8 @@ export default function SellSmart() {
   useEffect(() => {
     calculateTotalPrice();
     calculateChange();
-  }, [dataBillDetailOffline]);
+  }, [dataBillDetailOffline, dataTest]);
+
   const calculateTotalPrice = () => {
     let total = 0;
     dataBillDetailOffline.forEach((product) => {
@@ -881,8 +885,11 @@ export default function SellSmart() {
                     >
                       <Table.Column
                         dataIndex="images"
+                        title="Ảnh"
                         render={(text, record) => (
-                          <AvtProduct product={record.idProduct} />
+                          <div style={{ width: "150px" }}>
+                            <AvtProduct product={record.idProduct} />
+                          </div>
                         )}
                       />
                       <Table.Column
@@ -1127,7 +1134,6 @@ export default function SellSmart() {
                             </td>
                             <td>
                               <p>số imei </p>
-                              <p>{billDetail.idSKU}</p>
                               <p>
                                 <button
                                   type="button"
@@ -1807,6 +1813,7 @@ export default function SellSmart() {
                 Imei Thất Lạc
               </p>
               <input
+                id="id-imeithatlac"
                 className="form-control me-2"
                 type="search"
                 placeholder="Search"
@@ -1959,7 +1966,7 @@ export default function SellSmart() {
                           Chọn
                         </Button>
                       </strong>
-                    </li>imei
+                    </li>
                   </ul>
                 ))}
               </div>
