@@ -17,15 +17,17 @@ public interface BillDetailOffLineIon {
      @Value("#{target.price}")
      BigDecimal getPrice();
 
-
      @Value("#{target.statusBillDetail}")
      StatusBill getStatusBill();
 
-     @Value("#{target.product}")
-     Integer getProduct();
+//     @Value("#{target.product}")
+//     Integer getProduct();
 
      @Value("#{target.bill}")
      Integer getBill();
+
+     @Value("#{target.CodeBill}")
+     String getCodeBill();
 
      @Value("#{target.personCreate}")
      String getPersonCreate();

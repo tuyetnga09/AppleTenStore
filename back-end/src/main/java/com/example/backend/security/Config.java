@@ -1,7 +1,6 @@
 package com.example.backend.security;
 
 import com.example.backend.controller.order_management.service.AccountService;
-import com.example.backend.controller.order_management.service.UserService;
 import com.example.backend.entity.Account;
 import com.example.backend.untils.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -70,15 +64,12 @@ public class Config implements WebMvcConfigurer {
                 .authorizeRequests()
                 .requestMatchers("/**").permitAll()
 //                .requestMatchers("/public/**").permitAll()
-                .requestMatchers("/customer/**").hasAnyRole(String.valueOf(Roles.CUSTOMER), String.valueOf(Roles.NHAN_VIEN), String.valueOf(Roles.ADMIN))
-                .requestMatchers("/employee/**").hasAnyRole(String.valueOf(Roles.NHAN_VIEN), String.valueOf(Roles.ADMIN))
+                .requestMatchers("/customer/**").hasRole(String.valueOf(Roles.CUSTOMER))
+                .requestMatchers("/employee/**").hasRole(String.valueOf(Roles.NHAN_VIEN))
                 .requestMatchers("/admin/**").hasRole(String.valueOf(Roles.ADMIN))
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-//                .loginPage("http://localhost:3000/login")
-                .defaultSuccessUrl("/public/product/display")// Đường dẫn sau khi đăng nhập thành công
-                .permitAll()
                 .and()
                 .logout()
                 .addLogoutHandler(new SecurityContextLogoutHandler())

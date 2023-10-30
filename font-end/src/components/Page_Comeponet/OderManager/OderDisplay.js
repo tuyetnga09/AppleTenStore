@@ -1,56 +1,42 @@
-import { useEffect, useState } from "react";
-import { useTranslate } from "@refinedev/core";
+import {useEffect, useState} from "react";
+import {useTranslate} from "@refinedev/core";
 import {
-  SearchOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-  DashboardOutlined,
   AppstoreAddOutlined,
+  CloseCircleOutlined,
+  DashboardOutlined,
+  FormOutlined,
   GiftOutlined,
   LogoutOutlined,
-  ShopOutlined,
-  CloseCircleOutlined,
-  FormOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
   MoreOutlined,
+  SearchOutlined,
+  ShopOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import {
-  Typography,
-  Table,
-  Image,
-  Card,
-  Input,
-  Form,
-  DatePicker,
-  Select,
+  Badge,
   Button,
-  Row,
+  Card,
   Col,
+  DatePicker,
+  Dropdown,
+  Form,
+  Input,
   Layout,
   Menu,
+  Row,
+  Select,
+  Table,
   theme,
-  Badge,
-  notification,
-  Modal,
-  Dropdown,
+  Typography,
 } from "antd";
-import { List, Array, DateField } from "@refinedev/antd";
-import {
-  Link,
-  useHistory,
-  useParams,
-} from "react-router-dom/cjs/react-router-dom.min";
-import { faTimes, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  searchNoDate,
-  searchWithDate,
-  updateStatusBill,
-} from "../../../service/Bill/bill.service";
-import { readAllUser } from "../../../service/User/user.service";
+import {DateField, List} from "@refinedev/antd";
+import {Link, useHistory,} from "react-router-dom/cjs/react-router-dom.min";
+import {searchNoDate, searchWithDate, updateStatusBill,} from "../../../service/Bill/bill.service";
+import {readAllUser} from "../../../service/User/user.service";
 import queryString from "query-string";
-import { Option } from "antd/es/mentions";
-import dayjs, { Dayjs } from "dayjs";
+import {Option} from "antd/es/mentions";
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;

@@ -29,6 +29,8 @@ public interface BillService {
 
     void updateStatusBill(int id);
 
+    Bill findByCode(String code);
+
     List<Bill> listBillByIdAccount(Integer id);
 
     List<Bill> listBillByIdAccountCXN(Integer id);

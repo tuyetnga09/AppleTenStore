@@ -74,4 +74,5 @@ public class SKUServiceImpl implements Iservice<SKU> {
     public List<ListSkuProduct> getSKUProductFormSellOffByCategory(Integer id, String key){
         return skuRepositoty.getSkuProductFormSellOfflineByCategory(id, key);
     }
+
 }
