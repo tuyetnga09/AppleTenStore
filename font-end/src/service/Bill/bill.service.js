@@ -16,5 +16,9 @@ export const createBillAccount = (billAccount) => {
 }
 
 export const updateStatusBill = (id) => {
-  return httpClient.put(`/customer/bill/update-status/${id}`)
+  return httpClient.put(`/customer/bill/update-status/${id}`);
+}
+
+export const findBillByCode = (code) => {
+  return httpClient.get(`/customer/bill/search/${code}`);
 }

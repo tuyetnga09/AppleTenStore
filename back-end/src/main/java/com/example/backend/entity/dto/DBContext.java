@@ -69,11 +69,10 @@ public class DBContext implements CommandLineRunner {
         addRam("R3", "5GB");
         addRam("R4", "6GB");
         addRam("R5", "7GB");
-        addCategory("CT1", "Iphone X");
-        addCategory("CT2", "Iphone 11");
-        addCategory("CT3", "Iphone 12");
-        addCategory("CT4", "Samsung A23");
-        addCategory("CT5", "Samsung S22");
+        addCategory("CT1", "Iphone");
+        addCategory("CT2", "Samsung");
+        addCategory("CT3", "Oppo");
+        addCategory("CT4", "Xiaomi");
 
         // Thêm dữ liệu cho bảng Capacity
         addCapacity("C1", "32GB");
@@ -116,11 +115,11 @@ public class DBContext implements CommandLineRunner {
         addSize("SZ5", "51 mm");
 
         // Thêm dữ liệu cho bảng Voucher
-        addVoucher("V1", "Giảm giá sốc cuối tháng", LocalDate.of(2023, 10, 10), LocalDate.of(2023, 10, 20), new BigDecimal("2000000"), new BigDecimal("1000000"), new BigDecimal("10000000"), new BigDecimal("15000000"), 100, 5);
-        addVoucher("V2", "Giảm giá", LocalDate.of(2023, 9, 25), LocalDate.of(2023, 9, 27), new BigDecimal("2100000"), new BigDecimal("1200000"), new BigDecimal("30000000"), new BigDecimal("15000000"), 100, 3);
-        addVoucher("V3", "Sale sốc cuối năm", LocalDate.of(2023, 9, 26), LocalDate.of(2023, 9, 28), new BigDecimal("1100000"), new BigDecimal("2300000"), new BigDecimal("11000000"), new BigDecimal("22000000"), 200, 7);
-        addVoucher("V4", "Sale sập sàn", LocalDate.of(2023, 9, 21), LocalDate.of(2023, 9, 30), new BigDecimal("2200000"), new BigDecimal("2500000"), new BigDecimal("11000000"), new BigDecimal("15000000"), 100, 9);
-        addVoucher("V5", "Tưng bừng giảm giá", LocalDate.of(2023, 9, 20), LocalDate.of(2023, 9, 21), new BigDecimal("2600000"), new BigDecimal("3000000"), new BigDecimal("15000000"), new BigDecimal("25000000"), 150, 8);
+        addVoucher("VC01", "Giảm giá sốc cuối tháng", LocalDate.of(2023, 10, 10), LocalDate.of(2023, 11, 20), new BigDecimal("2000000"), new BigDecimal("1000000"), new BigDecimal("10000000"), new BigDecimal("15000000"), 100, 5);
+        addVoucher("VC02", "Giảm giá", LocalDate.of(2023, 11, 25), LocalDate.of(2023, 11, 27), new BigDecimal("2100000"), new BigDecimal("1200000"), new BigDecimal("30000000"), new BigDecimal("15000000"), 100, 3);
+        addVoucher("VC033", "Sale sốc cuối năm", LocalDate.of(2023, 10, 26), LocalDate.of(2023, 11, 28), new BigDecimal("1100000"), new BigDecimal("2300000"), new BigDecimal("11000000"), new BigDecimal("22000000"), 200, 7);
+        addVoucher("VC044", "Sale sập sàn", LocalDate.of(2023, 10, 21), LocalDate.of(2023, 11, 30), new BigDecimal("2200000"), new BigDecimal("2500000"), new BigDecimal("11000000"), new BigDecimal("15000000"), 100, 9);
+        addVoucher("VC05", "Tưng bừng giảm giá", LocalDate.of(2023, 10, 20), LocalDate.of(2023, 11, 21), new BigDecimal("2600000"), new BigDecimal("3000000"), new BigDecimal("15000000"), new BigDecimal("25000000"), 150, 8);
 
         addUser("Trung Hieu", LocalDate.of(2003, 12, 10), "0355969499", "trunghieunguyen673@gmail.com", true, 100000, Status.DANG_SU_DUNG);
         addUser("Công Minh", LocalDate.of(2003, 7, 23), "0355969888", "congminh673@gmail.com", true, 200000, Status.DANG_SU_DUNG);
