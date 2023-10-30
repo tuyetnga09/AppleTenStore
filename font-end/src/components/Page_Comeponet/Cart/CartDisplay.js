@@ -40,7 +40,6 @@ export default function CartDisplay() {
     if (idAccount !== null && idAccount !== "") {
       readAll(idAccount)
         .then((response) => {
-          console.log(response.data);
           setProducts(response.data);
           // setNumber(response.data.total);
         })
@@ -51,11 +50,15 @@ export default function CartDisplay() {
       Promise.all(requests)
         .then((responses) => {
           const productsData = responses.map((response, index) => {
-            const productInfo = response.data[0];
             const cartItem = cartItems[index];
             // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
             return {
-              ...productInfo,
+              capacity: cartItem.capacity,
+              color: cartItem.color,
+              idProduct: cartItem.idProduct,
+              idSKU: cartItem.idSKU,
+              nameProduct: cartItem.nameProduct,
+              quantitySKU: cartItem.quantitySKU,
               quantity: cartItem.quantity,
               price: cartItem.price,
               total: cartItem.quantity * cartItem.price,
@@ -122,6 +125,7 @@ export default function CartDisplay() {
           }
           return item;
         });
+        
         sessionStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
         setProducts(updatedCartItems);
         calculateTotalPrice();

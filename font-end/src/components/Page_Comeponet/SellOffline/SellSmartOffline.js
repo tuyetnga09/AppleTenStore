@@ -53,6 +53,9 @@ import {
   getImeisOfSku,
   getOneSkuSelected,
   getBillChoThanhToan,
+  updateQuantitySellOff,
+  getBillCTTByCodeBill,
+  getBillCTTByCodeBillS2,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -233,15 +236,12 @@ export default function SellSmart() {
     getBillChoThanhToan(idAccount)
       .then((response) => {
         setHoaDonCho(response.data);
-        console.log(response.data + "jfhsjdhajfhsdu");
+        const totalQuantity = hoaDonCho.length;
+        setDlHoaDonCho(totalQuantity);
       })
       .catch((error) => {
         console.log(`${error}`);
       });
-
-      const totalQuantity = hoaDonCho.length;
-      setDlHoaDonCho(totalQuantity);
-
   }, [filters, filtersCategory]);
 
   function handlePageChange(newPage) {
@@ -461,7 +461,7 @@ export default function SellSmart() {
   //add imei vào bảng imei dã bán - phongnh
   async function handleImeiClick(codeImei) {}
 
-  const handleUpdateQuantity = (cartItemId, newQuantity, idSKU) => {
+  const handleUpdateQuantity = (billDetailID, newQuantity, codeBill) => {
     if (newQuantity == 0) {
       newQuantity = 1;
     } else if (newQuantity < 0) {
@@ -471,12 +471,12 @@ export default function SellSmart() {
         description: "Không được nhập số lượng âm",
       });
     } else {
-      updateQuantityOff(cartItemId, newQuantity)
+      updateQuantitySellOff(billDetailID, newQuantity)
         .then((response) => {
-          console.log("Phản hồi từ máy chủ:", response.data);
-          readAllCartOff(idNhanVien)
+          console.log(response.data);
+          getBillDetailOfBill(codeBill)
             .then((response) => {
-              setCartItems(response.data);
+              setDataBillDetailOffline(response.data);
             })
             .catch((error) => {
               console.log(`${error}`);
@@ -652,6 +652,24 @@ export default function SellSmart() {
 
   const filterOption = (input, option) => {
     return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+  };
+
+  const clickHoaDonCho = (codeBill) => {
+    setDataBillOffline([]);
+    getBillCTTByCodeBill(codeBill)
+      .then((response) => {
+        setDataBillDetailOffline(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    getBillCTTByCodeBillS2(codeBill)
+      .then((response) => {
+        setDataBillOffline(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   };
 
   return (
@@ -862,57 +880,6 @@ export default function SellSmart() {
                         }}
                       />
                     </Table>
-                    {/* <table className="table">
-                      <thead className="thead-dark">
-                        <tr>
-                          <th className="so--luong">Ảnh</th>
-                          <th className="so--luong">Tên sản phẩm</th>
-                          <th className="so--luong">Giá bán</th>
-                          <th className="so--luong">Kho</th>
-                          <th className="so--luong text-center" />
-                        </tr>
-                      </thead>
-                      <tbody style={{ position: "relative", height: "100px" }}>
-                        {skuProduct.map((product) => (
-                          <tr>
-                            <td style={{ width: "200px" }}>
-                              <AvtProduct
-                                product={product.idProduct}
-                              ></AvtProduct>
-                            </td>
-                            <td>
-                              <h6 className="text-primary">
-                                {product.nameProduct} {product.nameCapacity}{" "}
-                                {product.nameColor}
-                              </h6>
-                            </td>
-                            <td>
-                              {parseFloat(product.price).toLocaleString(
-                                "vi-VN",
-                                {
-                                  style: "currency",
-                                  currency: "VND",
-                                }
-                              )}
-                            </td>
-                            <td>{product.quantitySKU}</td>
-                            <td>
-                              <button
-                                className="btn btn-primary btn-sm trash"
-                                type="button"
-                                title="Xóa"
-                              >
-                                <ShoppingCartOutlined />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table> */}
-                    {/* <Pagination
-                      pagination={pagination}
-                      onPageChange={handlePageChange}
-                    /> */}
 
                     {/* test phongnh  */}
                     <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
@@ -966,7 +933,6 @@ export default function SellSmart() {
                                       `quantity-${index}`
                                     );
                                     quantity.value = billDetail.quantity - 1;
-                                    console.log(quantity.value);
                                     if (quantity.value <= 0) {
                                       notification.error({
                                         message: "ADD TO CART",
@@ -974,11 +940,11 @@ export default function SellSmart() {
                                       });
                                       quantity.value = 1;
                                     }
-                                    // handleUpdateQuantity(
-                                    //   cart.idCartDetail,
-                                    //   cart.quantity - 1,
-                                    //   cart.idSKU
-                                    // );
+                                    handleUpdateQuantity(
+                                      billDetail.id,
+                                      billDetail.quantity - 1,
+                                      billDetail.codeBill
+                                    );
                                   }}
                                   className="minus"
                                 />
@@ -987,13 +953,12 @@ export default function SellSmart() {
                                   className="quantity fw-bold text-black"
                                   min={0}
                                   name="quantity"
-                                  // value={product.quantity}
                                   type="number"
-                                  placeholder={billDetail.quantity}
+                                  defaultValue={billDetail.quantity}
                                   onChange={() => {
-                                    getOneSKU(billDetail.idSKU).then((res) => {
-                                      // setQuantitySKU(res.data.quantity);
-                                    });
+                                    getOneSKU(billDetail.idSKU).then(
+                                      (res) => {}
+                                    );
                                   }}
                                   onBlur={(event) => {
                                     if (event.target.value <= 0) {
@@ -1005,11 +970,11 @@ export default function SellSmart() {
                                         `quantity-${index}`
                                       );
                                       quantity.value = billDetail.quantity;
-                                      // handleUpdateQuantity(
-                                      //   cart.idCartDetail,
-                                      //   cart.quantity,
-                                      //   cart.idSKU
-                                      // );
+                                      handleUpdateQuantity(
+                                        billDetail.id,
+                                        billDetail.quantity,
+                                        billDetail.codeBill
+                                      );
                                     } else if (
                                       event.target.value > parseInt(quantitySKU)
                                       // +
@@ -1024,21 +989,21 @@ export default function SellSmart() {
                                         `quantity-${index}`
                                       );
                                       quantity.value = billDetail.quantity;
-                                      // handleUpdateQuantity(
-                                      //   cart.idCartDetail,
-                                      //   cart.quantity,
-                                      //   cart.idSKU
-                                      // );
+                                      handleUpdateQuantity(
+                                        billDetail.id,
+                                        billDetail.quantity,
+                                        billDetail.codeBill
+                                      );
                                     } else {
                                       const quantity = document.getElementById(
                                         `quantity-${index}`
                                       );
                                       quantity.value = event.target.value;
-                                      // handleUpdateQuantity(
-                                      //   cart.idCartDetail,
-                                      //   event.target.value,
-                                      //   cart.idSKU
-                                      // );
+                                      handleUpdateQuantity(
+                                        billDetail.id,
+                                        billDetail.quantity,
+                                        billDetail.codeBill
+                                      );
                                     }
                                   }}
                                 />
@@ -1065,11 +1030,11 @@ export default function SellSmart() {
                                         );
                                       }
                                     });
-                                    // handleUpdateQuantity(
-                                    //   cart.idCartDetail,
-                                    //   parseInt(cart.quantity) + 1,
-                                    //   cart.idSKU
-                                    // );
+                                    handleUpdateQuantity(
+                                      billDetail.id,
+                                      billDetail.quantity + 1,
+                                      billDetail.codeBill
+                                    );
                                   }}
                                   className="plus"
                                 />
@@ -1885,6 +1850,22 @@ export default function SellSmart() {
                       width: "170px",
                       height: "60px",
                       marginBottom: "10px",
+                    }}
+                    onClick={() => {
+                      const shouldContinue = window.confirm(
+                        "Bạn có muốn tiếp tục thanh toán không?"
+                      );
+                      if (shouldContinue) {
+                        // Thực hiện hành động sau khi xác nhận
+                        clickHoaDonCho(hoadon.code);
+                        setIsModalVisibleBill(false);
+                        notification.success({
+                          message: "Tiếp tục thanh toán",
+                        });
+                      } else {
+                        setIsModalVisibleBill(false);
+                        // Hủy bỏ hành động nếu người dùng không muốn tiếp tục
+                      }
                     }}
                   >
                     {hoadon.code}

@@ -4,6 +4,8 @@ import com.example.backend.controller.order_management.model.billOffLine.AddBill
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
@@ -280,6 +282,16 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     public SkuBillOffLineIonRespon getOneSKU(Long idSKU) {
         SkuBillOffLineIonRespon sku = skuRepositoty.getOneSkuSellOffLine(idSKU);
         return sku;
+    }
+
+    @Override
+    public List<ListBillChoThanhToan> findBillByCodeBill(String codeBill) {
+        return billDetailRepository.findBillbyCodeBill(codeBill);
+    }
+
+    @Override
+    public ListBillChoThanhToanS2 findBillByCodeBillS2(String codeBill) {
+        return billDetailRepository.findBillbyCodeBillS2(codeBill);
     }
 
 }

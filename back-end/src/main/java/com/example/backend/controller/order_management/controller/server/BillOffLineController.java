@@ -4,6 +4,8 @@ import com.example.backend.controller.order_management.model.billOffLine.AddBill
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +74,18 @@ public class BillOffLineController {
     public ResponseEntity<SkuBillOffLineIonRespon> getOneSkuSelected(@RequestParam("idSKU") Long idSKU) {
         SkuBillOffLineIonRespon sku = billOffLineService.getOneSKU(idSKU);
         return new ResponseEntity<>(sku, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-bill-CTT/{codeBill}")
+    public ResponseEntity<List<ListBillChoThanhToan>> getBillByCodeBy(@PathVariable("codeBill") String codeBill) {
+        List<ListBillChoThanhToan> billList = billOffLineService.findBillByCodeBill(codeBill);
+        return new ResponseEntity<>(billList, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-bill-CTT-S2/{codeBill}")
+    public ResponseEntity<ListBillChoThanhToanS2> getBillByCodeByS2(@PathVariable("codeBill") String codeBill) {
+        ListBillChoThanhToanS2 billList = billOffLineService.findBillByCodeBillS2(codeBill);
+        return new ResponseEntity<>(billList, HttpStatus.OK);
     }
 
 }

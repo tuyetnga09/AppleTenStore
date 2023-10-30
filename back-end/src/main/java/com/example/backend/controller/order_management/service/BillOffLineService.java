@@ -4,6 +4,8 @@ import com.example.backend.controller.order_management.model.billOffLine.AddBill
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.BillDetails;
@@ -27,4 +29,9 @@ public interface BillOffLineService {
 
     //lấy ra sku để hiển thị
     SkuBillOffLineIonRespon getOneSKU(Long idSKU);
+
+    List<ListBillChoThanhToan> findBillByCodeBill(String codeBill);
+
+    ListBillChoThanhToanS2 findBillByCodeBillS2(String codeBill);
+
 }
