@@ -30,11 +30,13 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private BillHistoryRepository billHistoryRepository;
     @Autowired
-    private ProductRepository productRepository;
+    private CartDetailRepository cartDetailRepository;
     @Autowired
     private BillDetailRepository billDetailRepository;
     @Autowired
     private PaymentsRepository paymentsRepository;
+    @Autowired
+    private SKURepositoty skuRepositoty;
 
     @Autowired
     private VoucherRepository voucherRepository;
@@ -44,10 +46,6 @@ public class BillServiceImpl implements BillService {
 
     @Autowired
     private CartRepository cartRepository;
-    @Autowired
-    private CartDetailRepository cartDetailRepository;
-    @Autowired
-    private SKURepositoty skuRepositoty;
 
     // CLIENT
     @Override
@@ -58,6 +56,7 @@ public class BillServiceImpl implements BillService {
                 .phoneNumber(request.getPhoneNumber())
                 .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .points(0).build();
         userRepository.save(user);
         // account khách hàng
@@ -65,6 +64,7 @@ public class BillServiceImpl implements BillService {
                 .user(user)
                 .email(request.getEmail())
                 .status(Status.DANG_SU_DUNG)
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .password(new Random().randomPassword())
                 // sau cho them roles vao day nua
                 .build();
@@ -77,18 +77,20 @@ public class BillServiceImpl implements BillService {
                 .address(request.getAddress())
                 .quanHuyen(request.getDistrict())
                 .tinhThanhPho(request.getProvince())
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .xaPhuong(request.getWards()).build();
         addressRepository.save(address);
 
         // thông tin hoá đơn
         Bill bill = Bill.builder()
-                .code(new Random().randomToString("Bill"))
+                .code(request.getCode())
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + '-' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
                 .itemDiscount(request.getItemDiscount())
-                .totalMoney(request.getTotalMoney())
+                .totalMoney(request.getAfterPrice())
+                .dateCreate(LocalDate.now())
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .dateCreate(LocalDate.now())
@@ -99,25 +101,26 @@ public class BillServiceImpl implements BillService {
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
-            SKU productDetail = skuRepositoty.findById(x.getSku()).get();
-            if (productDetail.getQuantity() < x.getQuantity()) {
-                throw new RestAPIRunTime(Message.ERROR_QUANTITY);
-            }
+//            if (productDetail.getQuantity() < x.getQuantity()) {
+//                throw new RestAPIRunTime(Message.ERROR_QUANTITY);
+//            }
 //            if (productDetail.getStatus() != Status.DANG_SU_DUNG) {
 //                throw new RestAPIRunTime(Message.NOT_PAYMENT_PRODUCT);
 //            }
             BillDetails billDetail = BillDetails.builder()
                     .statusBill(StatusBill.CHO_XAC_NHAN)
-                    .sku(skuRepositoty.findById(x.getSku()).orElse(null))
+                    .sku(skuRepositoty.findById(x.getSku()).get())
                     .price(x.getPrice())
                     .quantity(x.getQuantity())
                     .dateCreate(new Date(new java.util.Date().getTime()))
                     .bill(bill).build();
             billDetailRepository.save(billDetail);
+            skuRepositoty.updateQuantity(x.getSku(), x.getQuantity());
         }
 
         // hình thức thanh toán của hoá đơn
@@ -125,6 +128,7 @@ public class BillServiceImpl implements BillService {
                 .method(request.getPaymentMethod().equals("paymentReceive") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                 .bill(bill)
                 .moneyPayment(request.getTotalMoney())
+                .dateCreate(new Date(new java.util.Date().getTime()))
                 .typePayment(StatusPayment.THANH_TOAN).build();
         paymentsRepository.save(payments);
 
@@ -156,7 +160,7 @@ public class BillServiceImpl implements BillService {
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
             Bill bill = Bill.builder()
-                    .code(new Random().randomToString("BillAccount "))
+                    .code(request.getCode())
                     .phoneNumber(request.getPhoneNumber())
                     .address(request.getAddress())
                     .userName(request.getUserName())
@@ -164,7 +168,8 @@ public class BillServiceImpl implements BillService {
                     .itemDiscount(request.getItemDiscount())
                     .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
-                    .statusBill(StatusBill.DA_THANH_TOAN)
+                    .statusBill(StatusBill.CHO_XAC_NHAN)
+                    .dateCreate(LocalDate.now())
                     .account(account)
                     .build();
             billRepository.save(bill);
@@ -194,7 +199,7 @@ public class BillServiceImpl implements BillService {
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
-            if(request.getIdVoucher().equals(null)){
+            if(request.getIdVoucher().equals("")){
                 VoucherDetail voucherDetail = VoucherDetail.builder()
                         .voucher(null)
                         .bill(bill)
@@ -317,6 +322,10 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public Bill findByCode(String code) {
+        return billRepository.findByCode(code).orElse(null);
+    }
+
     public List<Bill> listBillByIdAccount(Integer id) {
         return billRepository.listBillByIdAccount(id);
     }
@@ -339,6 +348,11 @@ public class BillServiceImpl implements BillService {
     @Override
     public List<Bill> listBillByIdAccountDH(Integer id) {
         return billRepository.listBillByIdAccountDH(id);
+    }
+
+    @Override
+    public List<Bill> getListBillChoThanhToan(Integer idAccount) {
+        return billRepository.listBillChoThanhToan(idAccount);
     }
 
 }

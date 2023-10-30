@@ -74,3 +74,19 @@ export const getListImeiThatLac = (codeImei) => {
     `/admin/bill-offline/get-imei-that-lac?codeImei=${codeImei}`
   );
 };
+
+export const getBillChoThanhToan = (id) => {
+  return httpClient.get(`http://localhost:8080/manager/bill/getBillCTT/${id}`)
+}
+
+export const updateQuantitySellOff = (id, newQuantity) => {
+  return httpClient.put(`/admin/billDetail/update-quantity/${id}?quantity=${newQuantity}`);
+};
+
+export const getBillCTTByCodeBill = (codeBill) => {
+  return httpClient.get(`/admin/bill-offline/get-bill-CTT/${codeBill}`)
+}
+
+export const getBillCTTByCodeBillS2 = (codeBill) => {
+  return httpClient.get(`/admin/bill-offline/get-bill-CTT-S2/${codeBill}`)
+}

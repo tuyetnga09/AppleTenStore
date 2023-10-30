@@ -29,6 +29,8 @@ public interface BillService {
 
     void updateStatusBill(int id);
 
+    Bill findByCode(String code);
+
     List<Bill> listBillByIdAccount(Integer id);
 
     List<Bill> listBillByIdAccountCXN(Integer id);
@@ -38,4 +40,6 @@ public interface BillService {
     List<Bill> listBillByIdAccountDTT(Integer id);
 
     List<Bill> listBillByIdAccountDH(Integer id);
+
+    List<Bill> getListBillChoThanhToan(Integer idAccount);
 }

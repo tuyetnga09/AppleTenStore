@@ -26,6 +26,9 @@ public interface BillDetailOffLineIon {
      @Value("#{target.bill}")
      Integer getBill();
 
+     @Value("#{target.CodeBill}")
+     String getCodeBill();
+
      @Value("#{target.personCreate}")
      String getPersonCreate();
 

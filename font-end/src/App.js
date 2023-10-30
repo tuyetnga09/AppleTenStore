@@ -210,7 +210,7 @@ function App() {
           <Route path="/categories" exact component={CategoryDisplay} />
           <Route path="/account" exact component={AccountList} />
           <Route path="/sell" exact component={SellOffline} />
-          <Route path="/paydone" exact component={Paydone} />
+          <Route path="/paydone/:code" exact component={Paydone} />
           <Route path="/signup/admin" exact component={SignUpAdmin} />
           <Route path="/oderUserAll" exact component={OderUserAll} />
           <Route path="/oderUserCTT" exact component={OderUserChoThanhToan} />

@@ -7,6 +7,8 @@ import com.example.backend.controller.order_management.model.billOffLine.ion.Bil
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
@@ -343,4 +345,14 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         List<CheckImeiDaBanIonSellOffLine> list = imeiDaBanRepository.checkImeiDaBan(codeImei);
         return list;
     }
+    @Override
+    public List<ListBillChoThanhToan> findBillByCodeBill(String codeBill) {
+        return billDetailRepository.findBillbyCodeBill(codeBill);
+    }
+
+    @Override
+    public ListBillChoThanhToanS2 findBillByCodeBillS2(String codeBill) {
+        return billDetailRepository.findBillbyCodeBillS2(codeBill);
+    }
+
 }

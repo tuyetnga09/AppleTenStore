@@ -7,6 +7,8 @@ import com.example.backend.controller.order_management.model.billOffLine.ion.Bil
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.BillDetails;
@@ -43,4 +45,8 @@ public interface BillOffLineService {
 
     //seach imei thất lạc
      List<CheckImeiDaBanIonSellOffLine> checkImeiThatLac(String codeImei);
+    List<ListBillChoThanhToan> findBillByCodeBill(String codeBill);
+
+    ListBillChoThanhToanS2 findBillByCodeBillS2(String codeBill);
+
 }

@@ -4,6 +4,7 @@ import com.example.backend.controller.order_management.model.cart.LisCartSession
 import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.controller.order_management.model.cart.ListCartOffline;
 import com.example.backend.entity.Cart;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
