@@ -159,7 +159,6 @@ export default function CartDisplay() {
   //xóa all giỏ hàng
   const handleRemoveAllFromCart = () => {
     if (idAccount !== null && idAccount !== "") {
-
     } else {
       sessionStorage.removeItem("cartItems");
       setProducts([]);
@@ -300,9 +299,8 @@ export default function CartDisplay() {
                                       className="quantity fw-bold text-black"
                                       min={0}
                                       name="quantity"
-                                      // value={product.quantity}
                                       type="number"
-                                      placeholder={product.quantity}
+                                      defaultValue={product.quantity}
                                       onChange={() => {
                                         if (
                                           idAccount !== null &&

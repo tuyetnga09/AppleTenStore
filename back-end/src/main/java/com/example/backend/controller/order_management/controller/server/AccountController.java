@@ -7,6 +7,7 @@ import com.example.backend.untils.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,5 +68,10 @@ public class AccountController {
     @GetMapping("/get-id")
     public ResponseObj getOneById(@RequestParam("id") Integer id) {
         return new ResponseObj(accountService.getOneById(id));
+    }
+
+    @PutMapping("/updateRole")
+    public Account updateRole(@RequestParam("role") String role, @RequestParam("idUser") Integer idUser){
+        return accountService.updateRole(role, idUser);
     }
 }

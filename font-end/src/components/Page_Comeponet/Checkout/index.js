@@ -37,6 +37,9 @@ const Checkout = () => {
   const [selecteVoucher, setSelectedVoucher] = useState(0);
   const [linkPay, setLinkPay] = useState(["/paydone"]);
   const [isChecked, setIsChecked] = useState([true]);
+  const [isChecked1, setIsChecked1] = useState(true);
+  const [isChecked2, setIsChecked2] = useState(false);
+  const [isChecked3, setIsChecked3] = useState(false);
   const [voucherFreeShip, setVoucherFreeShip] = useState([true]);
   const [selecteVoucherFreeShip, setSelectedVoucherFreeShip] = useState(0);
   const [provinces, setProvinces] = useState([]);
@@ -82,6 +85,12 @@ const Checkout = () => {
   const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
 
   useEffect(() => {
+    const checked1 = document.getElementById("htnn_4");
+    checked1.checked = isChecked1;
+    const checked2 = document.getElementById("htnn_5");
+    checked2.checked = isChecked2;
+    const checked3 = document.getElementById("htnn_6");
+    checked3.checked = isChecked3;
     //hiển thị giỏ hàng
     if (idAccount !== null && idAccount !== "") {
       readAll(idAccount)
@@ -216,6 +225,8 @@ const Checkout = () => {
     divDcmd.hidden = true;
     const notDcmd = document.getElementById("notDcmd");
     notDcmd.hidden = false;
+    document.getElementById("htnn_4").checked = false;
+    document.getElementById("htnn_6").checked = false;
   }
 
   function nhanTaiCuaHang() {
@@ -227,6 +238,15 @@ const Checkout = () => {
     divDcmd.hidden = true;
     const notDcmd = document.getElementById("notDcmd");
     notDcmd.hidden = true;
+    setTransportationFeeDTO({
+      toDistrictId: null,
+      toWardCode: null,
+      insuranceValue: null,
+      quantity: 1,
+    });
+    setIsChecked1(true);
+    setIsChecked2(false);
+    setIsChecked3(false);
   }
 
   function diaChiMacDinh() {
@@ -234,6 +254,8 @@ const Checkout = () => {
     divDcmd.hidden = false;
     const notDcmd = document.getElementById("notDcmd");
     notDcmd.hidden = true;
+    document.getElementById("htnn_4").checked = false;
+    document.getElementById("htnn_5").checked = false;
   }
 
   useEffect(() => {
@@ -454,6 +476,9 @@ const Checkout = () => {
         quantity: quantityCart,
       });
     }
+    setIsChecked1(false);
+    setIsChecked2(true);
+    setIsChecked3(false);
   };
 
   const handleDistrict = (event) => {
@@ -480,6 +505,9 @@ const Checkout = () => {
         quantity: quantityCart,
       });
     }
+    setIsChecked1(false);
+    setIsChecked2(true);
+    setIsChecked3(false);
   };
 
   const handleWard = (event) => {
@@ -502,6 +530,9 @@ const Checkout = () => {
       });
     }
     console.log(transportationFeeDTO);
+    setIsChecked1(false);
+    setIsChecked2(true);
+    setIsChecked3(false);
   };
 
   function hanldeName(event) {
@@ -558,7 +589,7 @@ const Checkout = () => {
         province: dataArray[dataArray.length - 1],
         district: dataArray[dataArray.length - 2],
         wards: dataArray[dataArray.length - 3],
-        address: dataArray[dataArray.length - 4],
+        address: inputString,
       });
       let province_id = [...provinces].filter(
         (pr) => pr.ProvinceName === dataArray[dataArray.length - 1]
@@ -603,6 +634,9 @@ const Checkout = () => {
         quantity: quantityCart,
       });
     }
+    setIsChecked1(false);
+    setIsChecked2(false);
+    setIsChecked3(true);
   }
 
   return (
@@ -771,12 +805,10 @@ const Checkout = () => {
                     <div class="custom-control custom-radio">
                       <input
                         id="htnn_4"
-                        name="htnn_ma"
                         type="radio"
                         class="custom-control-input"
                         required=""
                         value="1"
-                        checked
                         onClick={() => nhanTaiCuaHang()}
                       ></input>
                       <label class="custom-control-label" for="htnn_4">
@@ -786,7 +818,6 @@ const Checkout = () => {
                     <div class="custom-control custom-radio">
                       <input
                         id="htnn_5"
-                        name="htnn_ma"
                         type="radio"
                         class="custom-control-input"
                         required=""
@@ -804,7 +835,6 @@ const Checkout = () => {
                     >
                       <input
                         id="htnn_6"
-                        name="htnn_ma"
                         type="radio"
                         class="custom-control-input"
                         required=""

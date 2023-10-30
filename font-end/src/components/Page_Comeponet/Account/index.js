@@ -1,4 +1,7 @@
-import { listRoles } from "../../../service/Account/account.service";
+import {
+  listRoles,
+  updateRole,
+} from "../../../service/Account/account.service";
 import { readAllUserByRole } from "../../../service/User/user.service";
 // import { listProductByCategories } from "../../../service/product.service";
 import { useEffect, useState } from "react";
@@ -12,7 +15,7 @@ import {
   DateField,
   useDrawerForm,
 } from "@refinedev/antd";
-import { FormOutlined, MoreOutlined } from "@ant-design/icons";
+import { FormOutlined, MoreOutlined, TeamOutlined } from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -24,6 +27,8 @@ import {
   Menu,
   Avatar,
   Grid,
+  Modal,
+  notification,
 } from "antd";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { Row, Col, Card, Typography, Layout, theme } from "antd";
@@ -42,6 +47,7 @@ import {
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../Page_Comeponet/header/index";
 import moment from "moment";
+import EditAccount from "./edit";
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -62,7 +68,7 @@ export const AccountList = () => {
       });
   }, []);
 
-  const moreMenu = (categories) => (
+  const moreMenu = (accounts) => (
     <Menu
       mode="vertical"
       onClick={({ domEvent }) => domEvent.stopPropagation()}
@@ -107,7 +113,7 @@ export const AccountList = () => {
               <Link to="/orders">Orders</Link>
             </Menu.Item>
             <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/account">Users</Link>
+              <Link to="/users">Users</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
               <Link to="/product">Product</Link>
@@ -160,6 +166,12 @@ export const AccountList = () => {
                       : undefined,
                   }}
                   rowKey="1"
+                  pagination={{
+                    pageSize: 5,
+                    showSizeChanger: false,
+                    showTotal: (total) => `Tổng số ${total} mục`,
+                    showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                  }}
                 >
                   <Table.Column
                     key="title"
@@ -228,49 +240,241 @@ export const AccountList = () => {
 
 const UserAccountTable = ({ record }) => {
   const [users, setUsers] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [user, setUser] = useState({});
+  const [isUpdate, setIsUpdate] = useState(false);
+  const editShow = (user) => {
+    setUser(user);
+    setIsModalVisible(true);
+    console.log(user);
+  };
 
-  useEffect(() => {
-    readAllUserByRole(record)
+  // Hàm để ẩn Modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const editRole = (role, idUser) => {
+    updateRole(role, idUser)
       .then((res) => {
-        setUsers(res.data.content);
+        if (res.status === 200) {
+          notification.success({
+            message: "CẬP NHẬT",
+            description: "Cập nhật thông tin thành công",
+          });
+          setIsUpdate(!isUpdate);
+        } else {
+          notification.error({
+            message: "CẬP NHẬT",
+            description: "Cập nhật thông tin thất bại",
+          });
+        }
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  };
 
-  const moreMenu = (record) => (
-    <Menu
-      mode="vertical"
-      onClick={({ domEvent }) => domEvent.stopPropagation()}
-    >
-      <Menu.Item
-        key="edit"
-        style={{
-          fontSize: 15,
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-        }}
-        icon={
-          <FormOutlined
+  useEffect(() => {
+    readAllUserByRole(record)
+      .then((res) => {
+        setUsers(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [isModalVisible, isUpdate]);
+
+  const moreMenu = (record1) => (
+    <>
+      {record === "ADMIN" ? (
+        <Menu
+          mode="vertical"
+          onClick={({ domEvent }) => domEvent.stopPropagation()}
+        >
+          <Menu.Item
+            key="edit"
             style={{
-              color: "#52c41a",
-              fontSize: 17,
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
               fontWeight: 500,
             }}
-          />
-        }
-        // onClick={() => editShow(record.id)}
-      >
-        Edit
-      </Menu.Item>
-    </Menu>
+            icon={
+              <TeamOutlined
+                style={{
+                  color: "yellow",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => editRole("NHAN_VIEN", record1.id)}
+          >
+            Nhân viên
+          </Menu.Item>
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <TeamOutlined
+                style={{
+                  color: "red",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => editRole("CUSTOMER", record1.id)}
+          >
+            Khách hàng
+          </Menu.Item>
+        </Menu>
+      ) : record === "NHAN_VIEN" ? (
+        <Menu
+          mode="vertical"
+          onClick={({ domEvent }) => domEvent.stopPropagation()}
+        >
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <TeamOutlined
+                style={{
+                  color: "#52c41a",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => editRole("ADMIN", record1.id)}
+          >
+            Admin
+          </Menu.Item>
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <TeamOutlined
+                style={{
+                  color: "red",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => editRole("CUSTOMER", record1.id)}
+          >
+            Khách hàng
+          </Menu.Item>
+        </Menu>
+      ) : record === "CUSTOMER" ? (
+        <Menu
+          mode="vertical"
+          onClick={({ domEvent }) => domEvent.stopPropagation()}
+        >
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <TeamOutlined
+                style={{
+                  color: "#52c41a",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => editRole("ADMIN", record1.id)}
+          >
+            Admin
+          </Menu.Item>
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <TeamOutlined
+                style={{
+                  color: "yellow",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => editRole("NHAN_VIEN", record1.id)}
+          >
+            Nhân viên
+          </Menu.Item>
+        </Menu>
+      ) : (
+        ""
+      )}
+    </>
+    // <Menu
+    //   mode="vertical"
+    //   onClick={({ domEvent }) => domEvent.stopPropagation()}
+    // >
+    //   <Menu.Item
+    //     key="edit"
+    //     style={{
+    //       fontSize: 15,
+    //       display: "flex",
+    //       alignItems: "center",
+    //       fontWeight: 500,
+    //     }}
+    //     icon={
+    //       <FormOutlined
+    //         style={{
+    //           color: "#52c41a",
+    //           fontSize: 17,
+    //           fontWeight: 500,
+    //         }}
+    //       />
+    //     }
+    //     onClick={() => editShow(record)}
+    //   >
+    //     Edit
+    //   </Menu.Item>
+    // </Menu>
   );
 
   return (
     <List title="Users" createButtonProps={undefined}>
-      <Table rowKey="id" dataSource={users}>
+      <Table
+        rowKey="id"
+        dataSource={users}
+        pagination={{
+          pageSize: 5,
+          showSizeChanger: false,
+          showTotal: (total) => `Tổng số ${total} mục`,
+          showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+        }}
+      >
         <Table.Column
           dataIndex="images"
           render={(text, record) => (
@@ -324,11 +528,15 @@ const UserAccountTable = ({ record }) => {
           )}
         />
       </Table>
-      {/* <EditProduct
-        drawerProps={editDrawerProps}
-        formProps={editFormProps}
-        saveButtonProps={editSaveButtonProps}
-      /> */}
+      <Modal
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        width={1500}
+        footer={null}
+        bodyStyle={{ minHeight: "350px" }}
+      >
+        <EditAccount data={user} />
+      </Modal>
     </List>
   );
 };
