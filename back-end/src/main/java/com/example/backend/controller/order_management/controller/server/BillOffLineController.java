@@ -84,8 +84,8 @@ public class BillOffLineController {
 
     //lấy ra list imei đã bán của sku trong bill_detail được chọn
     @GetMapping("/get-imei-da-ban")
-    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> getListImeiDaBanOfSku(@RequestParam("idBillDetail") Integer idBillDetail ,
-                                                                             @RequestParam("idSKU") Long idSKU) {
+    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> getListImeiDaBanOfSku(@RequestParam("idBillDetail") Integer idBillDetail,
+                                                                                 @RequestParam("idSKU") Long idSKU) {
         List<ImeiDaBanOffLineIonRespon> list = billOffLineService.getImeiDaBanOfSku(idBillDetail, idSKU);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
@@ -93,23 +93,25 @@ public class BillOffLineController {
     //add imei vvào billDetail ( vào bảng imei_da_ban)
     @PostMapping("/add-imei-da-ban")
     public ResponseEntity<ImeiDaBan> addImeiDaBan(@RequestBody ImeiDaBanOffLineRequest imeiDaBanOffLineRequest) {
-        ImeiDaBan  imeiDaBan= billOffLineService.addImeiDaBanOffLine(imeiDaBanOffLineRequest);
+        ImeiDaBan imeiDaBan = billOffLineService.addImeiDaBanOffLine(imeiDaBanOffLineRequest);
         return new ResponseEntity<>(imeiDaBan, HttpStatus.OK);
     }
 
     //delete imei_da_ban -> đang chưa hoà lại status cho imei...
     @DeleteMapping("/delete-imei-da-ban")
-    public ResponseEntity<Boolean> deleteImeiDaBan(@RequestParam("idImeiDaBan") Long idImeiDaBan ) {
-        Boolean check = billOffLineService.deleteImeiDaBanOffLine(idImeiDaBan);
+    public ResponseEntity<Boolean> deleteImeiDaBan(@RequestParam("idImeiDaBan") Long idImeiDaBan,
+                                                   @RequestParam("codeImeiDaBan") String codeImeiDaBan) {
+        Boolean check = billOffLineService.deleteImeiDaBanOffLine(idImeiDaBan, codeImeiDaBan);
         return new ResponseEntity<>(check, HttpStatus.OK);
     }
 
     // tìm imei thất lạc
     @GetMapping("/get-imei-that-lac")
-    public ResponseEntity<List<CheckImeiDaBanIonSellOffLine>> getListImeiThatLac(@RequestParam("codeImei") String codeImei ) {
+    public ResponseEntity<List<CheckImeiDaBanIonSellOffLine>> getListImeiThatLac(@RequestParam("codeImei") String codeImei) {
         List<CheckImeiDaBanIonSellOffLine> list = billOffLineService.checkImeiThatLac(codeImei);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
     @GetMapping("/get-bill-CTT/{codeBill}")
     public ResponseEntity<List<ListBillChoThanhToan>> getBillByCodeBy(@PathVariable("codeBill") String codeBill) {
         List<ListBillChoThanhToan> billList = billOffLineService.findBillByCodeBill(codeBill);
@@ -122,4 +124,49 @@ public class BillOffLineController {
         return new ResponseEntity<>(billList, HttpStatus.OK);
     }
 
+    //seach Imei Da Ban
+    @GetMapping("/get-seach-imei-da-ban")
+    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> seachImeisDaBan(@RequestParam("idBillDetail") Integer idBillDetail,
+                                                                  @RequestParam("idSKU") Long idSKU,
+                                                                  @RequestParam("codeImei") String codeImei) {
+        List<ImeiDaBanOffLineIonRespon> list = billOffLineService.seachImeiDaBan(idBillDetail, idSKU, codeImei);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //seach imei theo codeImei
+    @GetMapping("/get-seach-imeis")
+    public ResponseEntity<List<ImeiBillOffLineIonRespon>> seachImeis(@RequestParam("idSKU") Long idSKU,
+                                                                      @RequestParam("codeImei") String codeImei) {
+        List<ImeiBillOffLineIonRespon> list = billOffLineService.seachImeiFindByCodeImei(idSKU, codeImei);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //delete imei_da_ban - xoá danh sách imei đã bán được chọn (checkbox)
+    @DeleteMapping("/delete-imeis-da-ban-check-box")
+    public ResponseEntity<Boolean> deleteImeisDaBanOffLineCheckBox(@RequestParam("codeImeis") List<String> codeImeis) {
+        Boolean check = billOffLineService.deleteImeisDaBanOffLineCheckBox(codeImeis);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    //delete imei_da_ban - xoá all imei đã bán  where idbillDetail
+    @DeleteMapping("/delete-all-imeis-da-ban")
+    public ResponseEntity<Boolean> deleteAllImeisDaBanOffLine(@RequestParam("idBillDetail") Integer idBillDetail) {
+        Boolean check = billOffLineService.deleteAllImeisDaBanOffLine(idBillDetail);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    //all imei da ban cua bill_detail
+    @GetMapping("/get-all-imeis-da-ban")
+    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> getAllImeisDaBanOffLine(@RequestParam("idBillDetail") Integer idBillDetail) {
+        List<ImeiDaBanOffLineIonRespon> list = billOffLineService.getAllImeisDaBanOffLine(idBillDetail);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //xoá bill_detail -> xoá các imei_da_ban trong bảng imei_da_ban của bill_detail đó và hoàn lại status các của các imei
+    //chỉ xoá được các bill_detail của bill chưa hoàn thành
+    @DeleteMapping("/delete-bill-detail")
+    public ResponseEntity<Boolean> deleteBillOneDetail(@RequestParam("idBillDetail") Integer idBillDetail) {
+        Boolean check = billOffLineService.deleteBillDetail(idBillDetail);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
 }

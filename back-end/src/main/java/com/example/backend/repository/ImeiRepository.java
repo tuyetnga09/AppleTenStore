@@ -24,12 +24,20 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
     @Query(value = "SELECT * FROM imei WHERE (Code_Imei like %?1% or id_product like %?1%) and Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Imei> search(Pageable pageable, String key);
 
-
-
+    //danh sách imei theo idSKU
     @Query(value = "select i.id as 'idImei', i.code_imei as 'codeImei', s.id as 'idSKU'," +
             " s.quantity as 'quantityImei', s.capacity as 'capacitySKU', \n" +
             " s.color as 'colorSKU', p.name as 'nameProduct'\n" +
             " from imei i join sku s on i.sku_id = s.id join product p on s.product_id = p.id  " +
             " where i.status = 0 and s.id=?1", nativeQuery = true)
     List<ImeiBillOffLineIonRespon> imeisSellOffLine(Long idSku);
+
+
+    //seach imei theo codeImei
+    @Query(value = "select i.id as 'idImei', i.code_imei as 'codeImei', s.id as 'idSKU',\n" +
+            "             s.quantity as 'quantityImei', s.capacity as 'capacitySKU', \n" +
+            "             s.color as 'colorSKU', p.name as 'nameProduct'\n" +
+            "             from imei i join sku s on i.sku_id = s.id join product p on s.product_id = p.id  \n" +
+            "             where i.status = 0 and s.id=?1 and i.code_imei =?2", nativeQuery = true)
+    List<ImeiBillOffLineIonRespon> seachImeiFindByCodeImei(Long idSku, String codeImei);
 }

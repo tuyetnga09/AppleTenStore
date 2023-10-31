@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -326,25 +327,32 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         return imeiDaBanRepository.save(imeiDaBan);
     }
 
-    //delete imei_da_ban
+    //delete imei_da_ban - xoá từng cái
     @Override
-    public Boolean deleteImeiDaBanOffLine(Long idImeiDaban) {
+    public Boolean deleteImeiDaBanOffLine(Long idImeiDaban, String codeImeiDaBan) {
         Boolean isCheck = imeiDaBanRepository.existsById(idImeiDaban);
         if (isCheck) {
+            //xoá imei ở trong bảng imei đã bán
             imeiDaBanRepository.deleteById(idImeiDaban);
+
+            //cập nhật lại imei trong bảng imei -> status = 0 (0 là hoạt động)
+            Imei imeiUpdate = imeiRepository.findByCodeImei(codeImeiDaBan);
+            imeiUpdate.setStatus(0);
+            imeiRepository.save(imeiUpdate);
             return true;
         }
         return false;
     }
 
     //seach imei thất lạc
-    public List<CheckImeiDaBanIonSellOffLine> checkImeiThatLac(String codeImei){
-        if (codeImei.trim().equals("")){
+    public List<CheckImeiDaBanIonSellOffLine> checkImeiThatLac(String codeImei) {
+        if (codeImei.trim().equals("")) {
             return null;
         }
         List<CheckImeiDaBanIonSellOffLine> list = imeiDaBanRepository.checkImeiDaBan(codeImei);
         return list;
     }
+
     @Override
     public List<ListBillChoThanhToan> findBillByCodeBill(String codeBill) {
         return billDetailRepository.findBillbyCodeBill(codeBill);
@@ -355,4 +363,100 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         return billDetailRepository.findBillbyCodeBillS2(codeBill);
     }
 
+    //seach code imei đã bán trong bảng imei đã bán
+    @Override
+    public List<ImeiDaBanOffLineIonRespon> seachImeiDaBan(Integer idBillDetail, Long idSku, String codeImei) {
+        if (codeImei.trim().equals("")) {
+            return null;
+        } else {
+            List<ImeiDaBanOffLineIonRespon> list =
+                    imeiDaBanRepository.seachImeiDaBanFindByCodeImei(idBillDetail, idSku, codeImei);
+            return list;
+        }
+    }
+
+    //seach imei theo codeImei
+    @Override
+    public List<ImeiBillOffLineIonRespon> seachImeiFindByCodeImei(Long idSku, String codeImei) {
+        if (codeImei.trim().equals("")) {
+            return null;
+        } else {
+            List<ImeiBillOffLineIonRespon> list = imeiRepository.seachImeiFindByCodeImei(idSku, codeImei);
+            return list;
+        }
+    }
+
+    //delete imei_da_ban - xoá danh sách imei đã bán được chọn (checkbox)
+    @Override
+    public Boolean deleteImeisDaBanOffLineCheckBox(List<String> codeImeis) {
+        if (codeImeis.size() > 0) {
+            for (String codeImei : codeImeis) {
+                ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(codeImei);
+                //xoá imei ở trong bảng imei đã bán
+                imeiDaBanRepository.deleteById(imeiDaBan.getId());
+
+                //cập nhật lại imei trong bảng imei -> status = 0 (0 là hoạt động)
+                Imei imeiUpdate = imeiRepository.findByCodeImei(codeImei);
+                imeiUpdate.setStatus(0);
+                imeiRepository.save(imeiUpdate);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    //delete imei_da_ban - xoá all imei đã bán  where idbillDetail
+    @Override
+    public Boolean deleteAllImeisDaBanOffLine(Integer idBillDetail) {
+        List<ImeiDaBanOffLineIonRespon> listImei = imeiDaBanRepository.listAllImeiDaBanWhereIdBillDetail(idBillDetail);
+        if (listImei.size() > 0) {
+            for (ImeiDaBanOffLineIonRespon imei : listImei) {
+                //xoá imei ở trong bảng imei đã bán
+                imeiDaBanRepository.deleteById(imei.getIdImeiDaBan());
+
+                //cập nhật lại imei trong bảng imei -> status = 0 (0 là hoạt động)
+                Imei imeiUpdate = imeiRepository.findByCodeImei(imei.getCodeImeiDaBan());
+                imeiUpdate.setStatus(0);
+                imeiRepository.save(imeiUpdate);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    //get imei_da_ban - get all imei đã bán  where idbillDetail
+    @Override
+    public List<ImeiDaBanOffLineIonRespon> getAllImeisDaBanOffLine(Integer idBillDetail) {
+        List<ImeiDaBanOffLineIonRespon> listImei = imeiDaBanRepository.listAllImeiDaBanWhereIdBillDetail(idBillDetail);
+        return listImei;
+    }
+
+    //xoá bill_detail -> xoá các imei_da_ban trong bảng imei_da_ban của bill_detail đó và hoàn lại status các của các imei
+    //chỉ xoá được các bill_detail của bill chưa hoàn thành
+    @Override
+    public Boolean deleteBillDetail(Integer idBillDetail) {
+        Boolean isCheck = billDetailRepository.existsById(idBillDetail);
+        if (!isCheck) {
+            return false;
+        }
+        BillDetails billDetail = billDetailRepository.findById(idBillDetail).get(); // đối tượng bill detail
+        //list imei_da_ban
+        List<ImeiDaBanOffLineIonRespon> listImei = imeiDaBanRepository.listAllImeiDaBanWhereIdBillDetail(idBillDetail);
+        Integer size = listImei.size();
+
+
+        if (billDetail.getBill().getStatusBill() == StatusBill.CHO_XAC_NHAN
+                && billDetail.getBill().getTypeBill() == TypeBill.OFFLINE && size>0) {
+            Boolean deleteImei = this.deleteAllImeisDaBanOffLine(billDetail.getId());
+            if (deleteImei) {
+                billDetailRepository.deleteById(billDetail.getId());
+                return true;
+            }
+        }else {
+            billDetailRepository.deleteById(billDetail.getId());
+            return true;
+        }
+        return false;
+    }
 }
