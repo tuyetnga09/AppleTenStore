@@ -62,12 +62,20 @@ public class BillOffLineController {
         BillDetails billDetailsList = billOffLineService.addBillDetail(addBillOffLineRequest);
         return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
     }
-
+    //lấy ra list bill_detail của 1 bill theo codeBill
     @GetMapping("/get-bill-detail")
     public ResponseEntity<List<BillDetailOffLineIon>> getBillDetailOfBill(@RequestParam("codeBill") String codeBill) {
         List<BillDetailOffLineIon> billDetailsList = billOffLineService.getBilDetailOfBill(codeBill);
         return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
     }
+
+    //lấy ra list bill_detail của 1 bill theo id_bill
+    @GetMapping("/get-bill-detail-idbill")
+    public ResponseEntity<List<BillDetailOffLineIon>> getBilDetailOfBillWhereIdBill(@RequestParam("idBill") Integer idBill) {
+        List<BillDetailOffLineIon> billDetailsList = billOffLineService.getBilDetailOfBillWhereIdBill(idBill);
+        return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
+    }
+
 
     //lấy ra danh sách imei của sku được chọn
     @GetMapping("/get-imeis")
@@ -179,7 +187,13 @@ public class BillOffLineController {
     }
 
     @GetMapping("/getBillCTT/{idAccount}")
-    public List<Bill> getBillChoThanhToan(@PathVariable("idAccount") Integer idAccount){
+    public List<Bill> getBillChoThanhToan(@PathVariable("idAccount") Integer idAccount) {
         return billOffLineService.getListBillChoThanhToan(idAccount);
+    }
+    //lấy ra id_bill theo ib_billdetail
+    @GetMapping("/get-bill")
+    public ResponseEntity<Integer> getIdBill(@RequestParam("idBillDetail") Integer idBillDetail) {
+        Integer idBill = billOffLineService.getIdBill(idBillDetail);
+        return new ResponseEntity<>(idBill, HttpStatus.OK);
     }
 }

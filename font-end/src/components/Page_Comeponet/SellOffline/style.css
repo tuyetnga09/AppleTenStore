@@ -1,0 +1,6 @@
+.btn-xoa :hover {
+  color: rgb(0, 0, 0);
+  border: 2px solid none;
+  transform: scale(1.1); /* Thu nhỏ nút một chút khi hover */
+  transition: all 0.3s;
+}
