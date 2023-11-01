@@ -5,6 +5,7 @@ import com.example.backend.controller.order_management.model.account.AccountResp
 import com.example.backend.controller.order_management.service.AccountService;
 import com.example.backend.entity.Account;
 import com.example.backend.repository.AccountRepository;
+import com.example.backend.untils.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account getOneById(Integer id) {
         return accountRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Account updateRole(String role, Integer idUser) {
+        Account account = accountRepository.findByUser_Id(idUser);
+        account.setRoles(Roles.valueOf(role));
+        return accountRepository.save(account);
     }
 
 //    @Override

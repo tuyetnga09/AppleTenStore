@@ -113,7 +113,7 @@ const NewCustomers = () => {
         </div> */}
 
         <TitleArea>
-          <Title level={3}>New Customers</Title>
+          <Title level={3}>Tài Khoản Mới Hôm Nay</Title>
           <TitleAreNumber>
             <Text strong>{dataThisMonth}</Text>
 

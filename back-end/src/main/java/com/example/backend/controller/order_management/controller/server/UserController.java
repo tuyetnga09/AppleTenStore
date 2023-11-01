@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/findByRole")
-    public Page<User> findByRole(Pageable pageable, @RequestParam("role") String role){
+    public List<User> findByRole(Pageable pageable, @RequestParam("role") String role){
         return userService.findByRole(pageable, role);
     }
 

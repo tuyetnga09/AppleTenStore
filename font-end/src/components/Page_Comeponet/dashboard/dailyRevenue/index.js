@@ -335,9 +335,7 @@ const DailyRevenue = () => {
       {/* <TitleArea> */}
       <Row>
         <TitleAreaAmount>
-          <Typography.Title level={3}>
-            Daily Revenue Minus Canceled Bills
-          </Typography.Title>
+          <Typography.Title level={3}>Thực Thu Hôm Nay</Typography.Title>
         </TitleAreaAmount>
       </Row>
       <Row>
@@ -369,7 +367,7 @@ const DailyRevenue = () => {
       {/* 1 */}
       <TitleArea>
         <Title level={4} style={{ color: "red" }}>
-          * Daily Revenue
+          * Doanh Thu Dự Tính Hôm Nay
         </Title>
 
         <NumberField
@@ -386,7 +384,7 @@ const DailyRevenue = () => {
       {/* 2 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          1MU - Sum Total Money Bill Unconfimred
+          1MU - Tổng tiền đơn hàng chờ xác nhận
         </Title>
 
         <NumberField
@@ -404,7 +402,7 @@ const DailyRevenue = () => {
       {/* 3 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          2MC - Sum Total Money Bill Confimred
+          2MC - Tổng tiền đơn hàng đã xác nhận
         </Title>
 
         <NumberField
@@ -421,7 +419,7 @@ const DailyRevenue = () => {
       {/* 4 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          3MAD - Sum Total Money Bill Are Delivering
+          3MAD - Tổng tiền đơn hàng đang vận chuyển
         </Title>
 
         <NumberField
@@ -438,7 +436,7 @@ const DailyRevenue = () => {
       {/* 5 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          4MAP - Sum Total Money Bill Already Paid
+          4MAP - Tổng tiền đơn hàng đã thanh toán
         </Title>
 
         <NumberField
@@ -455,7 +453,7 @@ const DailyRevenue = () => {
       {/* 6 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          5MNR - Sum Total Money Bill No Return
+          5MNR - Tổng tiền đơn hàng không hoàn trả
         </Title>
 
         <NumberField
@@ -472,7 +470,7 @@ const DailyRevenue = () => {
       {/* 7 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          6MR - Sum Total Money Bill Returns
+          6MR - Tổng tiền đơn hàng hoàn trả
         </Title>
 
         <NumberField
@@ -489,7 +487,7 @@ const DailyRevenue = () => {
       {/* 8 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          7MCO - Sum Total Money Bill Cancel Order
+          7MCO - Tổng tiền đơn hàng huỷ đơn
         </Title>
 
         <NumberField

@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {useTranslate} from "@refinedev/core";
+import { useEffect, useState } from "react";
+import { useTranslate } from "@refinedev/core";
 import {
   AppstoreAddOutlined,
   CloseCircleOutlined,
@@ -31,12 +31,16 @@ import {
   theme,
   Typography,
 } from "antd";
-import {DateField, List} from "@refinedev/antd";
-import {Link, useHistory,} from "react-router-dom/cjs/react-router-dom.min";
-import {searchNoDate, searchWithDate, updateStatusBill,} from "../../../service/Bill/bill.service";
-import {readAllUser} from "../../../service/User/user.service";
+import { DateField, List } from "@refinedev/antd";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import {
+  searchNoDate,
+  searchWithDate,
+  updateStatusBill,
+} from "../../../service/Bill/bill.service";
+import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
-import {Option} from "antd/es/mentions";
+import { Option } from "antd/es/mentions";
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
@@ -546,7 +550,7 @@ const OderDisplay = ({}) => {
                       render={(text, record) => (
                         // <span>{record.dateUpdate}</span>
                         <DateField
-                          value={record.phoneNumber}
+                          value={record.dateUpdate}
                           format="DD/MM/YYYY"
                         />
                       )}

@@ -21,3 +21,9 @@ export const login = (email, password) => {
 export const detail = (id) => {
   return httpClient.get(`/admin/account/get-id?id=${id}`);
 };
+
+export const updateRole = (role, idUser) => {
+  return httpClient.put(
+    `/admin/account/updateRole?role=${role}&idUser=${idUser}`
+  );
+};

@@ -208,7 +208,7 @@ function App() {
           <Route path="/chats" exact component={ChatManager} />
           <Route path="/sku/display" exact component={SkuDisplay} />
           <Route path="/categories" exact component={CategoryDisplay} />
-          <Route path="/account" exact component={AccountList} />
+          <Route path="/users" exact component={AccountList} />
           <Route path="/sell" exact component={SellOffline} />
           <Route path="/paydone/:code" exact component={Paydone} />
           <Route path="/signup/admin" exact component={SignUpAdmin} />

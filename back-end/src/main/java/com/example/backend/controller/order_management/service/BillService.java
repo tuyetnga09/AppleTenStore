@@ -40,5 +40,4 @@ public interface BillService {
     List<Bill> listBillByIdAccountDTT(Integer id);
 
     List<Bill> listBillByIdAccountDH(Integer id);
-
 }
