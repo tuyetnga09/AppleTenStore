@@ -142,7 +142,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     List<Bill> listBillChoThanhToan(Integer id);
 
     //search bill cho thanh toan
-    @Query(value = "select * from bill where status_bill = 'CHO_XAC_NHAN' and type = 'OFFLINE' and id_account = ?1 and code = ?2 ORDER BY date_create DESC", nativeQuery = true)
+    @Query(value = "select * from bill where status_bill = 'CHO_XAC_NHAN' and type = 'OFFLINE' and id_account = ?1 and code like %?2% ORDER BY date_create DESC", nativeQuery = true)
     List<Bill> searchBillChoThanhToan(Integer id, String codeBill);
 
 }
