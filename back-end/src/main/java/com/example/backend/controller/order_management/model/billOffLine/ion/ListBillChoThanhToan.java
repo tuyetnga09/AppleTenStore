@@ -67,4 +67,8 @@ public interface ListBillChoThanhToan {
 
     @Value("#{target.totalManyOneBillDetail}")
     BigDecimal getTotalManyOneBillDetail();
+
+    @Value("#{target.soLuongImeiDaChon}")
+    Integer getSoLuongImeiDaChon();
+
 }

@@ -67,6 +67,8 @@ import {
   deleteAllImeisDaBanOffLine,
   getAllImeisDaBanOffLine,
   deleteBillOneDetail,
+  getBilDetailOfBillWhereIdBill,
+  getIdBill,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -446,7 +448,6 @@ export default function SellSmart() {
       });
     setIsModalVisibleImei(true);
   };
-
   // Hàm để ẩn Modal imei
   const handleCancelImei = () => {
     setDataSKuSelected({});
@@ -461,6 +462,7 @@ export default function SellSmart() {
     setDataSeachImeiDaBan([]);
     setDataSeachImeis([]);
     setSelectedCheckboxes([]);
+
     setIsModalVisibleImei(false);
   };
 
@@ -529,6 +531,22 @@ export default function SellSmart() {
             .catch((error) => {
               console.log(`${error}`);
             });
+
+          //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+          getIdBill(idBillDetail)
+            .then((response) => {
+              getBilDetailOfBillWhereIdBill(response.data)
+                .then((response) => {
+                  setDataBillDetailOffline(response.data);
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+
           notification.success({
             message: "Thêm Imei Thành Công",
           });
@@ -560,6 +578,20 @@ export default function SellSmart() {
         seachImeisDaBan(dataIdBillDetail, dataIdSKU, codeImeiDaBan)
           .then((response) => {
             setDataSeachImeiDaBan(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+        getIdBill(dataIdBillDetail)
+          .then((response) => {
+            getBilDetailOfBillWhereIdBill(response.data)
+              .then((response) => {
+                setDataBillDetailOffline(response.data);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
           })
           .catch((error) => {
             console.log(`${error}`);
@@ -697,6 +729,20 @@ export default function SellSmart() {
             });
 
           setDataSeachImeiDaBan([]);
+          //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+          getIdBill(dataIdBillDetail)
+            .then((response) => {
+              getBilDetailOfBillWhereIdBill(response.data)
+                .then((response) => {
+                  setDataBillDetailOffline(response.data);
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
           toast.current.show({
             severity: "success",
             summary: "THÔNG BÁO THÀNH CÔNG",
@@ -756,13 +802,23 @@ export default function SellSmart() {
                 .catch((error) => {
                   console.log(`Lỗi đọc imei của sku: ${error}`);
                 });
-              // seachImeisDaBan(dataIdBillDetail, dataIdSKU, codeImeiDaBan)
-              //   .then((response) => {
+
               setDataSeachImeiDaBan([]);
-              //   })
-              //   .catch((error) => {
-              //     console.log(`${error}`);
-              //   });
+
+              //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+              getIdBill(dataIdBillDetail)
+                .then((response) => {
+                  getBilDetailOfBillWhereIdBill(response.data)
+                    .then((response) => {
+                      setDataBillDetailOffline(response.data);
+                    })
+                    .catch((error) => {
+                      console.log(`${error}`);
+                    });
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
               toast.current.show({
                 severity: "success",
                 summary: "THÔNG BÁO THÀNH CÔNG",
@@ -1240,6 +1296,8 @@ export default function SellSmart() {
 
                       {/* test nút mới add sp vào bill detai */}
                       <Table.Column
+                        align="center"
+                        title="Action"
                         render={(record) => {
                           return (
                             <button
@@ -1441,7 +1499,9 @@ export default function SellSmart() {
                               })}
                             </td>
                             <td>
-                              <p>số imei </p>
+                              <p>
+                                Tổng số imei: {billDetail.soLuongImeiDaChon}
+                              </p>
                               <p>
                                 <button
                                   type="button"
@@ -1451,19 +1511,14 @@ export default function SellSmart() {
                                     // marginRight: "10px",
                                     backgroundColor: "green",
                                   }}
-                                  onClick={
-                                    () =>
-                                      handleAddImei(
-                                        billDetail.idSKU,
-                                        billDetail.id
-                                      )
-                                    // handleImeiOpen(
-                                    //   billDetail.idSKU,
-                                    //   billDetail.id
-                                    // )
+                                  onClick={() =>
+                                    handleAddImei(
+                                      billDetail.idSKU,
+                                      billDetail.id
+                                    )
                                   }
                                 >
-                                  imei
+                                  Chọn imei
                                 </button>
                               </p>
                             </td>

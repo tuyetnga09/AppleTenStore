@@ -61,4 +61,7 @@ public interface BillDetailOffLineIon {
 
      @Value("#{target.totalManyOneBillDetail}")
      BigDecimal getTotalManyOneBillDetail();
+
+     @Value("#{target.soLuongImeiDaChon}")
+     Integer getSoLuongImeiDaChon();
 }

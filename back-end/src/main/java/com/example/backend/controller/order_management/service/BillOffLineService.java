@@ -28,8 +28,11 @@ public interface BillOffLineService {
     //add ản phẩm vào bill -> sinh ra bill_detail
     BillDetails addBillDetail(AddBillOffLineRequest addBillOffLineRequest);
 
-    //lấy ra list bill_detail của 1 bill
+    //lấy ra list bill_detail của 1 bill theo codeBill
     List<BillDetailOffLineIon> getBilDetailOfBill(String codeBill);
+
+    //lấy ra list bill_detail của 1 bill theo id_bill
+    List<BillDetailOffLineIon> getBilDetailOfBillWhereIdBill(Integer idBill);
 
     //lấy ra list imei của 1 sku được chọn khi ấn thêm imei ở màn hình bán offline
     List<ImeiBillOffLineIonRespon> getImeisOfSkuSellOffLine(Long idSku);
@@ -70,5 +73,8 @@ public interface BillOffLineService {
 
     //xoá bill_detail -> xoá các imei_da_ban trong bảng imei_da_ban của bill_detail đó và hoàn lại status các của các imei
     //chỉ xoá được các bill_detail của bill chưa hoàn thành
-     Boolean deleteBillDetail(Integer idBillDetail);
+    Boolean deleteBillDetail(Integer idBillDetail);
+
+    //lấy ra 1  id_bill theo idBillDetail
+    Integer getIdBill(Integer idBillDetail);
 }

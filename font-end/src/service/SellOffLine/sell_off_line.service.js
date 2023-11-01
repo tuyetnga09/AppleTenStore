@@ -36,6 +36,12 @@ export const getBillDetailOfBill = (codeBill) => {
     `/admin/bill-offline/get-bill-detail?codeBill=${codeBill}`
   );
 };
+//lấy ra list bill_detail của 1 bill theo id_bill - phongnh
+export const getBilDetailOfBillWhereIdBill = (idBill) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-bill-detail-idbill?idBill=${idBill}`
+  );
+};
 
 //lấy ra danh sách imei của sku được chọn
 export const getImeisOfSku = (idSKU) => {
@@ -134,5 +140,12 @@ export const getAllImeisDaBanOffLine = (idBillDetail) => {
 export const deleteBillOneDetail = (idBillDetail) => {
   return httpClient.delete(
     `/admin/bill-offline/delete-bill-detail?idBillDetail=${idBillDetail}`
+  );
+};
+
+//lấy ra id_bill theo ib_billdetail
+export const getIdBill = (idBillDetail) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-bill?idBillDetail=${idBillDetail}`
   );
 };

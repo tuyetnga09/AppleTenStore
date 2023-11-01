@@ -272,12 +272,18 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
     }
 
-    //lấy ra list bill_detail của 1 bill
+    //lấy ra list bill_detail của 1 billbill theo codeBill
     @Override
     public List<BillDetailOffLineIon> getBilDetailOfBill(String codeBill) {
         Bill bill = billRepository.findByCode(codeBill).get();
 //        List<BillDetails> billDetailsList = billDetailRepository.findByBillDetailOfIdBill(bill.getId());
         List<BillDetailOffLineIon> billDetailsList = billDetailRepository.findByBillDetailOffLineIdBill(bill.getId());
+        return billDetailsList;
+    }
+    //lấy ra list bill_detail của 1 bill theo id_bill
+    @Override
+    public List<BillDetailOffLineIon> getBilDetailOfBillWhereIdBill(Integer idBill) {
+        List<BillDetailOffLineIon> billDetailsList = billDetailRepository.findByBillDetailOffLineIdBill(idBill);
         return billDetailsList;
     }
 
@@ -458,5 +464,12 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             return true;
         }
         return false;
+    }
+
+    //lấy ra 1  id_bill theo idBillDetail
+    public Integer getIdBill(Integer idBillDetail){
+        BillDetails billDetail = billDetailRepository.findById(idBillDetail).get();
+        Integer idBill = billDetail.getBill().getId();
+        return idBill;
     }
 }
