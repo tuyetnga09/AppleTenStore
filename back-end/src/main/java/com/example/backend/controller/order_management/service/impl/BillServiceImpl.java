@@ -350,9 +350,4 @@ public class BillServiceImpl implements BillService {
         return billRepository.listBillByIdAccountDH(id);
     }
 
-    @Override
-    public List<Bill> getListBillChoThanhToan(Integer idAccount) {
-        return billRepository.listBillChoThanhToan(idAccount);
-    }
-
 }

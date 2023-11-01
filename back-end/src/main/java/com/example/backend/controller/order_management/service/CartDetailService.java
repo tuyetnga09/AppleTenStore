@@ -13,4 +13,6 @@ public interface CartDetailService {
 
     void updateQuantityCartOff(Integer id, Integer newQuantity);
     Boolean deleteCartDetailOff(Integer id);
+
+    Boolean deleteAllCartDetail(Integer idAccount);
 }

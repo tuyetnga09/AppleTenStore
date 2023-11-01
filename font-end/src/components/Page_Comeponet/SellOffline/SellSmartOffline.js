@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslate } from "@refinedev/core";
 import { ShoppingCartOutlined, GiftOutlined } from "@ant-design/icons";
+import "../SellOffline/style.css";
 import {
   Layout,
   theme,
@@ -61,6 +62,16 @@ import {
   getBillCTTByCodeBillS2,
   doneBill,
   listImeiDaBanByIdBillDetail,
+  deleteImeiDaBan,
+  seachImeisDaBan,
+  seachImeis,
+  deleteImeisDaBanOffLineCheckBox,
+  deleteAllImeisDaBanOffLine,
+  getAllImeisDaBanOffLine,
+  deleteBillOneDetail,
+  searchBillCTT,
+  getBilDetailOfBillWhereIdBill,
+  getIdBill,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -508,6 +519,7 @@ export default function SellSmart() {
   // Hàm để ẩn Modal
   const handleCancelBill = () => {
     setIsModalVisibleBill(false);
+    document.getElementById("id-bill-ctt").value = "";
   };
 
   const handleChange = (e) => {
@@ -740,6 +752,12 @@ export default function SellSmart() {
     setDataIdSKU([]);
     setDataImeiThatLac([]);
     document.getElementById("id-imeithatlac").value = "";
+    document.getElementById("id-imeis").value = "";
+    document.getElementById("id-imei-da-ban").value = "";
+    setDataSeachImeiDaBan([]);
+    setDataSeachImeis([]);
+    setSelectedCheckboxes([]);
+
     setIsModalVisibleImei(false);
     // khi đóng modal thì lấy ra được thông tin cần để update
     // let arrCodeImeiDaBan = [];
@@ -841,6 +859,29 @@ export default function SellSmart() {
             .catch((error) => {
               console.log(`Lỗi đọc imei của sku: ${error}`);
             });
+          seachImeis(dataIdSKU, codeImei)
+            .then((response) => {
+              setDataSeachImeis(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+
+          //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+          getIdBill(idBillDetail)
+            .then((response) => {
+              getBilDetailOfBillWhereIdBill(response.data)
+                .then((response) => {
+                  setDataBillDetailOffline(response.data);
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+
           notification.success({
             message: "Thêm Imei Thành Công",
           });
@@ -851,6 +892,55 @@ export default function SellSmart() {
       });
   };
 
+  // xoá imei đã bán ra khỏi bảng imei đã bán và cập nhật lại status imei trong bảng imei - phongnh
+  const handleClearImeiDaBan = (idImeiDaBan, codeImeiDaBan) => {
+    deleteImeiDaBan(idImeiDaBan, codeImeiDaBan)
+      .then((response) => {
+        getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
+          .then((response) => {
+            setDataImeiSelected(response.data);
+          })
+          .catch((error) => {
+            console.log(`Lỗi đọc sku: ${error}`);
+          });
+        getImeisOfSku(dataIdSKU)
+          .then((response) => {
+            setDataImeiClick(response.data);
+          })
+          .catch((error) => {
+            console.log(`Lỗi đọc imei của sku: ${error}`);
+          });
+        seachImeisDaBan(dataIdBillDetail, dataIdSKU, codeImeiDaBan)
+          .then((response) => {
+            setDataSeachImeiDaBan(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+        getIdBill(dataIdBillDetail)
+          .then((response) => {
+            getBilDetailOfBillWhereIdBill(response.data)
+              .then((response) => {
+                setDataBillDetailOffline(response.data);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        notification.success({
+          message: "Xoá Imei Thành Công",
+        });
+      })
+      .catch((error) => {
+        console.log(`Lỗi xoá imei_da_ban: ${error}`);
+      });
+  };
+
+  //tạo danh sach imei thất lạc
   const [dataImeiThatLac, setDataImeiThatLac] = useState([]);
   //tìm kiếm imei thất lạc - phongnh
   function handleChangeImeiThatLac(event) {
@@ -874,6 +964,279 @@ export default function SellSmart() {
         });
     }
   }
+
+  //tìm kiếm imei đã bán - phongnh
+  const [dataSeachImeiDaBan, setDataSeachImeiDaBan] = useState([]);
+  function handleChangeImeisDaBan(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(target + " check imei");
+    console.log(value + " check imei - name");
+
+    // let item = { key: "" };
+    // item[name] = value;
+    // setDataImeiThatLac(item);
+    if (value !== undefined) {
+      seachImeisDaBan(dataIdBillDetail, dataIdSKU, value)
+        .then((response) => {
+          setDataSeachImeiDaBan(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }
+  //tìm kiếm imei - phongnh
+  const [dataSeachImeis, setDataSeachImeis] = useState([]);
+  function handleChangeImeis(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(target + " check imei");
+    console.log(value + " check imei - name");
+
+    // let item = { key: "" };
+    // item[name] = value;
+    // setDataImeiThatLac(item);
+    if (value !== undefined) {
+      seachImeis(dataIdSKU, value)
+        .then((response) => {
+          setDataSeachImeis(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }
+
+  //check box imei để xoá đi - phongnh
+  const [isChecked, setIsChecked] = useState(false);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
+
+  function handleCheckboxChange(e) {
+    const checkboxValue = e.target.value;
+    // setIsChecked(e.target.checked);
+
+    // if (e.target.checked) {
+    //   // Nếu được chọn, thêm giá trị vào danh sách
+    //   setSelectedCheckboxes([...selectedCheckboxes, checkboxValue]);
+    // } else {
+    //   // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
+    //   setSelectedCheckboxes(
+    //     selectedCheckboxes.filter((item) => item !== checkboxValue)
+    //   );
+    // }
+    setSelectedCheckboxes((prevSelectedCheckboxes) => {
+      if (e.target.checked) {
+        // Nếu được chọn, thêm giá trị vào danh sách
+        return [...prevSelectedCheckboxes, checkboxValue];
+      } else {
+        // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
+        return prevSelectedCheckboxes.filter((item) => item !== checkboxValue);
+      }
+    });
+  }
+  // Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxes và in giá trị mới
+  // useEffect(() => {
+  //   console.log(selectedCheckboxes + " :imei da ban ++--");
+  // }, [selectedCheckboxes]);
+
+  //xoá các imei đã được chọn - checkbox - phongnh
+  const handleClearImeiDaBanCheckBox = () => {
+    if (selectedCheckboxes.length > 0) {
+      deleteImeisDaBanOffLineCheckBox(selectedCheckboxes)
+        .then((response) => {
+          setSelectedCheckboxes([]);
+          getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
+            .then((response) => {
+              setDataImeiSelected(response.data);
+            })
+            .catch((error) => {
+              console.log(`Lỗi đọc sku: ${error}`);
+            });
+          getImeisOfSku(dataIdSKU)
+            .then((response) => {
+              setDataImeiClick(response.data);
+            })
+            .catch((error) => {
+              console.log(`Lỗi đọc imei của sku: ${error}`);
+            });
+
+          setDataSeachImeiDaBan([]);
+          //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+          getIdBill(dataIdBillDetail)
+            .then((response) => {
+              getBilDetailOfBillWhereIdBill(response.data)
+                .then((response) => {
+                  setDataBillDetailOffline(response.data);
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+          toast.current.show({
+            severity: "success",
+            summary: "THÔNG BÁO THÀNH CÔNG",
+            detail: "Đã Xoá Danh Sách Imei.",
+            life: 3000,
+          });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      notification.error({
+        message: "Xoá Thất Bại!",
+        description: "Hãy Chọn Danh Sách Imei.",
+      });
+    }
+  };
+  //config khi xoá cehckbox imei  của bill_detail - phongnh
+  const rejectDeleteImeiCheckBoxBillDetail = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmDeleteImeiCheckBoxBillDetail = (idBillDetail, codeBill) => {
+    confirmDialog({
+      message: "Bạn chắc chắn xoá?",
+      header: "XOÁ TẤT CẢ IMEI ĐÃ CHỌN",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleClearImeiDaBanCheckBox(),
+      reject: () => rejectDeleteImeiCheckBoxBillDetail(),
+    });
+  };
+
+  //xoá all imei của bill_detail - phongnh
+  const handleClearAllImeiDaBan = () => {
+    getAllImeisDaBanOffLine(dataIdBillDetail)
+      .then((response) => {
+        if (response.data.length > 0) {
+          deleteAllImeisDaBanOffLine(dataIdBillDetail)
+            .then((response) => {
+              setSelectedCheckboxes([]);
+              getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
+                .then((response) => {
+                  setDataImeiSelected(response.data);
+                })
+                .catch((error) => {
+                  console.log(`Lỗi đọc sku: ${error}`);
+                });
+              getImeisOfSku(dataIdSKU)
+                .then((response) => {
+                  setDataImeiClick(response.data);
+                })
+                .catch((error) => {
+                  console.log(`Lỗi đọc imei của sku: ${error}`);
+                });
+
+              setDataSeachImeiDaBan([]);
+
+              //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+              getIdBill(dataIdBillDetail)
+                .then((response) => {
+                  getBilDetailOfBillWhereIdBill(response.data)
+                    .then((response) => {
+                      setDataBillDetailOffline(response.data);
+                    })
+                    .catch((error) => {
+                      console.log(`${error}`);
+                    });
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
+              toast.current.show({
+                severity: "success",
+                summary: "THÔNG BÁO THÀNH CÔNG",
+                detail: "Đã Xoá Tất Cả Imei.",
+                life: 3000,
+              });
+            })
+            .catch((error) => {
+              console.log(`Lỗi đọc imei_da_ban: ${error}`);
+            });
+        } else {
+          notification.error({
+            message: "Xoá Thất Bại!",
+            description: "Danh Sách Imei Rỗng.",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(`Lỗi đọc bill_detail: ${error}`);
+      });
+  };
+  //config khi xoá all imei của bill_detail - phongnh
+  const rejectDeleteAllImeiBillDetail = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmDeleteAllImeiBillDetail = (idBillDetail, codeBill) => {
+    confirmDialog({
+      message: "Bạn chắc chắn xoá?",
+      header: "XOÁ TẤT CẢ IMEI ĐÃ CHỌN",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleClearAllImeiDaBan(),
+      reject: () => rejectDeleteAllImeiBillDetail(),
+    });
+  };
+
+  // xoá one bill_detail cảu 1 hoá đơn - phongnh
+  const removeBillDetail = (idBillDetail, codeBill) => {
+    deleteBillOneDetail(idBillDetail)
+      .then((response) => {
+        console.log(" xaos kkk");
+        getBillDetailOfBill(codeBill)
+          .then((response) => {
+            setDataBillDetailOffline(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        toast.current.show({
+          severity: "success",
+          summary: "THÔNG BÁO",
+          detail: "Xoá thành công.",
+          life: 3000,
+        });
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  };
+  //config khi xoá bill_detail - phongnh
+  const rejectDeleteBillDetail = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmDeleteBillDetail = (idBillDetail, codeBill) => {
+    confirmDialog({
+      message: "Bạn chắc chắn xoá?",
+      header: "THÔNG BÁO XOÁ SẢN PHẨM",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => removeBillDetail(idBillDetail, codeBill),
+      reject: () => rejectDeleteBillDetail(),
+    });
+  };
 
   const handleUpdateQuantity = (billDetailID, newQuantity, codeBill) => {
     if (newQuantity == 0) {
@@ -902,13 +1265,13 @@ export default function SellSmart() {
     }
   };
 
-  async function remove(id) {
-    deleteCartDetailOff(id).then(() => {
-      let newArr = [...cartIemts].filter((s) => s.id !== id);
-      setCartItems(newArr);
-      window.location.reload();
-    });
-  }
+  // async function remove(id) {
+  //   deleteCartDetailOff(id).then(() => {
+  //     let newArr = [...cartIemts].filter((s) => s.id !== id);
+  //     setCartItems(newArr);
+  //     window.location.reload();
+  //   });
+  // }
 
   // TÍNH TIỀN TỔNG SẢN PHẨN - ADD VOUCHER
   useEffect(() => {
@@ -1116,6 +1479,23 @@ export default function SellSmart() {
       });
   };
 
+  //tìm kiếm hóa đơn chờ thanh toán
+  const handleChangeBillCTT = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    if (value !== undefined) {
+      searchBillCTT(idAccount, value)
+        .then((response) => {
+          setHoaDonCho(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
   return (
     <React.Fragment>
       <>
@@ -1297,6 +1677,8 @@ export default function SellSmart() {
 
                       {/* test nút mới add sp vào bill detai */}
                       <Table.Column
+                        align="center"
+                        title="Action"
                         render={(record) => {
                           return (
                             <button
@@ -1526,7 +1908,9 @@ export default function SellSmart() {
                               })}
                             </td>
                             <td>
-                              <p>số imei </p>
+                              <p>
+                                Tổng số imei: {billDetail.soLuongImeiDaChon}
+                              </p>
                               <p>
                                 <button
                                   type="button"
@@ -1556,7 +1940,7 @@ export default function SellSmart() {
                                     // )
                                   }
                                 >
-                                  imei
+                                  Chọn imei
                                 </button>
                               </p>
                             </td>
@@ -1572,7 +1956,12 @@ export default function SellSmart() {
                                 className="close"
                                 data-dismiss="alert"
                                 aria-label="Close"
-                                onClick={() => remove(billDetail.id)}
+                                onClick={() =>
+                                  confirmDeleteBillDetail(
+                                    billDetail.id,
+                                    dataBillOffLine?.codeBill
+                                  )
+                                }
                               >
                                 <span aria-hidden="true">
                                   <FontAwesomeIcon
@@ -2331,6 +2720,7 @@ export default function SellSmart() {
                 name="key"
                 onChange={handleChangeImeiThatLac}
               />
+              <p></p>
               {dataImeiThatLac.length > 0 ? (
                 <ul class="list-group mb-3">
                   <li
@@ -2375,7 +2765,10 @@ export default function SellSmart() {
               ) : (
                 <p style={{ color: "red" }}>* Không có dữ liệu!</p>
               )}
-
+              <div
+                className="card-header d-flex justify-content-between align-items-center"
+                style={{ borderTop: "4px solid #ffa900" }}
+              ></div>
               <p
                 style={{
                   marginTop: "10px",
@@ -2384,54 +2777,121 @@ export default function SellSmart() {
                 }}
               >
                 Danh Sách Imei Đã Chọn Của {dataSkuSelected.nameProduct}{" "}
-                {dataSkuSelected.colorSKU} - {dataSkuSelected.capacitySKU}
+                {dataSkuSelected.capacitySKU} - {dataSkuSelected.colorSKU}
+              </p>
+
+              <input
+                id="id-imei-da-ban"
+                className="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                name="key"
+                onChange={handleChangeImeisDaBan}
+              />
+              <p></p>
+              <p style={{ textAlign: "right" }}>
+                <Button
+                  type="text"
+                  style={{
+                    border: "2px solid black",
+                    backgroundColor: "#ff7700",
+                    color: "white",
+                  }}
+                  className="col-3 btn-xoa"
+                  danger
+                  onClick={() => confirmDeleteImeiCheckBoxBillDetail()}
+                >
+                  Xoá Checkbox
+                </Button>
+                <span className="col-1"></span>
+                <Button
+                  type="text"
+                  danger
+                  style={{
+                    border: "2px solid black",
+                    backgroundColor: "red",
+                    color: "white",
+                  }}
+                  className="col-3 btn-xoa"
+                  onClick={() => confirmDeleteAllImeiBillDetail()}
+                >
+                  Xoá All Imei
+                </Button>
               </p>
               <div
                 className="card-body"
                 data-mdb-perfect-scrollbar="true"
                 style={{ position: "relative", height: 250, overflowY: "auto" }}
               >
-                {dataImeiSelected.map((imei, index) => (
+                {/* dataSeachImeiDaBan */}
+                {dataSeachImeiDaBan.length === 0 ? (
                   <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>
-                        {/* <Image
-                          style={{
-                            width: "100px",
-                          }}
-                          src="https://bizweb.dktcdn.net/100/377/231/articles/freeship.png?v=1588928233387"
-                        /> */}
-                        {index + 1}
-                      </span>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {imei.codeImeiDaBan}
-                      </span>
-                      <strong>
-                        {/* <Checkbox
-                        onClick={() => handleVoucherClick(voucher)}
-                      /> */}
-                        {/* <Button
-                          type="text"
-                          danger
-                          onClick={() => handleVoucherFreeShipClick(voucher)}
-                        >
-                          Áp dụng
-                        </Button>
-                        <br /> */}
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() => handleClearVoucherFreeShip(voucher.id)}
-                        >
-                          Hủy
-                        </Button>
-                      </strong>
-                    </li>
+                    {dataImeiSelected.map((imei, index) => (
+                      <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between">
+                          <span>{index + 1}</span>
+
+                          <input
+                            type="checkbox"
+                            value={imei.codeImeiDaBan}
+                            checked={selectedCheckboxes.includes(
+                              imei.codeImeiDaBan
+                            )}
+                            onChange={handleCheckboxChange}
+                          />
+                          <span style={{ paddingLeft: "10px" }}>
+                            {imei.codeImeiDaBan}
+                          </span>
+                          <strong>
+                            <Button
+                              type="text"
+                              danger
+                              onClick={() =>
+                                handleClearImeiDaBan(
+                                  imei.idImeiDaBan,
+                                  imei.codeImeiDaBan
+                                )
+                              }
+                            >
+                              Hủy
+                            </Button>
+                          </strong>
+                        </li>
+                      </ul>
+                    ))}
                   </ul>
-                ))}
+                ) : (
+                  <ul class="list-group mb-3">
+                    {dataSeachImeiDaBan.map((imei, index) => (
+                      <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between">
+                          <span>{index + 1}</span>
+                          <span style={{ paddingLeft: "10px" }}>
+                            {imei.codeImeiDaBan}
+                          </span>
+                          <strong>
+                            <Button
+                              type="text"
+                              danger
+                              onClick={() =>
+                                handleClearImeiDaBan(
+                                  imei.idImeiDaBan,
+                                  imei.codeImeiDaBan
+                                )
+                              }
+                            >
+                              Hủy
+                            </Button>
+                          </strong>
+                        </li>
+                      </ul>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div
-                className="card-header d-flex justify-content-between align-items-center p-3"
+                className="card-header d-flex justify-content-between align-items-center"
                 style={{ borderTop: "4px solid #ffa900" }}
               ></div>
               <p
@@ -2442,43 +2902,75 @@ export default function SellSmart() {
                 }}
               >
                 Danh Sách Imei Của {dataSkuSelected.nameProduct}{" "}
-                {dataSkuSelected.colorSKU} - {dataSkuSelected.capacitySKU}
+                {dataSkuSelected.capacitySKU} - {dataSkuSelected.colorSKU}
               </p>
+              <input
+                id="id-imeis"
+                className="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                name="key"
+                onChange={handleChangeImeis}
+              />
+              <p></p>
               <div
                 className="card-body"
                 data-mdb-perfect-scrollbar="true"
                 style={{ position: "relative", height: 330, overflowY: "auto" }}
               >
-                {dataImeiClick.map((imei, index) => (
+                {/* dataSeachImeis */}
+                {dataSeachImeis.length === 0 ? (
                   <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>
-                        {/* <Image
-                          style={{
-                            width: "100px",
-                          }}
-                          src="https://help.turitop.com/hc/article_attachments/360007926459/voucher.png"
-                        /> */}
-                        {index + 1}
-                      </span>
-                      <span style={{ paddingLeft: "10px" }}>
-                        {imei.codeImei}
-                        <br />
-                      </span>
-                      <strong>
-                        <Button
-                          type="text"
-                          danger
-                          onClick={() =>
-                            handleImeiClick(imei.codeImei, dataIdBillDetail)
-                          }
-                        >
-                          Chọn
-                        </Button>
-                      </strong>
-                    </li>
+                    {dataImeiClick.map((imei, index) => (
+                      <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between">
+                          <span>{index + 1}</span>
+                          <span style={{ paddingLeft: "10px" }}>
+                            {imei.codeImei}
+                            <br />
+                          </span>
+                          <strong>
+                            <Button
+                              type="text"
+                              danger
+                              onClick={() =>
+                                handleImeiClick(imei.codeImei, dataIdBillDetail)
+                              }
+                            >
+                              Chọn
+                            </Button>
+                          </strong>
+                        </li>
+                      </ul>
+                    ))}
                   </ul>
-                ))}
+                ) : (
+                  <ul class="list-group mb-3">
+                    {dataSeachImeis.map((imei, index) => (
+                      <ul class="list-group mb-3">
+                        <li class="list-group-item d-flex justify-content-between">
+                          <span>{index + 1}</span>
+                          <span style={{ paddingLeft: "10px" }}>
+                            {imei.codeImei}
+                            <br />
+                          </span>
+                          <strong>
+                            <Button
+                              type="text"
+                              danger
+                              onClick={() =>
+                                handleImeiClick(imei.codeImei, dataIdBillDetail)
+                              }
+                            >
+                              Chọn
+                            </Button>
+                          </strong>
+                        </li>
+                      </ul>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
@@ -2500,14 +2992,17 @@ export default function SellSmart() {
                 <h5 className="mb-0">HÓA ĐƠN CHỜ</h5>
               </div>
               <input
+                id="id-bill-ctt"
                 className="form-control"
-                type="text"
-                placeholder="Tìm kiếm hóa đơn"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
                 name="key"
                 style={{
                   marginBottom: "10px",
                   borderTop: "4px solid red",
                 }}
+                onChange={handleChangeBillCTT}
               />
               <div
                 className="card-body"

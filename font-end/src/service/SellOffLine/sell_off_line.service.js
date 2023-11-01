@@ -36,6 +36,12 @@ export const getBillDetailOfBill = (codeBill) => {
     `/admin/bill-offline/get-bill-detail?codeBill=${codeBill}`
   );
 };
+//lấy ra list bill_detail của 1 bill theo id_bill - phongnh
+export const getBilDetailOfBillWhereIdBill = (idBill) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-bill-detail-idbill?idBill=${idBill}`
+  );
+};
 
 //lấy ra danh sách imei của sku được chọn
 export const getImeisOfSku = (idSKU) => {
@@ -63,12 +69,13 @@ export const addImeiDaBan = (imeiDaBanOffLineRequest) => {
 };
 
 //delete imei_da_ban
-export const deleteImeiDaBan = (idImeiDaBan) => {
+export const deleteImeiDaBan = (idImeiDaBan, codeImeiDaBan) => {
   return httpClient.delete(
-    `/admin/bill-offline/delete-imei-da-ban?idImeiDaBan=${idImeiDaBan}`
+    `/admin/bill-offline/delete-imei-da-ban?idImeiDaBan=${idImeiDaBan}&codeImeiDaBan=${codeImeiDaBan}`
   );
 };
 
+//check imei that lac
 export const getListImeiThatLac = (codeImei) => {
   return httpClient.get(
     `/admin/bill-offline/get-imei-that-lac?codeImei=${codeImei}`
@@ -76,7 +83,7 @@ export const getListImeiThatLac = (codeImei) => {
 };
 
 export const getBillChoThanhToan = (id) => {
-  return httpClient.get(`http://localhost:8080/manager/bill/getBillCTT/${id}`);
+  return httpClient.get(`/admin/bill-offline/getBillCTT/${id}`);
 };
 
 export const updateQuantitySellOff = (id, newQuantity) => {
@@ -100,5 +107,62 @@ export const doneBill = (data) => {
 export const listImeiDaBanByIdBillDetail = (idBillDetail) => {
   return httpClient.get(
     `/admin/bill-offline/get-code-imei-da-ban?idBillDetail=${idBillDetail}`
+  );
+};
+
+//seach Imei Da Ban
+export const seachImeisDaBan = (idBillDetail, idSKU, codeImei) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-seach-imei-da-ban?idBillDetail=${idBillDetail}&idSKU=${idSKU}&codeImei=${codeImei}`
+  );
+};
+
+//seach imei theo codeImei
+export const seachImeis = (idSKU, codeImei) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-seach-imeis?idSKU=${idSKU}&codeImei=${codeImei}`
+  );
+};
+
+//delete imei_da_ban - xoá danh sách imei đã bán được chọn (checkbox)
+export const deleteImeisDaBanOffLineCheckBox = (codeImeis) => {
+  return httpClient.delete(
+    `/admin/bill-offline/delete-imeis-da-ban-check-box?codeImeis=${codeImeis}`
+  );
+};
+
+//delete imei_da_ban - xoá all imei đã bán  where idbillDetail
+export const deleteAllImeisDaBanOffLine = (idBillDetail) => {
+  return httpClient.delete(
+    `/admin/bill-offline/delete-all-imeis-da-ban?idBillDetail=${idBillDetail}`
+  );
+};
+
+//all imei da ban cua bill_detail
+export const getAllImeisDaBanOffLine = (idBillDetail) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-all-imeis-da-ban?idBillDetail=${idBillDetail}`
+  );
+};
+
+//xoá bill_detail -> xoá các imei_da_ban trong bảng imei_da_ban của bill_detail đó và hoàn lại status các của các imei
+//chỉ xoá được các bill_detail của bill chưa hoàn thành
+export const deleteBillOneDetail = (idBillDetail) => {
+  return httpClient.delete(
+    `/admin/bill-offline/delete-bill-detail?idBillDetail=${idBillDetail}`
+  );
+};
+
+//seach Imei Da Ban
+export const searchBillCTT = (idAccount, codeBill) => {
+  return httpClient.get(
+    `/admin/bill-offline/searchBill-CTT?idAccount=${idAccount}&codeBill=${codeBill}`
+  );
+};
+
+//lấy ra id_bill theo ib_billdetail
+export const getIdBill = (idBillDetail) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-bill?idBillDetail=${idBillDetail}`
   );
 };

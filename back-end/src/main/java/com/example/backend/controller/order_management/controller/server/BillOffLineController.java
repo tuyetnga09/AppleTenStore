@@ -13,6 +13,7 @@ import com.example.backend.controller.order_management.model.billOffLine.ion.Lis
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
+import com.example.backend.entity.Bill;
 import com.example.backend.entity.BillDetails;
 import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.SKU;
@@ -67,12 +68,20 @@ public class BillOffLineController {
         BillDetails billDetailsList = billOffLineService.addBillDetail(addBillOffLineRequest);
         return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
     }
-
+    //lấy ra list bill_detail của 1 bill theo codeBill
     @GetMapping("/get-bill-detail")
     public ResponseEntity<List<BillDetailOffLineIon>> getBillDetailOfBill(@RequestParam("codeBill") String codeBill) {
         List<BillDetailOffLineIon> billDetailsList = billOffLineService.getBilDetailOfBill(codeBill);
         return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
     }
+
+    //lấy ra list bill_detail của 1 bill theo id_bill
+    @GetMapping("/get-bill-detail-idbill")
+    public ResponseEntity<List<BillDetailOffLineIon>> getBilDetailOfBillWhereIdBill(@RequestParam("idBill") Integer idBill) {
+        List<BillDetailOffLineIon> billDetailsList = billOffLineService.getBilDetailOfBillWhereIdBill(idBill);
+        return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
+    }
+
 
     //lấy ra danh sách imei của sku được chọn
     @GetMapping("/get-imeis")
@@ -90,8 +99,8 @@ public class BillOffLineController {
 
     //lấy ra list imei đã bán của sku trong bill_detail được chọn
     @GetMapping("/get-imei-da-ban")
-    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> getListImeiDaBanOfSku(@RequestParam("idBillDetail") Integer idBillDetail ,
-                                                                             @RequestParam("idSKU") Long idSKU) {
+    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> getListImeiDaBanOfSku(@RequestParam("idBillDetail") Integer idBillDetail,
+                                                                                 @RequestParam("idSKU") Long idSKU) {
         List<ImeiDaBanOffLineIonRespon> list = billOffLineService.getImeiDaBanOfSku(idBillDetail, idSKU);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
@@ -99,23 +108,25 @@ public class BillOffLineController {
     //add imei vvào billDetail ( vào bảng imei_da_ban)
     @PostMapping("/add-imei-da-ban")
     public ResponseEntity<ImeiDaBan> addImeiDaBan(@RequestBody ImeiDaBanOffLineRequest imeiDaBanOffLineRequest) {
-        ImeiDaBan  imeiDaBan= billOffLineService.addImeiDaBanOffLine(imeiDaBanOffLineRequest);
+        ImeiDaBan imeiDaBan = billOffLineService.addImeiDaBanOffLine(imeiDaBanOffLineRequest);
         return new ResponseEntity<>(imeiDaBan, HttpStatus.OK);
     }
 
     //delete imei_da_ban -> đang chưa hoà lại status cho imei...
     @DeleteMapping("/delete-imei-da-ban")
-    public ResponseEntity<Boolean> deleteImeiDaBan(@RequestParam("idImeiDaBan") Long idImeiDaBan ) {
-        Boolean check = billOffLineService.deleteImeiDaBanOffLine(idImeiDaBan);
+    public ResponseEntity<Boolean> deleteImeiDaBan(@RequestParam("idImeiDaBan") Long idImeiDaBan,
+                                                   @RequestParam("codeImeiDaBan") String codeImeiDaBan) {
+        Boolean check = billOffLineService.deleteImeiDaBanOffLine(idImeiDaBan, codeImeiDaBan);
         return new ResponseEntity<>(check, HttpStatus.OK);
     }
 
     // tìm imei thất lạc
     @GetMapping("/get-imei-that-lac")
-    public ResponseEntity<List<CheckImeiDaBanIonSellOffLine>> getListImeiThatLac(@RequestParam("codeImei") String codeImei ) {
+    public ResponseEntity<List<CheckImeiDaBanIonSellOffLine>> getListImeiThatLac(@RequestParam("codeImei") String codeImei) {
         List<CheckImeiDaBanIonSellOffLine> list = billOffLineService.checkImeiThatLac(codeImei);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
     @GetMapping("/get-bill-CTT/{codeBill}")
     public ResponseEntity<List<ListBillChoThanhToan>> getBillByCodeBy(@PathVariable("codeBill") String codeBill) {
         List<ListBillChoThanhToan> billList = billOffLineService.findBillByCodeBill(codeBill);
@@ -136,5 +147,68 @@ public class BillOffLineController {
     @GetMapping("/get-code-imei-da-ban")
     public List<ImeiDaBan> getListImeiDaBanByIdBillDetaill(@RequestParam("idBillDetail") Integer idBillDetail){
         return imeiDaBanRepository.findImeiDaBanByBillDetail_Id(idBillDetail);
+    }
+    //seach Imei Da Ban
+    @GetMapping("/get-seach-imei-da-ban")
+    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> seachImeisDaBan(@RequestParam("idBillDetail") Integer idBillDetail,
+                                                                  @RequestParam("idSKU") Long idSKU,
+                                                                  @RequestParam("codeImei") String codeImei) {
+        List<ImeiDaBanOffLineIonRespon> list = billOffLineService.seachImeiDaBan(idBillDetail, idSKU, codeImei);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //seach imei theo codeImei
+    @GetMapping("/get-seach-imeis")
+    public ResponseEntity<List<ImeiBillOffLineIonRespon>> seachImeis(@RequestParam("idSKU") Long idSKU,
+                                                                      @RequestParam("codeImei") String codeImei) {
+        List<ImeiBillOffLineIonRespon> list = billOffLineService.seachImeiFindByCodeImei(idSKU, codeImei);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //delete imei_da_ban - xoá danh sách imei đã bán được chọn (checkbox)
+    @DeleteMapping("/delete-imeis-da-ban-check-box")
+    public ResponseEntity<Boolean> deleteImeisDaBanOffLineCheckBox(@RequestParam("codeImeis") List<String> codeImeis) {
+        Boolean check = billOffLineService.deleteImeisDaBanOffLineCheckBox(codeImeis);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    //delete imei_da_ban - xoá all imei đã bán  where idbillDetail
+    @DeleteMapping("/delete-all-imeis-da-ban")
+    public ResponseEntity<Boolean> deleteAllImeisDaBanOffLine(@RequestParam("idBillDetail") Integer idBillDetail) {
+        Boolean check = billOffLineService.deleteAllImeisDaBanOffLine(idBillDetail);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    //all imei da ban cua bill_detail
+    @GetMapping("/get-all-imeis-da-ban")
+    public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> getAllImeisDaBanOffLine(@RequestParam("idBillDetail") Integer idBillDetail) {
+        List<ImeiDaBanOffLineIonRespon> list = billOffLineService.getAllImeisDaBanOffLine(idBillDetail);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //xoá bill_detail -> xoá các imei_da_ban trong bảng imei_da_ban của bill_detail đó và hoàn lại status các của các imei
+    //chỉ xoá được các bill_detail của bill chưa hoàn thành
+    @DeleteMapping("/delete-bill-detail")
+    public ResponseEntity<Boolean> deleteBillOneDetail(@RequestParam("idBillDetail") Integer idBillDetail) {
+        Boolean check = billOffLineService.deleteBillDetail(idBillDetail);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    @GetMapping("/searchBill-CTT")
+    public ResponseEntity<List<Bill>> seachBillChoThanhToan(@RequestParam("idAccount") Integer idAccount,
+                                                                           @RequestParam("codeBill") String codeBill) {
+        List<Bill> list = billOffLineService.searchBillChoThanhToan(idAccount, codeBill);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/getBillCTT/{idAccount}")
+    public List<Bill> getBillChoThanhToan(@PathVariable("idAccount") Integer idAccount) {
+        return billOffLineService.getListBillChoThanhToan(idAccount);
+    }
+    //lấy ra id_bill theo ib_billdetail
+    @GetMapping("/get-bill")
+    public ResponseEntity<Integer> getIdBill(@RequestParam("idBillDetail") Integer idBillDetail) {
+        Integer idBill = billOffLineService.getIdBill(idBillDetail);
+        return new ResponseEntity<>(idBill, HttpStatus.OK);
     }
 }

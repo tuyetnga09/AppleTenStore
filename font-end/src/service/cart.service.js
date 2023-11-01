@@ -56,3 +56,7 @@ export const addToCartSession = (newCartSession) => {
 export const getCartSession = () => {
   return httpClient.get("/customer/cart/items");
 };
+
+export const deleteAllCart = (idAccount) => {
+  return httpClient.delete(`/customer/cart-detail/deleteAll/${idAccount}`);
+};
