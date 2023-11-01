@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.billOffLine.AddBillOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
+import com.example.backend.controller.order_management.model.billOffLine.DoneBill;
 import com.example.backend.controller.order_management.model.billOffLine.ImeiDaBanOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
@@ -353,6 +354,44 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     @Override
     public ListBillChoThanhToanS2 findBillByCodeBillS2(String codeBill) {
         return billDetailRepository.findBillbyCodeBillS2(codeBill);
+    }
+
+    @Override
+    public void thanhToan(DoneBill doneBill) {
+        Bill bill = billRepository.findById(doneBill.getIdBill()).orElse(null);
+        bill.setDateUpdate(LocalDate.now());
+        bill.setMoneyShip(doneBill.getMoneyShip());
+        bill.setTotalMoney(doneBill.getTotalMoney());
+        bill.setAddress(doneBill.getAddress());
+        bill.setNote(doneBill.getNote());
+        bill.setPersonUpdate(doneBill.getPersonUpdate());
+        bill.setPhoneNumber(doneBill.getPhoneNumber());
+        bill.setUserName(doneBill.getUserName());
+        bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+        billRepository.save(bill);
+        List<BillDetails> billDetails = billDetailRepository.findByBillDetailOfIdBill(doneBill.getIdBill());
+        for (BillDetails bd : billDetails
+             ) {
+            bd.setStatusBill(StatusBill.DA_THANH_TOAN);
+            bd.setPersonUpdate(doneBill.getPersonUpdate());
+            bd.setDateUpdate(new Date());
+            billDetailRepository.save(bd);
+        }
+        for (String codeImei : doneBill.getCodeImeiDaBan()
+             ) {
+            ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(codeImei);
+            imeiDaBan.setStatus(3);
+            imeiDaBanRepository.save(imeiDaBan);
+            Imei imei = imeiRepository.findByCodeImei(codeImei);
+            imei.setStatus(3);
+            imei.setPersonSale(doneBill.getPersonUpdate());
+            imei.setSaleDate(new Date());
+            imeiRepository.save(imei);
+        }
+        for (Long idSku : doneBill.getIdSku()
+             ) {
+            skuRepositoty.updateQuantity(idSku, skuRepositoty.quantitySkuInBillDetails(idSku, doneBill.getIdBill()));
+        }
     }
 
 }

@@ -24,4 +24,5 @@ public interface ImeiDaBanRepository extends JpaRepository<ImeiDaBan, Long> {
             "    where idb.code_imei = ?1", nativeQuery = true)
     List<CheckImeiDaBanIonSellOffLine> checkImeiDaBan(String codeImei);
 
+    List<ImeiDaBan> findImeiDaBanByBillDetail_Id(Integer id);
 }

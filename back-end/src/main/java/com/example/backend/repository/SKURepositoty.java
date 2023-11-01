@@ -52,4 +52,6 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     @Query(value = "update sku set quantity = quantity - ?2 where id = ?1", nativeQuery = true)
     void updateQuantity(Long id, Integer number);
 
+    @Query(value = "select quantity from bill_detail where id_sku = ?1 and id_bill = ?2", nativeQuery = true)
+    Integer quantitySkuInBillDetails(Long idSku, Integer idBill);
 }

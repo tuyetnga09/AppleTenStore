@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.service;
 
 import com.example.backend.controller.order_management.model.billOffLine.AddBillOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
+import com.example.backend.controller.order_management.model.billOffLine.DoneBill;
 import com.example.backend.controller.order_management.model.billOffLine.ImeiDaBanOffLineRequest;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
@@ -49,4 +50,5 @@ public interface BillOffLineService {
 
     ListBillChoThanhToanS2 findBillByCodeBillS2(String codeBill);
 
+    void thanhToan(DoneBill doneBill);
 }

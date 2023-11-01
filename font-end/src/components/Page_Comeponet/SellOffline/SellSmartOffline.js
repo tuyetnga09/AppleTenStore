@@ -59,11 +59,21 @@ import {
   updateQuantitySellOff,
   getBillCTTByCodeBill,
   getBillCTTByCodeBillS2,
+  doneBill,
+  listImeiDaBanByIdBillDetail,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
+import { Toast } from "primereact/toast";
+import { readAllWard } from "../../../service/AddressAPI/ward.service";
+import { readAllDistrict } from "../../../service/AddressAPI/district.service";
+import { readAllProvince } from "../../../service/AddressAPI/province.service";
+import { getFee } from "../../../service/AddressAPI/fee.service";
+import { set } from "js-cookie";
 const { Header, Sider, Content } = Layout;
-
+let arrCodeImeiDaBan = [];
+let arrIdSku = [];
+let arr = [];
 export default function SellSmart() {
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
@@ -101,7 +111,27 @@ export default function SellSmart() {
   const [slHoaDonCho, setDlHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
 
   const [dataTest, setDataTest] = useState(false); // tesst so luong
-
+  const [indexTest, setIndexTest] = useState(0);
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [province_id, setProvince_id] = useState();
+  const [district_id, setDistrict_id] = useState();
+  const [showProvinces, setShowProvinces] = useState(true);
+  const [showDistricts, setShowDistricts] = useState(true);
+  const [showWards, setShowWards] = useState(true);
+  const [fee, setFee] = useState([]);
+  const [transportationFeeDTO, setTransportationFeeDTO] = useState({
+    toDistrictId: null,
+    toWardCode: null,
+    insuranceValue: null,
+    quantity: 1,
+  });
+  const [address, setAddress] = useState({
+    province: "",
+    district: "",
+    wards: "",
+  });
   const [customer, setCustomer] = useState({
     fullName: "", // Đổi từ 'full_name' thành 'fullName'
     email: "", // Giữ nguyên
@@ -122,6 +152,101 @@ export default function SellSmart() {
     id: null,
   });
 
+  const [dataDoneBill, setDataDoneBill] = useState({
+    idBill: null,
+    codeImeiDaBan: [],
+    moneyShip: 0,
+    totalMoney: 0,
+    address: null,
+    note: null,
+    personUpdate: null,
+    phoneNumber: null,
+    userName: null,
+    dateUpdate: null,
+    idSku: [],
+  });
+
+  const handleProvince = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setProvince_id(value);
+      console.log(value);
+      setDistrict_id(null);
+      setWards([]);
+      let item = {
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: null,
+        quantity: 1,
+      };
+      setTransportationFeeDTO(item);
+      setAddress({
+        province: document.getElementById(value).innerText,
+        district: "",
+        wards: "",
+      });
+      setShowDistricts(true);
+    } else {
+      setShowDistricts(false);
+      setShowWards(false);
+      setTransportationFeeDTO({
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: soTienThanhToan,
+        quantity: 1,
+      });
+    }
+  };
+
+  const handleDistrict = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setDistrict_id(value);
+      let item = { ...transportationFeeDTO };
+      item["toDistrictId"] = parseInt(value);
+      item["insuranceValue"] = parseInt(soTienThanhToan);
+      setTransportationFeeDTO(item);
+      console.log(transportationFeeDTO);
+      setAddress({
+        ...address,
+        district: document.getElementById(value).innerText,
+        wards: "",
+      });
+      setShowWards(true);
+    } else {
+      setShowWards(false);
+      setTransportationFeeDTO({
+        toDistrictId: event.target.value,
+        toWardCode: null,
+        insuranceValue: soTienThanhToan,
+        quantity: 1,
+      });
+    }
+  };
+
+  const handleWard = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      let item = { ...transportationFeeDTO };
+      item["toWardCode"] = value;
+      setTransportationFeeDTO(item);
+      console.log(transportationFeeDTO);
+      setAddress({
+        ...address,
+        wards: document.getElementById(value).innerText,
+      });
+      console.log(dataDoneBill);
+    } else {
+      setTransportationFeeDTO({
+        ...transportationFeeDTO,
+        toWardCode: event.target.value,
+      });
+    }
+  };
+
   //Tạo hoá đơn off - phongnh
   async function handleCreateOrder() {
     //nếu chưa đăng nhập thì idAccount là null vì thế không cho add giỏ hàng
@@ -131,6 +256,7 @@ export default function SellSmart() {
         // description: "Add product successfully",
       });
     } else {
+      arr = [];
       //nếu  đăng nhập thì idAccount là khác null vì thế cho add giỏ hàng
       const checkVarAccount = await checkAccount(idAccount);
       setDataCheckAccount(checkVarAccount);
@@ -157,6 +283,12 @@ export default function SellSmart() {
 
               //set gior hàng là rỗng
               setDataBillDetailOffline([]);
+              setDataDoneBill({
+                ...dataDoneBill,
+                idBill: response.data.idBill,
+                // idSku: arrIdSku,
+                // codeImeiDaBan: arrCodeImeiDaBan,
+              });
             })
             .catch((error) => {
               console.log(`${error}`);
@@ -247,7 +379,62 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, [filters, filtersCategory, dataTest]);
+    readAllProvince()
+      .then((response) => {
+        // setProvinces(response.data.data);
+        if (showProvinces === true) {
+          setProvinces(response.data.data);
+        } else {
+          setProvinces([]);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    readAllDistrict(province_id)
+      .then((response) => {
+        // setDistricts(response.data.data);
+        if (showDistricts === true) {
+          setDistricts(response.data.data);
+        } else {
+          setDistricts([]);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    readAllWard(district_id)
+      .then((response) => {
+        // setWards(response.data.data);
+        if (showWards === true) {
+          setWards(response.data.data);
+        } else {
+          setWards([]);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    if (transportationFeeDTO != []) {
+      getFee(transportationFeeDTO)
+        .then((response) => {
+          setFee(response.data.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }, [
+    filters,
+    filtersCategory,
+    dataTest,
+    province_id,
+    district_id,
+    showProvinces,
+    showDistricts,
+    showWards,
+    transportationFeeDTO,
+  ]);
 
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
@@ -353,6 +540,13 @@ export default function SellSmart() {
     input.hidden = false;
     const selectTT = document.getElementById("floatingSelect4");
     selectTT.hidden = false;
+    const select5 = document.getElementById("floatingSelect5");
+    select5.hidden = false;
+    const select6 = document.getElementById("floatingSelect6");
+    select6.hidden = false;
+    const select7 = document.getElementById("floatingSelect7");
+    select7.hidden = false;
+    setShowProvinces(true);
   }
 
   function taiCuaHang() {
@@ -362,24 +556,125 @@ export default function SellSmart() {
     input.hidden = true;
     const selectTT = document.getElementById("floatingSelect4");
     selectTT.hidden = true;
+    const select5 = document.getElementById("floatingSelect5");
+    select5.hidden = true;
+    const select6 = document.getElementById("floatingSelect6");
+    select6.hidden = true;
+    const select7 = document.getElementById("floatingSelect7");
+    select7.hidden = true;
+    setTransportationFeeDTO({
+      toDistrictId: null,
+      toWardCode: null,
+      insuranceValue: null,
+      quantity: 1,
+    });
+    setDataDoneBill({
+      ...dataDoneBill,
+      address: "",
+      moneyShip: 0,
+      totalMoney: totalPrice,
+    });
+    setShowProvinces(false);
+    setShowDistricts(false);
+    setShowWards(false);
+    select.value = "";
   }
 
   const toast = useRef(null);
   const reject = () => {
     toast.current.show({
       severity: "warn",
-      summary: "Rejected",
-      detail: "You have rejected",
+      summary: "THANH TOÁN",
+      detail: "Mời bạn tiếp tục mua hàng",
       life: 3000,
+    });
+    console.log(arrIdSku);
+  };
+  function checkSoluongImei() {
+    if (dataBillDetailOffline[indexTest].quantity !== dataImeiSelected.length) {
+      return false;
+    }
+    return true;
+  }
+
+  function setDataCheckSoLuongImei(index, idBillDetail, idSKU) {
+    setIndexTest(index);
+    getListImeiDaBanOfSku(idBillDetail, idSKU)
+      .then((response) => {
+        setDataImeiSelected(response.data);
+      })
+      .catch((error) => {
+        console.log(`Lỗi đọc sku: ${error}`);
+      });
+  }
+
+  const accept = () => {
+    if (checkSoluongImei() === true) {
+      doneBill(dataDoneBill)
+        .then((res) => {
+          if (res.status === 200) {
+            toast.current.show({
+              severity: "success",
+              summary: "THANH TOÁN",
+              detail: "Thanh toán thành công",
+              life: 3000,
+            });
+            setDataBillDetailOffline([]);
+            setDataTest(!dataTest);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      console.log("ok");
+    } else {
+      toast.current.show({
+        severity: "error",
+        summary: "KIỂM TRA IMEI",
+        detail: "Vui lòng kiểm tra lại imei",
+        life: 3000,
+      });
+    }
+  };
+  const handleGhiChu = (event) => {
+    setDataDoneBill({
+      ...dataDoneBill,
+      note: event.target.value,
+    });
+  };
+  const handleDiaChi = (event) => {
+    setDataDoneBill({
+      ...dataDoneBill,
+      address:
+        event.target.value +
+        ", " +
+        address.wards +
+        ", " +
+        address.district +
+        ", " +
+        address.province,
+      moneyShip: fee?.total,
+      totalMoney: fee?.total + totalPrice,
+    });
+  };
+  const handlePhiVanChuyen = (event) => {
+    setDataDoneBill({
+      ...dataDoneBill,
+      moneyShip: parseInt(event.target.value),
+      totalMoney: totalPrice + parseInt(event.target.value),
     });
   };
   const confirm2 = () => {
+    setDataDoneBill({
+      ...dataDoneBill,
+      totalMoney: totalPrice + dataDoneBill.moneyShip,
+    });
     confirmDialog({
-      message: "Do you want to delete this record?",
-      header: "Delete Confirmation",
+      message: "Bạn chắc chắn muốn thanh toán?",
+      header: "THANH TOÁN",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
-      accept: "/",
+      accept: () => accept(),
       reject,
     });
   };
@@ -436,17 +731,56 @@ export default function SellSmart() {
       });
     setIsModalVisibleImei(true);
   };
-
   // Hàm để ẩn Modal imei
   const handleCancelImei = () => {
     setDataSKuSelected({});
     setDataImeiClick([]);
     setDataIdBillDetail([]);
-    setDataImeiSelected([]);
+    // setDataImeiSelected([]);
     setDataIdSKU([]);
     setDataImeiThatLac([]);
     document.getElementById("id-imeithatlac").value = "";
     setIsModalVisibleImei(false);
+    // khi đóng modal thì lấy ra được thông tin cần để update
+    // let arrCodeImeiDaBan = [];
+    dataImeiSelected.map((item) => {
+      // Kiểm tra xem phần tử mới có tồn tại trong mảng không trước khi thêm vào
+      if (!arrCodeImeiDaBan.includes(item.codeImeiDaBan)) {
+        arrCodeImeiDaBan.push(item.codeImeiDaBan);
+      }
+    });
+    const isUnique = arr.every(
+      (arr1) => !arr1.every((value, index) => value === dataImeiSelected[index])
+    );
+    if (isUnique) {
+      arr.push(dataImeiSelected); // Thêm mảng mới vào mảng 2D
+    }
+    // if (!arr.includes(dataImeiSelected)) {
+    //   arr.push(dataImeiSelected);
+    // }
+    setDataDoneBill({
+      ...dataDoneBill,
+      // idBill: dataBillOffLine.idBill,
+      codeImeiDaBan: arrCodeImeiDaBan,
+      // moneyShip: fee?.total,
+      // totalMoney: totalPrice + parseInt(fee?.total),
+      // address:
+      //   document.getElementById("floatingSelect2").value +
+      //   ", " +
+      //   address.wards +
+      //   ", " +
+      //   address.district +
+      //   ", " +
+      //   address.province,
+      note: document.getElementById("ghiChu").value,
+      personUpdate: dataBillOffLine.codeAccount,
+      phoneNumber: null,
+      userName: null,
+      dateUpdate: null,
+      // idSku: arrIdSku,
+    });
+    console.log(dataDoneBill);
+    console.log(dataBillDetailOffline);
   };
 
   //danh sách imei - của sku được chọn
@@ -594,6 +928,13 @@ export default function SellSmart() {
 
     //tính phí ship
     let priceS = 0;
+    if (fee != null) {
+      priceS = fee?.total;
+      // setBill({
+      //   ...bill,
+      //   moneyShip: priceS,
+      // });
+    }
     setPriceShip(priceS);
     //tính số tiền cẩn thanh toán
     let price = 0;
@@ -740,6 +1081,22 @@ export default function SellSmart() {
     getBillCTTByCodeBill(codeBill)
       .then((response) => {
         setDataBillDetailOffline(response.data);
+        response.data.map((data) => {
+          if (!arrIdSku.includes(data.idSKU)) {
+            arrIdSku.push(data.idSKU);
+          }
+          listImeiDaBanByIdBillDetail(data.id)
+            .then((response) => {
+              response.data.map((data) => {
+                if (!arrCodeImeiDaBan.includes(data.codeImei)) {
+                  arrCodeImeiDaBan.push(data.codeImei);
+                }
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -747,6 +1104,12 @@ export default function SellSmart() {
     getBillCTTByCodeBillS2(codeBill)
       .then((response) => {
         setDataBillOffline(response.data);
+        setDataDoneBill({
+          ...dataDoneBill,
+          idBill: response.data.idBill,
+          idSku: arrIdSku,
+          codeImeiDaBan: arrCodeImeiDaBan,
+        });
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -756,6 +1119,8 @@ export default function SellSmart() {
   return (
     <React.Fragment>
       <>
+        <Toast ref={toast} />
+        <ConfirmDialog />
         <Layout>
           <Layout>
             <Content
@@ -950,6 +1315,13 @@ export default function SellSmart() {
                                     record.price,
                                     dataBillOffLine?.codeBill
                                   );
+                                  if (!arrIdSku.includes(record.idSKU)) {
+                                    arrIdSku.push(record.idSKU);
+                                  }
+                                  setDataDoneBill({
+                                    ...dataDoneBill,
+                                    idSku: arrIdSku,
+                                  });
                                 } else {
                                   notification.error({
                                     message: "ADD TO CART",
@@ -1029,6 +1401,11 @@ export default function SellSmart() {
                                       billDetail.quantity - 1,
                                       billDetail.codeBill
                                     );
+                                    setDataCheckSoLuongImei(
+                                      index,
+                                      billDetail.id,
+                                      billDetail.idSKU
+                                    );
                                   }}
                                   className="minus"
                                 />
@@ -1042,6 +1419,11 @@ export default function SellSmart() {
                                   onChange={() => {
                                     getOneSKU(billDetail.idSKU).then(
                                       (res) => {}
+                                    );
+                                    setDataCheckSoLuongImei(
+                                      index,
+                                      billDetail.id,
+                                      billDetail.idSKU
                                     );
                                   }}
                                   onBlur={(event) => {
@@ -1060,7 +1442,8 @@ export default function SellSmart() {
                                         billDetail.codeBill
                                       );
                                     } else if (
-                                      event.target.value > parseInt(quantitySKU)
+                                      event.target.value >
+                                      parseInt(skuProduct[index].quantitySKU)
                                       // +
                                       //   parseInt(product.quantity)
                                     ) {
@@ -1085,10 +1468,15 @@ export default function SellSmart() {
                                       quantity.value = event.target.value;
                                       handleUpdateQuantity(
                                         billDetail.id,
-                                        billDetail.quantity,
+                                        quantity.value,
                                         billDetail.codeBill
                                       );
                                     }
+                                    setDataCheckSoLuongImei(
+                                      index,
+                                      billDetail.id,
+                                      billDetail.idSKU
+                                    );
                                   }}
                                 />
                                 <button
@@ -1119,6 +1507,11 @@ export default function SellSmart() {
                                       billDetail.quantity + 1,
                                       billDetail.codeBill
                                     );
+                                    setDataCheckSoLuongImei(
+                                      index,
+                                      billDetail.id,
+                                      billDetail.idSKU
+                                    );
                                   }}
                                   className="plus"
                                 />
@@ -1144,11 +1537,19 @@ export default function SellSmart() {
                                     backgroundColor: "green",
                                   }}
                                   onClick={
-                                    () =>
+                                    () => {
                                       handleAddImei(
                                         billDetail.idSKU,
                                         billDetail.id
-                                      )
+                                      );
+                                      setIndexTest(index);
+                                      // if (
+                                      //   billDetail.quantity ===
+                                      //   dataImeiSelected.length
+                                      // ) {
+                                      //   console.log("ok");
+                                      // }
+                                    }
                                     // handleImeiOpen(
                                     //   billDetail.idSKU,
                                     //   billDetail.id
@@ -1284,10 +1685,12 @@ export default function SellSmart() {
                             Ghi chú đơn hàng
                           </label>
                           <textarea
+                            id="ghiChu"
                             className="form-control"
                             rows={4}
                             placeholder="Ghi chú thêm đơn hàng"
                             defaultValue={""}
+                            onChange={handleGhiChu}
                           />
                         </div>
                         <div className="form-group  col-md-12">
@@ -1325,15 +1728,109 @@ export default function SellSmart() {
                               Ship hàng
                             </label>
                           </div>
-                          <input
-                            hidden
-                            id="floatingSelect2"
-                            class="form-control"
-                            type="text"
-                            placeholder="Địa chỉ cụ thể"
-                            aria-label="default input example"
-                          />
                         </div>
+                        <div
+                          className="form-group  col-md-12"
+                          hidden
+                          id="floatingSelect5"
+                        >
+                          <label
+                            className="control-label"
+                            style={{ fontWeight: "bold" }}
+                          >
+                            Tỉnh, thành phố
+                          </label>
+                          <select
+                            class="form-select"
+                            id="provinces"
+                            aria-label="Floating label select example"
+                            onChange={handleProvince}
+                          >
+                            <option value={"undefined"} selected></option>
+                            {provinces.map((pr) => {
+                              return (
+                                <option
+                                  id={pr.ProvinceID}
+                                  key={pr.ProvinceID}
+                                  value={pr.ProvinceID}
+                                >
+                                  {pr.ProvinceName}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        <div
+                          className="form-group  col-md-12"
+                          hidden
+                          id="floatingSelect6"
+                        >
+                          <label
+                            className="control-label"
+                            style={{ fontWeight: "bold" }}
+                          >
+                            Quân, Huyện
+                          </label>
+                          <select
+                            class="form-select"
+                            id="districts"
+                            aria-label="Floating label select example"
+                            onChange={handleDistrict}
+                          >
+                            <option selected></option>
+                            {districts.map((dt) => {
+                              return (
+                                <option
+                                  id={dt.DistrictID}
+                                  key={dt.DistrictID}
+                                  value={dt.DistrictID}
+                                >
+                                  {dt.DistrictName}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        <div
+                          className="form-group  col-md-12"
+                          hidden
+                          id="floatingSelect7"
+                        >
+                          <label
+                            className="control-label"
+                            style={{ fontWeight: "bold" }}
+                          >
+                            Xã, Phường
+                          </label>
+                          <select
+                            class="form-select"
+                            id="wards"
+                            aria-label="Floating label select example"
+                            onChange={handleWard}
+                          >
+                            <option selected></option>
+                            {wards.map((w) => {
+                              return (
+                                <option
+                                  id={w.WardCode}
+                                  key={w.WardID}
+                                  value={w.WardCode}
+                                >
+                                  {w.WardName}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </div>
+                        <input
+                          hidden
+                          id="floatingSelect2"
+                          class="form-control"
+                          type="text"
+                          placeholder="Địa chỉ cụ thể"
+                          aria-label="default input example"
+                          onChange={handleDiaChi}
+                        />
                         <div
                           className="form-group  col-md-12"
                           hidden
@@ -1345,11 +1842,21 @@ export default function SellSmart() {
                           >
                             Phí vận chuyển:{" "}
                           </label>
-                          <input
+                          <p className="fw-bold" id="phiVanChuyen">
+                            {fee == null
+                              ? 0 + "₫"
+                              : fee?.total?.toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
+                          </p>
+                          {/* <input
+                            id="phiVanChuyen"
                             className="form-control"
                             type="number"
                             defaultValue={0}
-                          />
+                            onChange={handlePhiVanChuyen}
+                          /> */}
                         </div>
                         <div
                           className="form-group  col-md-12"
@@ -1484,6 +1991,9 @@ export default function SellSmart() {
                               marginRight: "10px",
                               marginBottom: "10px",
                               backgroundColor: "orange",
+                            }}
+                            onClick={() => {
+                              console.log(dataDoneBill);
                             }}
                           >
                             {" "}
@@ -2018,12 +2528,14 @@ export default function SellSmart() {
                         "Bạn có muốn tiếp tục thanh toán không?"
                       );
                       if (shouldContinue) {
+                        arrIdSku = [];
                         // Thực hiện hành động sau khi xác nhận
                         clickHoaDonCho(hoadon.code);
                         setIsModalVisibleBill(false);
                         notification.success({
                           message: "Tiếp tục thanh toán",
                         });
+                        arrCodeImeiDaBan = [];
                       } else {
                         setIsModalVisibleBill(false);
                         // Hủy bỏ hành động nếu người dùng không muốn tiếp tục
