@@ -1,9 +1,11 @@
 package com.example.backend.controller.order_management.service.impl;
 
 
+import com.example.backend.controller.order_management.model.bill.request.BillAskClient;
 import com.example.backend.controller.order_management.model.cartDetail.ChangeQuantity;
 import com.example.backend.controller.order_management.model.cartDetail.ChangeSizeInCart;
 import com.example.backend.controller.order_management.service.CartDetailService;
+import com.example.backend.entity.Cart;
 import com.example.backend.entity.CartDetail;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.CartDetailRepository;
@@ -11,6 +13,8 @@ import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.SKURepositoty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CartDetailServiceImpl implements CartDetailService {
@@ -114,6 +118,12 @@ public class CartDetailServiceImpl implements CartDetailService {
     @Override
     public Boolean deleteCartDetailOff(Integer id) {
         cartDetailRepository.deleteById(id);
+        return true;
+    }
+
+    @Override
+    public Boolean deleteAllCartDetail(Integer idAccount) {
+        cartDetailRepository.deleteAllByAccountId(idAccount);
         return true;
     }
 }

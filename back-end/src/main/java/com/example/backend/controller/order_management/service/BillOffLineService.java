@@ -11,6 +11,7 @@ import com.example.backend.controller.order_management.model.billOffLine.ion.Lis
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.entity.Account;
+import com.example.backend.entity.Bill;
 import com.example.backend.entity.BillDetails;
 import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.SKU;
@@ -71,4 +72,9 @@ public interface BillOffLineService {
     //xoá bill_detail -> xoá các imei_da_ban trong bảng imei_da_ban của bill_detail đó và hoàn lại status các của các imei
     //chỉ xoá được các bill_detail của bill chưa hoàn thành
      Boolean deleteBillDetail(Integer idBillDetail);
+
+    List<Bill> searchBillChoThanhToan(Integer idAccount, String codeBill);
+
+    List<Bill> getListBillChoThanhToan(Integer idAccount);
+
 }

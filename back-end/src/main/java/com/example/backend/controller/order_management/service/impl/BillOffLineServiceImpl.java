@@ -459,4 +459,14 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         }
         return false;
     }
+
+    @Override
+    public List<Bill> searchBillChoThanhToan(Integer idAccount, String codeBill) {
+        return billRepository.searchBillChoThanhToan(idAccount,codeBill);
+    }
+
+    @Override
+    public List<Bill> getListBillChoThanhToan(Integer idAccount) {
+        return billRepository.listBillChoThanhToan(idAccount);
+    }
 }

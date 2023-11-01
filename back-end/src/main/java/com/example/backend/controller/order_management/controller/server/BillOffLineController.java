@@ -12,6 +12,7 @@ import com.example.backend.controller.order_management.model.billOffLine.ion.Lis
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
+import com.example.backend.entity.Bill;
 import com.example.backend.entity.BillDetails;
 import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.SKU;
@@ -168,5 +169,17 @@ public class BillOffLineController {
     public ResponseEntity<Boolean> deleteBillOneDetail(@RequestParam("idBillDetail") Integer idBillDetail) {
         Boolean check = billOffLineService.deleteBillDetail(idBillDetail);
         return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    @GetMapping("/searchBill-CTT")
+    public ResponseEntity<List<Bill>> seachBillChoThanhToan(@RequestParam("idAccount") Integer idAccount,
+                                                                           @RequestParam("codeBill") String codeBill) {
+        List<Bill> list = billOffLineService.searchBillChoThanhToan(idAccount, codeBill);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/getBillCTT/{idAccount}")
+    public List<Bill> getBillChoThanhToan(@PathVariable("idAccount") Integer idAccount){
+        return billOffLineService.getListBillChoThanhToan(idAccount);
     }
 }

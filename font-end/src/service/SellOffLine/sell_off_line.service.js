@@ -77,7 +77,7 @@ export const getListImeiThatLac = (codeImei) => {
 };
 
 export const getBillChoThanhToan = (id) => {
-  return httpClient.get(`http://localhost:8080/manager/bill/getBillCTT/${id}`);
+  return httpClient.get(`/admin/bill-offline/getBillCTT/${id}`);
 };
 
 export const updateQuantitySellOff = (id, newQuantity) => {
@@ -134,5 +134,12 @@ export const getAllImeisDaBanOffLine = (idBillDetail) => {
 export const deleteBillOneDetail = (idBillDetail) => {
   return httpClient.delete(
     `/admin/bill-offline/delete-bill-detail?idBillDetail=${idBillDetail}`
+  );
+};
+
+//seach Imei Da Ban
+export const searchBillCTT = (idAccount, codeBill) => {
+  return httpClient.get(
+    `/admin/bill-offline/searchBill-CTT?idAccount=${idAccount}&codeBill=${codeBill}`
   );
 };

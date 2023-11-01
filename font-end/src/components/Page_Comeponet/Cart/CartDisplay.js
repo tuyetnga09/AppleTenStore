@@ -7,6 +7,7 @@ import {
   getQuantityCartDetailBySku,
   getCartSession,
   getbysku,
+  deleteAllCart
 } from "../../../service/cart.service";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
@@ -163,7 +164,19 @@ export default function CartDisplay() {
   //xóa all giỏ hàng
   const handleRemoveAllFromCart = () => {
     if (idAccount !== null && idAccount !== "") {
-
+      deleteAllCart(idAccount).then(() => {
+        notification.success({
+          message: "CART",
+          description: "Xóa thành công",
+        });
+        readAll(idAccount)
+        .then((response) => {
+          setProducts(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      })
     } else {
       sessionStorage.removeItem("cartItems");
       setProducts([]);

@@ -67,6 +67,7 @@ import {
   deleteAllImeisDaBanOffLine,
   getAllImeisDaBanOffLine,
   deleteBillOneDetail,
+  searchBillCTT,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -331,6 +332,7 @@ export default function SellSmart() {
   // Hàm để ẩn Modal
   const handleCancelBill = () => {
     setIsModalVisibleBill(false);
+    document.getElementById("id-bill-ctt").value = "";
   };
 
   const handleChange = (e) => {
@@ -1058,6 +1060,23 @@ export default function SellSmart() {
         console.log(`${error}`);
       });
   };
+
+  //tìm kiếm hóa đơn chờ thanh toán
+  const handleChangeBillCTT = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    if (value !== undefined) {
+      searchBillCTT(idAccount, value)
+        .then((response) => {
+          setHoaDonCho(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }
 
   return (
     <React.Fragment>
@@ -2406,14 +2425,17 @@ export default function SellSmart() {
                 <h5 className="mb-0">HÓA ĐƠN CHỜ</h5>
               </div>
               <input
+                id="id-bill-ctt"
                 className="form-control"
-                type="text"
-                placeholder="Tìm kiếm hóa đơn"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
                 name="key"
                 style={{
                   marginBottom: "10px",
                   borderTop: "4px solid red",
                 }}
+                onChange={handleChangeBillCTT}
               />
               <div
                 className="card-body"
