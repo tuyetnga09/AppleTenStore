@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -128,6 +127,7 @@ public class CustomerServiceImpl  implements CustomerService {
         account1.setRoles(Roles.CUSTOMER);
         account1.setEmail(user1.getEmail());
         account1.setPassword(Base64.getEncoder().encodeToString(account.getPassword().getBytes()));
+        account1.setDateCreate(new Date());
         account1.setStatus(Status.DANG_SU_DUNG);
         accountRepository.save(account1);
 

@@ -47,4 +47,9 @@ public class CartDetailController {
     public Integer getCartDetail(@PathVariable("id") Long id,@RequestParam("idAccount") Integer idAccount) {
         return cartDetailService.getQuantityCartDetailBySku(id, idAccount);
     }
+
+    @DeleteMapping("/deleteAll/{id}")
+    public ResponseObj deleteAllCartDetail(@PathVariable("id") Integer idAccount) {
+        return new ResponseObj(cartDetailService.deleteAllCartDetail(idAccount));
+    }
 }

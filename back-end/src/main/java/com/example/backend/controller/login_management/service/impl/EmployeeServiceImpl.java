@@ -10,12 +10,12 @@ import com.example.backend.repository.AddressRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.untils.Message;
 import com.example.backend.untils.RestAPIRunTime;
-import com.example.backend.untils.Roles;
 import com.example.backend.untils.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
+import java.util.Date;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -54,6 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .dateOfBirth(user.getDateOfBirth())
                 .gender(user.getGender())
                 .points(0)
+                .dateCreate(new Date())
 //                .avatar(urlImage) // đường dẫn ảnh từ url
                 .build();
         userReposiory.save(user1);
@@ -66,6 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         account1.setEmail(user1.getEmail());
         account1.setPassword(Base64.getEncoder().encodeToString(account.getPassword().getBytes()));
         account1.setStatus(Status.DANG_SU_DUNG);
+        account1.setDateCreate(new Date());
         accountRepository.save(account1);
 
         //  địa chỉ user

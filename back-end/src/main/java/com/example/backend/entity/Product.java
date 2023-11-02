@@ -3,6 +3,7 @@ package com.example.backend.entity;
 import com.example.backend.entity.dto.DuplicateAttribute;
 import com.example.backend.entity.dto.Identify;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -80,7 +81,8 @@ public class Product  extends DuplicateAttribute implements Identify {
             inverseJoinColumns = @JoinColumn(name = "capacity_id"))
     private List<Capacity> capacities;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<SKU> skus;
 
 }

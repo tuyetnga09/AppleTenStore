@@ -167,7 +167,7 @@ const DashboardPage = () => {
                     <Text
                       strong /* style={{ fontSize: 24, fontWeight: 800 }} */
                     >
-                      Annual Revenue
+                      Doanh Thu Của Năm
                     </Text>
                   }
                 >
@@ -192,14 +192,18 @@ const DashboardPage = () => {
               <Col xl={17} lg={16} md={24} sm={24} xs={24}>
                 <Card
                   title={
-                    <Text strong>The Order Was Successfully Placed Today</Text>
+                    <Text strong>Đơn hàng đã được đặt thành công hôm nay</Text>
                   }
                 >
                   <RecentOrders />
                 </Card>
               </Col>
               <Col xl={7} lg={8} md={24} sm={24} xs={24}>
-                <Card title={<Text strong>Trending Menu For 30 Days</Text>}>
+                <Card
+                  title={
+                    <Text strong>Sản phẩm bán nhiều nhất 30 ngày gần đây</Text>
+                  }
+                >
                   <TrendingMenu />
                 </Card>
               </Col>

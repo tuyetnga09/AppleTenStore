@@ -13,4 +13,7 @@ public interface BillDetailService {
     Page<BillDetails> getAll(FindBillDetailRequest request, Pageable pageable);
 
     List<BillDetailCustomerResponse> getAll(Integer id);
+
+    void updateQuantity(Integer id, Integer newQuantity);
+
 }

@@ -24,4 +24,6 @@ public interface AccountService {
     Boolean updatePassword(String password, String passwordNew, String passwordRepeat, Integer id);
 
     Account getOneById(Integer id);
+
+    Account updateRole(String role, Integer idUser);
 }

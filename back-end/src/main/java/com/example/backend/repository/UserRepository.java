@@ -45,6 +45,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM  User u WHERE u.email =:email")
     User getOneUserByEmail(@Param("email") String email);
 
-    @Query(value = "select user.id, user.avatar, user.citizen_identity, user.date_create, user.date_of_birth, user.date_update, user.email, user.full_name, user.gender, user.person_create, user.person_update, user.phone_number, user.points, user.status from account join user on account.id_user = user.id join address on user.id = address.id_user where roles = ?1", nativeQuery = true)
-    Page<User> findByRole(Pageable pageable, String role);
+//    @Query(value = "select user.id, user.avatar, user.citizen_identity, user.date_create, user.date_of_birth, user.date_update, user.email, user.full_name, user.gender, user.person_create, user.person_update, user.phone_number, user.points, user.status from account join user on account.id_user = user.id join address on user.id = address.id_user where roles = ?1", nativeQuery = true)
+    @Query(value = "select user.id, user.avatar, user.citizen_identity, user.date_create, user.date_of_birth, user.date_update, user.email, user.full_name, user.gender, user.person_create, user.person_update, user.phone_number, user.points, user.status from account join user on account.id_user = user.id where roles = ?1", nativeQuery = true)
+    List<User> findByRole(Pageable pageable, String role);
 }

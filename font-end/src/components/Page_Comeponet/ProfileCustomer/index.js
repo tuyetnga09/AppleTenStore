@@ -22,10 +22,6 @@ const ProfileCustomer = () => {
   const month = storedUser?.user?.dateOfBirth[1]?.toString().padStart(2, "0");
   const day = storedUser?.user?.dateOfBirth[2]?.toString().padStart(2, "0");
   const [editCustomer, setEditCustomer] = useState({
-    // fullName: "",
-    // email: "",
-    // phoneNumber: "",
-    // datOfBirth: "",
     fullName: storedUser.user.fullName,
     email: storedUser.user.email,
     phoneNumber: storedUser.user.phoneNumber,

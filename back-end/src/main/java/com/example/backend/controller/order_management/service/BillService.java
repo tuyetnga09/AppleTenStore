@@ -40,7 +40,10 @@ public interface BillService {
     List<Bill> listBillByIdAccountDTT(Integer id);
 
     List<Bill> listBillByIdAccountDH(Integer id);
+<<<<<<< HEAD
 
     void deleteBill(Integer id);
 
+=======
+>>>>>>> cd570b57d7c97226dd2350fdeacd881d5e997594
 }

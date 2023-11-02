@@ -255,7 +255,7 @@ const DailyOrders = () => {
   return (
     <DailyOrderWrapper>
       <TitleArea>
-        <Title level={3}>Daily Orders</Title>
+        <Title level={3}>Đơn Hàng Hôm Nay</Title>
         <TitleAreNumber>
           <Text strong>{dataSumAllBill}</Text>
 
@@ -279,7 +279,7 @@ const DailyOrders = () => {
       {/* 1 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          1U - Sum Bill Unconfimred
+          1U - Đơn hàng chờ xác nhận
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>
@@ -290,7 +290,7 @@ const DailyOrders = () => {
       {/* 2 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          2C - Sum Bill Confimred
+          2C - Đơn hang đã xác nhận
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>
@@ -301,7 +301,7 @@ const DailyOrders = () => {
       {/* 3 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          3AD - Sum Bill Are Delivering
+          3AD - Đơn hàng đang vận chuyển
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>
@@ -313,7 +313,7 @@ const DailyOrders = () => {
       {/* 4 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          4AP - Sum Bill Already Paid
+          4AP - Đơn hàng đã thanh toán
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>
@@ -324,7 +324,7 @@ const DailyOrders = () => {
       {/* 5 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          5NR - Sum Bill No Return
+          5NR - Đơn hàng không hoàn trả
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>
@@ -335,7 +335,7 @@ const DailyOrders = () => {
       {/* 6 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          6R - Sum Bill Returns
+          6R - Đơn hàng hoàn trả
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>
@@ -346,7 +346,7 @@ const DailyOrders = () => {
       {/* 7 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          7CO - Sum Bill Cancel Order
+          7CO - Đơn hàng huỷ
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>

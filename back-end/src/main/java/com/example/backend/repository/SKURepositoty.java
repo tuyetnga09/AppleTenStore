@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.product_controller.model.request.ListSkuProduct;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
@@ -37,6 +38,11 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     @Query(value = "select sku.price AS 'Price SKU', product.id AS 'Product ID', sku.id AS 'SKU ID', sku.quantity 'SKU Quantity', sku.capacity AS 'Capacity', sku.color AS 'Color', product.name AS 'Name Product' from sku join product on sku.product_id = product.id join category on product.id_category = category.id where category.id = ?1 and (product.name like %?2% or sku.capacity like %?2% or sku.color like %?2% or sku.price like %?2% or sku.quantity like %?2% )", nativeQuery = true)
     List<ListSkuProduct> getSkuProductFormSellOfflineByCategory(Integer id, String key);
 
+
+    @Query(value = "select p.name as 'nameProduct', s.color as 'colorSKU' , s.capacity as 'capacitySKU' " +
+            " from sku s join product p on s.product_id = p.id where s.id =?1", nativeQuery = true)
+    SkuBillOffLineIonRespon getOneSkuSellOffLine (Long idSku);
+
     @Modifying
     @Transactional
     Optional<SKU> findById(Long id);
@@ -46,4 +52,6 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     @Query(value = "update sku set quantity = quantity - ?2 where id = ?1", nativeQuery = true)
     void updateQuantity(Long id, Integer number);
 
+    @Query(value = "select quantity from bill_detail where id_sku = ?1 and id_bill = ?2", nativeQuery = true)
+    Integer quantitySkuInBillDetails(Long idSku, Integer idBill);
 }

@@ -23,6 +23,7 @@ import {
   Menu,
   Avatar,
   Grid,
+  Modal,
 } from "antd";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { Row, Col, Card, Typography, Layout, theme } from "antd";
@@ -41,6 +42,7 @@ import {
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../Page_Comeponet/header/index";
 import moment from "moment";
+import EditProduct from "../../product_component/Product/crud/edit";
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -231,6 +233,18 @@ export const CategoryList = () => {
 
 const CategoryProductsTable = ({ record }) => {
   const [products, setProducts] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+  const [product, setProduct] = useState({});
+  const editShow = (product) => {
+    setProduct(product);
+    setIsModalVisible(true);
+    console.log(product);
+  };
+
+  // Hàm để ẩn Modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   useEffect(() => {
     listProductByCategories(`id=${record.id}`)
@@ -264,7 +278,7 @@ const CategoryProductsTable = ({ record }) => {
             }}
           />
         }
-        // onClick={() => editShow(record.id)}
+        onClick={() => editShow(record)}
       >
         Edit
       </Menu.Item>
@@ -348,11 +362,20 @@ const CategoryProductsTable = ({ record }) => {
           )}
         />
       </Table>
-      {/* <EditProduct
-        drawerProps={editDrawerProps}
-        formProps={editFormProps}
-        saveButtonProps={editSaveButtonProps}
-      /> */}
+      <Modal
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        width={1000}
+        footer={null}
+        bodyStyle={{ minHeight: "350px" }}
+      >
+        <EditProduct
+          // drawerProps={editDrawerProps}
+          // formProps={editFormProps}
+          // saveButtonProps={editSaveButtonProps}
+          product={product}
+        />
+      </Modal>
     </List>
   );
 };

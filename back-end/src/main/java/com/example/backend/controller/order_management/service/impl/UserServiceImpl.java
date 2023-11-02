@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> findByRole(Pageable pageable, String role) {
+    public List<User> findByRole(Pageable pageable, String role) {
         return userRepository.findByRole(pageable, role);
     }
 
