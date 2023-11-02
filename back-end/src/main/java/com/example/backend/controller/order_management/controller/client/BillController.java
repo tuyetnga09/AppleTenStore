@@ -146,4 +146,10 @@ public class BillController {
     public List<Bill> listBillByIdAccountDH(@RequestParam("id") Integer id){
         return billService.listBillByIdAccountDH(id);
     }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public void deleteBill(@PathVariable Integer id){
+        this.billService.deleteBill(id);
+    }
+
 }

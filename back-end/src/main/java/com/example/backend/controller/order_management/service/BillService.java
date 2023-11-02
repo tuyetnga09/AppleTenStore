@@ -41,4 +41,6 @@ public interface BillService {
 
     List<Bill> listBillByIdAccountDH(Integer id);
 
+    void deleteBill(Integer id);
+
 }

@@ -133,4 +133,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_HUY'", nativeQuery = true)
     List<Bill> listBillByIdAccountDH(Integer id);
+
+    void deleteBillById(Integer id);
+
 }
