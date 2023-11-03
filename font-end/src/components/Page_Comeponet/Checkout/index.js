@@ -20,7 +20,7 @@ import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
 import { get } from "jquery";
 import { Link } from "react-router-dom";
-import { createBillAccount } from "../../../service/Bill/bill.service";
+import {createBill, createBillAccount} from "../../../service/Bill/bill.service";
 import { DateField } from "@refinedev/antd";
 import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
 
@@ -137,6 +137,18 @@ const Checkout = () => {
               };
             });
             setProducts(productsData);
+            const list = [];
+            productsData.map((item) => {
+              list.push({
+                sku: item.idSku,
+                price: item.price,
+                quantity: item.quantity,
+              });
+            });
+            setBill({
+              ...bill,
+              billDetail: list,
+            });
           })
           .catch((error) => {
             console.log(`${error}`);
@@ -571,13 +583,26 @@ const Checkout = () => {
   }
 
   function handleSubmit() {
-    createBillAccount(bill)
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    if (idAccount !== "") {
+      createBillAccount(bill)
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    } else {
+      createBill(bill)
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      sessionStorage.removeItem("cartItems");
+      setProducts([]);
+      setTotalPrice(0);
+    }
   }
 
   function handleDefaultAddress(event) {

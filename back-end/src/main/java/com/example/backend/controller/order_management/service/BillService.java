@@ -1,13 +1,9 @@
 package com.example.backend.controller.order_management.service;
 
-import com.example.backend.controller.order_management.model.bill.request.BillRequest;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
-import com.example.backend.controller.order_management.model.cart.ListCart;
 import com.example.backend.entity.Bill;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,10 +36,7 @@ public interface BillService {
     List<Bill> listBillByIdAccountDTT(Integer id);
 
     List<Bill> listBillByIdAccountDH(Integer id);
-<<<<<<< HEAD
 
     void deleteBill(Integer id);
 
-=======
->>>>>>> cd570b57d7c97226dd2350fdeacd881d5e997594
 }
