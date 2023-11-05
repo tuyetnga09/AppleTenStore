@@ -2,6 +2,8 @@ package com.example.backend.repository;
 
 
 
+import com.example.backend.controller.product_controller.model.product_detail.ion.ProductDetailIonAdmin;
+import com.example.backend.controller.product_controller.model.product_detail.ion.SkuIonAdmin;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.Voucher;
 import jakarta.persistence.EntityManager;
@@ -78,4 +80,15 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query(value = "select product.id, product.date_create, product.date_update, product.person_create, product.person_update, product.status, product.code, product.description, product.name, product.price, product.quantity, product.id_ram, product.id_battery, product.id_category, product.id_chip, product.id_manufacture, product.id_screen, product.id_size from product join category on product.id_category = category.id where category.id = ?1", nativeQuery = true)
     List<Product> listProductByCategories(Integer id);
+
+    //lấy ra product - phongnh
+    @Query(value = "select p.id as 'idProduct', p.name as 'nameProduct',count(DISTINCT s.id) as 'sumSKU'," +
+            " count(i.code_imei)as 'sumImei', SUM(CASE WHEN i.status = 3 THEN 1 ELSE 0 END) AS 'sumImeiDaBan',\n" +
+            " SUM(CASE WHEN i.status = 2 THEN 1 ELSE 0 END) AS 'sumImeiTrongGioHang', " +
+            " SUM(CASE WHEN i.status = 0 THEN 1 ELSE 0 END) AS 'sumImeiTrongKho',\n" +
+            "  SUM(CASE WHEN i.status = 1 THEN 1 ELSE 0 END) AS 'sumImeiNgungHoatDong', p.status as 'statusProduct'\n" +
+            " from product p  left join sku s on p.id = s.product_id left join imei i on s.id = i.sku_id  \n" +
+            " group by p.id, p.name order by p.id desc", nativeQuery = true)
+    List<ProductDetailIonAdmin> getAllProductDetailIon();
+
 }

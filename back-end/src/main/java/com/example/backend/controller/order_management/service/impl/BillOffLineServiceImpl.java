@@ -499,8 +499,8 @@ public class BillOffLineServiceImpl implements BillOffLineService {
                 return true;
             }
         }else {
-            billDetailRepository.deleteById(billDetail.getId());
-            return true;
+//            billDetailRepository.deleteById(billDetail.getId());
+            return false;
         }
         return false;
     }

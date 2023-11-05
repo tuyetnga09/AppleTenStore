@@ -1,0 +1,18 @@
+.ant-table-expanded-row {
+  background-color: rgb(198, 177, 161);
+}
+/* .btn-loc {
+  color: rgb(0, 0, 0);
+  border: 2px solid;
+  transform: scale(1.1); /* Thu nhỏ nút một chút khi hover */
+/* transition: all 0.3s;
+  border-radius: 5px;
+  height: 100px;
+}  */
+#selectOption {
+  color: rgb(0, 0, 0);
+  transform: scale(1.1); /* Thu nhỏ nút một chút khi hover */
+  transition: all 0.3s;
+  border-radius: 5px;
+  height: 29px;
+}
