@@ -44,6 +44,7 @@ const SignUpAdmin = () => {
   const [district_id, setDistrict_id] = useState();
   const [showDistricts, setShowDistricts] = useState(true);
   const [showWards, setShowWards] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
@@ -161,6 +162,7 @@ const SignUpAdmin = () => {
   };
 
   const handleSubmit = (event) => {
+    setLoading(true);
     event.preventDefault();
 
     const items = { ...data };
@@ -172,6 +174,7 @@ const SignUpAdmin = () => {
             message: "ĐĂNG KÍ",
             description: "Đăng kí thành công",
           });
+          setLoading(false);
           history.push("/login");
         } else {
           notification.error({
@@ -223,6 +226,25 @@ const SignUpAdmin = () => {
 
   return (
     <>
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "rgba(255, 255, 255, 0.8)",
+            padding: "10px",
+            borderRadius: "5px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            zIndex: "9999", // Đặt z-index lớn hơn phần nền
+          }}
+        >
+          <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
       <div class="bgr">
         <div class="login-box">
           <h2>Đăng ký</h2>

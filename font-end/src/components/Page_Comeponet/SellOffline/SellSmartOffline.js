@@ -433,8 +433,13 @@ export default function SellSmart() {
       }
     }
   }
-
+  const [isChecked1, setIsChecked1] = useState(true);
+  const [isChecked2, setIsChecked2] = useState(false);
   useEffect(() => {
+    const checked1 = document.getElementById("inlineRadio1");
+    checked1.checked = isChecked1;
+    const checked2 = document.getElementById("inlineRadio2");
+    checked2.checked = isChecked2;
     const phanloai = document.getElementById("exampleSelect1");
     //lấy danh sách voucher
     getVoucher()
@@ -716,6 +721,8 @@ export default function SellSmart() {
     const select7 = document.getElementById("floatingSelect7");
     select7.hidden = false;
     setShowProvinces(true);
+    setIsChecked1(false);
+    setIsChecked2(true);
   }
 
   function taiCuaHang() {
@@ -747,6 +754,8 @@ export default function SellSmart() {
     setShowDistricts(false);
     setShowWards(false);
     select.value = "";
+    setIsChecked1(true);
+    setIsChecked2(false);
   }
 
   const toast = useRef(null);
@@ -760,7 +769,9 @@ export default function SellSmart() {
     console.log(arrIdSku);
   };
   function checkSoluongImei() {
-    if (dataBillDetailOffline[indexTest].quantity !== dataImeiSelected.length) {
+    if (
+      dataBillDetailOffline[indexTest]?.quantity !== dataImeiSelected.length
+    ) {
       return false;
     }
     return true;
@@ -778,44 +789,60 @@ export default function SellSmart() {
   }
 
   const accept = () => {
-    if (checkSoluongImei() === true) {
-      if (tienThua <= 0) {
-        doneBill(dataDoneBill)
-          .then((res) => {
-            if (res.status === 200) {
-              toast.current.show({
-                severity: "success",
-                summary: "THANH TOÁN",
-                detail: "Thanh toán thành công",
-                life: 3000,
-              });
-              setDataBillDetailOffline([]);
-              setDataTest(!dataTest);
-              setDataBillOffline([]);
-              document.getElementById("amountGiven").value = 0;
-              getBillChoThanhToanOff();
-              setSelectedVoucher(0);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
+    if (dataDoneBill.idBill === null) {
+      toast.current.show({
+        severity: "error",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, hãy tạo/chọn hóa đơn",
+        life: 3000,
+      });
+    } else if (dataBillDetailOffline.length === 0) {
+      toast.current.show({
+        severity: "error",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, hãy thêm sản phẩm để thanh toán",
+        life: 3000,
+      });
+    } else {
+      if (checkSoluongImei() === true) {
+        if (tienThua <= 0) {
+          doneBill(dataDoneBill)
+            .then((res) => {
+              if (res.status === 200) {
+                toast.current.show({
+                  severity: "success",
+                  summary: "THANH TOÁN",
+                  detail: "Thanh toán thành công",
+                  life: 3000,
+                });
+                setDataBillDetailOffline([]);
+                setDataTest(!dataTest);
+                setDataBillOffline([]);
+                document.getElementById("amountGiven").value = 0;
+                getBillChoThanhToanOff();
+                setSelectedVoucher(0);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          console.log("ok");
+        } else {
+          toast.current.show({
+            severity: "error",
+            summary: "THANH TOÁN",
+            detail: "Chưa thanh toán đủ tiền",
+            life: 3000,
           });
-        console.log("ok");
+        }
       } else {
         toast.current.show({
           severity: "error",
-          summary: "THANH TOÁN",
-          detail: "Chưa thanh toán đủ tiền",
+          summary: "KIỂM TRA IMEI",
+          detail: "Vui lòng kiểm tra lại imei",
           life: 3000,
         });
       }
-    } else {
-      toast.current.show({
-        severity: "error",
-        summary: "KIỂM TRA IMEI",
-        detail: "Vui lòng kiểm tra lại imei",
-        life: 3000,
-      });
     }
   };
   const handleGhiChu = (event) => {
@@ -2481,7 +2508,6 @@ export default function SellSmart() {
                               name="inlineRadioOptions"
                               id="inlineRadio1"
                               value="option1"
-                              checked
                               onClick={() => taiCuaHang()}
                             />
                             <label class="form-check-label" for="inlineRadio1">
@@ -2805,6 +2831,7 @@ export default function SellSmart() {
                             }}
                             onClick={() => {
                               console.log(dataDoneBill);
+                              console.log(dataBillDetailOffline);
                             }}
                           >
                             {" "}
