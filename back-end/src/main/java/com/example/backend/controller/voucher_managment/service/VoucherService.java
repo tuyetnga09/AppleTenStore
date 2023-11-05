@@ -34,4 +34,7 @@ public interface VoucherService {
 
     List<Voucher> getVoucherFreeShip(Voucher voucher);
 
+    List<Voucher> searchVoucher(String codeVoucher);
+
+
 }

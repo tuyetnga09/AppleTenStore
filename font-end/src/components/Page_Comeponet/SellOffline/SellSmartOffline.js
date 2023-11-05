@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslate } from "@refinedev/core";
-import { ShoppingCartOutlined, GiftOutlined } from "@ant-design/icons";
+import {
+  ShoppingCartOutlined,
+  GiftOutlined,
+  FormOutlined,
+  MoreOutlined,
+} from "@ant-design/icons";
 import "../SellOffline/style.css";
 import {
   Layout,
@@ -16,12 +21,18 @@ import {
   notification,
   Badge,
   Space,
+  InputNumber,
+  Grid,
+  Menu,
+  Dropdown,
+  Form,
 } from "antd";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getVoucher,
   getVoucherFreeShip,
+  searchVoucher,
 } from "../../../service/Voucher/voucher.service";
 import {
   getSKUProductFormSell,
@@ -32,7 +43,7 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import queryString from "query-string";
 import Pagination from "./Paging";
-import { NumberField } from "@refinedev/antd";
+import { NumberField, List, BooleanField } from "@refinedev/antd";
 import {
   addToCartOffline,
   readAllCartOff,
@@ -72,6 +83,9 @@ import {
   searchBillCTT,
   getBilDetailOfBillWhereIdBill,
   getIdBill,
+  getBillInDate,
+  getBillCTTByCodeBillInDate,
+  searchBillDTT,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -81,6 +95,7 @@ import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
 import { set } from "js-cookie";
+
 const { Header, Sider, Content } = Layout;
 let arrCodeImeiDaBan = [];
 let arrIdSku = [];
@@ -99,6 +114,8 @@ export default function SellSmart() {
   // const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal khách hàng
   const [isModalVisibleVoucher, setIsModalVisibleVoucher] = useState(false); // Trạng thái hiển thị Modal Voucher
   const [isModalVisibleBill, setIsModalVisibleBill] = useState(false); // Trạng thái hiển thị Modal Bill chờ
+  const [isModalVisibleBillInDate, setIsModalVisibleBillInDate] =
+    useState(false); // Trạng thái hiển thị Modal Bill trong Ngày
   const [voucher, setVoucher] = useState([]);
   const [selecteVoucher, setSelectedVoucher] = useState(0);
   const [voucherFreeShip, setVoucherFreeShip] = useState([true]);
@@ -120,6 +137,7 @@ export default function SellSmart() {
 
   const [hoaDonCho, setHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
   const [slHoaDonCho, setDlHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
+  const [slHoaDonNgay, setDlHoaDonChoNgay] = useState([]); // lấy danh sách hóa đơn trong ngày
 
   const [dataTest, setDataTest] = useState(false); // tesst so luong
   const [indexTest, setIndexTest] = useState(0);
@@ -176,6 +194,13 @@ export default function SellSmart() {
     dateUpdate: null,
     idSku: [],
   });
+
+  //hóa đơn trong ngày
+  const [collapsedBill, setCollapsedBill] = useState(false);
+  const {
+    token: { colorBgContainerBill },
+  } = theme.useToken();
+  const [billInDate, setBillInDate] = useState([]);
 
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
@@ -258,8 +283,107 @@ export default function SellSmart() {
     }
   };
 
+  const { PDFDocument, rgb } = require("pdf-lib");
+
+  async function createPDFWithInvoice(codeBill, codeAccount) {
+    // Tạo một tài liệu PDF mới
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 400]);
+    // Lấy ngữ cảnh để vẽ
+    const { width, height } = page.getSize();
+    // Vẽ thông tin hóa đơn lên trang
+    page.drawText("APPLETENSTORE", {
+      x: 200,
+      y: height - 50,
+      size: 24,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Hoa don so: ${codeBill}`, {
+      x: 50,
+      y: height - 100,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Nhan vien: ${codeAccount}`, {
+      x: 50,
+      y: height - 150,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
+      x: 100,
+      y: height - 250,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+    // Lưu tài liệu PDF ra dạng dữ liệu nhị phân
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes;
+  }
+
   //Tạo hoá đơn off - phongnh
   async function handleCreateOrder() {
+    // Kiểm tra xem đã có mã hóa đơn trước đó hay chưa
+    if (dataBillOffLine.codeBill) {
+      // Nếu có mã hóa đơn trước đó, tạo PDF với mã hóa đơn đó
+      const pdfBytes = await createPDFWithInvoice(
+        dataBillOffLine.codeBill,
+        dataBillOffLine.codeAccount
+      );
+
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+
+      if (idAccount == null || idAccount == "") {
+        notification.error({
+          message: "Bạn Chưa Đăng Nhập!",
+          // description: "Add product successfully",
+        });
+      } else {
+        arr = [];
+        //nếu  đăng nhập thì idAccount là khác null vì thế cho add giỏ hàng
+        const checkVarAccount = await checkAccount(idAccount);
+        setDataCheckAccount(checkVarAccount);
+        if (checkVarAccount == null) {
+          notification.error({
+            message: "Bạn Chưa Đăng Nhập!!",
+            // description: "Add product successfully",
+          });
+        } else {
+          //check role tài khoản
+          if (roleAccount === "CUSTOMER") {
+            notification.error({
+              message: "Bạn Không Có Quyền!",
+            });
+          } else {
+            notification.success({
+              message: "Mời Thêm Sản Phẩm",
+              // description: "Add product successfully",
+            });
+            createBillOffLine(idAccount)
+              .then((response) => {
+                console.log(response.data);
+                setDataBillOffline(response.data);
+
+                //set gior hàng là rỗng
+                setDataBillDetailOffline([]);
+                setDataDoneBill({
+                  ...dataDoneBill,
+                  idBill: response.data.idBill,
+                  // idSku: arrIdSku,
+                  // codeImeiDaBan: arrCodeImeiDaBan,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+            getBillChoThanhToanOff();
+          }
+        }
+      }
+      return;
+    }
     //nếu chưa đăng nhập thì idAccount là null vì thế không cho add giỏ hàng
     if (idAccount == null || idAccount == "") {
       notification.error({
@@ -304,6 +428,7 @@ export default function SellSmart() {
             .catch((error) => {
               console.log(`${error}`);
             });
+          getBillChoThanhToanOff();
         }
       }
     }
@@ -435,6 +560,16 @@ export default function SellSmart() {
           console.log(`${error}`);
         });
     }
+    //lấy danh sách hóa đơn trong ngày
+    getBillInDate()
+      .then((res) => {
+        setBillInDate(res.data);
+        const totalQuantity = billInDate.length;
+        setDlHoaDonChoNgay(totalQuantity);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [
     filters,
     filtersCategory,
@@ -446,6 +581,18 @@ export default function SellSmart() {
     showWards,
     transportationFeeDTO,
   ]);
+
+  function getBillChoThanhToanOff() {
+    getBillChoThanhToan(idAccount)
+      .then((response) => {
+        setHoaDonCho(response.data);
+        const totalQuantity = hoaDonCho.length;
+        setDlHoaDonCho(totalQuantity);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }
 
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
@@ -520,6 +667,16 @@ export default function SellSmart() {
   const handleCancelBill = () => {
     setIsModalVisibleBill(false);
     document.getElementById("id-bill-ctt").value = "";
+  };
+
+  // Hàm để hiển thị Modal hóa đơn trong ngày
+  const handleClickHoaDonTrongNgay = (record) => {
+    setIsModalVisibleBillInDate(true);
+  };
+
+  // Hàm để ẩn Modal hóa đơn trong ngày
+  const handleCancelHoaDonTrongNgay = () => {
+    setIsModalVisibleBillInDate(false);
   };
 
   const handleChange = (e) => {
@@ -622,23 +779,36 @@ export default function SellSmart() {
 
   const accept = () => {
     if (checkSoluongImei() === true) {
-      doneBill(dataDoneBill)
-        .then((res) => {
-          if (res.status === 200) {
-            toast.current.show({
-              severity: "success",
-              summary: "THANH TOÁN",
-              detail: "Thanh toán thành công",
-              life: 3000,
-            });
-            setDataBillDetailOffline([]);
-            setDataTest(!dataTest);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
+      if (tienThua <= 0) {
+        doneBill(dataDoneBill)
+          .then((res) => {
+            if (res.status === 200) {
+              toast.current.show({
+                severity: "success",
+                summary: "THANH TOÁN",
+                detail: "Thanh toán thành công",
+                life: 3000,
+              });
+              setDataBillDetailOffline([]);
+              setDataTest(!dataTest);
+              setDataBillOffline([]);
+              document.getElementById("amountGiven").value = 0;
+              getBillChoThanhToanOff();
+              setSelectedVoucher(0);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        console.log("ok");
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "THANH TOÁN",
+          detail: "Chưa thanh toán đủ tiền",
+          life: 3000,
         });
-      console.log("ok");
+      }
     } else {
       toast.current.show({
         severity: "error",
@@ -1277,7 +1447,15 @@ export default function SellSmart() {
   useEffect(() => {
     calculateTotalPrice();
     calculateChange();
-  }, [dataBillDetailOffline, dataTest]);
+  }, [
+    dataBillDetailOffline,
+    dataTest,
+    fee,
+    tienThua,
+    soTienThanhToan,
+    selecteVoucher,
+    selecteVoucherFreeShip,
+  ]);
 
   const calculateTotalPrice = () => {
     let total = 0;
@@ -1496,6 +1674,209 @@ export default function SellSmart() {
     }
   };
 
+  const [selectedOptions, setSelectedOptions] = useState([]); // State để lưu các option đã chọn
+
+  const handleSelectChange = (selectedValues) => {
+    setSelectedOptions(selectedValues); // Cập nhật state khi có sự thay đổi trong việc chọn option
+  };
+
+  //tìm kiếm voucher
+  const handleChangeVoucher = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    if (value !== undefined) {
+      searchVoucher(value)
+        .then((response) => {
+          setVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
+  const moreMenu = (categories) => (
+    <Menu
+      mode="vertical"
+      onClick={({ domEvent }) => domEvent.stopPropagation()}
+    >
+      <Menu.Item
+        key="accept"
+        style={{
+          fontSize: 15,
+          display: "flex",
+          alignItems: "center",
+          fontWeight: 500,
+        }}
+        icon={
+          <FormOutlined
+            style={{
+              color: "#52c41a",
+              fontSize: 17,
+              fontWeight: 500,
+            }}
+          />
+        }
+        onClick={() => {
+          //   setEditId(record.id);
+        }}
+      >
+        Edit
+      </Menu.Item>
+    </Menu>
+  );
+
+  const breakpoint = Grid.useBreakpoint();
+
+  const BillDetailTable = ({ record }) => {
+    const [billDetail, setBillDetail] = useState([]);
+
+    useEffect(() => {
+      getBillCTTByCodeBillInDate(record.code)
+        .then((res) => {
+          setBillDetail(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, []);
+
+    const moreMenu = (record) => (
+      <Menu
+        mode="vertical"
+        onClick={({ domEvent }) => domEvent.stopPropagation()}
+      >
+        <Menu.Item
+          key="edit"
+          style={{
+            fontSize: 15,
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+          }}
+          icon={
+            <FormOutlined
+              style={{
+                color: "#52c41a",
+                fontSize: 17,
+                fontWeight: 500,
+              }}
+            />
+          }
+          // onClick={() => editShow(record)}
+        >
+          DELETE
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <List title="Sản phẩm" createButtonProps={undefined}>
+        <Table
+          rowKey="idSKU"
+          dataSource={billDetail}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showTotal: (total) => `Tổng số ${total} mục`,
+            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+          }}
+        >
+          <Table.Column
+            dataIndex="images"
+            title="Ảnh"
+            render={(text, record) => (
+              <div style={{ width: "150px" }}>
+                <AvtProduct product={record.idProduct} />
+              </div>
+            )}
+          />
+          <Table.Column
+            key="nameProduct"
+            dataIndex="nameProduct"
+            title="Tên sản phẩm"
+            render={(text, record) => {
+              return `${record.nameProduct} - ${record.skuCapacity} - ${record.skuColor}`;
+            }}
+          />
+          <Table.Column
+            align="right"
+            key="price"
+            dataIndex="price"
+            title="Giá bán"
+            render={(value) => {
+              return (
+                <NumberField
+                  options={{
+                    currency: "VND",
+                    style: "currency",
+                    //   notation: "compact",
+                  }}
+                  value={value}
+                />
+              );
+            }}
+            sorter={(a, b) => a.price - b.price}
+          />
+          <Table.Column
+            align="right"
+            key="quantity"
+            dataIndex="quantity"
+            title="Số lượng"
+            render={(value) => {
+              return <NumberField value={value} />;
+            }}
+            sorter={(a, b) => a.quantity - b.quantity}
+          />
+          <Table.Column
+            align="right"
+            key="totalManyOneBillDetail"
+            dataIndex="totalManyOneBillDetail"
+            title="Thành tiền"
+            render={(value) => {
+              return (
+                <NumberField
+                  options={{
+                    currency: "VND",
+                    style: "currency",
+                    //   notation: "compact",
+                  }}
+                  value={value}
+                />
+              );
+            }}
+            sorter={(a, b) =>
+              a.totalManyOneBillDetail - b.totalManyOneBillDetail
+            }
+          />
+        </Table>
+      </List>
+    );
+  };
+
+  const expandedRowRender = (record) => {
+    return <BillDetailTable record={record} />;
+  };
+
+  //tìm kiếm hóa đơn trong ngày
+  const handleChangeBillDTT = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    if (value !== undefined) {
+      searchBillDTT(idAccount, value)
+        .then((response) => {
+          setBillInDate(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
   return (
     <React.Fragment>
       <>
@@ -1579,16 +1960,18 @@ export default function SellSmart() {
                           +
                         </label>{" "}
                         <br />
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          style={{ marginRight: "10px" }}
-                        >
-                          {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
-                        </button>
-                        {/* <button type="button" class="btn btn-secondary">
-                                    {/* <RiseOutlined /> */}
-                        {/* </button> */}
+                        <Space size="middle">
+                          <Badge count={slHoaDonNgay} overflowCount={10}>
+                            <button
+                              type="button"
+                              class="btn btn-secondary"
+                              style={{ marginRight: "10px" }}
+                              onClick={() => handleClickHoaDonTrongNgay()}
+                            >
+                              {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
+                            </button>
+                          </Badge>
+                        </Space>
                       </div>
                       <div className="col-md-2">
                         <label
@@ -1989,6 +2372,7 @@ export default function SellSmart() {
                             Mã Hoá Đơn
                           </label>
                           <input
+                            id="codeBill"
                             className="form-control"
                             type="text"
                             defaultValue={dataBillOffLine?.codeBill}
@@ -2277,11 +2661,18 @@ export default function SellSmart() {
                                 <option>Thanh toán chuyển khoản</option>
                                 <option>Trả tiền mặt tại quầy</option>
                             </select> */}
-                          <Select mode="multiple" style={{ width: "100%" }}>
-                            <Select.Option>
+                          <Select
+                            mode="multiple"
+                            style={{ width: "100%" }}
+                            value={selectedOptions} // Đặt giá trị được chọn dựa trên state
+                            onChange={handleSelectChange} // Sử dụng hàm xử lý sự kiện
+                          >
+                            <Select.Option value="transfer">
                               Thanh toán chuyển khoản
                             </Select.Option>
-                            <Select.Option>Trả tiền mặt tại quầy</Select.Option>
+                            <Select.Option value="cash">
+                              Trả tiền mặt tại quầy
+                            </Select.Option>
                           </Select>
                         </div>
                         <div
@@ -2339,9 +2730,19 @@ export default function SellSmart() {
                             id="amountGiven"
                             className="form-control"
                             type="number"
-                            // defaultValue={290000}
+                            defaultValue={0}
                             onChange={calculateChange}
                           />
+                          {/* <Space>
+                            <InputNumber
+                              id="amountGiven"
+                              className="form-control"
+                              formatter={(value) => `${value} ₫`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                              parser={(value) => value && value.replace('₫', '').replace(/(,*)/g, '')}
+                              defaultValue={0}
+                              onChange={calculateChange}
+                            />
+                          </Space> */}
                         </div>
                         <div
                           className="form-group  col-md-6"
@@ -2361,15 +2762,36 @@ export default function SellSmart() {
                         </div>
                         <div
                           className="form-group  col-md-6"
-                          style={{ fontWeight: "bold" }}
+                          style={{
+                            fontWeight: "bold",
+                            color:
+                              tienThua === 0
+                                ? "green" // Nếu đủ tiền, màu xanh lá cây
+                                : tienThua > 0
+                                ? "red" // Nếu thiếu tiền, màu đỏ
+                                : "green", // Nếu thừa tiền, màu xanh biển
+                          }}
                         >
-                          <label className="control-label">Thiếu: </label>
+                          <label className="control-label">*** </label>
                           <p className="control-all-money">
                             {" "}
-                            {tienThua?.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
+                            {tienThua === 0
+                              ? "Đã thu đủ tiền"
+                              : tienThua > 0
+                              ? `Thiếu ${Math.abs(tienThua).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}`
+                              : `Thừa ${Math.abs(tienThua).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}`}
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
@@ -2506,6 +2928,15 @@ export default function SellSmart() {
               >
                 <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
               </div>
+              <input
+                id="voucher-offline"
+                className="form-control"
+                type="search"
+                placeholder="Nhập mã Voucher"
+                aria-label="Search"
+                name="key"
+                onChange={handleChangeVoucher}
+              />
               <p style={{ marginTop: "10px", fontWeight: "bold" }}>
                 Mã FreeShip
               </p>
@@ -3027,6 +3458,7 @@ export default function SellSmart() {
                         // Thực hiện hành động sau khi xác nhận
                         clickHoaDonCho(hoadon.code);
                         setIsModalVisibleBill(false);
+                        getBillChoThanhToanOff();
                         notification.success({
                           message: "Tiếp tục thanh toán",
                         });
@@ -3043,6 +3475,102 @@ export default function SellSmart() {
               </div>
             </div>
           </div>
+        </Modal>
+
+        <Modal
+          visible={isModalVisibleBillInDate}
+          onCancel={handleCancelHoaDonTrongNgay}
+          width={900}
+          footer={null}
+          bodyStyle={{ minHeight: "800px" }}
+        >
+          <h3 className="tile-title">Danh sách hóa đơn</h3>
+          <input
+            id="id-bill-ctt"
+            className="form-control"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+            name="key"
+            onChange={handleChangeBillDTT}
+          />
+          <List>
+            <Form>
+              <Table
+                dataSource={billInDate}
+                expandable={{
+                  expandedRowRender: !breakpoint.xs
+                    ? expandedRowRender
+                    : undefined,
+                }}
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} mục`,
+                  showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                }}
+                rowKey="id"
+              >
+                <Table.Column
+                  key="title"
+                  dataIndex="title"
+                  title="Mã hóa đơn"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0, fontWeight: "bold" }}>
+                        {record.code}
+                      </Form.Item>
+                    );
+                  }}
+                />
+                <Table.Column
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Ngày tạo"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <DateField
+                          value={record.dateCreate}
+                          format="DD/MM/YYYY"
+                        />
+                      </Form.Item>
+                    );
+                  }}
+                />
+                <Table.Column
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Nhân viên bán hàng"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {record.personUpdate}
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* <Table.Column
+                  title="Actions"
+                  dataIndex="actions"
+                  key="actions"
+                  align="center"
+                  render={(_text, record) => {
+                    return (
+                      <Dropdown overlay={moreMenu(record)} trigger={["click"]}>
+                        <MoreOutlined
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            fontSize: 24,
+                          }}
+                        />
+                      </Dropdown>
+                    );
+                  }}
+                /> */}
+              </Table>
+            </Form>
+          </List>
         </Modal>
       </>
     </React.Fragment>

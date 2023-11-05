@@ -166,3 +166,22 @@ export const getIdBill = (idBillDetail) => {
     `/admin/bill-offline/get-bill?idBillDetail=${idBillDetail}`
   );
 };
+
+//lấy danh sách hóa đơn trong ngày
+export const getBillInDate = () => {
+  return httpClient.get(
+    "/admin/bill-offline/getBillInDate"
+  );
+};
+
+//lấy danh sách đơn hàng trong ngày
+export const getBillCTTByCodeBillInDate = (codeBill) => {
+  return httpClient.get(`/admin/bill-offline/get-billDetail-InDate/${codeBill}`);
+};
+
+//search đơn hàng trong ngày
+export const searchBillDTT = (idAccount, codeBill) => {
+  return httpClient.get(
+    `/admin/bill-offline/searchBill-CTT?idAccount=${idAccount}&codeBill=${codeBill}`
+  );
+};
