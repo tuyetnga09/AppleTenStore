@@ -105,7 +105,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString().replaceAll("-", "");
-        String stringRandomCode = formattedDateNow + randomUUIDString;
+        String stringRandomCode = formattedDateNow +"MPH"+ randomUUIDString;
         String truncatedString = stringRandomCode.toUpperCase(Locale.ROOT).substring(0, 20);
         Bill bill = billRepository.newBillOfNow();
         String codeBill = "";
