@@ -111,10 +111,15 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         String codeBill = "";
         //nếu trong ngày đó chưa có bill nào thì mã bill được random +1
         if (bill == null) {
-            codeBill = truncatedString + "1";
+            codeBill = truncatedString + "HD" + "1";
         } else {
             //nếu trong ngày đó có bill rồi thì lấy mã bill random + với id hoá đơn tạo mới nhất + thêm 1
-            codeBill = truncatedString + (bill.getId() + 1);
+            String inputString = bill.getCode();
+            // Sử dụng phương thức lastIndexOf để tìm vị trí cuối cùng của chữ 'D'
+            int lastIndex = inputString.lastIndexOf("D");
+            String targetString = inputString.substring(lastIndex + 1);
+            Integer identityCodeBill = Integer.valueOf(targetString);
+            codeBill = truncatedString + "HD" + (identityCodeBill + 1);
         }
         return codeBill;
     }
@@ -520,5 +525,20 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         BillDetails billDetail = billDetailRepository.findById(idBillDetail).get();
         Integer idBill = billDetail.getBill().getId();
         return idBill;
+    }
+
+    @Override
+    public List<Bill> billInDate() {
+        return billRepository.billInDate();
+    }
+
+    @Override
+    public List<ListBillChoThanhToan> findBillByCodeBillInDate(String codeBill) {
+        return billDetailRepository.findBillbyCodeBillInDate(codeBill);
+    }
+
+    @Override
+    public List<Bill> searchBillDaThanhToan(Integer idAccount, String codeBill) {
+        return billRepository.searchBillDaThanhToan(idAccount,codeBill);
     }
 }

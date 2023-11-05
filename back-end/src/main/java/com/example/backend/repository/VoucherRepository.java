@@ -76,4 +76,10 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
     @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2% and (date_start = ?3 and date_end = ?4)", nativeQuery = true)
     List<Voucher> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
+    @Query(value = "SELECT conditions_apply, date_end, date_start, id, quantity, status,\n" +
+            "              type_voucher, value_maximum, value_minimum, value_voucher,\n" +
+            "               date_create, date_update, code, name, person_create, person_update\n" +
+            "            FROM voucher\n" +
+            "            WHERE CURRENT_DATE BETWEEN date_start AND date_end AND code like %?1% ", nativeQuery = true)
+    List<Voucher> searchVoucher(String codeVoucher);
 }

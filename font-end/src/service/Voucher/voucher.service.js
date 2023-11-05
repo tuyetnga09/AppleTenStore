@@ -52,3 +52,7 @@ export const searchNoDate = (page) => {
 export const searchWithDate = (page) => {
   return httpClient.get(`/voucher/searchWithDate?${page}`);
 };
+
+export const searchVoucher = (code) => {
+  return httpClient.get(`/admin/voucher/search-voucher/${code}`);
+};
