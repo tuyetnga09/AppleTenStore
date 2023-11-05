@@ -29,7 +29,7 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
             "                          where a.id = :idAccount order by cd.date_create desc", nativeQuery = true)
     List<ListCartOffline> getListCartOffline(@Param("idAccount") Integer idAccount);
 
-    @Query(value = "select p.name as 'nameProduct', sku.capacity as 'capacity', sku.color as 'color', sku.price as 'price', p.id as 'idProduct', sku.quantity AS 'QuantitySKU' from sku join product p on p.id = sku.product_id where sku.id = :idSku", nativeQuery = true)
+    @Query(value = "select p.name as 'nameProduct', sku.capacity as 'capacity', sku.color as 'color', sku.price as 'price', sku.id as 'idSku', sku.quantity AS 'QuantitySKU' from sku join product p on p.id = sku.product_id where sku.id = :idSku", nativeQuery = true)
     List<LisCartSession> getListCartSession(@Param("idSku") Long idSku);
 
 }

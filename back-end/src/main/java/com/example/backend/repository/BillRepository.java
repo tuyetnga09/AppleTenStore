@@ -1,6 +1,5 @@
 package com.example.backend.repository;
 
-import com.example.backend.controller.product_controller.model.request.AnnualRevenue;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import jakarta.transaction.Transactional;
@@ -133,6 +132,8 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_HUY'", nativeQuery = true)
     List<Bill> listBillByIdAccountDH(Integer id);
+
+    void deleteBillById(Integer id);
 
     //lấy ra bill mới nhất trong ngày
     @Query(value = "select * from bill where date_create = CURDATE() ORDER BY date_create DESC, Id DESC limit 1", nativeQuery = true)

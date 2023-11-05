@@ -350,4 +350,12 @@ public class BillServiceImpl implements BillService {
         return billRepository.listBillByIdAccountDH(id);
     }
 
+    @Override
+    public void deleteBill(Integer id) {
+        this.billDetailRepository.deleteBillDetailsByBill(id);
+        this.paymentsRepository.deletePaymentsByBill(id);
+        this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
+        this.billRepository.deleteBillById(id);
+    }
+
 }
