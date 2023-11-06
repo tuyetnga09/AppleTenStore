@@ -355,7 +355,7 @@ public class BillServiceImpl implements BillService {
         this.billDetailRepository.deleteBillDetailsByBill(id);
         this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
-        this.billRepository.deleteBillById(id);
+        this.billRepository.deleteBill(id);
     }
 
 }

@@ -82,36 +82,24 @@
 
 // export default DailyOrders;
 
-import { useState, useEffect } from "react";
-import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
-import { Typography } from "antd";
-import { Column } from "@ant-design/charts";
-import { ColumnConfig } from "@ant-design/plots/lib/components/column";
+import {useEffect, useState} from "react";
+import {Typography} from "antd";
 
-import { IncreaseIcon } from "../../icon/increase";
-import { DecreaseIcon } from "../../icon/decrease";
+import {IncreaseIcon} from "../../icon/increase";
 import {
-  sumAllBill,
-  sumBillUnconfimred,
-  sumBillConfirmed,
-  sumBillAreDelivering,
-  sumBillAlreadyPaid,
-  sumBillNoReturn,
-  sumBillReturns,
-  sumBillCancelOrder,
+    sumAllBill,
+    sumBillAlreadyPaid,
+    sumBillAreDelivering,
+    sumBillCancelOrder,
+    sumBillConfirmed,
+    sumBillNoReturn,
+    sumBillReturns,
+    sumBillUnconfimred,
 } from "../../../../service/dashboard/admin_bill.service";
 
 // import { ISalesChart } from "../../../interfaces";
-import { DailyOrderWrapper, TitleAreNumber, TitleArea } from "./styled";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  CartesianGrid,
-} from "recharts";
+import {DailyOrderWrapper, TitleArea, TitleAreNumber} from "./styled";
+import {CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis,} from "recharts";
 
 const DailyOrders = () => {
   const [data, setData] = useState([]);

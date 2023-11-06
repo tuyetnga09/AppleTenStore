@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Transactional
 public interface BillRepository extends JpaRepository<Bill, Integer> {
     Optional<Bill> findByCode(String code);
 
@@ -124,7 +125,7 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     @Query(value = "select * from bill where id_account = ?1 and status_bill = 'CHO_XAC_NHAN'", nativeQuery = true)
     List<Bill> listBillByIdAccountCXN(Integer id);
 
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'VAN_CHUYEN'", nativeQuery = true)
+    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'CHO_VAN_CHUYEN'", nativeQuery = true)
     List<Bill> listBillByIdAccountVC(Integer id);
 
     @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_THANH_TOAN'", nativeQuery = true)
@@ -133,7 +134,9 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_HUY'", nativeQuery = true)
     List<Bill> listBillByIdAccountDH(Integer id);
 
-    void deleteBillById(Integer id);
+    @Modifying
+    @Query(value = "update bill set status_bill = 'DA_HUY' where id = ?1", nativeQuery = true)
+    void deleteBill(Integer id);
 
     //lấy ra bill mới nhất trong ngày
     @Query(value = "select * from bill where date_create = CURDATE() ORDER BY date_create DESC, Id DESC limit 1", nativeQuery = true)

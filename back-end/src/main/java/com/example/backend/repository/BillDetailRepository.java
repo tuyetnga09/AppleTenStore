@@ -21,7 +21,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
 
     @Transactional
     @Modifying
-    @Query(value = "delete from bill_detail where id_bill = ?1", nativeQuery = true)
+    @Query(value = "update bill_detail set status_bill = 'DA_HUY' where id_bill = ?1", nativeQuery = true)
     void deleteBillDetailsByBill(Integer id);
 
     @Query(value = "select * from bill_detail where id_bill =?1", nativeQuery = true)

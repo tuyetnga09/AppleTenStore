@@ -12,6 +12,6 @@ public interface BillHistoryRepository extends JpaRepository<BillHistory, Intege
 
     @Modifying
     @Transactional
-    @Query(value = "delete from bill_history where id_bill = ?1", nativeQuery = true)
+    @Query(value = "update bill_history set status_bill = 'DA_HUY' where id_bill = ?1", nativeQuery = true)
     void deleteBillHistoriesByIdBill(Integer id);
 }

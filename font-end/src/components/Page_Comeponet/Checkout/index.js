@@ -332,9 +332,6 @@ const Checkout = () => {
       price = total + priceS;
     }
     setSoTienThanhToan(price);
-    console.log(soTienThanhToan);
-    console.log(priceShip);
-    console.log(totalPrice);
   };
   //click Voucher
   const handleVoucherClick = (voucher) => {
@@ -353,6 +350,11 @@ const Checkout = () => {
       });
     } else {
       setSelectedVoucher(voucher);
+      setBill({
+        ...bill,
+        itemDiscount: voucher.valueVoucher,
+        idVoucher: voucher.id
+      })
       readAll(idAccount)
           .then((response) => {
             console.log(response.data);
