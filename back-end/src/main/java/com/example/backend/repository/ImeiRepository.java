@@ -2,9 +2,11 @@ package com.example.backend.repository;
 
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
 import com.example.backend.entity.Imei;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -40,4 +42,25 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
             "             from imei i join sku s on i.sku_id = s.id join product p on s.product_id = p.id  \n" +
             "             where i.status = 0 and s.id=?1 and i.code_imei =?2", nativeQuery = true)
     List<ImeiBillOffLineIonRespon> seachImeiFindByCodeImei(Long idSku, String codeImei);
+
+
+    //laays ra lisst imei theo idsku
+    @Query(value = "select * from imei i where i.sku_id=?1", nativeQuery = true)
+    List<Imei> getAllImeiWherIdSku(Long idSku);
+
+    //laays ra lisst imei theo idsku and status
+    @Query(value = "select * from imei i where i.sku_id=?1 and i.status =?2", nativeQuery = true)
+    List<Imei> getAllImeiWherIdSkuAndStatus(Long idSku, Integer status);
+
+    //update status imei where id_product
+    @Modifying
+    @Transactional
+    @Query(value = "update imei set status =?1 where id_product =?2 and status =?3", nativeQuery = true)
+    void updateStatusImeiWhereIdProduct(Integer status, Integer idProduct, Integer statusWhere);
+
+    //update status imei where sku_id
+    @Modifying
+    @Transactional
+    @Query(value = "update imei set status =?1 where sku_id =?2 and status =?3", nativeQuery = true)
+    void updateStatusImeiWhereIdSku(Integer status, Long idSku, Integer statusWhere);
 }

@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslate } from "@refinedev/core";
-import { ShoppingCartOutlined, GiftOutlined } from "@ant-design/icons";
+import {
+  ShoppingCartOutlined,
+  GiftOutlined,
+  FormOutlined,
+  MoreOutlined,
+} from "@ant-design/icons";
 import "../SellOffline/style.css";
 import {
   Layout,
@@ -16,12 +21,18 @@ import {
   notification,
   Badge,
   Space,
+  InputNumber,
+  Grid,
+  Menu,
+  Dropdown,
+  Form,
 } from "antd";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getVoucher,
   getVoucherFreeShip,
+  searchVoucher,
 } from "../../../service/Voucher/voucher.service";
 import {
   getSKUProductFormSell,
@@ -32,7 +43,7 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import queryString from "query-string";
 import Pagination from "./Paging";
-import { NumberField } from "@refinedev/antd";
+import { NumberField, List, BooleanField } from "@refinedev/antd";
 import {
   addToCartOffline,
   readAllCartOff,
@@ -72,6 +83,9 @@ import {
   searchBillCTT,
   getBilDetailOfBillWhereIdBill,
   getIdBill,
+  getBillInDate,
+  getBillCTTByCodeBillInDate,
+  searchBillDTT,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -81,6 +95,7 @@ import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
 import { set } from "js-cookie";
+
 const { Header, Sider, Content } = Layout;
 let arrCodeImeiDaBan = [];
 let arrIdSku = [];
@@ -99,6 +114,8 @@ export default function SellSmart() {
   // const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal khách hàng
   const [isModalVisibleVoucher, setIsModalVisibleVoucher] = useState(false); // Trạng thái hiển thị Modal Voucher
   const [isModalVisibleBill, setIsModalVisibleBill] = useState(false); // Trạng thái hiển thị Modal Bill chờ
+  const [isModalVisibleBillInDate, setIsModalVisibleBillInDate] =
+    useState(false); // Trạng thái hiển thị Modal Bill trong Ngày
   const [voucher, setVoucher] = useState([]);
   const [selecteVoucher, setSelectedVoucher] = useState(0);
   const [voucherFreeShip, setVoucherFreeShip] = useState([true]);
@@ -120,6 +137,7 @@ export default function SellSmart() {
 
   const [hoaDonCho, setHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
   const [slHoaDonCho, setDlHoaDonCho] = useState([]); // lấy danh sách hóa đơn chờ
+  const [slHoaDonNgay, setDlHoaDonChoNgay] = useState([]); // lấy danh sách hóa đơn trong ngày
 
   const [dataTest, setDataTest] = useState(false); // tesst so luong
   const [indexTest, setIndexTest] = useState(0);
@@ -171,11 +189,23 @@ export default function SellSmart() {
     address: null,
     note: null,
     personUpdate: null,
-    phoneNumber: null,
-    userName: null,
+    // phoneNumber: null,
+    // userName: null,
     dateUpdate: null,
     idSku: [],
+    idCustomer: null,
   });
+
+  //hóa đơn trong ngày
+  const [collapsedBill, setCollapsedBill] = useState(false);
+  const {
+    token: { colorBgContainerBill },
+  } = theme.useToken();
+  const [billInDate, setBillInDate] = useState([]);
+
+  const [selectedOptions, setSelectedOptions] = useState(["cash"]);
+  const [showCashInput, setShowCashInput] = useState(false);
+  const [showTransferInput, setShowTransferInput] = useState(false);
 
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
@@ -258,8 +288,107 @@ export default function SellSmart() {
     }
   };
 
+  const { PDFDocument, rgb } = require("pdf-lib");
+
+  async function createPDFWithInvoice(codeBill, codeAccount) {
+    // Tạo một tài liệu PDF mới
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 400]);
+    // Lấy ngữ cảnh để vẽ
+    const { width, height } = page.getSize();
+    // Vẽ thông tin hóa đơn lên trang
+    page.drawText("APPLETENSTORE", {
+      x: 200,
+      y: height - 50,
+      size: 24,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Hoa don so: ${codeBill}`, {
+      x: 50,
+      y: height - 100,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Nhan vien: ${codeAccount}`, {
+      x: 50,
+      y: height - 150,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
+      x: 100,
+      y: height - 250,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+    // Lưu tài liệu PDF ra dạng dữ liệu nhị phân
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes;
+  }
+
   //Tạo hoá đơn off - phongnh
   async function handleCreateOrder() {
+    // Kiểm tra xem đã có mã hóa đơn trước đó hay chưa
+    // if (dataBillOffLine.codeBill) {
+    //   // Nếu có mã hóa đơn trước đó, tạo PDF với mã hóa đơn đó
+    //   const pdfBytes = await createPDFWithInvoice(
+    //     dataBillOffLine.codeBill,
+    //     dataBillOffLine.codeAccount
+    //   );
+
+    //   const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    //   const url = URL.createObjectURL(blob);
+    //   window.open(url);
+
+    //   if (idAccount == null || idAccount == "") {
+    //     notification.error({
+    //       message: "Bạn Chưa Đăng Nhập!",
+    //       // description: "Add product successfully",
+    //     });
+    //   } else {
+    //     arr = [];
+    //     //nếu  đăng nhập thì idAccount là khác null vì thế cho add giỏ hàng
+    //     const checkVarAccount = await checkAccount(idAccount);
+    //     setDataCheckAccount(checkVarAccount);
+    //     if (checkVarAccount == null) {
+    //       notification.error({
+    //         message: "Bạn Chưa Đăng Nhập!!",
+    //         // description: "Add product successfully",
+    //       });
+    //     } else {
+    //       //check role tài khoản
+    //       if (roleAccount === "CUSTOMER") {
+    //         notification.error({
+    //           message: "Bạn Không Có Quyền!",
+    //         });
+    //       } else {
+    //         notification.success({
+    //           message: "Mời Thêm Sản Phẩm",
+    //           // description: "Add product successfully",
+    //         });
+    //         createBillOffLine(idAccount)
+    //           .then((response) => {
+    //             console.log(response.data);
+    //             setDataBillOffline(response.data);
+
+    //             //set gior hàng là rỗng
+    //             setDataBillDetailOffline([]);
+    //             setDataDoneBill({
+    //               ...dataDoneBill,
+    //               idBill: response.data.idBill,
+    //               // idSku: arrIdSku,
+    //               // codeImeiDaBan: arrCodeImeiDaBan,
+    //             });
+    //           })
+    //           .catch((error) => {
+    //             console.log(`${error}`);
+    //           });
+    //         getBillChoThanhToanOff();
+    //       }
+    //     }
+    //   }
+    //   return;
+    // }
     //nếu chưa đăng nhập thì idAccount là null vì thế không cho add giỏ hàng
     if (idAccount == null || idAccount == "") {
       notification.error({
@@ -304,12 +433,18 @@ export default function SellSmart() {
             .catch((error) => {
               console.log(`${error}`);
             });
+          getBillChoThanhToanOff();
         }
       }
     }
   }
-
+  const [isChecked1, setIsChecked1] = useState(true);
+  const [isChecked2, setIsChecked2] = useState(false);
   useEffect(() => {
+    const checked1 = document.getElementById("inlineRadio1");
+    checked1.checked = isChecked1;
+    const checked2 = document.getElementById("inlineRadio2");
+    checked2.checked = isChecked2;
     const phanloai = document.getElementById("exampleSelect1");
     //lấy danh sách voucher
     getVoucher()
@@ -381,7 +516,7 @@ export default function SellSmart() {
       });
 
     //lấy danh sách hóa đơn chờ
-    getBillChoThanhToan(idAccount)
+    getBillChoThanhToan()
       .then((response) => {
         setHoaDonCho(response.data);
         const totalQuantity = hoaDonCho.length;
@@ -435,6 +570,25 @@ export default function SellSmart() {
           console.log(`${error}`);
         });
     }
+    //lấy danh sách hóa đơn trong ngày
+    getBillInDate()
+      .then((res) => {
+        setBillInDate(res.data);
+        const totalQuantity = billInDate.length;
+        setDlHoaDonChoNgay(totalQuantity);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    // Kiểm tra xem "cash" đã được chọn mặc định hay không
+    if (selectedOptions.includes("cash")) {
+      setShowCashInput(true);
+    }
+    // Kiểm tra xem "transfer" đã được chọn mặc định hay không
+    if (selectedOptions.includes("transfer")) {
+      setShowTransferInput(true);
+    }
   }, [
     filters,
     filtersCategory,
@@ -446,6 +600,18 @@ export default function SellSmart() {
     showWards,
     transportationFeeDTO,
   ]);
+
+  function getBillChoThanhToanOff() {
+    getBillChoThanhToan(idAccount)
+      .then((response) => {
+        setHoaDonCho(response.data);
+        const totalQuantity = hoaDonCho.length;
+        setDlHoaDonCho(totalQuantity);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }
 
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
@@ -522,6 +688,16 @@ export default function SellSmart() {
     document.getElementById("id-bill-ctt").value = "";
   };
 
+  // Hàm để hiển thị Modal hóa đơn trong ngày
+  const handleClickHoaDonTrongNgay = (record) => {
+    setIsModalVisibleBillInDate(true);
+  };
+
+  // Hàm để ẩn Modal hóa đơn trong ngày
+  const handleCancelHoaDonTrongNgay = () => {
+    setIsModalVisibleBillInDate(false);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCustomer((prevCustomer) => ({
@@ -540,6 +716,13 @@ export default function SellSmart() {
           email: "",
           phoneNumber: "",
         });
+        getCustomer()
+          .then((response) => {
+            setKhachHang(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
       })
       .catch((error) => {
         alert("Thêm khách hàng thất bại");
@@ -559,6 +742,8 @@ export default function SellSmart() {
     const select7 = document.getElementById("floatingSelect7");
     select7.hidden = false;
     setShowProvinces(true);
+    setIsChecked1(false);
+    setIsChecked2(true);
   }
 
   function taiCuaHang() {
@@ -590,6 +775,8 @@ export default function SellSmart() {
     setShowDistricts(false);
     setShowWards(false);
     select.value = "";
+    setIsChecked1(true);
+    setIsChecked2(false);
   }
 
   const toast = useRef(null);
@@ -603,8 +790,19 @@ export default function SellSmart() {
     console.log(arrIdSku);
   };
   function checkSoluongImei() {
-    if (dataBillDetailOffline[indexTest].quantity !== dataImeiSelected.length) {
-      return false;
+    // if (
+    //   dataBillDetailOffline[indexTest]?.quantity !== dataImeiSelected.length
+    // ) {
+    //   return false;
+    // }
+    // return true;
+    for (let index = 0; index < dataBillDetailOffline.length; index++) {
+      if (
+        dataBillDetailOffline[index]?.quantity !==
+        dataBillDetailOffline[index]?.soLuongImeiDaChon
+      ) {
+        return false;
+      }
     }
     return true;
   }
@@ -621,31 +819,68 @@ export default function SellSmart() {
   }
 
   const accept = () => {
-    if (checkSoluongImei() === true) {
-      doneBill(dataDoneBill)
-        .then((res) => {
-          if (res.status === 200) {
-            toast.current.show({
-              severity: "success",
-              summary: "THANH TOÁN",
-              detail: "Thanh toán thành công",
-              life: 3000,
-            });
-            setDataBillDetailOffline([]);
-            setDataTest(!dataTest);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      console.log("ok");
-    } else {
+    if (dataDoneBill.idBill === null) {
       toast.current.show({
         severity: "error",
-        summary: "KIỂM TRA IMEI",
-        detail: "Vui lòng kiểm tra lại imei",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, hãy tạo/chọn hóa đơn",
         life: 3000,
       });
+    } else if (dataBillDetailOffline.length === 0) {
+      toast.current.show({
+        severity: "error",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, hãy thêm sản phẩm để thanh toán",
+        life: 3000,
+      });
+    } else if (dataDoneBill.idCustomer === null) {
+      toast.current.show({
+        severity: "error",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, chưa chọn khách hàng?",
+        life: 3000,
+      });
+    } else {
+      if (checkSoluongImei() === true) {
+        if (tienThua <= 0) {
+          doneBill(dataDoneBill)
+            .then((res) => {
+              if (res.status === 200) {
+                toast.current.show({
+                  severity: "success",
+                  summary: "THANH TOÁN",
+                  detail: "Thanh toán thành công",
+                  life: 3000,
+                });
+                setDataBillDetailOffline([]);
+                setDataTest(!dataTest);
+                setDataBillOffline([]);
+                document.getElementById("amountGiven").value = 0;
+                document.getElementById("transferAmount").value = 0;
+                getBillChoThanhToanOff();
+                setSelectedVoucher(0);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          console.log("ok");
+        } else {
+          toast.current.show({
+            severity: "error",
+            summary: "THANH TOÁN",
+            detail: "Chưa thanh toán đủ tiền",
+            life: 3000,
+          });
+        }
+      } else {
+        toast.current.show({
+          severity: "error",
+          summary: "KIỂM TRA IMEI",
+          detail: "Vui lòng kiểm tra lại imei",
+          life: 3000,
+        });
+      }
     }
   };
   const handleGhiChu = (event) => {
@@ -776,27 +1011,33 @@ export default function SellSmart() {
     // if (!arr.includes(dataImeiSelected)) {
     //   arr.push(dataImeiSelected);
     // }
-    setDataDoneBill({
-      ...dataDoneBill,
-      // idBill: dataBillOffLine.idBill,
-      codeImeiDaBan: arrCodeImeiDaBan,
-      // moneyShip: fee?.total,
-      // totalMoney: totalPrice + parseInt(fee?.total),
-      // address:
-      //   document.getElementById("floatingSelect2").value +
-      //   ", " +
-      //   address.wards +
-      //   ", " +
-      //   address.district +
-      //   ", " +
-      //   address.province,
-      note: document.getElementById("ghiChu").value,
-      personUpdate: dataBillOffLine.codeAccount,
-      phoneNumber: null,
-      userName: null,
-      dateUpdate: null,
-      // idSku: arrIdSku,
-    });
+    if (fee === undefined) {
+      setDataDoneBill({
+        ...dataDoneBill,
+        codeImeiDaBan: arrCodeImeiDaBan,
+        note: document.getElementById("ghiChu").value,
+        personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
+        dateUpdate: null,
+        totalMoney: totalPrice,
+      });
+    } else {
+      setDataDoneBill({
+        ...dataDoneBill,
+        codeImeiDaBan: arrCodeImeiDaBan,
+        note: document.getElementById("ghiChu").value,
+        personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
+        dateUpdate: null,
+        totalMoney: fee?.total + totalPrice,
+      });
+    }
+    // setDataDoneBill({
+    //   ...dataDoneBill,
+    //   codeImeiDaBan: arrCodeImeiDaBan,
+    //   note: document.getElementById("ghiChu").value,
+    //   personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
+    //   dateUpdate: null,
+    //   totalMoney: totalPrice,
+    // });
     console.log(dataDoneBill);
     console.log(dataBillDetailOffline);
   };
@@ -1277,7 +1518,15 @@ export default function SellSmart() {
   useEffect(() => {
     calculateTotalPrice();
     calculateChange();
-  }, [dataBillDetailOffline, dataTest]);
+  }, [
+    dataBillDetailOffline,
+    dataTest,
+    fee,
+    tienThua,
+    soTienThanhToan,
+    selecteVoucher,
+    selecteVoucherFreeShip,
+  ]);
 
   const calculateTotalPrice = () => {
     let total = 0;
@@ -1327,15 +1576,53 @@ export default function SellSmart() {
 
   // TÍNH TIỀN Thiếu
   function calculateChange() {
-    // Lấy giá trị số tiền khách đưa
-    const amountGiven = parseFloat(
-      document.getElementById("amountGiven").value
-    );
-    // Lấy giá trị số tiền cần trả (bạn có thể sử dụng biến soTienThanhToan)
-    const amountToReturn = parseFloat(soTienThanhToan);
-    // Tính số tiền thừa
-    const change = amountToReturn - amountGiven;
-    setTienThua(change);
+    const amountGivenInput = document.getElementById("amountGiven");
+    const transferAmountInput = document.getElementById("transferAmount");
+
+    if (showCashInput && showTransferInput) {
+      // Tính tiền khi cả hai hình thức được chọn
+      const amountGiven = parseFloat(amountGivenInput.value);
+      const transferAmount = parseFloat(transferAmountInput.value);
+      if (!isNaN(amountGiven) && !isNaN(transferAmount)) {
+        const amountToReturn = parseFloat(soTienThanhToan);
+        if (!isNaN(amountToReturn)) {
+          const change = amountToReturn - (transferAmount + amountGiven);
+          setTienThua(change);
+        } else {
+          setTienThua(0);
+        }
+      } else {
+        setTienThua(0);
+      }
+    } else if (showCashInput) {
+      // Tính tiền khi chỉ tiền mặt được chọn
+      const amountGiven = parseFloat(amountGivenInput.value);
+      if (!isNaN(amountGiven)) {
+        const amountToReturn = parseFloat(soTienThanhToan);
+        if (!isNaN(amountToReturn)) {
+          const change = amountToReturn - amountGiven;
+          setTienThua(change);
+        } else {
+          setTienThua(0);
+        }
+      } else {
+        setTienThua(0);
+      }
+    } else if (showTransferInput) {
+      // Tính tiền khi chỉ chuyển khoản được chọn
+      const transferAmount = parseFloat(transferAmountInput.value);
+      if (!isNaN(transferAmount)) {
+        const amountToReturn = parseFloat(soTienThanhToan);
+        if (!isNaN(amountToReturn)) {
+          const change = amountToReturn - transferAmount;
+          setTienThua(change);
+        } else {
+          setTienThua(0);
+        }
+      } else {
+        setTienThua(0);
+      }
+    }
   }
 
   //click Voucher
@@ -1429,6 +1716,10 @@ export default function SellSmart() {
 
   const handleSelect = (value) => {
     setSelectedValues(value);
+    setDataDoneBill({
+      ...dataDoneBill,
+      idCustomer: value,
+    });
   };
 
   const handleClear = () => {
@@ -1441,9 +1732,15 @@ export default function SellSmart() {
 
   const clickHoaDonCho = (codeBill) => {
     setDataBillOffline([]);
+    let totalMoney = 0;
     getBillCTTByCodeBill(codeBill)
       .then((response) => {
         setDataBillDetailOffline(response.data);
+        console.log(response.data);
+        response.data.map((data) => {
+          console.log(data.price);
+          totalMoney += data.price;
+        });
         response.data.map((data) => {
           if (!arrIdSku.includes(data.idSKU)) {
             arrIdSku.push(data.idSKU);
@@ -1472,6 +1769,8 @@ export default function SellSmart() {
           idBill: response.data.idBill,
           idSku: arrIdSku,
           codeImeiDaBan: arrCodeImeiDaBan,
+          totalMoney: totalMoney,
+          personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
         });
       })
       .catch((error) => {
@@ -1489,6 +1788,221 @@ export default function SellSmart() {
       searchBillCTT(idAccount, value)
         .then((response) => {
           setHoaDonCho(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
+  const handleSelectChange = (selectedValues) => {
+    setSelectedOptions(selectedValues); // Cập nhật state khi có sự thay đổi trong việc chọn option
+
+    // Kiểm tra nếu "cash" nằm trong danh sách lựa chọn
+    if (selectedValues.includes("cash")) {
+      setShowCashInput(true);
+    } else {
+      setShowCashInput(false);
+    }
+
+    // Kiểm tra nếu "transfer" nằm trong danh sách lựa chọn
+    if (selectedValues.includes("transfer")) {
+      setShowTransferInput(true);
+    } else {
+      setShowTransferInput(false);
+    }
+  };
+
+  //tìm kiếm voucher
+  const handleChangeVoucher = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    if (value !== undefined) {
+      searchVoucher(value)
+        .then((response) => {
+          setVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  };
+
+  const moreMenu = (categories) => (
+    <Menu
+      mode="vertical"
+      onClick={({ domEvent }) => domEvent.stopPropagation()}
+    >
+      <Menu.Item
+        key="accept"
+        style={{
+          fontSize: 15,
+          display: "flex",
+          alignItems: "center",
+          fontWeight: 500,
+        }}
+        icon={
+          <FormOutlined
+            style={{
+              color: "#52c41a",
+              fontSize: 17,
+              fontWeight: 500,
+            }}
+          />
+        }
+        onClick={() => {
+          //   setEditId(record.id);
+        }}
+      >
+        Edit
+      </Menu.Item>
+    </Menu>
+  );
+
+  const breakpoint = Grid.useBreakpoint();
+
+  const BillDetailTable = ({ record }) => {
+    const [billDetail, setBillDetail] = useState([]);
+
+    useEffect(() => {
+      getBillCTTByCodeBillInDate(record.code)
+        .then((res) => {
+          setBillDetail(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, []);
+
+    const moreMenu = (record) => (
+      <Menu
+        mode="vertical"
+        onClick={({ domEvent }) => domEvent.stopPropagation()}
+      >
+        <Menu.Item
+          key="edit"
+          style={{
+            fontSize: 15,
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+          }}
+          icon={
+            <FormOutlined
+              style={{
+                color: "#52c41a",
+                fontSize: 17,
+                fontWeight: 500,
+              }}
+            />
+          }
+          // onClick={() => editShow(record)}
+        >
+          DELETE
+        </Menu.Item>
+      </Menu>
+    );
+
+    return (
+      <List title="Sản phẩm" createButtonProps={undefined}>
+        <Table
+          rowKey="idSKU"
+          dataSource={billDetail}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showTotal: (total) => `Tổng số ${total} mục`,
+            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+          }}
+        >
+          <Table.Column
+            dataIndex="images"
+            title="Ảnh"
+            render={(text, record) => (
+              <div style={{ width: "150px" }}>
+                <AvtProduct product={record.idProduct} />
+              </div>
+            )}
+          />
+          <Table.Column
+            key="nameProduct"
+            dataIndex="nameProduct"
+            title="Tên sản phẩm"
+            render={(text, record) => {
+              return `${record.nameProduct} - ${record.skuCapacity} - ${record.skuColor}`;
+            }}
+          />
+          <Table.Column
+            align="right"
+            key="price"
+            dataIndex="price"
+            title="Giá bán"
+            render={(value) => {
+              return (
+                <NumberField
+                  options={{
+                    currency: "VND",
+                    style: "currency",
+                    //   notation: "compact",
+                  }}
+                  value={value}
+                />
+              );
+            }}
+            sorter={(a, b) => a.price - b.price}
+          />
+          <Table.Column
+            align="right"
+            key="quantity"
+            dataIndex="quantity"
+            title="Số lượng"
+            render={(value) => {
+              return <NumberField value={value} />;
+            }}
+            sorter={(a, b) => a.quantity - b.quantity}
+          />
+          <Table.Column
+            align="right"
+            key="totalManyOneBillDetail"
+            dataIndex="totalManyOneBillDetail"
+            title="Thành tiền"
+            render={(value) => {
+              return (
+                <NumberField
+                  options={{
+                    currency: "VND",
+                    style: "currency",
+                    //   notation: "compact",
+                  }}
+                  value={value}
+                />
+              );
+            }}
+            sorter={(a, b) =>
+              a.totalManyOneBillDetail - b.totalManyOneBillDetail
+            }
+          />
+        </Table>
+      </List>
+    );
+  };
+
+  const expandedRowRender = (record) => {
+    return <BillDetailTable record={record} />;
+  };
+
+  //tìm kiếm hóa đơn trong ngày
+  const handleChangeBillDTT = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+
+    if (value !== undefined) {
+      searchBillDTT(idAccount, value)
+        .then((response) => {
+          setBillInDate(response.data);
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -1579,16 +2093,18 @@ export default function SellSmart() {
                           +
                         </label>{" "}
                         <br />
-                        <button
-                          type="button"
-                          class="btn btn-secondary"
-                          style={{ marginRight: "10px" }}
-                        >
-                          {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
-                        </button>
-                        {/* <button type="button" class="btn btn-secondary">
-                                    {/* <RiseOutlined /> */}
-                        {/* </button> */}
+                        <Space size="middle">
+                          <Badge count={slHoaDonNgay} overflowCount={10}>
+                            <button
+                              type="button"
+                              class="btn btn-secondary"
+                              style={{ marginRight: "10px" }}
+                              onClick={() => handleClickHoaDonTrongNgay()}
+                            >
+                              {/* <FallOutlined /> */}DANH SÁCH HOÁ ĐƠN
+                            </button>
+                          </Badge>
+                        </Space>
                       </div>
                       <div className="col-md-2">
                         <label
@@ -1723,7 +2239,7 @@ export default function SellSmart() {
                     <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
                       Giỏ hàng
                     </h5>
-                    <table class="table">
+                    {/* <table class="table">
                       <thead class="thead-dark">
                         <tr>
                           <th className="so--luong">Ảnh</th>
@@ -1974,7 +2490,275 @@ export default function SellSmart() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table> */}
+                    <Table
+                      dataSource={dataBillDetailOffline}
+                      pagination={{
+                        pageSize: 5,
+                        showSizeChanger: false,
+                        showTotal: (total) => `Tổng số ${total} mục`,
+                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                      }}
+                      rowKey="id"
+                    >
+                      <Table.Column
+                        dataIndex="images"
+                        title="Ảnh"
+                        render={(text, record) => (
+                          <div style={{ width: "150px" }}>
+                            <AvtProduct product={record.idProduct} />
+                          </div>
+                        )}
+                      />
+                      <Table.Column
+                        key="nameProduct"
+                        dataIndex="nameProduct"
+                        title="Tên sản phẩm"
+                        render={(text, record) => {
+                          return `${record.nameProduct} - ${record.skuCapacity} - ${record.skuColor}`;
+                        }}
+                      />
+                      <Table.Column
+                        align="right"
+                        key="price"
+                        dataIndex="price"
+                        title="Giá bán"
+                        render={(value) => {
+                          return (
+                            <NumberField
+                              options={{
+                                currency: "VND",
+                                style: "currency",
+                                //   notation: "compact",
+                              }}
+                              value={value}
+                            />
+                          );
+                        }}
+                        sorter={(a, b) => a.price - b.price}
+                      />
+                      <Table.Column
+                        key="quantity"
+                        dataIndex="quantity"
+                        title="Số lượng"
+                        render={(text, record, index) => {
+                          return (
+                            <div
+                              className="def-number-input number-input safari_only"
+                              style={{ paddingRight: "10px" }}
+                            >
+                              <button
+                                onClick={() => {
+                                  const quantity = document.getElementById(
+                                    `quantity-${index}`
+                                  );
+                                  quantity.value = record.quantity - 1;
+                                  if (quantity.value <= 0) {
+                                    notification.error({
+                                      message: "ADD TO CART",
+                                      description: "Số lượng phải lớn hơn 0",
+                                    });
+                                    quantity.value = 1;
+                                  }
+                                  handleUpdateQuantity(
+                                    record.id,
+                                    record.quantity - 1,
+                                    record.codeBill
+                                  );
+                                  setDataCheckSoLuongImei(
+                                    index,
+                                    record.id,
+                                    record.idSKU
+                                  );
+                                }}
+                                className="minus"
+                              />
+                              <input
+                                id={`quantity-${index}`}
+                                className="quantity fw-bold text-black"
+                                min={0}
+                                name="quantity"
+                                type="number"
+                                defaultValue={record.quantity}
+                                onChange={() => {
+                                  getOneSKU(record.idSKU).then((res) => {});
+                                  setDataCheckSoLuongImei(
+                                    index,
+                                    record.id,
+                                    record.idSKU
+                                  );
+                                }}
+                                onBlur={(event) => {
+                                  if (event.target.value <= 0) {
+                                    notification.error({
+                                      message: "ADD TO CART",
+                                      description: "Số lượng phải lớn hơn 0",
+                                    });
+                                    const quantity = document.getElementById(
+                                      `quantity-${index}`
+                                    );
+                                    quantity.value = record.quantity;
+                                    handleUpdateQuantity(
+                                      record.id,
+                                      record.quantity,
+                                      record.codeBill
+                                    );
+                                  } else if (
+                                    event.target.value >
+                                    parseInt(skuProduct[index].quantitySKU)
+                                    // +
+                                    //   parseInt(product.quantity)
+                                  ) {
+                                    notification.error({
+                                      message: "ADD TO CART",
+                                      description:
+                                        "Không thể nhập quá số lượng đang có",
+                                    });
+                                    const quantity = document.getElementById(
+                                      `quantity-${index}`
+                                    );
+                                    quantity.value = record.quantity;
+                                    handleUpdateQuantity(
+                                      record.id,
+                                      record.quantity,
+                                      record.codeBill
+                                    );
+                                  } else {
+                                    const quantity = document.getElementById(
+                                      `quantity-${index}`
+                                    );
+                                    quantity.value = event.target.value;
+                                    handleUpdateQuantity(
+                                      record.id,
+                                      quantity.value,
+                                      record.codeBill
+                                    );
+                                  }
+                                  setDataCheckSoLuongImei(
+                                    index,
+                                    record.id,
+                                    record.idSKU
+                                  );
+                                }}
+                              />
+                              <button
+                                onClick={() => {
+                                  getOneSKU(record.idSKU).then((res) => {
+                                    const quantity = document.getElementById(
+                                      `quantity-${index}`
+                                    );
+                                    quantity.value =
+                                      parseInt(record.quantity) + 1;
+                                    if (
+                                      quantity.value >
+                                      parseInt(res.data.quantity)
+                                      // + parseInt(product.quantity)
+                                    ) {
+                                      notification.error({
+                                        message: "ADD TO CART",
+                                        description:
+                                          "Không thể nhập quá số lượng đang có",
+                                      });
+                                      quantity.value = parseInt(
+                                        res.data.quantity
+                                      );
+                                    }
+                                  });
+                                  handleUpdateQuantity(
+                                    record.id,
+                                    record.quantity + 1,
+                                    record.codeBill
+                                  );
+                                  setDataCheckSoLuongImei(
+                                    index,
+                                    record.id,
+                                    record.idSKU
+                                  );
+                                }}
+                                className="plus"
+                              />
+                            </div>
+                          );
+                        }}
+                        sorter={(a, b) => a.quantity - b.quantity}
+                      />
+                      <Table.Column
+                        key="totalMoney"
+                        dataIndex="totalMoney"
+                        title="Thành tiền"
+                        render={(text, record) => {
+                          return parseFloat(
+                            record.totalManyOneBillDetail
+                          ).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          });
+                        }}
+                        sorter={(a, b) =>
+                          a.totalManyOneBillDetail - b.totalManyOneBillDetail
+                        }
+                      />
+                      <Table.Column
+                        key="totalImei"
+                        dataIndex="totalImei"
+                        title="Imei"
+                        render={(text, record, index) => {
+                          return (
+                            <>
+                              <div style={{ width: "100px" }}>
+                                Tổng số imei: {record.soLuongImeiDaChon}
+                                <button
+                                  type="button"
+                                  // class="btn btn-secondary"
+                                  className="btn btn-primary btn-sm trash"
+                                  style={{
+                                    // marginRight: "10px",
+                                    backgroundColor: "green",
+                                  }}
+                                  onClick={() => {
+                                    handleAddImei(record.idSKU, record.id);
+                                    setIndexTest(index);
+                                  }}
+                                >
+                                  Chọn imei
+                                </button>
+                              </div>
+                            </>
+                          );
+                        }}
+                        sorter={(a, b) =>
+                          a.soLuongImeiDaChon - b.soLuongImeiDaChon
+                        }
+                      />
+                      <Table.Column
+                        title="Actions"
+                        render={(text, record) => {
+                          return (
+                            <>
+                              <button
+                                type="button"
+                                className="close"
+                                data-dismiss="alert"
+                                aria-label="Close"
+                                onClick={() =>
+                                  confirmDeleteBillDetail(
+                                    record.id,
+                                    dataBillOffLine?.codeBill
+                                  )
+                                }
+                              >
+                                <span aria-hidden="true">
+                                  <FontAwesomeIcon
+                                    icon={faTimes}
+                                    style={{ paddingRight: "10px" }}
+                                  />
+                                </span>
+                              </button>
+                            </>
+                          );
+                        }}
+                      />
+                    </Table>
                     {/* </div> */}
                   </div>
                   <div className="col-md-3">
@@ -1989,6 +2773,7 @@ export default function SellSmart() {
                             Mã Hoá Đơn
                           </label>
                           <input
+                            id="codeBill"
                             className="form-control"
                             type="text"
                             defaultValue={dataBillOffLine?.codeBill}
@@ -2097,7 +2882,6 @@ export default function SellSmart() {
                               name="inlineRadioOptions"
                               id="inlineRadio1"
                               value="option1"
-                              checked
                               onClick={() => taiCuaHang()}
                             />
                             <label class="form-check-label" for="inlineRadio1">
@@ -2273,20 +3057,23 @@ export default function SellSmart() {
                           >
                             Hình thức thanh toán
                           </label>
-                          {/* <select className="form-control" id="exampleSelect2" mode="multiple">
-                                <option>Thanh toán chuyển khoản</option>
-                                <option>Trả tiền mặt tại quầy</option>
-                            </select> */}
-                          <Select mode="multiple" style={{ width: "100%" }}>
-                            <Select.Option>
+                          <Select
+                            mode="multiple"
+                            style={{ width: "100%" }}
+                            value={selectedOptions} // Đặt giá trị được chọn dựa trên state
+                            onChange={handleSelectChange} // Sử dụng hàm xử lý sự kiện
+                          >
+                            <Select.Option value="transfer">
                               Thanh toán chuyển khoản
                             </Select.Option>
-                            <Select.Option>Trả tiền mặt tại quầy</Select.Option>
+                            <Select.Option value="cash">
+                              Trả tiền mặt tại quầy
+                            </Select.Option>
                           </Select>
                         </div>
                         <div
                           className="form-group  col-md-6"
-                          style={{ color: "red" }}
+                          style={{ color: "red", fontWeight: "bold" }}
                         >
                           <label className="control-label">
                             Tổng tiền hàng:{" "}
@@ -2300,22 +3087,31 @@ export default function SellSmart() {
                           </p>
                         </div>
                         <div className="form-group  col-md-6">
-                          <label className="control-label">Giảm giá: </label>
+                          <label
+                            className="control-label"
+                            style={{ fontWeight: "bold" }}
+                          >
+                            Giảm giá:{" "}
+                          </label>
                           <p
                             className="control-all-money-tamtinh"
                             onClick={() => handleEditClickVoucher()}
+                            style={{ color: "blue" }}
                           >
                             Chọn Voucher
                           </p>
                         </div>
                         <div
                           className="form-group  col-md-6"
-                          style={{ color: "red" }}
+                          style={{ color: "red", fontWeight: "bold" }}
                         >
                           <label className="control-label">
                             Giảm giá Voucher:{" "}
                           </label>
-                          <p className="control-all-money-total">
+                          <p
+                            className="control-all-money-total"
+                            style={{ fontWeight: "bold" }}
+                          >
                             ={" "}
                             {selecteVoucher && selecteVoucher.valueVoucher
                               ? selecteVoucher?.valueVoucher?.toLocaleString(
@@ -2331,21 +3127,28 @@ export default function SellSmart() {
                                 })}
                           </p>
                         </div>
-                        <div className="form-group  col-md-6">
-                          <label className="control-label">
-                            Khách hàng đưa tiền:{" "}
-                          </label>
-                          <input
-                            id="amountGiven"
-                            className="form-control"
-                            type="number"
-                            // defaultValue={290000}
-                            onChange={calculateChange}
-                          />
-                        </div>
+
+                        {showCashInput && (
+                          <div className="form-group col-md-6">
+                            <label
+                              className="control-label"
+                              style={{ fontWeight: "bold" }}
+                            >
+                              Khách hàng đưa tiền:
+                            </label>
+                            <input
+                              id="amountGiven"
+                              className="form-control"
+                              type="number"
+                              defaultValue={0}
+                              onChange={calculateChange}
+                            />
+                          </div>
+                        )}
+
                         <div
                           className="form-group  col-md-6"
-                          style={{ color: "red" }}
+                          style={{ color: "red", fontWeight: "bold" }}
                         >
                           <label className="control-label">
                             Khách cần trả:{" "}
@@ -2359,17 +3162,55 @@ export default function SellSmart() {
                             })}
                           </p>
                         </div>
+                        {showTransferInput && (
+                          <div className="form-group col-md-6">
+                            <label
+                              className="control-label"
+                              style={{ fontWeight: "bold" }}
+                            >
+                              Khách hàng chuyển khoản:
+                            </label>
+                            <input
+                              id="transferAmount"
+                              className="form-control"
+                              type="number"
+                              defaultValue={0}
+                              onChange={calculateChange}
+                            />
+                          </div>
+                        )}
                         <div
                           className="form-group  col-md-6"
-                          style={{ fontWeight: "bold" }}
+                          style={{
+                            fontWeight: "bold",
+                            color:
+                              tienThua === 0
+                                ? "green" // Nếu đủ tiền, màu xanh lá cây
+                                : tienThua > 0
+                                ? "red" // Nếu thiếu tiền, màu đỏ
+                                : "green", // Nếu thừa tiền, màu xanh biển
+                          }}
                         >
-                          <label className="control-label">Thiếu: </label>
+                          <label className="control-label">*** </label>
                           <p className="control-all-money">
                             {" "}
-                            {tienThua?.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
+                            {tienThua === 0
+                              ? "Đã thu đủ tiền"
+                              : tienThua > 0
+                              ? `Thiếu ${Math.abs(tienThua).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}`
+                              : `Thừa ${Math.abs(tienThua).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}`}
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
@@ -2383,6 +3224,9 @@ export default function SellSmart() {
                             }}
                             onClick={() => {
                               console.log(dataDoneBill);
+                              console.log(dataBillDetailOffline);
+                              // console.log(dataBillOffLine);
+                              console.log(fee);
                             }}
                           >
                             {" "}
@@ -2483,9 +3327,16 @@ export default function SellSmart() {
           <button className="btn btn-save" type="button" onClick={handleSave}>
             Lưu lại
           </button>
-          <a class="btn btn-cancel" data-dismiss="modal" href="#">
+          <button
+            className="btn btn-cancel"
+            type="button"
+            onClick={handleCancel}
+          >
             Hủy bỏ
-          </a>
+          </button>
+          {/* <a class="btn btn-cancel" data-dismiss="modal" href="#">
+            Hủy bỏ
+          </a> */}
           <br />
           {/* </div> */}
         </Modal>
@@ -2506,6 +3357,15 @@ export default function SellSmart() {
               >
                 <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
               </div>
+              <input
+                id="voucher-offline"
+                className="form-control"
+                type="search"
+                placeholder="Nhập mã Voucher"
+                aria-label="Search"
+                name="key"
+                onChange={handleChangeVoucher}
+              />
               <p style={{ marginTop: "10px", fontWeight: "bold" }}>
                 Mã FreeShip
               </p>
@@ -3027,6 +3887,7 @@ export default function SellSmart() {
                         // Thực hiện hành động sau khi xác nhận
                         clickHoaDonCho(hoadon.code);
                         setIsModalVisibleBill(false);
+                        getBillChoThanhToanOff();
                         notification.success({
                           message: "Tiếp tục thanh toán",
                         });
@@ -3043,6 +3904,105 @@ export default function SellSmart() {
               </div>
             </div>
           </div>
+        </Modal>
+
+        <Modal
+          visible={isModalVisibleBillInDate}
+          onCancel={handleCancelHoaDonTrongNgay}
+          width={900}
+          footer={null}
+          bodyStyle={{ minHeight: "800px" }}
+        >
+          <h3 className="tile-title">Danh sách hóa đơn</h3>
+          <input
+            id="id-bill-ctt"
+            className="form-control"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+            name="key"
+            onChange={handleChangeBillDTT}
+          />
+          <List>
+            <Form>
+              <Table
+                dataSource={billInDate}
+                expandable={{
+                  expandedRowRender: !breakpoint.xs
+                    ? expandedRowRender
+                    : undefined,
+                }}
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} mục`,
+                  showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                }}
+                rowKey="id"
+              >
+                <Table.Column
+                  key="title"
+                  dataIndex="title"
+                  title="Mã hóa đơn"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item
+                        name="title"
+                        style={{ margin: 0, fontWeight: "bold" }}
+                      >
+                        {record.code}
+                      </Form.Item>
+                    );
+                  }}
+                />
+                <Table.Column
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Ngày tạo"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <DateField
+                          value={record.dateCreate}
+                          format="DD/MM/YYYY"
+                        />
+                      </Form.Item>
+                    );
+                  }}
+                />
+                <Table.Column
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Nhân viên bán hàng"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {record.personUpdate}
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* <Table.Column
+                  title="Actions"
+                  dataIndex="actions"
+                  key="actions"
+                  align="center"
+                  render={(_text, record) => {
+                    return (
+                      <Dropdown overlay={moreMenu(record)} trigger={["click"]}>
+                        <MoreOutlined
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            fontSize: 24,
+                          }}
+                        />
+                      </Dropdown>
+                    );
+                  }}
+                /> */}
+              </Table>
+            </Form>
+          </List>
         </Modal>
       </>
     </React.Fragment>

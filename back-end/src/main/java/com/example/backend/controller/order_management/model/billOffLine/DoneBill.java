@@ -33,11 +33,13 @@ public class DoneBill {
 
     private String personUpdate;
 
-    private String phoneNumber;
-
-    private String userName;
+//    private String phoneNumber;
+//
+//    private String userName;
 
     private LocalDate dateUpdate;
 
     private List<Long> idSku;
+
+    private Integer idCustomer;
 }

@@ -46,6 +46,8 @@ public class SKU {
 
     private BigDecimal price;
 
+    private Integer status; //0 hoạt động, 1 đã xoá
+
 //    @Enumerated(EnumType.STRING)
 //    private Status status;
 

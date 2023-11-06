@@ -151,6 +151,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<Voucher> searchVoucher(String codeVoucher) {
+        return voucherRepository.searchVoucher(codeVoucher);
+    }
+
+    @Override
     public List<Voucher> searchNoDate(String key, String status) {
         return voucherRepository.searchNoDate(key, status);
     }

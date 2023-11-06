@@ -36,6 +36,10 @@ public class Account {
     @Column(length = 10, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "code")
+    private String code;
+
     @Column(name = "email")
     private String email;
 

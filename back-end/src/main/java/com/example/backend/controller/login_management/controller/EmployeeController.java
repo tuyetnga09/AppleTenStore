@@ -24,12 +24,20 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
+//    @PostMapping("/create")
+//    public ResponseObj add(@RequestBody EmployeeDTO employeeDTO, @RequestParam("role") String role) {
+//        User user = employeeDTO.getUser();
+//        Address address = employeeDTO.getAddress();
+//        Account account = employeeDTO.getAccount();
+//        account.setRoles(Roles.valueOf(role));
+//        return new ResponseObj(employeeService.add(user, address, account));
+//    }
+
     @PostMapping("/create")
-    public ResponseObj add(@RequestBody EmployeeDTO employeeDTO, @RequestParam("role") String role) {
+    public ResponseObj add(@RequestBody EmployeeDTO employeeDTO) {
         User user = employeeDTO.getUser();
         Address address = employeeDTO.getAddress();
         Account account = employeeDTO.getAccount();
-        account.setRoles(Roles.valueOf(role));
         return new ResponseObj(employeeService.add(user, address, account));
     }
 }

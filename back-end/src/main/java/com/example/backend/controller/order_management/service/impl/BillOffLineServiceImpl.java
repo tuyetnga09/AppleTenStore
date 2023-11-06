@@ -15,12 +15,14 @@ import com.example.backend.controller.order_management.service.BillOffLineServic
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.BillDetails;
+import com.example.backend.entity.Customer;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.BillDetailRepository;
 import com.example.backend.repository.BillRepository;
+import com.example.backend.repository.CustomerRepository;
 import com.example.backend.repository.ImeiDaBanRepository;
 import com.example.backend.repository.ImeiRepository;
 import com.example.backend.repository.SKURepositoty;
@@ -57,6 +59,9 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
     @Autowired
     private ImeiDaBanRepository imeiDaBanRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Override
     public Account getAccount(Integer idAccount) {
@@ -105,16 +110,21 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString().replaceAll("-", "");
-        String stringRandomCode = formattedDateNow + randomUUIDString;
+        String stringRandomCode = formattedDateNow + "MPH" + randomUUIDString;
         String truncatedString = stringRandomCode.toUpperCase(Locale.ROOT).substring(0, 20);
         Bill bill = billRepository.newBillOfNow();
         String codeBill = "";
         //nếu trong ngày đó chưa có bill nào thì mã bill được random +1
         if (bill == null) {
-            codeBill = truncatedString + "1";
+            codeBill = truncatedString + "HD" + "1";
         } else {
             //nếu trong ngày đó có bill rồi thì lấy mã bill random + với id hoá đơn tạo mới nhất + thêm 1
-            codeBill = truncatedString + (bill.getId() + 1);
+            String inputString = bill.getCode();
+            // Sử dụng phương thức lastIndexOf để tìm vị trí cuối cùng của chữ 'D'
+            int lastIndex = inputString.lastIndexOf("D");
+            String targetString = inputString.substring(lastIndex + 1);
+            Integer identityCodeBill = Integer.valueOf(targetString);
+            codeBill = truncatedString + "HD" + (identityCodeBill + 1);
         }
         return codeBill;
     }
@@ -152,7 +162,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         bill.setCode(codeBill);
 
         // tạm thời để người tạo là id account -> sau này chuyển thành mã account
-        bill.setPersonCreate(idAccount.toString());
+        bill.setPersonCreate(account.getCode() + " - " + account.getUser().getFullName());
 
         //ngày tạo bill
         bill.setDateCreate(now);
@@ -170,7 +180,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         BillOffLineModel billOffLineModel = new BillOffLineModel();
         billOffLineModel.setIdBill(bill.getId());
         billOffLineModel.setCodeBill(bill.getCode());
-        billOffLineModel.setCodeAccount(bill.getAccount().getEmail());
+        billOffLineModel.setCodeAccount(bill.getAccount().getCode() + " - " + bill.getAccount().getUser().getFullName());
 
         return billOffLineModel;
     }
@@ -208,7 +218,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
                 //billDetail.setDateUpdate(); chưa có cập nhật lại nên là null
                 billDetail.setSku(skuAddBillDetail);
                 // tạm thời lấy email account vào -> sau này truyền vào đây là code Account
-                billDetail.setPersonCreate(account.getEmail());
+                billDetail.setPersonCreate(account.getCode() + " - " + account.getUser().getFullName());
                 //billDetail.setPersonUpdate(); chưa có cập nhật lại nên là null
                 StatusBill statusBill = StatusBill.CHO_XAC_NHAN;
                 billDetail.setStatusBill(statusBill);
@@ -281,6 +291,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         List<BillDetailOffLineIon> billDetailsList = billDetailRepository.findByBillDetailOffLineIdBill(bill.getId());
         return billDetailsList;
     }
+
     //lấy ra list bill_detail của 1 bill theo id_bill
     @Override
     public List<BillDetailOffLineIon> getBilDetailOfBillWhereIdBill(Integer idBill) {
@@ -372,6 +383,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
     @Override
     public void thanhToan(DoneBill doneBill) {
+        Customer customer = customerRepository.findById(doneBill.getIdCustomer()).get();
         Bill bill = billRepository.findById(doneBill.getIdBill()).orElse(null);
         bill.setDateUpdate(LocalDate.now());
         bill.setMoneyShip(doneBill.getMoneyShip());
@@ -379,20 +391,21 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         bill.setAddress(doneBill.getAddress());
         bill.setNote(doneBill.getNote());
         bill.setPersonUpdate(doneBill.getPersonUpdate());
-        bill.setPhoneNumber(doneBill.getPhoneNumber());
-        bill.setUserName(doneBill.getUserName());
+        bill.setPhoneNumber(customer.getPhoneNumber());
+        bill.setUserName(customer.getFullName());
         bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+        bill.setCustomer(customer);
         billRepository.save(bill);
         List<BillDetails> billDetails = billDetailRepository.findByBillDetailOfIdBill(doneBill.getIdBill());
         for (BillDetails bd : billDetails
-             ) {
+        ) {
             bd.setStatusBill(StatusBill.DA_THANH_TOAN);
             bd.setPersonUpdate(doneBill.getPersonUpdate());
             bd.setDateUpdate(new Date());
             billDetailRepository.save(bd);
         }
         for (String codeImei : doneBill.getCodeImeiDaBan()
-             ) {
+        ) {
             ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(codeImei);
             imeiDaBan.setStatus(3);
             imeiDaBanRepository.save(imeiDaBan);
@@ -403,7 +416,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             imeiRepository.save(imei);
         }
         for (Long idSku : doneBill.getIdSku()
-             ) {
+        ) {
             skuRepositoty.updateQuantity(idSku, skuRepositoty.quantitySkuInBillDetails(idSku, doneBill.getIdBill()));
         }
     }
@@ -492,33 +505,46 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
 
         if (billDetail.getBill().getStatusBill() == StatusBill.CHO_XAC_NHAN
-                && billDetail.getBill().getTypeBill() == TypeBill.OFFLINE && size>0) {
-            Boolean deleteImei = this.deleteAllImeisDaBanOffLine(billDetail.getId());
-            if (deleteImei) {
-                billDetailRepository.deleteById(billDetail.getId());
-                return true;
+                && billDetail.getBill().getTypeBill() == TypeBill.OFFLINE) {
+            if (size > 0) {
+                Boolean deleteImei = this.deleteAllImeisDaBanOffLine(billDetail.getId());
             }
-        }else {
             billDetailRepository.deleteById(billDetail.getId());
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     @Override
     public List<Bill> searchBillChoThanhToan(Integer idAccount, String codeBill) {
-        return billRepository.searchBillChoThanhToan(idAccount,codeBill);
+        return billRepository.searchBillChoThanhToan(idAccount, codeBill);
     }
 
     @Override
-    public List<Bill> getListBillChoThanhToan(Integer idAccount) {
-        return billRepository.listBillChoThanhToan(idAccount);
+    public List<Bill> getListBillChoThanhToan() {
+        return billRepository.listBillChoThanhToan();
     }
 
     //lấy ra 1  id_bill theo idBillDetail
-    public Integer getIdBill(Integer idBillDetail){
+    public Integer getIdBill(Integer idBillDetail) {
         BillDetails billDetail = billDetailRepository.findById(idBillDetail).get();
         Integer idBill = billDetail.getBill().getId();
         return idBill;
+    }
+
+    @Override
+    public List<Bill> billInDate() {
+        return billRepository.billInDate();
+    }
+
+    @Override
+    public List<ListBillChoThanhToan> findBillByCodeBillInDate(String codeBill) {
+        return billDetailRepository.findBillbyCodeBillInDate(codeBill);
+    }
+
+    @Override
+    public List<Bill> searchBillDaThanhToan(Integer idAccount, String codeBill) {
+        return billRepository.searchBillDaThanhToan(idAccount, codeBill);
     }
 }

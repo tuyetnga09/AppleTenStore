@@ -139,6 +139,7 @@ public class ProductServiceImpl {
                         sku.setCapacity(capacity.getName());
                         sku.setQuantity(0); // Khởi tạo số lượng là 0
                         sku.setProduct(sanPham);
+                        sku.setStatus(0);
                         skus.add(sku);
                     }
                 }

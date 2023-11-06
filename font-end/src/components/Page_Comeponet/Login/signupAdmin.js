@@ -15,9 +15,9 @@ const SignUpAdmin = () => {
 
   const [isChecked, setIsChecked] = useState([true]);
 
-  const [isChecked2, setIsChecked2] = useState([true]);
+  // const [isChecked2, setIsChecked2] = useState([true]);
 
-  const [role, setRole] = useState("ADMIN");
+  // const [role, setRole] = useState("ADMIN");
 
   const [data, setData] = useState({
     user: {
@@ -44,6 +44,7 @@ const SignUpAdmin = () => {
   const [district_id, setDistrict_id] = useState();
   const [showDistricts, setShowDistricts] = useState(true);
   const [showWards, setShowWards] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
@@ -152,26 +153,28 @@ const SignUpAdmin = () => {
     console.log(data);
   };
 
-  const handleRole = (event) => {
-    const target = event.target;
-    const value = target.value;
-    setRole(value);
-    setIsChecked2(!isChecked2);
-    console.log(data);
-  };
+  // const handleRole = (event) => {
+  //   const target = event.target;
+  //   const value = target.value;
+  //   setRole(value);
+  //   setIsChecked2(!isChecked2);
+  //   console.log(data);
+  // };
 
   const handleSubmit = (event) => {
+    setLoading(true);
     event.preventDefault();
 
     const items = { ...data };
 
-    add(items, role)
+    add(items)
       .then((res) => {
         if (res !== null) {
           notification.success({
             message: "ĐĂNG KÍ",
             description: "Đăng kí thành công",
           });
+          setLoading(false);
           history.push("/login");
         } else {
           notification.error({
@@ -223,6 +226,25 @@ const SignUpAdmin = () => {
 
   return (
     <>
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "rgba(255, 255, 255, 0.8)",
+            padding: "10px",
+            borderRadius: "5px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            zIndex: "9999", // Đặt z-index lớn hơn phần nền
+          }}
+        >
+          <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
       <div class="bgr">
         <div class="login-box">
           <h2>Đăng ký</h2>
@@ -345,7 +367,7 @@ const SignUpAdmin = () => {
                     type="radio"
                     name="gender"
                     id="flexRadioDefault1"
-                    value={0}
+                    value={1}
                     onChange={handleGender}
                     checked={isChecked}
                   />
@@ -365,7 +387,7 @@ const SignUpAdmin = () => {
                     type="radio"
                     name="gender"
                     id="flexRadioDefault2"
-                    value={1}
+                    value={0}
                     onChange={handleGender}
                   />
                   <label
@@ -469,7 +491,7 @@ const SignUpAdmin = () => {
                 {/* </div> */}
               </div>
             </div>
-            <div className="row">
+            {/* <div className="row">
               <div className="col-6">
                 <label style={{ color: "#03e9f4", fontSize: "12px" }}>
                   Chức vụ
@@ -512,7 +534,7 @@ const SignUpAdmin = () => {
                   </label>
                 </div>
               </div>
-            </div>
+            </div> */}
             <button type="submit">
               <span></span>
               <span></span>

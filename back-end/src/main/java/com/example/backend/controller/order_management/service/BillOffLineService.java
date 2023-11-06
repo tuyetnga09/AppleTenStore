@@ -80,8 +80,16 @@ public interface BillOffLineService {
 
     List<Bill> searchBillChoThanhToan(Integer idAccount, String codeBill);
 
-    List<Bill> getListBillChoThanhToan(Integer idAccount);
+    List<Bill> getListBillChoThanhToan();
 
     //lấy ra 1  id_bill theo idBillDetail
     Integer getIdBill(Integer idBillDetail);
+
+    List<Bill> billInDate();
+
+    List<ListBillChoThanhToan> findBillByCodeBillInDate(String codeBill);
+
+    List<Bill> searchBillDaThanhToan(Integer idAccount, String codeBill);
+
+
 }

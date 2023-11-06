@@ -184,9 +184,9 @@ public class BillOffLineController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/getBillCTT/{idAccount}")
-    public List<Bill> getBillChoThanhToan(@PathVariable("idAccount") Integer idAccount) {
-        return billOffLineService.getListBillChoThanhToan(idAccount);
+    @GetMapping("/getBillCTT")
+    public List<Bill> getBillChoThanhToan() {
+        return billOffLineService.getListBillChoThanhToan();
     }
     //lấy ra id_bill theo ib_billdetail
     @GetMapping("/get-bill")
@@ -194,4 +194,23 @@ public class BillOffLineController {
         Integer idBill = billOffLineService.getIdBill(idBillDetail);
         return new ResponseEntity<>(idBill, HttpStatus.OK);
     }
+
+    @GetMapping("/getBillInDate")
+    public List<Bill> getBillInDate() {
+        return billOffLineService.billInDate();
+    }
+
+    @GetMapping("/get-billDetail-InDate/{codeBill}")
+    public ResponseEntity<List<ListBillChoThanhToan>> getBillByCodeInDate(@PathVariable("codeBill") String codeBill) {
+        List<ListBillChoThanhToan> billList = billOffLineService.findBillByCodeBillInDate(codeBill);
+        return new ResponseEntity<>(billList, HttpStatus.OK);
+    }
+
+    @GetMapping("/searchBill-DTT")
+    public ResponseEntity<List<Bill>> seachBillDaThanhToan(@RequestParam("idAccount") Integer idAccount,
+                                                            @RequestParam("codeBill") String codeBill) {
+        List<Bill> list = billOffLineService.searchBillDaThanhToan(idAccount, codeBill);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
 }

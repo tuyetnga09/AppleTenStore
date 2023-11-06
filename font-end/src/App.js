@@ -75,6 +75,7 @@ import OderUserVanChuyen from "./components/Page_Comeponet/OderUser/VanChuyen";
 import OderUserHoanThanh from "./components/Page_Comeponet/OderUser/HoanThanh";
 import OderUserDaHuy from "./components/Page_Comeponet/OderUser/DaHuy";
 import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
+import product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/sku/index";
 
 function App() {
   return (
@@ -218,6 +219,12 @@ function App() {
           <Route path="/oderUserHT" exact component={OderUserHoanThanh} />
           <Route path="/oderUserDH" exact component={OderUserDaHuy} />
           <Route path="/profile" exact component={ProfileCustomer} />
+          <Route
+            path="/admin/product-detail"
+            exact
+            component={product_detail_dashbroad}
+          />
+          {/* <Route path="/logout" exact component={Login} /> */}
         </Switch>
       </Router>
     </div>
