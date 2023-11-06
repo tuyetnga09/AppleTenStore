@@ -31,13 +31,8 @@ import {
     theme,
     Typography,
 } from "antd";
-<<<<<<< HEAD
-import {DateField, List} from "@refinedev/antd";
-import {Link, useHistory} from "react-router-dom/cjs/react-router-dom.min";
-=======
 import { DateField, List, NumberField } from "@refinedev/antd";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
->>>>>>> main
 import {
     deleteBillById,
     searchNoDate,
@@ -432,93 +427,6 @@ const OderDisplay = ({}) => {
                           <Select allowClear />
                         </Form.Item>
                       </Col> */}
-<<<<<<< HEAD
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item label={t("User")} name="user">
-                                                    <Select
-                                                        name="user"
-                                                        onChange={handleChangeUser}
-                                                        allowClear
-                                                        placeholder={"Users"}
-                                                    >
-                                                        {user.map((us) => {
-                                                            return (
-                                                                <Option value={us.id}>{us.fullName}</Option>
-                                                            );
-                                                        })}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item label={t("Date")} name="createdAt">
-                                                    <RangePicker
-                                                        id="dateFilter"
-                                                        style={{width: "100%"}}
-                                                        onChange={handleChangeDate}
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item>
-                                                    <Button
-                                                        htmlType="submit"
-                                                        type="primary"
-                                                        size="large"
-                                                        block
-                                                        onClick={() => search()}
-                                                    >
-                                                        {t("FILLTER")}
-                                                    </Button>
-                                                </Form.Item>
-                                            </Col>
-                                        </Row>
-                                    </Form>
-                                </Card>
-                            </Col>
-                            <Col xl={18} xs={24}>
-                                <List>
-                                    <Table
-                                        rowKey="id"
-                                        dataSource={oder}
-                                        scroll={{x: "max-content"}}
-                                        pagination={{
-                                            pageSize: 5,
-                                            showSizeChanger: false,
-                                            showTotal: (total) => `Tổng số ${total} mục`,
-                                            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
-                                        }}
-                                    >
-                                        <Table.Column
-                                            key="code"
-                                            dataIndex="code"
-                                            title={t("Code")}
-                                            render={(text, record) => <span>{record.code}</span>}
-                                        />
-                                        <Table.Column
-                                            key="status"
-                                            dataIndex="status"
-                                            title={t("Status")}
-                                            render={(text, record) => (
-                                                <span>{statusBadgeMapping[record.statusBill]}</span>
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="total"
-                                            dataIndex="total"
-                                            title={t("Total")}
-                                            render={(text, record) => (
-                                                <span>{record.totalMoney}</span>
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="user"
-                                            dataIndex="user"
-                                            title={t("User")}
-                                            render={(text, record) => (
-                                                <span>{record.account.user.fullName}</span>
-                                            )}
-                                        />
-=======
                       <Col xl={24} md={8} sm={12} xs={24}>
                         <Form.Item label={t("User")} name="user">
                           <Select
@@ -614,7 +522,6 @@ const OderDisplay = ({}) => {
                         <span>{record?.customer?.fullName}</span>
                       )}
                     />
->>>>>>> main
 
                                         {/* <Table.Column
                       key="product"
@@ -622,54 +529,6 @@ const OderDisplay = ({}) => {
                       title={t("Products")}
                       render={(text, record) => <span>{record.price}</span>}
                     /> */}
-<<<<<<< HEAD
-                                        <Table.Column
-                                            key="address"
-                                            dataIndex="address"
-                                            title={t("Address")}
-                                            render={(text, record) => <span>{record.address}</span>}
-                                        />
-                                        <Table.Column
-                                            key="personCreate"
-                                            dataIndex="personCreate"
-                                            title={t("PersonCreate")}
-                                            render={(text, record) => (
-                                                <span>{record.personCreate}</span>
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="personUpdate"
-                                            dataIndex="personUpdate"
-                                            title={t("PersonUpdate")}
-                                            render={(text, record) => (
-                                                <span>{record.personUpdate}</span>
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="dateCreate"
-                                            dataIndex="dateCreate"
-                                            title={t("DateCreate")}
-                                            render={(text, record) => (
-                                                // <span>{record.dateCreate}</span>
-                                                <DateField
-                                                    value={record.dateCreate}
-                                                    format="DD/MM/YYYY"
-                                                />
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="dateUpdate"
-                                            dataIndex="dateUpdate"
-                                            title={t("DateUpdate")}
-                                            render={(text, record) => (
-                                                // <span>{record.dateUpdate}</span>
-                                                <DateField
-                                                    value={record.dateUpdate}
-                                                    format="DD/MM/YYYY"
-                                                />
-                                            )}
-                                        />
-=======
                     <Table.Column
                       key="address"
                       dataIndex="address"
@@ -718,7 +577,6 @@ const OderDisplay = ({}) => {
                       )}
                       sorter={(a, b) => a.dateUpdate > b.dateUpdate}
                     />
->>>>>>> main
 
                                         <Table.Column
                                             key="actions"
