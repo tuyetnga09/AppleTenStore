@@ -31,7 +31,7 @@ import {
   theme,
   Typography,
 } from "antd";
-import { DateField, List } from "@refinedev/antd";
+import { DateField, List, NumberField } from "@refinedev/antd";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import {
   searchNoDate,
@@ -490,16 +490,26 @@ const OderDisplay = ({}) => {
                       key="total"
                       dataIndex="total"
                       title={t("Total")}
-                      render={(text, record) => (
-                        <span>{record.totalMoney}</span>
-                      )}
+                      render={(text, record) => {
+                        return (
+                          <NumberField
+                            options={{
+                              currency: "VND",
+                              style: "currency",
+                            }}
+                            value={record.totalMoney}
+                          />
+                        );
+                      }}
+                      sorter={(a, b) => a.totalMoney - b.totalMoney}
                     />
                     <Table.Column
                       key="user"
                       dataIndex="user"
                       title={t("User")}
                       render={(text, record) => (
-                        <span>{record.account.user.fullName}</span>
+                        // <span>{record.account.user.fullName}</span>
+                        <span>{record?.customer?.fullName}</span>
                       )}
                     />
 
@@ -542,6 +552,7 @@ const OderDisplay = ({}) => {
                           format="DD/MM/YYYY"
                         />
                       )}
+                      sorter={(a, b) => a.dateCreate > b.dateCreate}
                     />
                     <Table.Column
                       key="dateUpdate"
@@ -554,6 +565,7 @@ const OderDisplay = ({}) => {
                           format="DD/MM/YYYY"
                         />
                       )}
+                      sorter={(a, b) => a.dateUpdate > b.dateUpdate}
                     />
 
                     <Table.Column

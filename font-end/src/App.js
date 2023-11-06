@@ -224,6 +224,7 @@ function App() {
             exact
             component={product_detail_dashbroad}
           />
+          {/* <Route path="/logout" exact component={Login} /> */}
         </Switch>
       </Router>
     </div>

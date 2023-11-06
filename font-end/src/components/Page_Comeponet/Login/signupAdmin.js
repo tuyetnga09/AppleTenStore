@@ -15,9 +15,9 @@ const SignUpAdmin = () => {
 
   const [isChecked, setIsChecked] = useState([true]);
 
-  const [isChecked2, setIsChecked2] = useState([true]);
+  // const [isChecked2, setIsChecked2] = useState([true]);
 
-  const [role, setRole] = useState("ADMIN");
+  // const [role, setRole] = useState("ADMIN");
 
   const [data, setData] = useState({
     user: {
@@ -153,13 +153,13 @@ const SignUpAdmin = () => {
     console.log(data);
   };
 
-  const handleRole = (event) => {
-    const target = event.target;
-    const value = target.value;
-    setRole(value);
-    setIsChecked2(!isChecked2);
-    console.log(data);
-  };
+  // const handleRole = (event) => {
+  //   const target = event.target;
+  //   const value = target.value;
+  //   setRole(value);
+  //   setIsChecked2(!isChecked2);
+  //   console.log(data);
+  // };
 
   const handleSubmit = (event) => {
     setLoading(true);
@@ -167,7 +167,7 @@ const SignUpAdmin = () => {
 
     const items = { ...data };
 
-    add(items, role)
+    add(items)
       .then((res) => {
         if (res !== null) {
           notification.success({
@@ -367,7 +367,7 @@ const SignUpAdmin = () => {
                     type="radio"
                     name="gender"
                     id="flexRadioDefault1"
-                    value={0}
+                    value={1}
                     onChange={handleGender}
                     checked={isChecked}
                   />
@@ -387,7 +387,7 @@ const SignUpAdmin = () => {
                     type="radio"
                     name="gender"
                     id="flexRadioDefault2"
-                    value={1}
+                    value={0}
                     onChange={handleGender}
                   />
                   <label
@@ -491,7 +491,7 @@ const SignUpAdmin = () => {
                 {/* </div> */}
               </div>
             </div>
-            <div className="row">
+            {/* <div className="row">
               <div className="col-6">
                 <label style={{ color: "#03e9f4", fontSize: "12px" }}>
                   Chức vụ
@@ -534,7 +534,7 @@ const SignUpAdmin = () => {
                   </label>
                 </div>
               </div>
-            </div>
+            </div> */}
             <button type="submit">
               <span></span>
               <span></span>

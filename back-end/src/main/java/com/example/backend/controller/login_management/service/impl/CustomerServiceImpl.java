@@ -123,6 +123,7 @@ public class CustomerServiceImpl  implements CustomerService {
 
         // tạo tài khoản cho khách hàng
         Account account1 = new Account();
+        account1.setCode(this.randomMaNhanVien());
         account1.setUser(user1);
         account1.setRoles(Roles.CUSTOMER);
         account1.setEmail(user1.getEmail());
@@ -148,5 +149,22 @@ public class CustomerServiceImpl  implements CustomerService {
         emailService.sendEmailPasword(account1.getEmail(), subject, new String(Base64.getDecoder().decode(account1.getPassword())));
 
         return user;
+    }
+
+    private String randomMaNhanVien() {
+        Account account = accountRepository.latestAccount();
+        String code = "";
+        //nếu trong ngày đó chưa có bill nào thì mã bill được random +1
+        if (account == null) {
+            code = "NV" + "1";
+        } else {
+            String inputString = account.getCode();
+            // Sử dụng phương thức lastIndexOf để tìm vị trí cuối cùng của chữ 'V'
+            int lastIndex = inputString.lastIndexOf("V");
+            String targetString = inputString.substring(lastIndex + 1);
+            Integer identityCode = Integer.valueOf(targetString);
+            code = "NV" + (identityCode + 1);
+        }
+        return code;
     }
 }

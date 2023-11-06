@@ -39,7 +39,7 @@ import {
   ShopOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../Page_Comeponet/header/index";
 import moment from "moment";
 import EditProduct from "../../product_component/Product/crud/edit";
@@ -52,6 +52,7 @@ export const CategoryList = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const [categories, setCategories] = useState([]);
+  const history = useHistory();
 
   useEffect(() => {
     readAllDashboard()
@@ -119,7 +120,14 @@ export const CategoryList = () => {
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
               <Link to="/categories">Categories</Link>
             </Menu.Item>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
+            <Menu.Item
+              key="7"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                history.push("/login");
+              }}
+            >
               <Link to="/logout">Logout</Link>
             </Menu.Item>
           </Menu>
