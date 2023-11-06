@@ -7,6 +7,8 @@ import {
   returnProduct,
   deleteSku,
   returnSku,
+  deleteImei,
+  returnImei,
 } from "../../../../service/product_detail/sku/sku.service";
 // import { readAllUserByRole } from "../../../service/User/user.service";
 import { useEffect, useState, useRef } from "react";
@@ -380,7 +382,7 @@ export const AccountList = () => {
                   pagination={{
                     pageSize: 5,
                     showSizeChanger: false,
-                    showTotal: (total) => `Tổng số ${total} phiên bản`,
+                    showTotal: (total) => `Tổng số ${total} sản phẩm`,
                     showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
                   }}
                 >
@@ -570,10 +572,10 @@ const UserAccountTable = ({ record }) => {
   // const [users, setUsers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   // const [user, setUser] = useState({});
-  const [dataSku, setDataSku] = useState([]);
+  const [dataSku, setDataSku] = useState();
   const [isUpdate, setIsUpdate] = useState(false);
   const editShow = (user) => {
-    setDataSku(user);
+    // setDataSku(user);
     setIsModalVisible(true);
     console.log(user);
   };
@@ -694,6 +696,8 @@ const UserAccountTable = ({ record }) => {
       });
   }, [isModalVisible, record.idProduct]);
 
+  //  /* modal imei - phongnh */
+
   // taoj 1 modal khi xem imei
   const [isModalVisibleImei, setIsModalVisibleImei] = useState(false); // Trạng thái hiển thị Modal
   //hàm mở modal imei
@@ -749,6 +753,109 @@ const UserAccountTable = ({ record }) => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  // xoá 1 imei
+  const deleteOneImei = (id) => {
+    deleteImei(id)
+      .then((res) => {
+        if (res.data === true) {
+          console.log(dataIdSku + " llllo");
+          getAllImeisWhereIdSku(dataIdSku)
+            .then((res) => {
+              setDataImeisWhereIdSku(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          toast1.current.show({
+            severity: "success",
+            summary: "THÔNG BÁO THÀNH CÔNG",
+            detail: "Đã Xoá Imei.",
+            life: 3000,
+          });
+        } else {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO XOÁ THẤT BẠI",
+            detail: "Xoá Imei Thất Bại!",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  //config khi xoá 1 imei - phongnh
+  const rejectDeleteImei = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục thao tác.",
+      life: 3000,
+    });
+  };
+  const confirmDeleteImei = (id) => {
+    confirmDialog({
+      message: "Bạn chắc chắn xoá?",
+      header: "Xác Nhận Xoá Imei?",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => deleteOneImei(id),
+      reject: () => rejectDeleteImei(),
+    });
+  };
+
+  // return 1 imei
+  const returnOneImei = (id) => {
+    returnImei(id)
+      .then((res) => {
+        if (res.data === true) {
+          getAllImeisWhereIdSku(dataIdSku)
+            .then((res) => {
+              setDataImeisWhereIdSku(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          toast1.current.show({
+            severity: "success",
+            summary: "THÔNG BÁO THÀNH CÔNG",
+            detail: "Khôi Phục Imei Thành Công.",
+            life: 3000,
+          });
+        } else {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO THẤT BẠI",
+            detail: "Khôi Phục Imei Thất Bại!",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  //config khi xoá 1 imei - phongnh
+  const rejectReturnOneImei = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục thao tác.",
+      life: 3000,
+    });
+  };
+  const confirmReturnOneImei = (id) => {
+    confirmDialog({
+      message: "Xác Nhận Khôi Phục?",
+      header: "Xác Nhận Khôi Phục Imei?",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => returnOneImei(id),
+      reject: () => rejectReturnOneImei(),
+    });
   };
 
   const moreMenu2 = (sku) => (
@@ -853,7 +960,7 @@ const UserAccountTable = ({ record }) => {
           pagination={{
             pageSize: 5,
             showSizeChanger: false,
-            showTotal: (total) => `Tổng số ${total} mục`,
+            showTotal: (total) => `Tổng số ${total} phiên bản`,
             showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
           }}
         >
@@ -1500,14 +1607,14 @@ const UserAccountTable = ({ record }) => {
                                       style={{
                                         fontWeight: 500,
                                       }}
-                                      // icon={
-                                      //   <CloseCircleOutlined
-                                      //     style={{
-                                      //       color: "red",
-                                      //     }}
-                                      //   />
-                                      // }
-                                      // onClick={() => confirm2(item.id)}
+                                      icon={
+                                        <CloseCircleOutlined
+                                          style={{
+                                            color: "red",
+                                          }}
+                                        />
+                                      }
+                                      onClick={() => confirmDeleteImei(imei.id)} // all imei phongnh
                                       // onClick={() => remove(item.id)}
                                     >
                                       Delete
@@ -1554,7 +1661,9 @@ const UserAccountTable = ({ record }) => {
                                           }}
                                         />
                                       }
-                                      // onClick={() => openDetailModal(item)}
+                                      onClick={() =>
+                                        confirmReturnOneImei(imei.id)
+                                      }
                                     >
                                       Return
                                     </Menu.Item>
@@ -1784,15 +1893,14 @@ const UserAccountTable = ({ record }) => {
                                       style={{
                                         fontWeight: 500,
                                       }}
-                                      // icon={
-                                      //   <CloseCircleOutlined
-                                      //     style={{
-                                      //       color: "red",
-                                      //     }}
-                                      //   />
-                                      // }
+                                      icon={
+                                        <CloseCircleOutlined
+                                          style={{
+                                            color: "red",
+                                          }}
+                                        />
+                                      }
                                       // onClick={() => confirm2(item.id)}
-                                      // onClick={() => remove(item.id)}
                                     >
                                       Delete
                                     </Menu.Item>

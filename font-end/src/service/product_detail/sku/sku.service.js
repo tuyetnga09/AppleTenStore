@@ -57,3 +57,15 @@ export const returnSku = (idSku, idProduct) => {
     `/admin/product-detail/return-sku?idSku=${idSku}&idProduct=${idProduct}`
   );
 };
+
+//delete imei (cập nhật status imei =1)
+export const deleteImei = (idImei) => {
+  return httpClient.delete(
+    `/admin/product-detail/delete-imei?idImei=${idImei}`
+  );
+};
+
+//return imei (cập nhật status imei =1)
+export const returnImei = (idImei) => {
+  return httpClient.get(`/admin/product-detail/return-imei?idImei=${idImei}`);
+};

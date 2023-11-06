@@ -68,11 +68,13 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             product.setStatus(1); // sét lại status 1 - đã xoá
             productRepository.save(product); // cập nhật lại product
 
+            //tạm thời không cho xoá sku nữa
             //update status sku wher idproduct (status =1 đã xoá) statusWhere = 0 hoạt động -> chuyển từ hoạt động qua đã xoá
-            skuRepositoty.updateStatusSkuWhereIdProduct(1, idProduct, 0);
+//            skuRepositoty.updateStatusSkuWhereIdProduct(1, idProduct, 0);
 
+            //tạm thời không cho xoá imei nữa
             //update status imei wher idproduct (status =1 đã xoá) statusWhere = 0 hoạt động -> chuyển từ hoạt động qua đã xoá
-            imeiRepository.updateStatusImeiWhereIdProduct(1, idProduct, 0);
+//            imeiRepository.updateStatusImeiWhereIdProduct(1, idProduct, 0);
 
             return true;
         }
@@ -91,11 +93,13 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             product.setStatus(0); // sét lại status 0 - hoạt động
             productRepository.save(product); // cập nhật lại product
 
+            //tạm thời không cho xoá sku nữa
             //update status sku wher idproduct (status =0 hoạt động) statusWhere = 0 đã xoá -> chuyển từ đã xoá qua hoạt động
-            skuRepositoty.updateStatusSkuWhereIdProduct(0, idProduct, 1);
+            //skuRepositoty.updateStatusSkuWhereIdProduct(0, idProduct, 1);
 
+            //tạm thời không cho xoá imei nữa
             //update status imei wher idproduct (status =0 hoạt động) statusWhere = 0 đã xoá -> chuyển từ đã xoá qua hoạt động
-            imeiRepository.updateStatusImeiWhereIdProduct(0, idProduct, 1);
+            //imeiRepository.updateStatusImeiWhereIdProduct(0, idProduct, 1);
             return true;
         }
         return false;
@@ -115,8 +119,9 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             //update status sku wher idproduct (status =1 đã xoá) statusWhere = 0 hoạt động -> chuyển từ hoạt động qua đã xoá
             sku.setStatus(1);
             skuRepositoty.save(sku);
+            //tạm thời không cho xoá imei nữa
             //update status imei wher idproduct (status =1 đã xoá) statusWhere = 0 hoạt động -> chuyển từ hoạt động qua đã xoá
-            imeiRepository.updateStatusImeiWhereIdSku(1, idSku, 0);
+            //imeiRepository.updateStatusImeiWhereIdSku(1, idSku, 0);
             return true;
         }
         return false;
@@ -138,10 +143,41 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             //update status sku wher idproduct (status =0 hoạt động) statusWhere = 1 đã xoá -> chuyển từ đã xoá qua hoạt động
             sku.setStatus(0);
             skuRepositoty.save(sku);
-
+            //tạm thời không cho xoá imei nữa
             //update status imei wher idproduct (status =0 hoạt động) statusWhere = 1 đã xoá -> chuyển từ đã xoá qua hoạt động
-            imeiRepository.updateStatusImeiWhereIdSku(0, idSku, 1);
+            //imeiRepository.updateStatusImeiWhereIdSku(0, idSku, 1);
             return true;
+        }
+        return false;
+    }
+
+    //delete imei (cập nhật status imei =1)
+    @Override
+    public Boolean deleteImei(Integer idImei) {
+        Boolean isCheck = imeiRepository.existsById(idImei);
+        if (isCheck){
+            Imei imei = imeiRepository.findById(idImei).get();
+            if (imei.getIdProduct().getStatus()==0 && imei.getIdSku().getStatus() == 0){
+                imei.setStatus(1);
+                imeiRepository.save(imei);
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //return imei (cập nhật status imei =0)
+    @Override
+    public Boolean returnImei(Integer idImei) {
+        Boolean isCheck = imeiRepository.existsById(idImei);
+        if (isCheck){
+            Imei imei = imeiRepository.findById(idImei).get();
+            if (imei.getIdProduct().getStatus()==0 && imei.getIdSku().getStatus() == 0){
+                imei.setStatus(0);
+                imeiRepository.save(imei);
+                return true;
+            }
         }
         return false;
     }

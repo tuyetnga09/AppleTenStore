@@ -105,7 +105,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString().replaceAll("-", "");
-        String stringRandomCode = formattedDateNow +"MPH"+ randomUUIDString;
+        String stringRandomCode = formattedDateNow + "MPH" + randomUUIDString;
         String truncatedString = stringRandomCode.toUpperCase(Locale.ROOT).substring(0, 20);
         Bill bill = billRepository.newBillOfNow();
         String codeBill = "";
@@ -286,6 +286,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         List<BillDetailOffLineIon> billDetailsList = billDetailRepository.findByBillDetailOffLineIdBill(bill.getId());
         return billDetailsList;
     }
+
     //lấy ra list bill_detail của 1 bill theo id_bill
     @Override
     public List<BillDetailOffLineIon> getBilDetailOfBillWhereIdBill(Integer idBill) {
@@ -390,14 +391,14 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         billRepository.save(bill);
         List<BillDetails> billDetails = billDetailRepository.findByBillDetailOfIdBill(doneBill.getIdBill());
         for (BillDetails bd : billDetails
-             ) {
+        ) {
             bd.setStatusBill(StatusBill.DA_THANH_TOAN);
             bd.setPersonUpdate(doneBill.getPersonUpdate());
             bd.setDateUpdate(new Date());
             billDetailRepository.save(bd);
         }
         for (String codeImei : doneBill.getCodeImeiDaBan()
-             ) {
+        ) {
             ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(codeImei);
             imeiDaBan.setStatus(3);
             imeiDaBanRepository.save(imeiDaBan);
@@ -408,7 +409,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             imeiRepository.save(imei);
         }
         for (Long idSku : doneBill.getIdSku()
-             ) {
+        ) {
             skuRepositoty.updateQuantity(idSku, skuRepositoty.quantitySkuInBillDetails(idSku, doneBill.getIdBill()));
         }
     }
@@ -497,22 +498,20 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
 
         if (billDetail.getBill().getStatusBill() == StatusBill.CHO_XAC_NHAN
-                && billDetail.getBill().getTypeBill() == TypeBill.OFFLINE && size>0) {
-            Boolean deleteImei = this.deleteAllImeisDaBanOffLine(billDetail.getId());
-            if (deleteImei) {
-                billDetailRepository.deleteById(billDetail.getId());
-                return true;
+                && billDetail.getBill().getTypeBill() == TypeBill.OFFLINE) {
+            if (size > 0) {
+                Boolean deleteImei = this.deleteAllImeisDaBanOffLine(billDetail.getId());
             }
-        }else {
-//            billDetailRepository.deleteById(billDetail.getId());
+            billDetailRepository.deleteById(billDetail.getId());
+            return true;
+        } else {
             return false;
         }
-        return false;
     }
 
     @Override
     public List<Bill> searchBillChoThanhToan(Integer idAccount, String codeBill) {
-        return billRepository.searchBillChoThanhToan(idAccount,codeBill);
+        return billRepository.searchBillChoThanhToan(idAccount, codeBill);
     }
 
     @Override
@@ -521,7 +520,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     }
 
     //lấy ra 1  id_bill theo idBillDetail
-    public Integer getIdBill(Integer idBillDetail){
+    public Integer getIdBill(Integer idBillDetail) {
         BillDetails billDetail = billDetailRepository.findById(idBillDetail).get();
         Integer idBill = billDetail.getBill().getId();
         return idBill;
@@ -539,6 +538,6 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
     @Override
     public List<Bill> searchBillDaThanhToan(Integer idAccount, String codeBill) {
-        return billRepository.searchBillDaThanhToan(idAccount,codeBill);
+        return billRepository.searchBillDaThanhToan(idAccount, codeBill);
     }
 }

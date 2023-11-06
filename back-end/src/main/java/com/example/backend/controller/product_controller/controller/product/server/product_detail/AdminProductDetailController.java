@@ -79,4 +79,18 @@ public class AdminProductDetailController {
         Boolean ckeck = productDetailService.returnSku(idSku, idProduct);
         return new ResponseEntity<>(ckeck, HttpStatus.OK);
     }
+
+    //delete imei (cập nhật status imei =1)
+    @DeleteMapping("/delete-imei")
+    public ResponseEntity<Boolean> deleteImei(@RequestParam("idImei") Integer idImei){
+        Boolean check = productDetailService.deleteImei(idImei);
+        return  new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    //return imei (cập nhật status imei =1)
+    @GetMapping("/return-imei")
+    public ResponseEntity<Boolean> returnImei(@RequestParam("idImei") Integer idImei){
+        Boolean check = productDetailService.returnImei(idImei);
+        return  new ResponseEntity<>(check, HttpStatus.OK);
+    }
 }

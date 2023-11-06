@@ -32,4 +32,10 @@ public interface IProductDetailService {
 
     //return Product theo idProduct
     Boolean returnSku(Long idSku , Integer idProduct);
+
+    //delete imei (cập nhật status imei =1)
+    Boolean deleteImei(Integer idImei);
+
+    //return imei (cập nhật status imei =0)
+     Boolean returnImei(Integer idImei);
 }
