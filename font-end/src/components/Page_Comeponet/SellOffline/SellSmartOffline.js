@@ -203,6 +203,10 @@ export default function SellSmart() {
   } = theme.useToken();
   const [billInDate, setBillInDate] = useState([]);
 
+  const [selectedOptions, setSelectedOptions] = useState(["cash"]);
+  const [showCashInput, setShowCashInput] = useState(false);
+  const [showTransferInput, setShowTransferInput] = useState(false);
+
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
       const target = event.target;
@@ -576,6 +580,15 @@ export default function SellSmart() {
       .catch((err) => {
         console.log(err);
       });
+
+    // Kiểm tra xem "cash" đã được chọn mặc định hay không
+    if (selectedOptions.includes("cash")) {
+      setShowCashInput(true);
+    }
+    // Kiểm tra xem "transfer" đã được chọn mặc định hay không
+    if (selectedOptions.includes("transfer")) {
+      setShowTransferInput(true);
+    }
   }, [
     filters,
     filtersCategory,
@@ -703,6 +716,13 @@ export default function SellSmart() {
           email: "",
           phoneNumber: "",
         });
+        getCustomer()
+          .then((response) => {
+            setKhachHang(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
       })
       .catch((error) => {
         alert("Thêm khách hàng thất bại");
@@ -836,6 +856,7 @@ export default function SellSmart() {
                 setDataTest(!dataTest);
                 setDataBillOffline([]);
                 document.getElementById("amountGiven").value = 0;
+                document.getElementById("transferAmount").value = 0;
                 getBillChoThanhToanOff();
                 setSelectedVoucher(0);
               }
@@ -1555,15 +1576,53 @@ export default function SellSmart() {
 
   // TÍNH TIỀN Thiếu
   function calculateChange() {
-    // Lấy giá trị số tiền khách đưa
-    const amountGiven = parseFloat(
-      document.getElementById("amountGiven").value
-    );
-    // Lấy giá trị số tiền cần trả (bạn có thể sử dụng biến soTienThanhToan)
-    const amountToReturn = parseFloat(soTienThanhToan);
-    // Tính số tiền thừa
-    const change = amountToReturn - amountGiven;
-    setTienThua(change);
+    const amountGivenInput = document.getElementById("amountGiven");
+    const transferAmountInput = document.getElementById("transferAmount");
+
+    if (showCashInput && showTransferInput) {
+      // Tính tiền khi cả hai hình thức được chọn
+      const amountGiven = parseFloat(amountGivenInput.value);
+      const transferAmount = parseFloat(transferAmountInput.value);
+      if (!isNaN(amountGiven) && !isNaN(transferAmount)) {
+        const amountToReturn = parseFloat(soTienThanhToan);
+        if (!isNaN(amountToReturn)) {
+          const change = amountToReturn - (transferAmount + amountGiven);
+          setTienThua(change);
+        } else {
+          setTienThua(0);
+        }
+      } else {
+        setTienThua(0);
+      }
+    } else if (showCashInput) {
+      // Tính tiền khi chỉ tiền mặt được chọn
+      const amountGiven = parseFloat(amountGivenInput.value);
+      if (!isNaN(amountGiven)) {
+        const amountToReturn = parseFloat(soTienThanhToan);
+        if (!isNaN(amountToReturn)) {
+          const change = amountToReturn - amountGiven;
+          setTienThua(change);
+        } else {
+          setTienThua(0);
+        }
+      } else {
+        setTienThua(0);
+      }
+    } else if (showTransferInput) {
+      // Tính tiền khi chỉ chuyển khoản được chọn
+      const transferAmount = parseFloat(transferAmountInput.value);
+      if (!isNaN(transferAmount)) {
+        const amountToReturn = parseFloat(soTienThanhToan);
+        if (!isNaN(amountToReturn)) {
+          const change = amountToReturn - transferAmount;
+          setTienThua(change);
+        } else {
+          setTienThua(0);
+        }
+      } else {
+        setTienThua(0);
+      }
+    }
   }
 
   //click Voucher
@@ -1736,10 +1795,22 @@ export default function SellSmart() {
     }
   };
 
-  const [selectedOptions, setSelectedOptions] = useState([]); // State để lưu các option đã chọn
-
   const handleSelectChange = (selectedValues) => {
     setSelectedOptions(selectedValues); // Cập nhật state khi có sự thay đổi trong việc chọn option
+
+    // Kiểm tra nếu "cash" nằm trong danh sách lựa chọn
+    if (selectedValues.includes("cash")) {
+      setShowCashInput(true);
+    } else {
+      setShowCashInput(false);
+    }
+
+    // Kiểm tra nếu "transfer" nằm trong danh sách lựa chọn
+    if (selectedValues.includes("transfer")) {
+      setShowTransferInput(true);
+    } else {
+      setShowTransferInput(false);
+    }
   };
 
   //tìm kiếm voucher
@@ -2986,10 +3057,6 @@ export default function SellSmart() {
                           >
                             Hình thức thanh toán
                           </label>
-                          {/* <select className="form-control" id="exampleSelect2" mode="multiple">
-                                <option>Thanh toán chuyển khoản</option>
-                                <option>Trả tiền mặt tại quầy</option>
-                            </select> */}
                           <Select
                             mode="multiple"
                             style={{ width: "100%" }}
@@ -3006,7 +3073,7 @@ export default function SellSmart() {
                         </div>
                         <div
                           className="form-group  col-md-6"
-                          style={{ color: "red" }}
+                          style={{ color: "red", fontWeight: "bold" }}
                         >
                           <label className="control-label">
                             Tổng tiền hàng:{" "}
@@ -3020,22 +3087,31 @@ export default function SellSmart() {
                           </p>
                         </div>
                         <div className="form-group  col-md-6">
-                          <label className="control-label">Giảm giá: </label>
+                          <label
+                            className="control-label"
+                            style={{ fontWeight: "bold" }}
+                          >
+                            Giảm giá:{" "}
+                          </label>
                           <p
                             className="control-all-money-tamtinh"
                             onClick={() => handleEditClickVoucher()}
+                            style={{ color: "blue" }}
                           >
                             Chọn Voucher
                           </p>
                         </div>
                         <div
                           className="form-group  col-md-6"
-                          style={{ color: "red" }}
+                          style={{ color: "red", fontWeight: "bold" }}
                         >
                           <label className="control-label">
                             Giảm giá Voucher:{" "}
                           </label>
-                          <p className="control-all-money-total">
+                          <p
+                            className="control-all-money-total"
+                            style={{ fontWeight: "bold" }}
+                          >
                             ={" "}
                             {selecteVoucher && selecteVoucher.valueVoucher
                               ? selecteVoucher?.valueVoucher?.toLocaleString(
@@ -3051,31 +3127,28 @@ export default function SellSmart() {
                                 })}
                           </p>
                         </div>
-                        <div className="form-group  col-md-6">
-                          <label className="control-label">
-                            Khách hàng đưa tiền:{" "}
-                          </label>
-                          <input
-                            id="amountGiven"
-                            className="form-control"
-                            type="number"
-                            defaultValue={0}
-                            onChange={calculateChange}
-                          />
-                          {/* <Space>
-                            <InputNumber
+
+                        {showCashInput && (
+                          <div className="form-group col-md-6">
+                            <label
+                              className="control-label"
+                              style={{ fontWeight: "bold" }}
+                            >
+                              Khách hàng đưa tiền:
+                            </label>
+                            <input
                               id="amountGiven"
                               className="form-control"
-                              formatter={(value) => `${value} ₫`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                              parser={(value) => value && value.replace('₫', '').replace(/(,*)/g, '')}
+                              type="number"
                               defaultValue={0}
                               onChange={calculateChange}
                             />
-                          </Space> */}
-                        </div>
+                          </div>
+                        )}
+
                         <div
                           className="form-group  col-md-6"
-                          style={{ color: "red" }}
+                          style={{ color: "red", fontWeight: "bold" }}
                         >
                           <label className="control-label">
                             Khách cần trả:{" "}
@@ -3089,6 +3162,23 @@ export default function SellSmart() {
                             })}
                           </p>
                         </div>
+                        {showTransferInput && (
+                          <div className="form-group col-md-6">
+                            <label
+                              className="control-label"
+                              style={{ fontWeight: "bold" }}
+                            >
+                              Khách hàng chuyển khoản:
+                            </label>
+                            <input
+                              id="transferAmount"
+                              className="form-control"
+                              type="number"
+                              defaultValue={0}
+                              onChange={calculateChange}
+                            />
+                          </div>
+                        )}
                         <div
                           className="form-group  col-md-6"
                           style={{
