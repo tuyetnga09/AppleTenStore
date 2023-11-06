@@ -25,4 +25,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Account resetPassword(@Param("email") String email , @Param("phoneNumber") String phoneNumber);
 
     Account findByUser_Id(Integer id);
+
+    @Query(value = "SELECT * FROM account ORDER BY id DESC LIMIT 1", nativeQuery = true)
+    Account latestAccount();
 }

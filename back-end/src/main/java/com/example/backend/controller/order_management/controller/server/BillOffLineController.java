@@ -184,9 +184,9 @@ public class BillOffLineController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/getBillCTT/{idAccount}")
-    public List<Bill> getBillChoThanhToan(@PathVariable("idAccount") Integer idAccount) {
-        return billOffLineService.getListBillChoThanhToan(idAccount);
+    @GetMapping("/getBillCTT")
+    public List<Bill> getBillChoThanhToan() {
+        return billOffLineService.getListBillChoThanhToan();
     }
     //lấy ra id_bill theo ib_billdetail
     @GetMapping("/get-bill")

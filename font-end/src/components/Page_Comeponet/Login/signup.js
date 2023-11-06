@@ -355,7 +355,7 @@ const SignUp = () => {
                     type="radio"
                     name="gender"
                     id="flexRadioDefault1"
-                    value={0}
+                    value={1}
                     onChange={handleGender}
                     checked={isChecked}
                   />
@@ -375,7 +375,7 @@ const SignUp = () => {
                     type="radio"
                     name="gender"
                     id="flexRadioDefault2"
-                    value={1}
+                    value={0}
                     onChange={handleGender}
                   />
                   <label

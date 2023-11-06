@@ -55,7 +55,10 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
             " idSKU, skuCapacity, skuColor, skuPrice, idProduct, nameProduct, totalManyOneBillDetail;\n", nativeQuery = true)
     List<ListBillChoThanhToan> findBillbyCodeBill(String codeBill);
 
-    @Query(value = "select bill.code as 'codeBill', a.email as 'codeAccount', bill.id as 'idBill' from bill join account a on a.id = bill.id_account where bill.code = ?1", nativeQuery = true)
+//    @Query(value = "select bill.code as 'codeBill', a.email as 'codeAccount', bill.id as 'idBill' from bill join account a on a.id = bill.id_account where bill.code = ?1", nativeQuery = true)
+//    ListBillChoThanhToanS2 findBillbyCodeBillS2(String codeBill);
+
+    @Query(value = "select bill.code as 'codeBill', CONCAT(a.code, ' - ', u.full_name) as 'codeAccount', bill.id as 'idBill' from bill join account a on a.id = bill.id_account join user u on a.id_user = u.id where bill.code = ?1", nativeQuery = true)
     ListBillChoThanhToanS2 findBillbyCodeBillS2(String codeBill);
 
     @Query(value = "select b.id as 'id', b.quantity as 'quantity', b.price as 'price', b.status_bill as 'statusBillDetail'," +

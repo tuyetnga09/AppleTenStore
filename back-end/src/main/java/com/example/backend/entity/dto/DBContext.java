@@ -128,11 +128,11 @@ public class DBContext implements CommandLineRunner {
         addUser("Van Hieu", LocalDate.of(2003, 9, 8), "0355933499", "vanhieu673@gmail.com", true, 50000, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Account
-        addAccount("trunghieunguyen673@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("congminh673@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("hongphong673@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("ngaptt1409@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("hoanghieu673@gmail.com", "123456", Status.DANG_SU_DUNG);
+        addAccount("NV1","trunghieunguyen673@gmail.com", "123456", Status.DANG_SU_DUNG);
+        addAccount("NV2","congminh673@gmail.com", "123456", Status.DANG_SU_DUNG);
+        addAccount("NV3","hongphong673@gmail.com", "123456", Status.DANG_SU_DUNG);
+        addAccount("NV4","ngaptt1409@gmail.com", "123456", Status.DANG_SU_DUNG);
+        addAccount("NV5","hoanghieu673@gmail.com", "123456", Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Product
         addProduct("PR1", "Iphone 11 Pro Max", "Khung viền thép", 0, new BigDecimal(11000000));
@@ -242,9 +242,10 @@ public class DBContext implements CommandLineRunner {
             userRepository.save(user);
         }
     }
-    private void addAccount(String email, String password, Status status) {
+    private void addAccount(String code, String email, String password, Status status) {
         if (accountRepository.findByEmail(email) == null) {
             Account account = Account.builder()
+                    .code(code)
                     .email(email)
                     .password(password)
                     .status(status)
