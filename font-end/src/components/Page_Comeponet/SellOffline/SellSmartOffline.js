@@ -329,66 +329,66 @@ export default function SellSmart() {
   //Tạo hoá đơn off - phongnh
   async function handleCreateOrder() {
     // Kiểm tra xem đã có mã hóa đơn trước đó hay chưa
-    if (dataBillOffLine.codeBill) {
-      // Nếu có mã hóa đơn trước đó, tạo PDF với mã hóa đơn đó
-      const pdfBytes = await createPDFWithInvoice(
-        dataBillOffLine.codeBill,
-        dataBillOffLine.codeAccount
-      );
+    // if (dataBillOffLine.codeBill) {
+    //   // Nếu có mã hóa đơn trước đó, tạo PDF với mã hóa đơn đó
+    //   const pdfBytes = await createPDFWithInvoice(
+    //     dataBillOffLine.codeBill,
+    //     dataBillOffLine.codeAccount
+    //   );
 
-      const blob = new Blob([pdfBytes], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      window.open(url);
+    //   const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    //   const url = URL.createObjectURL(blob);
+    //   window.open(url);
 
-      if (idAccount == null || idAccount == "") {
-        notification.error({
-          message: "Bạn Chưa Đăng Nhập!",
-          // description: "Add product successfully",
-        });
-      } else {
-        arr = [];
-        //nếu  đăng nhập thì idAccount là khác null vì thế cho add giỏ hàng
-        const checkVarAccount = await checkAccount(idAccount);
-        setDataCheckAccount(checkVarAccount);
-        if (checkVarAccount == null) {
-          notification.error({
-            message: "Bạn Chưa Đăng Nhập!!",
-            // description: "Add product successfully",
-          });
-        } else {
-          //check role tài khoản
-          if (roleAccount === "CUSTOMER") {
-            notification.error({
-              message: "Bạn Không Có Quyền!",
-            });
-          } else {
-            notification.success({
-              message: "Mời Thêm Sản Phẩm",
-              // description: "Add product successfully",
-            });
-            createBillOffLine(idAccount)
-              .then((response) => {
-                console.log(response.data);
-                setDataBillOffline(response.data);
+    //   if (idAccount == null || idAccount == "") {
+    //     notification.error({
+    //       message: "Bạn Chưa Đăng Nhập!",
+    //       // description: "Add product successfully",
+    //     });
+    //   } else {
+    //     arr = [];
+    //     //nếu  đăng nhập thì idAccount là khác null vì thế cho add giỏ hàng
+    //     const checkVarAccount = await checkAccount(idAccount);
+    //     setDataCheckAccount(checkVarAccount);
+    //     if (checkVarAccount == null) {
+    //       notification.error({
+    //         message: "Bạn Chưa Đăng Nhập!!",
+    //         // description: "Add product successfully",
+    //       });
+    //     } else {
+    //       //check role tài khoản
+    //       if (roleAccount === "CUSTOMER") {
+    //         notification.error({
+    //           message: "Bạn Không Có Quyền!",
+    //         });
+    //       } else {
+    //         notification.success({
+    //           message: "Mời Thêm Sản Phẩm",
+    //           // description: "Add product successfully",
+    //         });
+    //         createBillOffLine(idAccount)
+    //           .then((response) => {
+    //             console.log(response.data);
+    //             setDataBillOffline(response.data);
 
-                //set gior hàng là rỗng
-                setDataBillDetailOffline([]);
-                setDataDoneBill({
-                  ...dataDoneBill,
-                  idBill: response.data.idBill,
-                  // idSku: arrIdSku,
-                  // codeImeiDaBan: arrCodeImeiDaBan,
-                });
-              })
-              .catch((error) => {
-                console.log(`${error}`);
-              });
-            getBillChoThanhToanOff();
-          }
-        }
-      }
-      return;
-    }
+    //             //set gior hàng là rỗng
+    //             setDataBillDetailOffline([]);
+    //             setDataDoneBill({
+    //               ...dataDoneBill,
+    //               idBill: response.data.idBill,
+    //               // idSku: arrIdSku,
+    //               // codeImeiDaBan: arrCodeImeiDaBan,
+    //             });
+    //           })
+    //           .catch((error) => {
+    //             console.log(`${error}`);
+    //           });
+    //         getBillChoThanhToanOff();
+    //       }
+    //     }
+    //   }
+    //   return;
+    // }
     //nếu chưa đăng nhập thì idAccount là null vì thế không cho add giỏ hàng
     if (idAccount == null || idAccount == "") {
       notification.error({
