@@ -288,37 +288,50 @@ export default function SellSmart() {
     }
   };
 
-  const { PDFDocument, rgb } = require("pdf-lib");
+  const { PDFDocument, rgb, StandardFonts  } = require("pdf-lib");
+  const unidecode = require("unidecode");
 
   async function createPDFWithInvoice(codeBill, codeAccount) {
+
     // Tạo một tài liệu PDF mới
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 400]);
     // Lấy ngữ cảnh để vẽ
     const { width, height } = page.getSize();
+
+    const customFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+
+    // Chuỗi chưa dấu
+    const unaccentedCodeBill = unidecode(codeBill);
+    const unaccentedCodeAccount = unidecode(codeAccount);
+
     // Vẽ thông tin hóa đơn lên trang
     page.drawText("APPLETENSTORE", {
       x: 200,
-      y: height - 50,
+      y: height - 50, 
       size: 24,
+      font: customFont,
       color: rgb(0, 0, 0),
     });
-    page.drawText(`Hoa don so: ${codeBill}`, {
+    page.drawText(`Hoa don so: ${unaccentedCodeBill}`, {
       x: 50,
       y: height - 100,
-      size: 18,
+      size: 22,
+      font: customFont,
       color: rgb(0, 0, 0),
     });
-    page.drawText(`Nhan vien: ${codeAccount}`, {
+    page.drawText(`Nhan vien BH: ${unaccentedCodeAccount}`, {
       x: 50,
       y: height - 150,
       size: 18,
+      font: customFont,
       color: rgb(0, 0, 0),
     });
     page.drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
       x: 100,
       y: height - 250,
       size: 18,
+      font: customFont,
       color: rgb(0, 0, 0),
     });
     // Lưu tài liệu PDF ra dạng dữ liệu nhị phân
@@ -329,66 +342,66 @@ export default function SellSmart() {
   //Tạo hoá đơn off - phongnh
   async function handleCreateOrder() {
     // Kiểm tra xem đã có mã hóa đơn trước đó hay chưa
-    // if (dataBillOffLine.codeBill) {
-    //   // Nếu có mã hóa đơn trước đó, tạo PDF với mã hóa đơn đó
-    //   const pdfBytes = await createPDFWithInvoice(
-    //     dataBillOffLine.codeBill,
-    //     dataBillOffLine.codeAccount
-    //   );
+    if (dataBillOffLine.codeBill) {
+      // Nếu có mã hóa đơn trước đó, tạo PDF với mã hóa đơn đó
+      const pdfBytes = await createPDFWithInvoice(
+        dataBillOffLine.codeBill,
+        dataBillOffLine.codeAccount
+      );
 
-    //   const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    //   const url = URL.createObjectURL(blob);
-    //   window.open(url);
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      window.open(url);
 
-    //   if (idAccount == null || idAccount == "") {
-    //     notification.error({
-    //       message: "Bạn Chưa Đăng Nhập!",
-    //       // description: "Add product successfully",
-    //     });
-    //   } else {
-    //     arr = [];
-    //     //nếu  đăng nhập thì idAccount là khác null vì thế cho add giỏ hàng
-    //     const checkVarAccount = await checkAccount(idAccount);
-    //     setDataCheckAccount(checkVarAccount);
-    //     if (checkVarAccount == null) {
-    //       notification.error({
-    //         message: "Bạn Chưa Đăng Nhập!!",
-    //         // description: "Add product successfully",
-    //       });
-    //     } else {
-    //       //check role tài khoản
-    //       if (roleAccount === "CUSTOMER") {
-    //         notification.error({
-    //           message: "Bạn Không Có Quyền!",
-    //         });
-    //       } else {
-    //         notification.success({
-    //           message: "Mời Thêm Sản Phẩm",
-    //           // description: "Add product successfully",
-    //         });
-    //         createBillOffLine(idAccount)
-    //           .then((response) => {
-    //             console.log(response.data);
-    //             setDataBillOffline(response.data);
+      if (idAccount == null || idAccount == "") {
+        notification.error({
+          message: "Bạn Chưa Đăng Nhập!",
+          // description: "Add product successfully",
+        });
+      } else {
+        arr = [];
+        //nếu  đăng nhập thì idAccount là khác null vì thế cho add giỏ hàng
+        const checkVarAccount = await checkAccount(idAccount);
+        setDataCheckAccount(checkVarAccount);
+        if (checkVarAccount == null) {
+          notification.error({
+            message: "Bạn Chưa Đăng Nhập!!",
+            // description: "Add product successfully",
+          });
+        } else {
+          //check role tài khoản
+          if (roleAccount === "CUSTOMER") {
+            notification.error({
+              message: "Bạn Không Có Quyền!",
+            });
+          } else {
+            notification.success({
+              message: "Mời Thêm Sản Phẩm",
+              // description: "Add product successfully",
+            });
+            createBillOffLine(idAccount)
+              .then((response) => {
+                console.log(response.data);
+                setDataBillOffline(response.data);
 
-    //             //set gior hàng là rỗng
-    //             setDataBillDetailOffline([]);
-    //             setDataDoneBill({
-    //               ...dataDoneBill,
-    //               idBill: response.data.idBill,
-    //               // idSku: arrIdSku,
-    //               // codeImeiDaBan: arrCodeImeiDaBan,
-    //             });
-    //           })
-    //           .catch((error) => {
-    //             console.log(`${error}`);
-    //           });
-    //         getBillChoThanhToanOff();
-    //       }
-    //     }
-    //   }
-    //   return;
-    // }
+                //set gior hàng là rỗng
+                setDataBillDetailOffline([]);
+                setDataDoneBill({
+                  ...dataDoneBill,
+                  idBill: response.data.idBill,
+                  // idSku: arrIdSku,
+                  // codeImeiDaBan: arrCodeImeiDaBan,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+            getBillChoThanhToanOff();
+          }
+        }
+      }
+      return;
+    }
     //nếu chưa đăng nhập thì idAccount là null vì thế không cho add giỏ hàng
     if (idAccount == null || idAccount == "") {
       notification.error({
@@ -1589,10 +1602,10 @@ export default function SellSmart() {
           const change = amountToReturn - (transferAmount + amountGiven);
           setTienThua(change);
         } else {
-          setTienThua(0);
+          setTienThua(soTienThanhToan);
         }
       } else {
-        setTienThua(0);
+        setTienThua(soTienThanhToan);
       }
     } else if (showCashInput) {
       // Tính tiền khi chỉ tiền mặt được chọn
@@ -1603,10 +1616,10 @@ export default function SellSmart() {
           const change = amountToReturn - amountGiven;
           setTienThua(change);
         } else {
-          setTienThua(0);
+          setTienThua(soTienThanhToan);
         }
       } else {
-        setTienThua(0);
+        setTienThua(soTienThanhToan);
       }
     } else if (showTransferInput) {
       // Tính tiền khi chỉ chuyển khoản được chọn
@@ -1617,10 +1630,10 @@ export default function SellSmart() {
           const change = amountToReturn - transferAmount;
           setTienThua(change);
         } else {
-          setTienThua(0);
+          setTienThua(soTienThanhToan);
         }
       } else {
-        setTienThua(0);
+        setTienThua(soTienThanhToan);
       }
     }
   }
@@ -2239,258 +2252,6 @@ export default function SellSmart() {
                     <h5 style={{ marginTop: "10px", marginBottom: "10px" }}>
                       Giỏ hàng
                     </h5>
-                    {/* <table class="table">
-                      <thead class="thead-dark">
-                        <tr>
-                          <th className="so--luong">Ảnh</th>
-                          <th className="so--luong">Sản Phẩm</th>
-                          <th className="so--luong">Giá</th>
-                          <th className="so--luong">Số Lượng</th>
-                          <th className="so--luong">Thành Tiền</th>
-                          <th className="so--luong">Imei</th>
-                          <th className="so--luong">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {dataBillDetailOffline.map((billDetail, index) => (
-                          <tr>
-                            <td style={{ width: "200px" }}>
-                              <AvtProduct
-                                product={billDetail.idProduct}
-                              ></AvtProduct>
-                            </td>
-                            <td>
-                              <p>
-                                <h6 className="text-primary">
-                                  {billDetail.nameProduct}{" "}
-                                </h6>
-                              </p>
-                              {billDetail.skuCapacity} - {billDetail.skuColor}
-                            </td>
-                            <td>
-                              {parseFloat(billDetail.price).toLocaleString(
-                                "vi-VN",
-                                {
-                                  style: "currency",
-                                  currency: "VND",
-                                }
-                              )}
-                            </td>
-                            <td>
-                              <div
-                                className="def-number-input number-input safari_only"
-                                style={{ paddingRight: "10px" }}
-                              >
-                                <button
-                                  onClick={() => {
-                                    const quantity = document.getElementById(
-                                      `quantity-${index}`
-                                    );
-                                    quantity.value = billDetail.quantity - 1;
-                                    if (quantity.value <= 0) {
-                                      notification.error({
-                                        message: "ADD TO CART",
-                                        description: "Số lượng phải lớn hơn 0",
-                                      });
-                                      quantity.value = 1;
-                                    }
-                                    handleUpdateQuantity(
-                                      billDetail.id,
-                                      billDetail.quantity - 1,
-                                      billDetail.codeBill
-                                    );
-                                    setDataCheckSoLuongImei(
-                                      index,
-                                      billDetail.id,
-                                      billDetail.idSKU
-                                    );
-                                  }}
-                                  className="minus"
-                                />
-                                <input
-                                  id={`quantity-${index}`}
-                                  className="quantity fw-bold text-black"
-                                  min={0}
-                                  name="quantity"
-                                  type="number"
-                                  defaultValue={billDetail.quantity}
-                                  onChange={() => {
-                                    getOneSKU(billDetail.idSKU).then(
-                                      (res) => {}
-                                    );
-                                    setDataCheckSoLuongImei(
-                                      index,
-                                      billDetail.id,
-                                      billDetail.idSKU
-                                    );
-                                  }}
-                                  onBlur={(event) => {
-                                    if (event.target.value <= 0) {
-                                      notification.error({
-                                        message: "ADD TO CART",
-                                        description: "Số lượng phải lớn hơn 0",
-                                      });
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value = billDetail.quantity;
-                                      handleUpdateQuantity(
-                                        billDetail.id,
-                                        billDetail.quantity,
-                                        billDetail.codeBill
-                                      );
-                                    } else if (
-                                      event.target.value >
-                                      parseInt(skuProduct[index].quantitySKU)
-                                      // +
-                                      //   parseInt(product.quantity)
-                                    ) {
-                                      notification.error({
-                                        message: "ADD TO CART",
-                                        description:
-                                          "Không thể nhập quá số lượng đang có",
-                                      });
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value = billDetail.quantity;
-                                      handleUpdateQuantity(
-                                        billDetail.id,
-                                        billDetail.quantity,
-                                        billDetail.codeBill
-                                      );
-                                    } else {
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value = event.target.value;
-                                      handleUpdateQuantity(
-                                        billDetail.id,
-                                        quantity.value,
-                                        billDetail.codeBill
-                                      );
-                                    }
-                                    setDataCheckSoLuongImei(
-                                      index,
-                                      billDetail.id,
-                                      billDetail.idSKU
-                                    );
-                                  }}
-                                />
-                                <button
-                                  onClick={() => {
-                                    getOneSKU(billDetail.idSKU).then((res) => {
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value =
-                                        parseInt(billDetail.quantity) + 1;
-                                      if (
-                                        quantity.value >
-                                        parseInt(res.data.quantity)
-                                        // + parseInt(product.quantity)
-                                      ) {
-                                        notification.error({
-                                          message: "ADD TO CART",
-                                          description:
-                                            "Không thể nhập quá số lượng đang có",
-                                        });
-                                        quantity.value = parseInt(
-                                          res.data.quantity
-                                        );
-                                      }
-                                    });
-                                    handleUpdateQuantity(
-                                      billDetail.id,
-                                      billDetail.quantity + 1,
-                                      billDetail.codeBill
-                                    );
-                                    setDataCheckSoLuongImei(
-                                      index,
-                                      billDetail.id,
-                                      billDetail.idSKU
-                                    );
-                                  }}
-                                  className="plus"
-                                />
-                              </div>
-                            </td>
-                            <td>
-                              {parseFloat(
-                                billDetail.totalManyOneBillDetail
-                              ).toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
-                            </td>
-                            <td>
-                              <p>
-                                Tổng số imei: {billDetail.soLuongImeiDaChon}
-                              </p>
-                              <p>
-                                <button
-                                  type="button"
-                                  // class="btn btn-secondary"
-                                  className="btn btn-primary btn-sm trash"
-                                  style={{
-                                    // marginRight: "10px",
-                                    backgroundColor: "green",
-                                  }}
-                                  onClick={
-                                    () => {
-                                      handleAddImei(
-                                        billDetail.idSKU,
-                                        billDetail.id
-                                      );
-                                      setIndexTest(index);
-                                      // if (
-                                      //   billDetail.quantity ===
-                                      //   dataImeiSelected.length
-                                      // ) {
-                                      //   console.log("ok");
-                                      // }
-                                    }
-                                    // handleImeiOpen(
-                                    //   billDetail.idSKU,
-                                    //   billDetail.id
-                                    // )
-                                  }
-                                >
-                                  Chọn imei
-                                </button>
-                              </p>
-                            </td>
-
-                            <td
-                              style={{
-                                textAlign: "center",
-                                verticalAlign: "middle",
-                              }}
-                            >
-                              <button
-                                type="button"
-                                className="close"
-                                data-dismiss="alert"
-                                aria-label="Close"
-                                onClick={() =>
-                                  confirmDeleteBillDetail(
-                                    billDetail.id,
-                                    dataBillOffLine?.codeBill
-                                  )
-                                }
-                              >
-                                <span aria-hidden="true">
-                                  <FontAwesomeIcon
-                                    icon={faTimes}
-                                    style={{ paddingRight: "10px" }}
-                                  />
-                                </span>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table> */}
                     <Table
                       dataSource={dataBillDetailOffline}
                       pagination={{
@@ -3140,8 +2901,18 @@ export default function SellSmart() {
                               id="amountGiven"
                               className="form-control"
                               type="number"
+                              min={0}
                               defaultValue={0}
                               onChange={calculateChange}
+                              onBlur={(event) => {
+                                if (event.target.value <= 0) {
+                                  const quantity = document.getElementById(
+                                    `amountGiven`
+                                  );
+                                  quantity.value = 0;
+                                  setTienThua(soTienThanhToan);
+                                }
+                              }}
                             />
                           </div>
                         )}
@@ -3174,8 +2945,18 @@ export default function SellSmart() {
                               id="transferAmount"
                               className="form-control"
                               type="number"
+                              min={0}
                               defaultValue={0}
                               onChange={calculateChange}
+                              onBlur={(event) => {
+                                if (event.target.value <= 0) {
+                                  const quantity = document.getElementById(
+                                    `transferAmount`
+                                  );
+                                  quantity.value = 0;
+                                  setTienThua(soTienThanhToan);
+                                }
+                              }}
                             />
                           </div>
                         )}
@@ -3214,7 +2995,7 @@ export default function SellSmart() {
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
-                          <button
+                          {/* <button
                             className="btn btn-danger luu-san-pham"
                             type="button"
                             style={{
@@ -3230,7 +3011,7 @@ export default function SellSmart() {
                           >
                             {" "}
                             Chờ thanh toán
-                          </button>
+                          </button> */}
                           <button
                             className="btn btn-danger luu-va-in"
                             type="button"
