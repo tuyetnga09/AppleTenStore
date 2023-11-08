@@ -40,8 +40,6 @@ public class DBContext implements CommandLineRunner {
     private SizeRepository sizeRepository;
 
     @Autowired
-    private VoucherRepository voucherRepository;
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -114,12 +112,12 @@ public class DBContext implements CommandLineRunner {
         addSize("SZ4", "55 mm");
         addSize("SZ5", "51 mm");
 
-        // Thêm dữ liệu cho bảng Voucher
-        addVoucher("VC01", "Giảm giá sốc cuối tháng", LocalDate.of(2023, 10, 10), LocalDate.of(2023, 11, 20), new BigDecimal("2000000"), new BigDecimal("1000000"), new BigDecimal("10000000"), new BigDecimal("15000000"), 100, 5);
-        addVoucher("VC02", "Giảm giá", LocalDate.of(2023, 11, 25), LocalDate.of(2023, 11, 27), new BigDecimal("2100000"), new BigDecimal("1200000"), new BigDecimal("30000000"), new BigDecimal("15000000"), 100, 3);
-        addVoucher("VC033", "Sale sốc cuối năm", LocalDate.of(2023, 10, 26), LocalDate.of(2023, 11, 28), new BigDecimal("1100000"), new BigDecimal("2300000"), new BigDecimal("11000000"), new BigDecimal("22000000"), 200, 7);
-        addVoucher("VC044", "Sale sập sàn", LocalDate.of(2023, 10, 21), LocalDate.of(2023, 11, 30), new BigDecimal("2200000"), new BigDecimal("2500000"), new BigDecimal("11000000"), new BigDecimal("15000000"), 100, 9);
-        addVoucher("VC05", "Tưng bừng giảm giá", LocalDate.of(2023, 10, 20), LocalDate.of(2023, 11, 21), new BigDecimal("2600000"), new BigDecimal("3000000"), new BigDecimal("15000000"), new BigDecimal("25000000"), 150, 8);
+//        // Thêm dữ liệu cho bảng Voucher
+//        addVoucher("VC01", "Giảm giá sốc cuối tháng", LocalDate.of(2023, 10, 10), LocalDate.of(2023, 11, 20), new BigDecimal("2000000"), new BigDecimal("1000000"), new BigDecimal("10000000"), new BigDecimal("15000000"), 100, 5);
+//        addVoucher("VC02", "Giảm giá", LocalDate.of(2023, 11, 25), LocalDate.of(2023, 11, 27), new BigDecimal("2100000"), new BigDecimal("1200000"), new BigDecimal("30000000"), new BigDecimal("15000000"), 100, 3);
+//        addVoucher("VC033", "Sale sốc cuối năm", LocalDate.of(2023, 10, 26), LocalDate.of(2023, 11, 28), new BigDecimal("1100000"), new BigDecimal("2300000"), new BigDecimal("11000000"), new BigDecimal("22000000"), 200, 7);
+//        addVoucher("VC044", "Sale sập sàn", LocalDate.of(2023, 10, 21), LocalDate.of(2023, 11, 30), new BigDecimal("2200000"), new BigDecimal("2500000"), new BigDecimal("11000000"), new BigDecimal("15000000"), 100, 9);
+//        addVoucher("VC05", "Tưng bừng giảm giá", LocalDate.of(2023, 10, 20), LocalDate.of(2023, 11, 21), new BigDecimal("2600000"), new BigDecimal("3000000"), new BigDecimal("15000000"), new BigDecimal("25000000"), 150, 8);
 
         addUser("Trung Hieu", LocalDate.of(2003, 12, 10), "0355969499", "trunghieunguyen673@gmail.com", true, 100000, Status.DANG_SU_DUNG);
         addUser("Công Minh", LocalDate.of(2003, 7, 23), "0355969888", "congminh673@gmail.com", true, 200000, Status.DANG_SU_DUNG);
@@ -208,23 +206,6 @@ public class DBContext implements CommandLineRunner {
         if (sizeRepository.findByCode(code) == null) {
             Size size = Size.builder().code(code).name(name).build();
             sizeRepository.save(size);
-        }
-    }
-    private void addVoucher(String code, String name, LocalDate dateStart, LocalDate dateEnd, BigDecimal conditionsApply, BigDecimal valueVoucher, BigDecimal valueMinimum, BigDecimal valueMaximum, int typeVoucher, int quantity) {
-        if (voucherRepository.findByCode(code) == null) {
-            Voucher voucher = Voucher.builder()
-                    .code(code)
-                    .name(name)
-                    .dateStart(dateStart)
-                    .dateEnd(dateEnd)
-                    .conditionsApply(conditionsApply)
-                    .valueVoucher(valueVoucher)
-                    .valueMinimum(valueMinimum)
-                    .valueMaximum(valueMaximum)
-                    .typeVoucher(typeVoucher)
-                    .quantity(quantity)
-                    .build();
-            voucherRepository.save(voucher);
         }
     }
 
