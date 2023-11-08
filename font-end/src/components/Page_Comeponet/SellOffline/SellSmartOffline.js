@@ -3225,8 +3225,7 @@ export default function SellSmart() {
                             onClick={() => {
                               console.log(dataDoneBill);
                               console.log(dataBillDetailOffline);
-                              // console.log(dataBillOffLine);
-                              console.log(fee);
+                              console.log(arrCodeImeiDaBan);
                             }}
                           >
                             {" "}
@@ -3707,12 +3706,16 @@ export default function SellSmart() {
                             <Button
                               type="text"
                               danger
-                              onClick={() =>
+                              onClick={() => {
                                 handleClearImeiDaBan(
                                   imei.idImeiDaBan,
                                   imei.codeImeiDaBan
-                                )
-                              }
+                                );
+                                let filteredArray = arrCodeImeiDaBan.filter(
+                                  (item) => item !== imei.codeImeiDaBan
+                                );
+                                arrCodeImeiDaBan = filteredArray;
+                              }}
                             >
                               Hủy
                             </Button>

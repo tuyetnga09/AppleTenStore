@@ -31,6 +31,11 @@ public class BillDetailServiceImpl implements BillDetailService {
     }
 
     @Override
+    public List<BillDetailCustomerResponse> getAllByCustomer(Integer id) {
+        return billDetailRepository.getAllByCustomer(id);
+    }
+
+    @Override
     public void updateQuantity(Integer id, Integer newQuantity) {
         BillDetails billDetails = billDetailRepository.findById(id).orElse(null);
         if (billDetails != null) {

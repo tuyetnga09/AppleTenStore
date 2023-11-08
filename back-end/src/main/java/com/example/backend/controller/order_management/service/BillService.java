@@ -9,9 +9,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BillService {
-    String createBillCustomerOnlineRequest( BillRequestOnline request) ;
+    Bill createBillCustomerOnlineRequest( BillRequestOnline request) ;
 
-    String createBillAccountOnlineRequest( BillRequestOnlineAccount request) ;
+    Bill createBillAccountOnlineRequest( BillRequestOnlineAccount request) ;
     String createBillCustomerOfflineRequest(BillRequestOffline request);
     /* Bán tại cửa hàng*/
     boolean billWait(BillRequestOffline request);
@@ -19,9 +19,9 @@ public interface BillService {
     Bill  saveBillOffline(Integer id,  BillRequestOffline request);
     Bill detail(Integer id);
 
-    List<Bill> searchNoDate(String key, String status, String user);
+    List<Bill> searchNoDate(String key, String status);
 
-    List<Bill> searchWithDate(String key, String status, String user, LocalDate dateStart, LocalDate dateEnd);
+    List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
     void updateStatusBill(int id);
 
@@ -30,6 +30,8 @@ public interface BillService {
     List<Bill> listBillByIdAccount(Integer id);
 
     List<Bill> listBillByIdAccountCXN(Integer id);
+
+    List<Bill> listBillByIdAccountCVC(Integer id);
 
     List<Bill> listBillByIdAccountVC(Integer id);
 

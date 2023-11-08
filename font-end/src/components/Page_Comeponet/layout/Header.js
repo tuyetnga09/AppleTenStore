@@ -173,7 +173,13 @@ export default function Header() {
               </div>{" "}
               {/* End Cart */}
               <div class="check-order">
-                <Link to="/oderUserAll">
+                {/* <Link to="/oderUserAll">
+                  <i class="fa fa-truck"></i>
+                  <span>Đơn hàng</span>
+                </Link> */}
+                <Link
+                  to={storedUser === null ? "/oderCustomerAll" : "/oderUserAll"}
+                >
                   <i class="fa fa-truck"></i>
                   <span>Đơn hàng</span>
                 </Link>

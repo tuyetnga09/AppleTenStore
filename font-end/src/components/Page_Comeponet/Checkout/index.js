@@ -1,10 +1,9 @@
 import * as React from "react";
 import "../Checkout/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
-import { useState } from "react";
 import { readAll, getbysku } from "../../../service/cart.service";
 import { readQuantityInCart } from "../../../service/cart.service";
 import { GiftOutlined } from "@ant-design/icons";
@@ -19,12 +18,16 @@ import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
 import { get } from "jquery";
-import { Link } from "react-router-dom";
-import {createBill, createBillAccount} from "../../../service/Bill/bill.service";
+import { Link, useHistory } from "react-router-dom";
+import {
+  createBill,
+  createBillAccount,
+} from "../../../service/Bill/bill.service";
 import { DateField } from "@refinedev/antd";
 import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
 
 const Checkout = () => {
+  const history = useHistory();
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
   const [products, setProducts] = useState([]);
@@ -35,7 +38,7 @@ const Checkout = () => {
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
   const [voucher, setVoucher] = useState([]);
   const [selecteVoucher, setSelectedVoucher] = useState(0);
-  const [linkPay, setLinkPay] = useState(["/paydone"]);
+  const [loading, setLoading] = useState(false);
   const [isChecked, setIsChecked] = useState([true]);
   const [isChecked1, setIsChecked1] = useState(true);
   const [isChecked2, setIsChecked2] = useState(false);
@@ -94,138 +97,138 @@ const Checkout = () => {
     //hiển thị giỏ hàng
     if (idAccount !== null && idAccount !== "") {
       readAll(idAccount)
-          .then((response) => {
-            const list = response.data;
-            setProducts(list);
-            const adidaphat = [];
-            list.map((item) => {
-              adidaphat.push({
-                sku: item.idSKU,
-                price: item.price,
-                quantity: item.quantity,
-              });
+        .then((response) => {
+          const list = response.data;
+          setProducts(list);
+          const adidaphat = [];
+          list.map((item) => {
+            adidaphat.push({
+              sku: item.idSKU,
+              price: item.price,
+              quantity: item.quantity,
             });
-            setBill({
-              ...bill,
-              billDetail: adidaphat,
-            });
-          })
-          .catch((error) => {
-            console.log(`${error}`);
           });
+          setBill({
+            ...bill,
+            billDetail: adidaphat,
+          });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       //số lượng sản phẩm trong giỏ hàng
       readQuantityInCart(idAccount)
-          .then((response) => {
-            console.log(response.data);
-            setQuantity(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+        .then((response) => {
+          console.log(response.data);
+          setQuantity(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
     } else {
       Promise.all(requests)
-          .then((responses) => {
-            const productsData = responses.map((response, index) => {
-              const productInfo = response.data[0];
-              const cartItem = cartItems[index];
-              // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
-              return {
-                ...productInfo,
-                quantity: cartItem.quantity,
-                price: cartItem.price,
-                total: cartItem.quantity * cartItem.price,
-              };
-            });
-            setProducts(productsData);
-            const list = [];
-            productsData.map((item) => {
-              list.push({
-                sku: item.idSku,
-                price: item.price,
-                quantity: item.quantity,
-              });
-            });
-            setBill({
-              ...bill,
-              billDetail: list,
-            });
-          })
-          .catch((error) => {
-            console.log(`${error}`);
+        .then((responses) => {
+          const productsData = responses.map((response, index) => {
+            const productInfo = response.data[0];
+            const cartItem = cartItems[index];
+            // Tạo một đối tượng sản phẩm mới có thông tin từ API và số lượng từ giỏ hàng
+            return {
+              ...productInfo,
+              quantity: cartItem.quantity,
+              price: cartItem.price,
+              total: cartItem.quantity * cartItem.price,
+            };
           });
+          setProducts(productsData);
+          const list = [];
+          productsData.map((item) => {
+            list.push({
+              sku: item.idSku,
+              price: item.price,
+              quantity: item.quantity,
+            });
+          });
+          setBill({
+            ...bill,
+            billDetail: list,
+          });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       const totalQuantity = cartItems.reduce(
-          (total, product) => total + product.quantity,
-          0
+        (total, product) => total + product.quantity,
+        0
       );
       setQuantity(totalQuantity);
     }
 
     //lấy danh sách voucher
     getVoucher()
-        .then((response) => {
-          console.log(response.data);
-          setVoucher(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        console.log(response.data);
+        setVoucher(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     //lấy danh sách voucher
     getVoucherFreeShip()
-        .then((response) => {
-          console.log(response.data);
-          setVoucherFreeShip(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        console.log(response.data);
+        setVoucherFreeShip(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     readAllProvince()
-        .then((response) => {
-          setProvinces(response.data.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        setProvinces(response.data.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     readAllDistrict(province_id)
-        .then((response) => {
-          // setDistricts(response.data.data);
-          if (showDistricts === true) {
-            setDistricts(response.data.data);
-          } else {
-            setDistricts([]);
-          }
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        // setDistricts(response.data.data);
+        if (showDistricts === true) {
+          setDistricts(response.data.data);
+        } else {
+          setDistricts([]);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     readAllWard(district_id)
-        .then((response) => {
-          // setWards(response.data.data);
-          if (showWards === true) {
-            setWards(response.data.data);
-          } else {
-            setWards([]);
-          }
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        // setWards(response.data.data);
+        if (showWards === true) {
+          setWards(response.data.data);
+        } else {
+          setWards([]);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     if (transportationFeeDTO != []) {
       getFee(transportationFeeDTO)
-          .then((response) => {
-            setFee(response.data.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+        .then((response) => {
+          setFee(response.data.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
     }
     readAllByIdUser(storedUser?.user?.id)
-        .then((res) => {
-          setDefaultAddress(res.data);
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        setDefaultAddress(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [province_id, district_id, transportationFeeDTO, priceShip]);
 
   function giaoTanNoi() {
@@ -278,7 +281,7 @@ const Checkout = () => {
       moneyShip: priceShip,
       afterPrice: soTienThanhToan,
     });
-  }, [products, fee]);
+  }, [products, fee, soTienThanhToan]);
   //tính số tiền cẩn thanh toán
   const calculatePriceSucsses = () => {
     //tính thành tiền sản phẩm
@@ -314,7 +317,7 @@ const Checkout = () => {
     if (selecteVoucherFreeShip && selecteVoucher) {
       const voucherValue = parseFloat(selecteVoucher.valueVoucher);
       const voucherVoucherFree = parseFloat(
-          selecteVoucherFreeShip.valueVoucher
+        selecteVoucherFreeShip.valueVoucher
       );
       price = total + priceS - (voucherValue + voucherVoucherFree);
     } else if (selecteVoucher) {
@@ -324,7 +327,7 @@ const Checkout = () => {
     } else if (selecteVoucherFreeShip) {
       // Nếu chỉ có selectedVoucherFreeShip có giá trị, sử dụng giá trị voucherfreeship
       const voucherVoucherFree = parseFloat(
-          selecteVoucherFreeShip.valueVoucher
+        selecteVoucherFreeShip.valueVoucher
       );
       price = total + priceS - voucherVoucherFree;
     } else {
@@ -336,8 +339,8 @@ const Checkout = () => {
   //click Voucher
   const handleVoucherClick = (voucher) => {
     if (
-        totalPrice < voucher.valueMinimum ||
-        totalPrice > voucher.valueMaximum
+      totalPrice < voucher.valueMinimum ||
+      totalPrice > voucher.valueMaximum
     ) {
       notification.error({
         message: "VOUCHER",
@@ -353,9 +356,10 @@ const Checkout = () => {
       setBill({
         ...bill,
         itemDiscount: voucher.valueVoucher,
-        idVoucher: voucher.id
-      })
-      readAll(idAccount)
+        idVoucher: voucher.id,
+      });
+      if (storedUser !== null) {
+        readAll(idAccount)
           .then((response) => {
             console.log(response.data);
             setProducts(response.data);
@@ -363,6 +367,9 @@ const Checkout = () => {
           .catch((error) => {
             console.log(`${error}`);
           });
+      } else {
+        setProducts(cartItems);
+      }
     }
   };
 
@@ -370,7 +377,8 @@ const Checkout = () => {
   const handleClearVoucher = (id) => {
     if (selecteVoucher.id === id) {
       setSelectedVoucher(null);
-      readAll(idAccount)
+      if (storedUser !== null) {
+        readAll(idAccount)
           .then((response) => {
             console.log(response.data);
             setProducts(response.data);
@@ -378,14 +386,17 @@ const Checkout = () => {
           .catch((error) => {
             console.log(`${error}`);
           });
+      } else {
+        setProducts(cartItems);
+      }
     }
   };
 
   //click Voucher freeship
   const handleVoucherFreeShipClick = (voucher) => {
     if (
-        totalPrice < voucher.valueMinimum ||
-        totalPrice > voucher.valueMaximum
+      totalPrice < voucher.valueMinimum ||
+      totalPrice > voucher.valueMaximum
     ) {
       notification.error({
         message: "VOUCHER",
@@ -398,7 +409,8 @@ const Checkout = () => {
       });
     } else {
       setSelectedVoucherFreeShip(voucher);
-      readAll(idAccount)
+      if (storedUser !== null) {
+        readAll(idAccount)
           .then((response) => {
             console.log(response.data);
             setProducts(response.data);
@@ -406,6 +418,9 @@ const Checkout = () => {
           .catch((error) => {
             console.log(`${error}`);
           });
+      } else {
+        setProducts(cartItems);
+      }
     }
   };
 
@@ -413,7 +428,8 @@ const Checkout = () => {
   const handleClearVoucherFreeShip = (id) => {
     if (selecteVoucherFreeShip.id === id) {
       setSelectedVoucherFreeShip(null);
-      readAll(idAccount)
+      if (storedUser !== null) {
+        readAll(idAccount)
           .then((response) => {
             console.log(response.data);
             setProducts(response.data);
@@ -421,6 +437,9 @@ const Checkout = () => {
           .catch((error) => {
             console.log(`${error}`);
           });
+      } else {
+        setProducts(cartItems);
+      }
     }
   };
 
@@ -445,18 +464,12 @@ const Checkout = () => {
     const tienMat = document.getElementById("httt-1");
     if (tienMat.checked === true) {
       setIsChecked(true);
-      setLinkPay("/paydone");
+      localStorage.removeItem("bill");
     }
     const vnpay = document.getElementById("httt-2");
     if (vnpay.checked == true) {
-      getPay(soTienThanhToan)
-          .then((res) => {
-            setLinkPay(res.data);
-            setIsChecked(false);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+      setIsChecked(false);
+      localStorage.setItem("bill", JSON.stringify(bill));
     }
   }
 
@@ -574,36 +587,93 @@ const Checkout = () => {
     setBill({
       ...bill,
       address:
-          event.target.value +
-          ", " +
-          bill.wards +
-          ", " +
-          bill.district +
-          ", " +
-          bill.province,
+        event.target.value +
+        ", " +
+        bill.wards +
+        ", " +
+        bill.district +
+        ", " +
+        bill.province,
     });
   }
 
-  function handleSubmit() {
-    if (idAccount !== "") {
-      createBillAccount(bill)
+  function handleSubmit(event) {
+    event.preventDefault();
+    setLoading(true);
+    const tienMat = document.getElementById("httt-1");
+    if (tienMat.checked === true) {
+      if (idAccount !== "") {
+        createBillAccount(bill)
           .then((response) => {
             console.log(response.data);
+            setLoading(false);
+            history.push(`/paydone/${response.data.data.code}`);
           })
           .catch((error) => {
             console.log(error);
           });
-    } else {
-      createBill(bill)
+      } else {
+        createBill(bill)
           .then((response) => {
             console.log(response.data);
+            setLoading(false);
+            history.push(`/paydone/${response.data.data.code}`);
           })
           .catch((error) => {
             console.log(error);
           });
-      sessionStorage.removeItem("cartItems");
-      setProducts([]);
-      setTotalPrice(0);
+        sessionStorage.removeItem("cartItems");
+        setProducts([]);
+        setTotalPrice(0);
+      }
+    }
+    const vnpay = document.getElementById("httt-2");
+    if (vnpay.checked == true) {
+      getPay(soTienThanhToan)
+        .then((res) => {
+          setLoading(false);
+          window.location.replace(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // if (idAccount !== "") {
+      //   createBillAccount(bill)
+      //     .then((response) => {
+      //       console.log(response.data);
+      //       // history.push(`/paydone/${response.data.data.code}`);
+      //       getPay(soTienThanhToan, response.data.data.code)
+      //         .then((res) => {
+      //           setLoading(false);
+      //           window.location.replace(res.data);
+      //         })
+      //         .catch((err) => {
+      //           console.log(err);
+      //         });
+      //     })
+      //     .catch((error) => {
+      //       console.log(error);
+      //     });
+      // } else {
+      //   createBill(bill)
+      //     .then((response) => {
+      //       console.log(response.data);
+      //       getPay(soTienThanhToan, response.data.data.code)
+      //         .then((res) => {
+      //           setLoading(false);
+      //           window.location.replace(res.data);
+      //         })
+      //         .catch((err) => {
+      //           console.log(err);
+      //         });
+      //     })
+      //     .catch((error) => {
+      //       console.log(error);
+      //     });
+      //   sessionStorage.removeItem("cartItems");
+      //   setProducts([]);
+      //   setTotalPrice(0);
+      // }
     }
   }
 
@@ -619,39 +689,39 @@ const Checkout = () => {
         address: inputString,
       });
       let province_id = [...provinces].filter(
-          (pr) => pr.ProvinceName === dataArray[dataArray.length - 1]
+        (pr) => pr.ProvinceName === dataArray[dataArray.length - 1]
       )[0].ProvinceID;
       readAllDistrict(province_id)
-          .then((response) => {
-            let district_id = [...response.data.data].filter(
-                (dt) => dt.DistrictName === dataArray[dataArray.length - 2]
-            )[0].DistrictID;
-            readAllWard(district_id)
-                .then((response) => {
-                  let ward_code = [...response.data.data].filter(
-                      (w) => w.WardName === dataArray[dataArray.length - 3]
-                  )[0].WardCode;
-                  setTransportationFeeDTO({
-                    toDistrictId: district_id,
-                    toWardCode: ward_code,
-                    insuranceValue: soTienThanhToan,
-                    quantity: quantityCart,
-                  });
-                })
-                .catch((error) => {
-                  console.log(`${error}`);
-                });
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+        .then((response) => {
+          let district_id = [...response.data.data].filter(
+            (dt) => dt.DistrictName === dataArray[dataArray.length - 2]
+          )[0].DistrictID;
+          readAllWard(district_id)
+            .then((response) => {
+              let ward_code = [...response.data.data].filter(
+                (w) => w.WardName === dataArray[dataArray.length - 3]
+              )[0].WardCode;
+              setTransportationFeeDTO({
+                toDistrictId: district_id,
+                toWardCode: ward_code,
+                insuranceValue: soTienThanhToan,
+                quantity: quantityCart,
+              });
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       getFee(transportationFeeDTO)
-          .then((response) => {
-            setFee(response.data.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+        .then((response) => {
+          setFee(response.data.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       console.log(bill);
     } else {
       setTransportationFeeDTO({
@@ -667,568 +737,584 @@ const Checkout = () => {
   }
 
   return (
-      <>
-        <Header />
-        <main role="main">
-          <div class="container mt-4">
-            <form
-                class="needs-validation"
-                name="frmthanhtoan"
-                onSubmit={handleSubmit}
+    <>
+      <Header />
+      {loading && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            padding: "10px",
+            zIndex: "9999", // Đặt z-index lớn hơn phần nền
+          }}
+        >
+          <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
+      <main role="main">
+        <div class="container mt-4">
+          <form
+            class="needs-validation"
+            name="frmthanhtoan"
+            onSubmit={handleSubmit}
+          >
+            <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
+            <div
+              class="py-5 text-center"
+              style={{ color: "#f68f2c", marginBottom: "50px" }}
             >
-              <input type="hidden" name="kh_tendangnhap" value="dnpcuong"></input>
-              <div
-                  class="py-5 text-center"
-                  style={{ color: "#f68f2c", marginBottom: "50px" }}
-              >
-                <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
-                <h2>Thanh toán</h2>
-                <p class="lead">
-                  Vui lòng kiểm tra thông tin Khách hàng, thông tin Giỏ hàng trước
-                  khi Đặt hàng.
-                </p>
-              </div>
-              <div class="row">
-                <div class="col-md-4 order-md-2 mb-4">
-                  <h4 class="d-flex justify-content-between align-items-center mb-3">
-                    <span class="text-muted">Giỏ hàng</span>
-                    <span class="badge badge-secondary badge-pill">
+              <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
+              <h2>Thanh toán</h2>
+              <p class="lead">
+                Vui lòng kiểm tra thông tin Khách hàng, thông tin Giỏ hàng trước
+                khi Đặt hàng.
+              </p>
+            </div>
+            <div class="row">
+              <div class="col-md-4 order-md-2 mb-4">
+                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-muted">Giỏ hàng</span>
+                  <span class="badge badge-secondary badge-pill">
                     {quantityCart}
                   </span>
-                  </h4>
-                  <ul class="list-group mb-3">
-                    {products.map((product) => (
-                        <li class="list-group-item d-flex justify-content-between lh-condensed">
-                          <div>
-                            <h6 class="my-0">
-                              {product.nameProduct} {product.capacity}{" "}
-                              {product.color}
-                            </h6>
-                            <small class="text-muted">
-                              {product?.price?.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}{" "}
-                              x {product.quantity}
-                            </small>
-                          </div>
-                          <span class="text-muted">
+                </h4>
+                <ul class="list-group mb-3">
+                  {products.map((product) => (
+                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                      <div>
+                        <h6 class="my-0">
+                          {product.nameProduct} {product.capacity}{" "}
+                          {product.color}
+                        </h6>
+                        <small class="text-muted">
+                          {product?.price?.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}{" "}
+                          x {product.quantity}
+                        </small>
+                      </div>
+                      <span class="text-muted">
                         {parseFloat(product.total).toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
                       </span>
-                        </li>
-                    ))}
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>Tổng thành tiền</span>
-                      <strong>
-                        {totalPrice?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </strong>
                     </li>
-                  </ul>
-                  <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>Voucher của Shop</span>
-                      <strong>
-                        <GiftOutlined onClick={() => handleEditClick()} />
-                      </strong>
-                    </li>
-                  </ul>
-                  <div className="d-flex justify-content-between px-x">
-                    <p className="fw-bold">Giảm giá Voucher:</p>
-                    <p className="fw-bold">
-                      -
-                      {selecteVoucher && selecteVoucher.valueVoucher
-                          ? selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
-                          : 0?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                    </p>
-                  </div>
-                  <div className="d-flex justify-content-between px-x">
-                    <p className="fw-bold">Tiền vận chuyển:</p>
-                    <p className="fw-bold">
-                      {fee == null
-                          ? 0 + "₫"
-                          : fee?.total?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                    </p>
-                  </div>
-                  <div className="d-flex justify-content-between px-x">
-                    <p className="fw-bold">Giảm giá tiền vận chuyển:</p>
-                    <p className="fw-bold">
-                      -
-                      {selecteVoucherFreeShip &&
-                      selecteVoucherFreeShip.valueVoucher
-                          ? selecteVoucherFreeShip?.valueVoucher?.toLocaleString(
-                              "vi-VN",
-                              {
-                                style: "currency",
-                                currency: "VND",
-                              }
-                          )
-                          : 0?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                    </p>
-                  </div>
-                  <div
-                      className="d-flex justify-content-between p-2 mb-2"
-                      style={{ backgroundColor: "#e1f5fe" }}
-                  >
-                    <h5 className="fw-bold mb-0">THANH TOÁN:</h5>
-                    <h5 className="fw-bold mb-0" style={{ color: "red" }}>
-                      {soTienThanhToan?.toLocaleString("vi-VN", {
+                  ))}
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>Tổng thành tiền</span>
+                    <strong>
+                      {totalPrice?.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })}
-                    </h5>
-                  </div>
+                    </strong>
+                  </li>
+                </ul>
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>Voucher của Shop</span>
+                    <strong>
+                      <GiftOutlined onClick={() => handleEditClick()} />
+                    </strong>
+                  </li>
+                </ul>
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Giảm giá Voucher:</p>
+                  <p className="fw-bold">
+                    -
+                    {selecteVoucher && selecteVoucher.valueVoucher
+                      ? selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : 0?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                  </p>
                 </div>
-                <div class="col-md-8 order-md-1">
-                  <h4 class="mb-3">Thông tin khách hàng</h4>
-                  <div class="row">
-                    <div class="col-md-12">
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Tiền vận chuyển:</p>
+                  <p className="fw-bold">
+                    {fee == null
+                      ? 0 + "₫"
+                      : fee?.total?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                  </p>
+                </div>
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Giảm giá tiền vận chuyển:</p>
+                  <p className="fw-bold">
+                    -
+                    {selecteVoucherFreeShip &&
+                    selecteVoucherFreeShip.valueVoucher
+                      ? selecteVoucherFreeShip?.valueVoucher?.toLocaleString(
+                          "vi-VN",
+                          {
+                            style: "currency",
+                            currency: "VND",
+                          }
+                        )
+                      : 0?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                  </p>
+                </div>
+                <div
+                  className="d-flex justify-content-between p-2 mb-2"
+                  style={{ backgroundColor: "#e1f5fe" }}
+                >
+                  <h5 className="fw-bold mb-0">THANH TOÁN:</h5>
+                  <h5 className="fw-bold mb-0" style={{ color: "red" }}>
+                    {soTienThanhToan?.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </h5>
+                </div>
+              </div>
+              <div class="col-md-8 order-md-1">
+                <h4 class="mb-3">Thông tin khách hàng</h4>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Tên"
+                      onChange={hanldeName}
+                    ></input>
+                    <br />
+                  </div>
+                  <div className="row">
+                    <div class="col-md-6">
                       <input
-                          type="text"
-                          class="form-control"
-                          placeholder="Tên"
-                          onChange={hanldeName}
+                        type="text"
+                        class="form-control"
+                        placeholder="Số điện thoại"
+                        onChange={hanldPhone}
                       ></input>
+                    </div>
+                    <div class="col-md-6">
+                      <input
+                        type="email"
+                        class="form-control"
+                        placeholder="Email"
+                        onChange={hanldeMail}
+                      ></input>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <br />
+                    <b for="kh_ngaysinh">Hình thức nhận hàng</b>
+                    <div class="custom-control custom-radio">
+                      <input
+                        id="htnn_4"
+                        type="radio"
+                        class="custom-control-input"
+                        required=""
+                        value="1"
+                        onClick={() => nhanTaiCuaHang()}
+                      ></input>
+                      <label class="custom-control-label" for="htnn_4">
+                        Nhận tại cửa hàng
+                      </label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                      <input
+                        id="htnn_5"
+                        type="radio"
+                        class="custom-control-input"
+                        required=""
+                        value="2"
+                        onClick={() => giaoTanNoi()}
+                      ></input>
+                      <label class="custom-control-label" for="htnn_5">
+                        Giao tận nơi
+                      </label>
+                    </div>
+                    <div
+                      class="custom-control custom-radio"
+                      id="dcmd"
+                      hidden={storedUser !== null ? false : true}
+                    >
+                      <input
+                        id="htnn_6"
+                        type="radio"
+                        class="custom-control-input"
+                        required=""
+                        value="3"
+                        onClick={() => diaChiMacDinh()}
+                        hidden
+                      ></input>
+                      <label class="custom-control-label" for="htnn_6">
+                        Địa chỉ mặc định
+                      </label>
+                    </div>
+                  </div>
+                  <div hidden className="row" id="notDcmd">
+                    <div class="col-md-4">
                       <br />
-                    </div>
-                    <div className="row">
-                      <div class="col-md-6">
-                        <input
-                            type="text"
-                            class="form-control"
-                            placeholder="Số điện thoại"
-                            onChange={hanldPhone}
-                        ></input>
-                      </div>
-                      <div class="col-md-6">
-                        <input
-                            type="email"
-                            class="form-control"
-                            placeholder="Email"
-                            onChange={hanldeMail}
-                        ></input>
-                      </div>
-                    </div>
-                    <div class="col-md-12">
-                      <br />
-                      <b for="kh_ngaysinh">Hình thức nhận hàng</b>
-                      <div class="custom-control custom-radio">
-                        <input
-                            id="htnn_4"
-                            type="radio"
-                            class="custom-control-input"
-                            required=""
-                            value="1"
-                            onClick={() => nhanTaiCuaHang()}
-                        ></input>
-                        <label class="custom-control-label" for="htnn_4">
-                          Nhận tại cửa hàng
-                        </label>
-                      </div>
-                      <div class="custom-control custom-radio">
-                        <input
-                            id="htnn_5"
-                            type="radio"
-                            class="custom-control-input"
-                            required=""
-                            value="2"
-                            onClick={() => giaoTanNoi()}
-                        ></input>
-                        <label class="custom-control-label" for="htnn_5">
-                          Giao tận nơi
-                        </label>
-                      </div>
-                      <div
-                          class="custom-control custom-radio"
-                          id="dcmd"
-                          hidden={storedUser !== null ? false : true}
-                      >
-                        <input
-                            id="htnn_6"
-                            type="radio"
-                            class="custom-control-input"
-                            required=""
-                            value="3"
-                            onClick={() => diaChiMacDinh()}
-                            hidden
-                        ></input>
-                        <label class="custom-control-label" for="htnn_6">
-                          Địa chỉ mặc định
-                        </label>
-                      </div>
-                    </div>
-                    <div hidden className="row" id="notDcmd">
-                      <div class="col-md-4">
-                        <br />
-                        <label for="kh_cmnd">Tỉnh, thành phố:</label>
-                        <select
-                            class="form-select"
-                            id="provinces"
-                            aria-label="Floating label select example"
-                            onChange={handleProvince}
-                        >
-                          <option selected></option>
-                          {provinces.map((pr) => {
-                            return (
-                                <option
-                                    id={pr.ProvinceID}
-                                    key={pr.ProvinceID}
-                                    value={pr.ProvinceID}
-                                >
-                                  {pr.ProvinceName}
-                                </option>
-                            );
-                          })}
-                        </select>
-                      </div>
-                      <div class="col-md-4">
-                        <br />
-                        <label for="kh_cmnd">Quận, huyện:</label>
-                        <select
-                            class="form-select"
-                            id="districts"
-                            aria-label="Floating label select example"
-                            onChange={handleDistrict}
-                        >
-                          <option selected></option>
-                          {districts.map((dt) => {
-                            return (
-                                <option
-                                    id={dt.DistrictID}
-                                    key={dt.DistrictID}
-                                    value={dt.DistrictID}
-                                >
-                                  {dt.DistrictName}
-                                </option>
-                            );
-                          })}
-                        </select>
-                      </div>
-                      <div class="col-md-4">
-                        <br />
-                        <label for="kh_cmnd">Phường, xã:</label>
-                        <select
-                            class="form-select"
-                            id="wards"
-                            aria-label="Floating label select example"
-                            onChange={handleWard}
-                        >
-                          <option selected></option>
-                          {wards.map((w) => {
-                            return (
-                                <option
-                                    id={w.WardCode}
-                                    key={w.WardID}
-                                    value={w.WardCode}
-                                >
-                                  {w.WardName}
-                                </option>
-                            );
-                          })}
-                        </select>
-                      </div>
-                      <div class="col-md-12">
-                        <br />
-                        <select
-                            class="form-select"
-                            id="floatingSelect1"
-                            aria-label="Floating label select example"
-                        >
-                          <option selected>Mời bạn chọn địa chỉ cửa hàng</option>
-                          <option value="1">One</option>
-                          <option value="2">Two</option>
-                          <option value="3">Three</option>
-                        </select>
-                      </div>
-                      <div class="col-md-12">
-                        <input
-                            hidden
-                            id="floatingSelect2"
-                            class="form-control"
-                            type="text"
-                            placeholder="Địa chỉ cụ thể"
-                            aria-label="default input example"
-                            onChange={handleAddress}
-                        />
-                      </div>
-                    </div>
-                    <div id="dcmd2" hidden>
-                      <br />
-                      <label for="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
+                      <label for="kh_cmnd">Tỉnh, thành phố:</label>
                       <select
-                          class="form-select"
-                          id="floatingSelect"
-                          aria-label="Floating label select example"
-                          onChange={handleDefaultAddress}
+                        class="form-select"
+                        id="provinces"
+                        aria-label="Floating label select example"
+                        onChange={handleProvince}
                       >
-                        <option selected id="0" value={0}></option>
-                        {defaultAddress.map((da) => {
+                        <option selected></option>
+                        {provinces.map((pr) => {
                           return (
-                              <option id={da.id} key={da.id} value={da.id}>
-                                {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}
-                                {da.tinhThanhPho}
-                              </option>
+                            <option
+                              id={pr.ProvinceID}
+                              key={pr.ProvinceID}
+                              value={pr.ProvinceID}
+                            >
+                              {pr.ProvinceName}
+                            </option>
                           );
                         })}
                       </select>
                     </div>
-                  </div>
-                  <br />
-                  <h4 class="mb-3">Hình thức thanh toán</h4>
-                  <div class="d-block my-3">
-                    <div class="custom-control custom-radio">
-                      <input
-                          id="httt-1"
-                          name="httt_ma"
-                          type="radio"
-                          class="custom-control-input"
-                          required=""
-                          value="1"
-                          checked={isChecked}
-                          onChange={datHang}
-                      />
-                      <label class="custom-control-label" for="httt-1">
-                        Tiền mặt
-                      </label>
-                    </div>
-                    <div class="custom-control custom-radio">
-                      <input
-                          id="httt-2"
-                          name="httt_ma"
-                          type="radio"
-                          class="custom-control-input"
-                          required=""
-                          value="2"
-                          checked={!isChecked}
-                          onChange={datHang}
-                      />
-                      <label class="custom-control-label" for="httt-2">
-                        VN Pay
-                      </label>
-                    </div>
-                    <hr class="mb-4" />
-                    <a href={linkPay}>
-                      <button
-                          class="btn btn-primary btn-lg btn-block"
-                          // type="submit"
-                          name="btnDatHang"
-                          type="submit"
+                    <div class="col-md-4">
+                      <br />
+                      <label for="kh_cmnd">Quận, huyện:</label>
+                      <select
+                        class="form-select"
+                        id="districts"
+                        aria-label="Floating label select example"
+                        onChange={handleDistrict}
                       >
-                        Đặt hàng
-                      </button>
-                    </a>
+                        <option selected></option>
+                        {districts.map((dt) => {
+                          return (
+                            <option
+                              id={dt.DistrictID}
+                              key={dt.DistrictID}
+                              value={dt.DistrictID}
+                            >
+                              {dt.DistrictName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <br />
+                      <label for="kh_cmnd">Phường, xã:</label>
+                      <select
+                        class="form-select"
+                        id="wards"
+                        aria-label="Floating label select example"
+                        onChange={handleWard}
+                      >
+                        <option selected></option>
+                        {wards.map((w) => {
+                          return (
+                            <option
+                              id={w.WardCode}
+                              key={w.WardID}
+                              value={w.WardCode}
+                            >
+                              {w.WardName}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+                    <div class="col-md-12">
+                      <br />
+                      <select
+                        class="form-select"
+                        id="floatingSelect1"
+                        aria-label="Floating label select example"
+                      >
+                        <option selected>Mời bạn chọn địa chỉ cửa hàng</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                      </select>
+                    </div>
+                    <div class="col-md-12">
+                      <input
+                        hidden
+                        id="floatingSelect2"
+                        class="form-control"
+                        type="text"
+                        placeholder="Địa chỉ cụ thể"
+                        aria-label="default input example"
+                        onChange={handleAddress}
+                      />
+                    </div>
+                  </div>
+                  <div id="dcmd2" hidden>
+                    <br />
+                    <label for="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
+                    <select
+                      class="form-select"
+                      id="floatingSelect"
+                      aria-label="Floating label select example"
+                      onChange={handleDefaultAddress}
+                    >
+                      <option selected id="0" value={0}></option>
+                      {defaultAddress.map((da) => {
+                        return (
+                          <option id={da.id} key={da.id} value={da.id}>
+                            {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}
+                            {da.tinhThanhPho}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </div>
                 </div>
-              </div>
-            </form>
-          </div>
-        </main>
-        <Footer />
-
-        <Modal
-            visible={isModalVisible}
-            onCancel={handleCancel}
-            width={550}
-            footer={null}
-            bodyStyle={{ minHeight: "700px" }}
-        >
-          <div className="container py-5">
-            <div className="row d-flex justify-content-center">
-              {/* <div className="card"> */}
-              <div
-                  className="card-header d-flex justify-content-between align-items-center p-3"
-                  style={{ borderTop: "4px solid #ffa900" }}
-              >
-                <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
-              </div>
-              <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã FreeShip</p>
-              <div
-                  className="card-body"
-                  data-mdb-perfect-scrollbar="true"
-                  style={{ position: "relative", height: 200, overflowY: "auto" }}
-              >
-                {voucherFreeShip.map((voucher) => (
-                    <ul class="list-group mb-3">
-                      <li class="list-group-item d-flex justify-content-between">
-                    <span>
-                      <Image
-                          style={{
-                            width: "100px",
-                          }}
-                          src="https://bizweb.dktcdn.net/100/377/231/articles/freeship.png?v=1588928233387"
-                      />
-                    </span>
-                        <span style={{ paddingLeft: "10px" }}>
-                      {voucher.name}
-                          <br />
-                      <p
-                          style={{
-                            color: "red",
-                            fontSize: "15px",
-                            fontWeight: "bold",
-                          }}
-                      >
-                        Giảm{" "}
-                        {voucher?.valueVoucher?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </p>
-                      <p style={{ fontSize: "13px" }}>
-                        Cho đơn hàng giá trị từ{" "}
-                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}{" "}
-                        đến{" "}
-                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </p>
-                      <p style={{ color: "red", fontSize: "10px" }}>
-                        Từ{" "}
-                        <DateField
-                            style={{ color: "red", fontSize: "10px" }}
-                            value={voucher.dateStart}
-                            format="DD/MM/YYYY"
-                        />{" "}
-                        đến{" "}
-                        <DateField
-                            style={{ color: "red", fontSize: "10px" }}
-                            value={voucher.dateEnd}
-                            format="DD/MM/YYYY"
-                        />{" "}
-                        - SL: {voucher.quantity}
-                      </p>
-                    </span>
-                        <strong>
-                          {/* <Checkbox
-                        onClick={() => handleVoucherClick(voucher)}
-                      /> */}
-                          <Button
-                              type="text"
-                              danger
-                              onClick={() => handleVoucherFreeShipClick(voucher)}
-                          >
-                            Áp dụng
-                          </Button>
-                          <br />
-                          <Button
-                              type="text"
-                              danger
-                              onClick={() => handleClearVoucherFreeShip(voucher.id)}
-                          >
-                            Hủy
-                          </Button>
-                        </strong>
-                      </li>
-                    </ul>
-                ))}
-              </div>
-              <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã Giảm giá</p>
-              <div
-                  className="card-body"
-                  data-mdb-perfect-scrollbar="true"
-                  style={{ position: "relative", height: 330, overflowY: "auto" }}
-              >
-                {voucher.map((voucher) => (
-                    <ul class="list-group mb-3">
-                      <li class="list-group-item d-flex justify-content-between">
-                    <span>
-                      <Image
-                          style={{
-                            width: "100px",
-                          }}
-                          src="https://help.turitop.com/hc/article_attachments/360007926459/voucher.png"
-                      />
-                    </span>
-                        <span style={{ paddingLeft: "10px" }}>
-                      {voucher.name}
-                          <br />
-                      <p
-                          style={{
-                            color: "red",
-                            fontSize: "15px",
-                            fontWeight: "bold",
-                          }}
-                      >
-                        Giảm{" "}
-                        {voucher?.valueVoucher?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </p>
-                      <p style={{ fontSize: "13px" }}>
-                        Cho đơn hàng giá trị từ{" "}
-                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}{" "}
-                        đến{" "}
-                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </p>
-                      <p style={{ color: "red", fontSize: "10px" }}>
-                        Từ{" "}
-                        <DateField
-                            style={{ color: "red", fontSize: "10px" }}
-                            value={voucher.dateStart}
-                            format="DD/MM/YYYY"
-                        />{" "}
-                        đến{" "}
-                        <DateField
-                            style={{ color: "red", fontSize: "10px" }}
-                            value={voucher.dateEnd}
-                            format="DD/MM/YYYY"
-                        />{" "}
-                        - SL: {voucher.quantity}
-                      </p>
-                    </span>
-                        <strong>
-                          <Button
-                              type="text"
-                              danger
-                              onClick={() => handleVoucherClick(voucher)}
-                          >
-                            Áp dụng
-                          </Button>
-                          <br />
-                          <Button
-                              type="text"
-                              danger
-                              onClick={() => handleClearVoucher(voucher.id)}
-                          >
-                            Hủy
-                          </Button>
-                        </strong>
-                      </li>
-                    </ul>
-                ))}
+                <br />
+                <h4 class="mb-3">Hình thức thanh toán</h4>
+                <div class="d-block my-3">
+                  <div class="custom-control custom-radio">
+                    <input
+                      id="httt-1"
+                      name="httt_ma"
+                      type="radio"
+                      class="custom-control-input"
+                      required=""
+                      value="1"
+                      checked={isChecked}
+                      onChange={datHang}
+                    />
+                    <label class="custom-control-label" for="httt-1">
+                      Tiền mặt
+                    </label>
+                  </div>
+                  <div class="custom-control custom-radio">
+                    <input
+                      id="httt-2"
+                      name="httt_ma"
+                      type="radio"
+                      class="custom-control-input"
+                      required=""
+                      value="2"
+                      checked={!isChecked}
+                      onChange={datHang}
+                    />
+                    <label class="custom-control-label" for="httt-2">
+                      VN Pay
+                    </label>
+                  </div>
+                  <hr class="mb-4" />
+                  {/* <a href={linkPay}> */}
+                  <button
+                    class="btn btn-primary btn-lg btn-block"
+                    // type="submit"
+                    name="btnDatHang"
+                    type="submit"
+                  >
+                    Đặt hàng
+                  </button>
+                  {/* </a> */}
+                </div>
               </div>
             </div>
+          </form>
+        </div>
+      </main>
+      <Footer />
+
+      <Modal
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "700px" }}
+      >
+        <div className="container py-5">
+          <div className="row d-flex justify-content-center">
+            {/* <div className="card"> */}
+            <div
+              className="card-header d-flex justify-content-between align-items-center p-3"
+              style={{ borderTop: "4px solid #ffa900" }}
+            >
+              <h5 className="mb-0">VOUCHER CỦA SHOP</h5>
+            </div>
+            <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã FreeShip</p>
+            <div
+              className="card-body"
+              data-mdb-perfect-scrollbar="true"
+              style={{ position: "relative", height: 200, overflowY: "auto" }}
+            >
+              {voucherFreeShip.map((voucher) => (
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>
+                      <Image
+                        style={{
+                          width: "100px",
+                        }}
+                        src="https://bizweb.dktcdn.net/100/377/231/articles/freeship.png?v=1588928233387"
+                      />
+                    </span>
+                    <span style={{ paddingLeft: "10px" }}>
+                      {voucher.name}
+                      <br />
+                      <p
+                        style={{
+                          color: "red",
+                          fontSize: "15px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Giảm{" "}
+                        {voucher?.valueVoucher?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ fontSize: "13px" }}>
+                        Cho đơn hàng giá trị từ{" "}
+                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}{" "}
+                        đến{" "}
+                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ color: "red", fontSize: "10px" }}>
+                        Từ{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateStart}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        đến{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateEnd}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        - SL: {voucher.quantity}
+                      </p>
+                    </span>
+                    <strong>
+                      {/* <Checkbox
+                        onClick={() => handleVoucherClick(voucher)}
+                      /> */}
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleVoucherFreeShipClick(voucher)}
+                      >
+                        Áp dụng
+                      </Button>
+                      <br />
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleClearVoucherFreeShip(voucher.id)}
+                      >
+                        Hủy
+                      </Button>
+                    </strong>
+                  </li>
+                </ul>
+              ))}
+            </div>
+            <p style={{ marginTop: "10px", fontWeight: "bold" }}>Mã Giảm giá</p>
+            <div
+              className="card-body"
+              data-mdb-perfect-scrollbar="true"
+              style={{ position: "relative", height: 330, overflowY: "auto" }}
+            >
+              {voucher.map((voucher) => (
+                <ul class="list-group mb-3">
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span>
+                      <Image
+                        style={{
+                          width: "100px",
+                        }}
+                        src="https://help.turitop.com/hc/article_attachments/360007926459/voucher.png"
+                      />
+                    </span>
+                    <span style={{ paddingLeft: "10px" }}>
+                      {voucher.name}
+                      <br />
+                      <p
+                        style={{
+                          color: "red",
+                          fontSize: "15px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Giảm{" "}
+                        {voucher?.valueVoucher?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ fontSize: "13px" }}>
+                        Cho đơn hàng giá trị từ{" "}
+                        {voucher?.valueMinimum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}{" "}
+                        đến{" "}
+                        {voucher?.valueMaximum?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </p>
+                      <p style={{ color: "red", fontSize: "10px" }}>
+                        Từ{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateStart}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        đến{" "}
+                        <DateField
+                          style={{ color: "red", fontSize: "10px" }}
+                          value={voucher.dateEnd}
+                          format="DD/MM/YYYY"
+                        />{" "}
+                        - SL: {voucher.quantity}
+                      </p>
+                    </span>
+                    <strong>
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleVoucherClick(voucher)}
+                      >
+                        Áp dụng
+                      </Button>
+                      <br />
+                      <Button
+                        type="text"
+                        danger
+                        onClick={() => handleClearVoucher(voucher.id)}
+                      >
+                        Hủy
+                      </Button>
+                    </strong>
+                  </li>
+                </ul>
+              ))}
+            </div>
           </div>
-        </Modal>
-      </>
+        </div>
+      </Modal>
+    </>
   );
 };
 
