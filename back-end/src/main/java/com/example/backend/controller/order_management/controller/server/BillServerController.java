@@ -22,13 +22,13 @@ public class BillServerController {
     }
 
     @GetMapping("/searchNoDate")
-    public List<Bill> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("user") String user){
-        return billService.searchNoDate(key, status, user);
+    public List<Bill> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status){
+        return billService.searchNoDate(key, status);
     }
 
     @GetMapping("/searchWithDate")
-    public List<Bill> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("user") String user, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
-        return billService.searchWithDate(key, status, user, dateStart, dateEnd);
+    public List<Bill> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
+        return billService.searchWithDate(key, status, dateStart, dateEnd);
     }
 
 //    @RestController

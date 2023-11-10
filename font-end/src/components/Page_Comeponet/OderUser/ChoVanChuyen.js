@@ -4,14 +4,14 @@ import Footer from "../layout/Footer";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
-import { readAllByIdAndDTT } from "../../../service/Bill/billCustomer.service";
+import { readAllByIdAndCVC } from "../../../service/Bill/billCustomer.service";
 import { account } from "../Login/login";
-const OderUserHoanThanh = () => {
+const OderUserChoVanChuyen = () => {
   const [billDetails, setBillDetails] = useState([]);
   const [bills, setBills] = useState([]);
   const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
-    readAllByIdAndDTT(storedUser?.id)
+    readAllByIdAndCVC(storedUser?.id)
       .then((res) => {
         setBills(res.data);
         console.log(res.data);
@@ -153,7 +153,7 @@ const OderUserHoanThanh = () => {
             </Link>
           </li>
           <li class="nav-item">
-            <Link class="nav-link" to="/oderUserCVC">
+            <Link class="nav-link active" aria-current="page" to="/oderUserCVC">
               Chờ vận chuyển
             </Link>
           </li>
@@ -163,7 +163,7 @@ const OderUserHoanThanh = () => {
             </Link>
           </li>
           <li class="nav-item">
-            <Link class="nav-link active" aria-current="page" to="/oderUserHT">
+            <Link class="nav-link" to="/oderUserHT">
               Hoàn thành
             </Link>
           </li>
@@ -180,4 +180,4 @@ const OderUserHoanThanh = () => {
     </>
   );
 };
-export default OderUserHoanThanh;
+export default OderUserChoVanChuyen;

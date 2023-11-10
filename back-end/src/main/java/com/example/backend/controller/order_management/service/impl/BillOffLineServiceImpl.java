@@ -547,4 +547,9 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     public List<Bill> searchBillDaThanhToan(Integer idAccount, String codeBill) {
         return billRepository.searchBillDaThanhToan(idAccount, codeBill);
     }
+
+    @Override
+    public List<Bill> getThongTinBill(String codeBill) {
+        return billRepository.getThongTinThanhToan(codeBill);
+    }
 }

@@ -12,6 +12,7 @@ import com.example.backend.entity.SKU;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -107,8 +108,8 @@ public class BillController {
     }
 
     @PutMapping(value = "/update-status/{id}")
-    public void updateStatusBill(@PathVariable int id){
-        this.billService.updateStatusBill(id);
+    public void updateStatusBill(@PathVariable int id, @RequestParam("idAccount") Integer idAccount){
+        this.billService.updateStatusBill(idAccount ,id);
     }
 
     @GetMapping(value = "/search/{code}")
@@ -130,6 +131,11 @@ public class BillController {
     @GetMapping("/CXN")
     public List<Bill> listBillByIdAccountCXN(@RequestParam("id") Integer id){
         return billService.listBillByIdAccountCXN(id);
+    }
+
+    @GetMapping("/CVC")
+    public List<Bill> listBillByIdAccountCVC(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountCVC(id);
     }
 
     @GetMapping("/VC")

@@ -91,5 +91,5 @@ public interface BillOffLineService {
 
     List<Bill> searchBillDaThanhToan(Integer idAccount, String codeBill);
 
-
+    List<Bill> getThongTinBill(String codeBill);
 }
