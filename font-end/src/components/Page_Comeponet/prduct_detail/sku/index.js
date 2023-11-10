@@ -305,7 +305,7 @@ export const AccountList = () => {
           <Menu
             theme="dark"
             mode="inline"
-            defaultSelectedKeys={["sku"]}
+            defaultSelectedKeys={["8"]}
             openKeys={openKeys}
             onOpenChange={handleOpenChange}
           >
@@ -327,16 +327,13 @@ export const AccountList = () => {
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
               <Link to="/categories">Categories</Link>
             </Menu.Item>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/login">Logout</Link>
-            </Menu.Item>
             <SubMenu
-              // key="8"
+              key="8"
               title="Product-Detail"
               icon={<AppstoreAddOutlined />}
             >
-              <Menu.Item key="sku">
-                <Link to="/product-detail/sku">SKU</Link>
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
               </Menu.Item>
               <Menu.Item key="color">
                 <Link to="/product-detail/color">Color</Link>
@@ -351,6 +348,9 @@ export const AccountList = () => {
                 <Link to="/product-detail/chip">Chip</Link>
               </Menu.Item>
             </SubMenu>
+            <Menu.Item key="7" icon={<LogoutOutlined />}>
+              <Link to="/login">Logout</Link>
+            </Menu.Item>
           </Menu>
         </Sider>
         <Layout>
