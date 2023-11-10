@@ -297,7 +297,7 @@ const ProfileCustomer = () => {
                     <button
                       class="btn btn-danger"
                       type="button"
-                      onClick={() => localStorage.removeItem("account")}
+                      onClick={() => {localStorage.removeItem("account"); window.location.replace("http://localhost:3000/")}}
                     >
                       Đăng xuất
                     </button>
