@@ -9,7 +9,16 @@ import {
   returnSku,
   deleteImei,
   returnImei,
+  addOneImei,
+  checkGiaSku,
+  getSkuIonAdmin,
+  deleteImeiCheckbox,
+  updateImeiCheckbox,
 } from "../../../../service/product_detail/sku/sku.service";
+import {
+  readImportImei,
+  ImportImeiExcel,
+} from "../../../../service/imei.service";
 // import { readAllUserByRole } from "../../../service/User/user.service";
 import { useEffect, useState, useRef } from "react";
 import {
@@ -53,6 +62,7 @@ import {
   CloseCircleOutlined,
   CheckCircleOutlined,
   WarningFilled,
+  Warning,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../header/index";
@@ -61,6 +71,7 @@ import "../css/index.css";
 import AvtProduct from "../../../custumer_componet/avtProduct";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import * as XLSX from "xlsx";
 
 // import EditAccount from "./edit";
 const { Text } = Typography;
@@ -701,15 +712,19 @@ const UserAccountTable = ({ record }) => {
   // taoj 1 modal khi xem imei
   const [isModalVisibleImei, setIsModalVisibleImei] = useState(false); // Trạng thái hiển thị Modal
   //hàm mở modal imei
-  const handleImeiOpen = (idSku) => {
+  const handleImeiOpen = (idSku, idProduct) => {
     setDataIdSku(idSku);
+    setDataIdProduct(idProduct);
     setIsModalVisibleImei(true);
   };
   // Hàm để ẩn Modal imei
   const handleCancelImei = () => {
     setDataIdSku([]);
+    setDataIdProduct([]);
     setDataImeisLoc([]);
     setSelectedOption("");
+    setSelectedCheckboxes([]);
+    setSelectedCheckboxImeiReturn([]);
     setIsModalVisibleImei(false);
   };
 
@@ -717,9 +732,11 @@ const UserAccountTable = ({ record }) => {
   const [dataImeisWhereIdSku, setDataImeisWhereIdSku] = useState([]);
   // idSku
   const [dataIdSku, setDataIdSku] = useState(null);
+  // idProduct
+  const [dataIdProduct, setDataIdProduct] = useState(null);
 
   // lấy ra list imei theo idSku
-  const handleGetAllImei = (idSku) => {
+  const handleGetAllImei = (idSku, idProduct) => {
     getAllImeisWhereIdSku(idSku)
       .then((res) => {
         setDataImeisWhereIdSku(res.data);
@@ -727,7 +744,8 @@ const UserAccountTable = ({ record }) => {
       .catch((err) => {
         console.log(err);
       });
-    handleImeiOpen(idSku);
+
+    handleImeiOpen(idSku, idProduct);
   };
 
   const [selectedOption, setSelectedOption] = useState("");
@@ -858,6 +876,382 @@ const UserAccountTable = ({ record }) => {
     });
   };
 
+  //thêm mới imei - phongnh
+  //tạo đối tượng imei
+  const [imeiItem, setImeiItem] = useState({});
+  //tạo đối check giá sku
+  const [dataCheckGiaSku, setDataCheckGiaSku] = useState(null);
+  //tạo đối tượng imeirequest
+  const [imeiItemRequest, setImeiItemRequest] = useState({});
+  // taoj 1 modal khi add new imei
+  const [isModalVisibleNewImei, setIsModalVisibleNewImei] = useState(false); // Trạng thái hiển thị Modal
+  //hàm mở modal new imei
+  const handleNewImeiOpen = (dataIdSku, dataIdProduct) => {
+    setExcelData([]);
+    setFile([]);
+    setIsModalVisibleNewImei(true);
+  };
+  // Hàm để ẩn Modal new imei
+  const handleCancelNewImei = () => {
+    setCheckImei([]);
+    setImeiItem([]);
+    setFile([]);
+    setExcelData([]);
+    setIsModalVisibleNewImei(false);
+  };
+  //nút thêm mới imei (nút này mở modal để save imei)
+  const addNewImei = (dataIdSku, dataIdProduct) => {
+    getSkuIonAdmin(dataIdSku)
+      .then((res) => {
+        if (res.data.statusSku === 0 && res.data.statusProduct === 0) {
+          checkGiaSku(dataIdSku)
+            .then((res) => {
+              if (res.data === false) {
+                setDataCheckGiaSku(true);
+              } else {
+                setDataCheckGiaSku(false);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          handleNewImeiOpen(dataIdSku, dataIdProduct);
+        } else {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO CẢNH BÁO",
+            detail: "Không Thể Thao Tác Do Sản Phẩm Đã Xoá!",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { ...imeiItem };
+    item[name] = value;
+    setImeiItem(item);
+  }
+
+  //nút save imei
+  async function handleSubmit(event) {
+    event.preventDefault();
+    console.log(dataCheckGiaSku + " dataCheckGiaSku");
+
+    const items = { ...imeiItem }; //đối tượng imei
+    const imeiRequest = {
+      codeImei: items.codeImei,
+      price: items.price,
+      idSku: dataIdSku,
+      idProduct: dataIdProduct,
+    };
+
+    await addOneImei(imeiRequest)
+      .then((res) => {
+        if (res.data === "") {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO THẤT BẠI",
+            detail: "Mã Imei Đã Tồn Tại!",
+            life: 3000,
+          });
+        } else {
+          getAllImeisWhereIdSku(dataIdSku)
+            .then((res) => {
+              setDataImeisWhereIdSku(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          readAllSku(dataIdProduct)
+            .then((res) => {
+              // setDataImeisWhereIdSku(res.data);
+              setDataSkus(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          setDataCheckGiaSku(false);
+          toast1.current.show({
+            severity: "success",
+            summary: "THÔNG BÁO THÀNH CÔNG",
+            detail: "Thêm Imei Thành Công",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  // //đọc file excel lên table (FE đọc luôn - Thue viện FE)
+  //IPMORT IMEI
+  const [displayfile, setFile] = useState(null);
+  // Khởi tạo file excel imei
+  const [excelData, setExcelData] = useState(null); // Khởi tạo là null
+
+  // Khởi tạo check imei là null
+  const [isCheckImei, setCheckImei] = useState([]);
+
+  const handleFileUpload = (event) => {
+    event.preventDefault();
+    const file = event.target.files[0];
+    setFile(event.target.files[0]);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        setExcelData(jsonData); // Cập nhật dữ liệu khi tệp đã được chọn
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
+
+  //import imei excel
+  const handleImportImei = async (event) => {
+    event.preventDefault();
+    if (!displayfile || displayfile == null || displayfile.length == 0) {
+      notification.error({
+        message: "Vui lòng chọn một file trước khi import.",
+      });
+      return;
+    } else {
+      console.log(displayfile);
+      console.log(dataIdSku);
+      const formData = new FormData();
+      formData.append("file", displayfile);
+
+      try {
+        const response = await ImportImeiExcel(formData, dataIdSku);
+        await setCheckImei(response.data);
+        if (response.data.length === 0) {
+          const responseImei = await getAllImeisWhereIdSku(dataIdSku);
+          // .then((res) => {})
+          // .catch((err) => {
+          //   console.log(err);
+          // });
+          await setDataImeisWhereIdSku(responseImei.data);
+          const responseSku = await readAllSku(dataIdProduct);
+          // .then((res) => {})
+          // .catch((err) => {
+          //   console.log(err);
+          // });
+          await setDataSkus(responseSku.data);
+          await setDataCheckGiaSku(false);
+          toast1.current.show({
+            severity: "success",
+            summary: "THÔNG BÁO THÀNH CÔNG",
+            detail: "Import Imei Thành Công",
+            life: 3000,
+          });
+          handleCancelNewImei();
+        } else {
+          toast1.current.show({
+            severity: "error",
+            summary: "THÔNG BÁO THẤT BẠI!",
+            detail: "Import Imei Thất Bại",
+            life: 3000,
+          });
+        }
+      } catch (error) {
+        toast1.current.show({
+          severity: "warn",
+          summary: "THÔNG BÁO LỖI!",
+          detail: "Import Imei Lỗi!",
+          life: 3000,
+        });
+      }
+    }
+  };
+
+  //chọn imei đê xoá - checkbox
+  const [selectedCheckboxImeiXoas, setSelectedCheckboxes] = useState([]);
+  function handleCheckboxChange(e) {
+    const checkboxValue = e.target.value;
+    setSelectedCheckboxes((prevSelectedCheckboxes) => {
+      if (e.target.checked) {
+        // Nếu được chọn, thêm giá trị vào danh sách
+        return [...prevSelectedCheckboxes, checkboxValue];
+      } else {
+        // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
+        return prevSelectedCheckboxes.filter((item) => item !== checkboxValue);
+      }
+    });
+  }
+  //Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxes và in giá trị mới
+  // useEffect(() => {
+  //   console.log(selectedCheckboxImeiXoas + " :imei da  xoá++--");
+  // }, [selectedCheckboxImeiXoas]);
+  // //xoá các imei đã được chọn - checkbox - phongnh
+  const handleClearImeiSkuCheckBox = () => {
+    if (selectedCheckboxImeiXoas.length > 0) {
+      deleteImeiCheckbox(selectedCheckboxImeiXoas)
+        .then((response) => {
+          if (response.data === true) {
+            getAllImeisWhereIdSku(dataIdSku)
+              .then((res) => {
+                setDataImeisWhereIdSku(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            readAllSku(dataIdProduct)
+              .then((res) => {
+                setDataSkus(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            toast1.current.show({
+              severity: "success",
+              summary: "THÔNG BÁO THÀNH CÔNG",
+              detail: "Đã Xoá Danh Sách Imei.",
+              life: 3000,
+            });
+            setSelectedCheckboxes([]);
+          } else {
+            toast1.current.show({
+              severity: "error",
+              summary: "THÔNG BÁO THẤT BẠI!",
+              detail: "Xoá Danh Sách Imei Thất Bại!",
+              life: 3000,
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      toast1.current.show({
+        severity: "warn",
+        summary: "THÔNG BÁO XOÁ THẤT BẠI!",
+        detail: "Hãy Chọn Danh Sách Imei!",
+        life: 3000,
+      });
+    }
+  };
+  //config khi xoá cehckbox imei  của sku - phongnh
+  const rejectDeleteImeiCheckBoxSku = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp Tục Thao Tác.",
+      life: 3000,
+    });
+  };
+  const confirmDeleteImeiCheckBoxSku = (idBillDetail, codeBill) => {
+    confirmDialog({
+      message: "Bạn chắc chắn xoá?",
+      header: "XOÁ TẤT CẢ IMEI ĐÃ CHỌN",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleClearImeiSkuCheckBox(),
+      reject: () => rejectDeleteImeiCheckBoxSku(),
+    });
+  };
+
+  //chọn imei đê khôi phục - checkbox
+  const [selectedCheckboxImeiReturn, setSelectedCheckboxImeiReturn] = useState(
+    []
+  );
+  // const [selectedCheckboxImeiXoas, setSelectedCheckboxes] = useState([]);
+  function handleCheckboxChangeImeiReturn(e) {
+    //handleCheckboxChange
+    const checkboxValue = e.target.value;
+    setSelectedCheckboxImeiReturn((prevSelectedCheckboxes) => {
+      if (e.target.checked) {
+        // Nếu được chọn, thêm giá trị vào danh sách
+        return [...prevSelectedCheckboxes, checkboxValue];
+      } else {
+        // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
+        return prevSelectedCheckboxes.filter((item) => item !== checkboxValue);
+      }
+    });
+  }
+  //khôi phục các imei đã được chọn - checkbox - phongnh
+  const handleReturnImeiSkuCheckBox = () => {
+    if (selectedCheckboxImeiReturn.length > 0) {
+      updateImeiCheckbox(selectedCheckboxImeiReturn)
+        .then((response) => {
+          if (response.data === true) {
+            getAllImeisWhereIdSku(dataIdSku)
+              .then((res) => {
+                setDataImeisWhereIdSku(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            readAllSku(dataIdProduct)
+              .then((res) => {
+                setDataSkus(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            toast1.current.show({
+              severity: "success",
+              summary: "THÔNG BÁO THÀNH CÔNG",
+              detail: "Đã Khôi Phục Danh Sách Imei.",
+              life: 3000,
+            });
+            setSelectedCheckboxImeiReturn([]);
+          } else {
+            toast1.current.show({
+              severity: "error",
+              summary: "THÔNG BÁO THẤT BẠI!",
+              detail: "Khôi Phục Danh Sách Imei Thất Bại!",
+              life: 3000,
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      toast1.current.show({
+        severity: "warn",
+        summary: "THÔNG BÁO KHÔI PHỤC THẤT BẠI!",
+        detail: "Hãy Chọn Danh Sách Imei!",
+        life: 3000,
+      });
+    }
+  };
+  //Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxImeiReturn và in giá trị mới
+  // useEffect(() => {
+  //   console.log(selectedCheckboxImeiReturn + " :imei khoi phuc++--");
+  // }, [selectedCheckboxImeiReturn]);
+
+  //config khi khôi phục cehckbox imei  của sku - phongnh
+  const rejectDeleteImeiCheckBoxSkuReturn = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp Tục Thao Tác.",
+      life: 3000,
+    });
+  };
+  const confirmUpdateImeiCheckBoxSku = (idBillDetail, codeBill) => {
+    confirmDialog({
+      message: "Bạn chắc chắn khôi phục?",
+      header: "KHÔI PHỤC TẤT CẢ IMEI ĐÃ CHỌN",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleReturnImeiSkuCheckBox(),
+      reject: () => rejectDeleteImeiCheckBoxSkuReturn(),
+    });
+  };
   const moreMenu2 = (sku) => (
     <>
       {sku.statusSku === 0 && sku.statusProduct === 0 ? (
@@ -1116,13 +1510,25 @@ const UserAccountTable = ({ record }) => {
             dataIndex="isActive"
             title="Trạng Thái"
             render={(value, record) => {
-              return record.statusSku === 0 ? (
+              return record.statusSku === 0 && record.sumImeiTrongKho > 0 ? (
                 <CheckCircleOutlined
                   value={true}
                   style={{
                     color: "#52c41a",
                   }}
                 />
+              ) : record.statusSku === 0 && record.sumImeiTrongKho === 0 ? (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>
+                    <WarningFilled
+                      value={false}
+                      style={{
+                        color: "#FFCC00",
+                      }}
+                    />
+                  </p>
+                  Hết hàng
+                </Form.Item>
               ) : record.statusSku === 1 ? (
                 <CloseCircleOutlined
                   value={false}
@@ -1160,7 +1566,7 @@ const UserAccountTable = ({ record }) => {
                         backgroundColor: "green",
                       }}
                       onClick={() => {
-                        handleGetAllImei(record.idSku);
+                        handleGetAllImei(record.idSku, record.idProduct);
                         // handleAddImei(billDetail.idSKU, billDetail.id);
                         // setIndexTest(index);
                       }}
@@ -1296,7 +1702,7 @@ const UserAccountTable = ({ record }) => {
                   backgroundColor: "orange",
                 }}
               >
-                Danh Sách Imei Đã Chọn Của
+                Danh Sách Imei Đã Chọn Của {dataIdSku} hihi {dataIdProduct}
               </p>
 
               <input
@@ -1342,7 +1748,7 @@ const UserAccountTable = ({ record }) => {
                   }}
                   className="col-2 btn-xoa"
                   danger
-                  // onClick={() => confirmDeleteImeiCheckBoxBillDetail()}
+                  onClick={() => addNewImei(dataIdSku, dataIdProduct)}
                 >
                   Add Imei
                 </Button>
@@ -1358,7 +1764,9 @@ const UserAccountTable = ({ record }) => {
                   }}
                   className="col-2 btn-xoa"
                   danger
-                  // onClick={() => confirmDeleteImeiCheckBoxBillDetail()}
+                  onClick={() =>
+                    confirmDeleteImeiCheckBoxSku(dataIdSku, dataIdProduct)
+                  }
                 >
                   Xoá Imeis
                 </Button>
@@ -1374,7 +1782,9 @@ const UserAccountTable = ({ record }) => {
                   }}
                   className="col-2 btn-xoa"
                   danger
-                  // onClick={() => confirmDeleteImeiCheckBoxBillDetail()}
+                  onClick={() =>
+                    confirmUpdateImeiCheckBoxSku(dataIdSku, dataIdProduct)
+                  }
                 >
                   Khôi Phục
                 </Button>
@@ -1401,7 +1811,7 @@ const UserAccountTable = ({ record }) => {
                     <span>STT</span>
                   </div>
                   <div style={{ paddingLeft: "10px" }}>
-                    <span>Chọn Imei</span>
+                    <span>Xoá Imei</span>
                   </div>
                   <div style={{ paddingLeft: "118px" }}>
                     <span>Mã Imei</span>
@@ -1436,19 +1846,20 @@ const UserAccountTable = ({ record }) => {
 
                           <div
                             style={{
-                              margin: "outo",
-                              textAlign: "center",
+                              // margin: "outo",
+                              // textAlign: "center",
                               width: "20px",
+                              paddingLeft: "10px",
                             }}
                           >
                             {imei.status === 0 ? (
                               <input
                                 type="checkbox"
-                                value={imei.codeImeiDaBan}
-                                // checked={selectedCheckboxes.includes(
-                                //   imei.codeImeiDaBan
-                                // )}
-                                // onChange={handleCheckboxChange}
+                                value={imei.codeImei}
+                                checked={selectedCheckboxImeiXoas.includes(
+                                  imei.codeImei
+                                )}
+                                onChange={handleCheckboxChange}
                               />
                             ) : imei.status === 1 ? (
                               <span>-</span>
@@ -1460,14 +1871,6 @@ const UserAccountTable = ({ record }) => {
                               "!"
                             )}
                           </div>
-                          {/* <input
-                        type="checkbox"
-                        value={imei.codeImeiDaBan}
-                        // checked={selectedCheckboxes.includes(
-                        //   imei.codeImeiDaBan
-                        // )}
-                        // onChange={handleCheckboxChange}
-                      /> */}
 
                           <span style={{ paddingLeft: "10px" }}>
                             {imei.codeImei}
@@ -1511,7 +1914,7 @@ const UserAccountTable = ({ record }) => {
                                   style={{
                                     paddingLeft: "5px",
                                     paddingRight: "5px",
-                                    backgroundColor: "#99FF99",
+                                    backgroundColor: "#FF6600",
                                     margin: "outo",
                                     textAlign: "center",
                                     borderRadius: "5px",
@@ -1560,11 +1963,11 @@ const UserAccountTable = ({ record }) => {
                             ) : imei.status === 1 ? (
                               <input
                                 type="checkbox"
-                                value={imei.codeImeiDaBan}
-                                // checked={selectedCheckboxes.includes(
-                                //   imei.codeImeiDaBan
-                                // )}
-                                // onChange={handleCheckboxChange}
+                                value={imei.codeImei}
+                                checked={selectedCheckboxImeiReturn.includes(
+                                  imei.codeImei
+                                )}
+                                onChange={handleCheckboxChangeImeiReturn}
                               />
                             ) : imei.status === 2 ? (
                               <span>-</span>
@@ -2118,6 +2521,245 @@ const UserAccountTable = ({ record }) => {
                 </p>
               </div> */}
               {/* </Row> */}
+            </div>
+          </div>
+        </Modal>
+
+        {/* modal add new imei - phongnh*/}
+        <Modal
+          visible={isModalVisibleNewImei}
+          onCancel={handleCancelNewImei}
+          width={500}
+          footer={null}
+          bodyStyle={{ minHeight: "600px" }}
+        >
+          <div className="container py-15">
+            <div className="row d-flex justify-content-center">
+              {/* <div className="card"> */}
+              <div>
+                <h4
+                  className="mb-0"
+                  style={{ textAlign: "center", margin: "auto" }}
+                >
+                  THÊM MỚI IMEI
+                </h4>
+              </div>
+              <div
+                className="card-header d-flex justify-content-between align-items-center p-3"
+                style={{ borderTop: "4px solid green" }}
+              ></div>
+              <div style={{ marginBottom: "10px" }}>
+                <h6
+                  className="mb-0"
+                  style={{ textAlign: "left", margin: "auto" }}
+                >
+                  Tên Sản Phẩm: {dataIdProduct} - {"Phiên bản"} - {dataIdSku}
+                </h6>
+              </div>
+              <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-row">
+                    <div className="col-8" style={{ marginLeft: "0px" }}>
+                      <div className="input-data">
+                        <Input
+                          type="text"
+                          required
+                          value={imeiItem.codeImei || ""}
+                          onChange={handleChange}
+                          id="codeImei"
+                          name="codeImei"
+                        ></Input>
+                        <div className="underline"></div>
+                        <label htmlFor="">Mã Imei</label>
+                      </div>
+                    </div>
+                    <div className="col-2"></div>
+                    <div className="col-2" style={{ marginLeft: "0px" }}>
+                      <div
+                        style={{
+                          borderRadius: "10px",
+                          marginLeft: "0px",
+                        }}
+                      >
+                        {/* <div className="inner"></div> */}
+                        {/* <Input type="submit" value={"Submit"}></Input> */}
+                        <button
+                          type="submit"
+                          class="btn btn-outline-success"
+                          style={{
+                            marginLeft: "0px",
+                          }}
+                        >
+                          Save
+                        </button>
+                      </div>
+                      {/* <button class="btn btn-light" type="button">
+                          <Link to="">
+                            <FontAwesomeIcon icon={faTimesCircle} />X
+                          </Link>
+                        </button> */}
+                    </div>
+                    <br />
+                  </div>
+                  {dataCheckGiaSku === true ? (
+                    <div className="form-row" style={{ marginTop: "20px" }}>
+                      <div className="col-8" style={{ marginLeft: "0px" }}>
+                        <div className="input-data">
+                          <Input
+                            type="number"
+                            required
+                            value={imeiItem.price || ""}
+                            onChange={handleChange}
+                            id="price"
+                            name="price"
+                          ></Input>
+                          <div className="underline"></div>
+                          <label htmlFor="">Giá</label>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </form>
+              </div>
+              <div
+                className="card-header d-flex justify-content-between align-items-center p-3"
+                style={{ borderTop: "4px solid green" }}
+              ></div>
+              <div style={{ marginTop: "10px" }}>
+                <form onSubmit={handleImportImei} enctype="multipart/form-data">
+                  <div className="form-row">
+                    <div className="col-8" style={{ marginLeft: "0px" }}>
+                      <div className="input-data">
+                        <Input
+                          type="file"
+                          accept=".xls,.xlsx"
+                          onChange={handleFileUpload}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-2"></div>
+                    <div className="col-2" style={{ marginRight: "0px" }}>
+                      <button type="submit" class="btn btn-outline-success">
+                        Import
+                      </button>
+                    </div>
+                  </div>
+                  {/* <br></br> */}
+
+                  {/* <div className="form-row">
+                    <div className="input-data textarea">
+                      <div className="form-row submit-btn">
+                        <button type="submit" class="btn btn-outline-secondary">
+                          Save Import Imei
+                        </button>
+                      </div>
+                    </div>
+                  </div> */}
+                </form>
+                <div
+                  className="card-body"
+                  data-mdb-perfect-scrollbar="true"
+                  style={{
+                    position: "relative",
+                    height: 500, // điều chỉnh table dài ra
+                    overflowY: "auto",
+                  }}
+                >
+                  {isCheckImei != null && isCheckImei.length > 0 ? (
+                    // <div className="table-wrap">
+                    //   <p style={{ color: "red" }}>* Imei Trung Lap</p>
+                    //   <table class="table">
+                    //     <thead class="table-dark">
+                    //       <th>STT</th>
+                    //       <th>PRODUCT</th>
+                    //       <th>COLOR</th>
+                    //       <th>CAPACITY</th>
+                    //       <th>IMEI</th>
+                    //       <th>PRICE</th>
+                    //     </thead>
+                    //     <tbody>
+                    //       {isCheckImei.map((s, index) => {
+                    //         return (
+                    //           <tr className="alert" role="alert" key={s.id}>
+                    //             <td>{index + 1}</td>
+                    //             <td>{s.nameProduct}</td>
+                    //             <td>{s.color}</td>
+                    //             <td>{s.capacity}</td>
+                    //             <td>{s.codeImei}</td>
+                    //             <td>{s.price}</td>
+                    //           </tr>
+                    //         );
+                    //       })}
+                    //     </tbody>
+                    //   </table>
+                    //   </div>
+                    <div>
+                      <p style={{ color: "red" }}>* Imei Trung Lap</p>
+                      <div style={{ backgroundColor: "#FF0000" }}>
+                        <Row>
+                          <div>
+                            <span>STT</span>
+                          </div>
+                          <div style={{ paddingLeft: "10px" }}>
+                            <span>Sản Phẩm</span>
+                          </div>
+                          <div style={{ paddingLeft: "118px" }}>
+                            <span>Mã Imei</span>
+                          </div>
+                          <div style={{ paddingLeft: "10px" }}>
+                            <span>price</span>
+                          </div>
+                        </Row>
+                      </div>
+                      <ul class="list-group mb-3">
+                        {isCheckImei.map((imei, index) => (
+                          <ul class="list-group mb-3">
+                            <li class="list-group-item d-flex justify-content-between">
+                              <span>{index + 1}</span>
+
+                              <span style={{ paddingLeft: "10px" }}>
+                                <span>{imei.nameProduct}</span>
+                                <br />
+                                <span>
+                                  {imei.capacity}
+                                  {" - "}
+                                  {imei.color}
+                                </span>
+                              </span>
+                              <span>{imei.codeImei}</span>
+                              <span>{imei.price}</span>
+                            </li>
+                          </ul>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p></p>
+                  )}
+                  {excelData !== null && excelData.length > 0 ? (
+                    <div>
+                      <p style={{ width: "400px", color: "red" }}>
+                        Imei Doc Tu File Excel Vui Long Check Lai Truoc Khi Luu
+                      </p>
+                      <ul class="list-group mb-3">
+                        {excelData.map((row, rowIndex) => (
+                          <ul key={rowIndex} class="list-group mb-3">
+                            <li class="list-group-item d-flex justify-content-between">
+                              {row.map((cell, cellIndex) => (
+                                <span key={cellIndex}>{cell}</span>
+                              ))}
+                            </li>
+                          </ul>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <p>Chọn tệp Excel để hiển thị dữ liệu.</p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </Modal>

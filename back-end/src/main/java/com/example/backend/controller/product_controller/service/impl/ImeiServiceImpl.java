@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -110,9 +112,9 @@ public class ImeiServiceImpl implements Iservice<Imei> {
             imeiRepository.save(imei);
             countImei++;
             System.out.println("hihih ------: " + imei.getCodeImei() + "hihih ------: " + imei.getIdSku() +
-                    "hihih ------: "  + imei.getIdProduct().getId());
+                    "hihih ------: " + imei.getIdProduct().getId());
         }
-        System.out.println("--------------------- countImei: "+countImei);
+        System.out.println("--------------------- countImei: " + countImei);
         sku.setQuantity(countImei);
         skuRepository.save(sku);
 
@@ -172,6 +174,25 @@ public class ImeiServiceImpl implements Iservice<Imei> {
         //- List imei trùng (Nếu có) -TH: 3
         List<ImportImei> trungImeiList = new ArrayList<>();
 
+        //TH1: *kiểm tra xem các imei trong file excel truyền vào có imei nào trùng nhau hay không
+        // Sử dụng Set để kiểm tra code trùng nhau
+        Set<String> codeSet = new HashSet<>();
+
+        if (!(listImportExcel == null)){
+            for (ImportImei imei : listImportExcel) {
+                //Trong đoạn mã trên, chúng ta sử dụng Set<String> để theo dõi các code đã xuất hiện.
+                //Nếu add trả về false, đó có nghĩa là code đã tồn tại và được thêm vào duplicateCodes.
+                if (!codeSet.add(imei.getCodeImei())) {
+                    // Nếu code đã tồn tại trong Set, đây là code trùng nhau
+                    trungImeiList.add(imei);
+                }
+            }
+            if (trungImeiList.size()>0){
+                return trungImeiList;
+            }
+        }
+
+
         //Trường hợp 2: chưa có imei nào trong dữ liệu và file import excel imei có dữ liệu
         if (stringGetAllListCodeImei.isEmpty() && !listStringCodeImeiImportExcel.isEmpty()) {
             //trường hợp này vì là trong dữ liệu chưa có imei nào nên không cần check trùng imei
@@ -180,6 +201,7 @@ public class ImeiServiceImpl implements Iservice<Imei> {
                 //Tạo đối tượng Imei và sét giá trị
                 Imei imei = new Imei();
                 imei.setCodeImei(importImei.getCodeImei());
+                imei.setStatus(0);
                 imei.setIdSku(skuUpdate);
                 imei.setIdProduct(skuUpdate.getProduct());
 
@@ -225,6 +247,7 @@ public class ImeiServiceImpl implements Iservice<Imei> {
                     //Tạo đối tượng Imei và sét giá trị
                     Imei imei = new Imei();
                     imei.setCodeImei(importImei.getCodeImei());
+                    imei.setStatus(0);
                     imei.setIdSku(skuUpdate);
                     imei.setIdProduct(skuUpdate.getProduct());
                     //save imei

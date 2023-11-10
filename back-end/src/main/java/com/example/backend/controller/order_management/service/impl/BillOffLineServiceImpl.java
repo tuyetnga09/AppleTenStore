@@ -102,7 +102,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     }
 
     private String randomMaHoaDon() {
-        //tạo code bill theo quy tắc (này hiện tại + mã ramdom VD: 20231025MHAVGGVJ)
+        //tạo code bill theo quy tắc (này hiện tại + mã ramdom VD: 20231025MPHMHAVGGVJ)
         LocalDate now = LocalDate.now();
         // Định dạng theo "yyyyMMdd"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
