@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public class Config {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_ReturnUrl = "http://localhost:3000/paydone";
+
+//    public static String vnp_ReturnUrl = "http://localhost:8080";
     public static String vnp_TmnCode = "2EXTQI1O";
     public static String secretKey = "PLQBCBPXMRMCVRNXBQLNYNXURXBGNSNU";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";

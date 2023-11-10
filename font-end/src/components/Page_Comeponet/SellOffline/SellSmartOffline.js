@@ -2428,6 +2428,22 @@ export default function SellSmart() {
                                     ...dataDoneBill,
                                     idSku: arrIdSku,
                                   });
+                                  for (
+                                    let index = 0;
+                                    index < dataBillDetailOffline.length;
+                                    index++
+                                  ) {
+                                    if (
+                                      dataBillDetailOffline[index].idSKU ===
+                                      record.idSKU
+                                    ) {
+                                      const quantity = document.getElementById(
+                                        `quantity-${index}`
+                                      );
+                                      quantity.value =
+                                        parseInt(quantity.value) + 1;
+                                    }
+                                  }
                                 } else {
                                   notification.error({
                                     message: "ADD TO CART",
@@ -3199,8 +3215,7 @@ export default function SellSmart() {
                             onClick={() => {
                               console.log(dataDoneBill);
                               console.log(dataBillDetailOffline);
-                              // console.log(dataBillOffLine);
-                              console.log(fee);
+                              console.log(arrCodeImeiDaBan);
                             }}
                           >
                             {" "}
@@ -3681,12 +3696,16 @@ export default function SellSmart() {
                             <Button
                               type="text"
                               danger
-                              onClick={() =>
+                              onClick={() => {
                                 handleClearImeiDaBan(
                                   imei.idImeiDaBan,
                                   imei.codeImeiDaBan
-                                )
-                              }
+                                );
+                                let filteredArray = arrCodeImeiDaBan.filter(
+                                  (item) => item !== imei.codeImeiDaBan
+                                );
+                                arrCodeImeiDaBan = filteredArray;
+                              }}
                             >
                               Hủy
                             </Button>

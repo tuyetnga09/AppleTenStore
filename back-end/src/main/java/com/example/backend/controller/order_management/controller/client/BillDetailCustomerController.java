@@ -23,4 +23,9 @@ public class BillDetailCustomerController {
     public List<BillDetailCustomerResponse> getAll(@RequestParam("id") Integer id){
         return billDetailService.getAll(id);
     }
+
+    @GetMapping("getAllByCustomer")
+    public List<BillDetailCustomerResponse> getAllByCustomer(@RequestParam("id") Integer id){
+        return billDetailService.getAllByCustomer(id);
+    }
 }

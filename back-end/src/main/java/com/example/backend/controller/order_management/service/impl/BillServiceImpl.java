@@ -47,39 +47,47 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     // CLIENT
     @Override
-    public String createBillCustomerOnlineRequest(BillRequestOnline request) {
-        // tạo người dùng
-        User user = User.builder()
+    public Bill createBillCustomerOnlineRequest(BillRequestOnline request) {
+        Customer customer = Customer.builder()
                 .fullName(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
-                .email(request.getEmail())
-                .status(Status.DANG_SU_DUNG)
-                .dateCreate(new Date(new java.util.Date().getTime()))
-                .points(0).build();
-        userRepository.save(user);
-        // account khách hàng
-        Account account = Account.builder()
-                .user(user)
-                .email(request.getEmail())
-                .status(Status.DANG_SU_DUNG)
-                .dateCreate(new Date(new java.util.Date().getTime()))
-                .password(new Random().randomPassword())
-                // sau cho them roles vao day nua
-                .build();
-        acountRepository.save(account);
+                .email(request.getEmail()).build();
+        customerRepository.save(customer);
+        // tạo người dùng
+//        User user = User.builder()
+//                .fullName(request.getUserName())
+//                .phoneNumber(request.getPhoneNumber())
+//                .email(request.getEmail())
+//                .status(Status.DANG_SU_DUNG)
+//                .dateCreate(new Date(new java.util.Date().getTime()))
+//                .points(0).build();
+//        userRepository.save(user);
+//        // account khách hàng
+//        Account account = Account.builder()
+//                .user(user)
+//                .email(request.getEmail())
+//                .status(Status.DANG_SU_DUNG)
+//                .dateCreate(new Date(new java.util.Date().getTime()))
+//                .password(new Random().randomPassword())
+//                // sau cho them roles vao day nua
+//                .build();
+//        acountRepository.save(account);
 
-        // địa chỉ giao hàng của khách hàng mua hàng
-        Address address = Address.builder()
-                .status(Status.DANG_SU_DUNG)
-                .user(user)
-                .address(request.getAddress())
-                .quanHuyen(request.getDistrict())
-                .tinhThanhPho(request.getProvince())
-                .dateCreate(new Date(new java.util.Date().getTime()))
-                .xaPhuong(request.getWards()).build();
-        addressRepository.save(address);
+//        // địa chỉ giao hàng của khách hàng mua hàng
+//        Address address = Address.builder()
+//                .status(Status.DANG_SU_DUNG)
+//                .user(user)
+//                .address(request.getAddress())
+//                .quanHuyen(request.getDistrict())
+//                .tinhThanhPho(request.getProvince())
+//                .dateCreate(new Date(new java.util.Date().getTime()))
+//                .xaPhuong(request.getWards()).build();
+//        addressRepository.save(address);
 
         // thông tin hoá đơn
         Bill bill = Bill.builder()
@@ -94,7 +102,9 @@ public class BillServiceImpl implements BillService {
                 .typeBill(TypeBill.ONLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .dateCreate(LocalDate.now())
-                .account(account).build();
+//                .account(account).
+        .customer(customer).
+                build();
         billRepository.save(bill);
 
         // lịch sử thông tin hoá đơn
@@ -146,15 +156,15 @@ public class BillServiceImpl implements BillService {
                     .build();
             voucherDetailRepository.save(voucherDetail);
         } else {
-            return "Lỗi";
+            return null;
         }
 
-        return "Finished";
+        return bill;
 
     }
 
     @Override
-    public String createBillAccountOnlineRequest(BillRequestOnlineAccount request) {
+    public Bill createBillAccountOnlineRequest(BillRequestOnlineAccount request) {
         Optional<Account> accountOptional = acountRepository.findById(request.getAccount());
 
         if (accountOptional.isPresent()) {
@@ -226,7 +236,7 @@ public class BillServiceImpl implements BillService {
                 List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndSku_Id(cart.getId(), x.getSku());
                 cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
             }
-            return "thanh toán ok";
+            return bill;
         }
 
         return null;
@@ -307,13 +317,13 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<Bill> searchNoDate(String key, String status, String user) {
-        return billRepository.searchNoDate(key, status, user);
+    public List<Bill> searchNoDate(String key, String status) {
+        return billRepository.searchNoDate(key, status);
     }
 
     @Override
-    public List<Bill> searchWithDate(String key, String status, String user, LocalDate dateStart, LocalDate dateEnd) {
-        return billRepository.searchWithDate(key, status, user, dateStart, dateEnd);
+    public List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd) {
+        return billRepository.searchWithDate(key, status, dateStart, dateEnd);
     }
 
     @Override
@@ -340,6 +350,11 @@ public class BillServiceImpl implements BillService {
     @Override
     public List<Bill> listBillByIdAccountCXN(Integer id) {
         return billRepository.listBillByIdAccountCXN(id);
+    }
+
+    @Override
+    public List<Bill> listBillByIdAccountCVC(Integer id) {
+        return billRepository.listBillByIdAccountCVC(id);
     }
 
     @Override

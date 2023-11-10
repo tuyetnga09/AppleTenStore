@@ -14,6 +14,8 @@ public interface BillDetailService {
 
     List<BillDetailCustomerResponse> getAll(Integer id);
 
+    List<BillDetailCustomerResponse> getAllByCustomer(Integer id);
+
     void updateQuantity(Integer id, Integer newQuantity);
 
 }

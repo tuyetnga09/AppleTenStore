@@ -133,6 +133,11 @@ public class BillController {
         return billService.listBillByIdAccountCXN(id);
     }
 
+    @GetMapping("/CVC")
+    public List<Bill> listBillByIdAccountCVC(@RequestParam("id") Integer id){
+        return billService.listBillByIdAccountCVC(id);
+    }
+
     @GetMapping("/VC")
     public List<Bill> listBillByIdAccountVC(@RequestParam("id") Integer id){
         return billService.listBillByIdAccountVC(id);
