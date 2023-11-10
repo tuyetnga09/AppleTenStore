@@ -288,11 +288,10 @@ export default function SellSmart() {
     }
   };
 
-  const { PDFDocument, rgb, StandardFonts  } = require("pdf-lib");
+  const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
   const unidecode = require("unidecode");
 
   async function createPDFWithInvoice(codeBill, codeAccount) {
-
     // Tạo một tài liệu PDF mới
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 400]);
@@ -308,7 +307,7 @@ export default function SellSmart() {
     // Vẽ thông tin hóa đơn lên trang
     page.drawText("APPLETENSTORE", {
       x: 200,
-      y: height - 50, 
+      y: height - 50,
       size: 24,
       font: customFont,
       color: rgb(0, 0, 0),
@@ -2233,6 +2232,22 @@ export default function SellSmart() {
                                     ...dataDoneBill,
                                     idSku: arrIdSku,
                                   });
+                                  for (
+                                    let index = 0;
+                                    index < dataBillDetailOffline.length;
+                                    index++
+                                  ) {
+                                    if (
+                                      dataBillDetailOffline[index].idSKU ===
+                                      record.idSKU
+                                    ) {
+                                      const quantity = document.getElementById(
+                                        `quantity-${index}`
+                                      );
+                                      quantity.value =
+                                        parseInt(quantity.value) + 1;
+                                    }
+                                  }
                                 } else {
                                   notification.error({
                                     message: "ADD TO CART",
@@ -2906,9 +2921,8 @@ export default function SellSmart() {
                               onChange={calculateChange}
                               onBlur={(event) => {
                                 if (event.target.value <= 0) {
-                                  const quantity = document.getElementById(
-                                    `amountGiven`
-                                  );
+                                  const quantity =
+                                    document.getElementById(`amountGiven`);
                                   quantity.value = 0;
                                   setTienThua(soTienThanhToan);
                                 }
@@ -2950,9 +2964,8 @@ export default function SellSmart() {
                               onChange={calculateChange}
                               onBlur={(event) => {
                                 if (event.target.value <= 0) {
-                                  const quantity = document.getElementById(
-                                    `transferAmount`
-                                  );
+                                  const quantity =
+                                    document.getElementById(`transferAmount`);
                                   quantity.value = 0;
                                   setTienThua(soTienThanhToan);
                                 }

@@ -464,12 +464,10 @@ const Checkout = () => {
     const tienMat = document.getElementById("httt-1");
     if (tienMat.checked === true) {
       setIsChecked(true);
-      localStorage.removeItem("bill");
     }
     const vnpay = document.getElementById("httt-2");
     if (vnpay.checked == true) {
       setIsChecked(false);
-      localStorage.setItem("bill", JSON.stringify(bill));
     }
   }
 
@@ -602,12 +600,14 @@ const Checkout = () => {
     setLoading(true);
     const tienMat = document.getElementById("httt-1");
     if (tienMat.checked === true) {
+      localStorage.removeItem("bill");
       if (idAccount !== "") {
         createBillAccount(bill)
           .then((response) => {
             console.log(response.data);
             setLoading(false);
-            history.push(`/paydone/${response.data.data.code}`);
+            localStorage.setItem("bill2", JSON.stringify(bill));
+            history.push(`/paydone`);
           })
           .catch((error) => {
             console.log(error);
@@ -617,7 +617,8 @@ const Checkout = () => {
           .then((response) => {
             console.log(response.data);
             setLoading(false);
-            history.push(`/paydone/${response.data.data.code}`);
+            localStorage.setItem("bill2", JSON.stringify(bill));
+            history.push(`/paydone`);
           })
           .catch((error) => {
             console.log(error);
@@ -629,6 +630,7 @@ const Checkout = () => {
     }
     const vnpay = document.getElementById("httt-2");
     if (vnpay.checked == true) {
+      localStorage.setItem("bill", JSON.stringify(bill));
       getPay(soTienThanhToan)
         .then((res) => {
           setLoading(false);
@@ -637,43 +639,6 @@ const Checkout = () => {
         .catch((err) => {
           console.log(err);
         });
-      // if (idAccount !== "") {
-      //   createBillAccount(bill)
-      //     .then((response) => {
-      //       console.log(response.data);
-      //       // history.push(`/paydone/${response.data.data.code}`);
-      //       getPay(soTienThanhToan, response.data.data.code)
-      //         .then((res) => {
-      //           setLoading(false);
-      //           window.location.replace(res.data);
-      //         })
-      //         .catch((err) => {
-      //           console.log(err);
-      //         });
-      //     })
-      //     .catch((error) => {
-      //       console.log(error);
-      //     });
-      // } else {
-      //   createBill(bill)
-      //     .then((response) => {
-      //       console.log(response.data);
-      //       getPay(soTienThanhToan, response.data.data.code)
-      //         .then((res) => {
-      //           setLoading(false);
-      //           window.location.replace(res.data);
-      //         })
-      //         .catch((err) => {
-      //           console.log(err);
-      //         });
-      //     })
-      //     .catch((error) => {
-      //       console.log(error);
-      //     });
-      //   sessionStorage.removeItem("cartItems");
-      //   setProducts([]);
-      //   setTotalPrice(0);
-      // }
     }
   }
 

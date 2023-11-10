@@ -78,8 +78,10 @@ import OderUserDaHuy from "./components/Page_Comeponet/OderUser/DaHuy";
 import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
 import product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/sku/index";
 import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 function App() {
+  const storedUser = localStorage.getItem("account");
   return (
     <div>
       <Router>
@@ -204,9 +206,22 @@ function App() {
           <Route path="/voucher" exact component={Voucher} />
           <Route path="/cart" exact component={Cart} />
           <Route path="/checkout" exact component={Checkout} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/signup" exact component={SignUp} />
-          <Route path="/forgotpassword" exact component={ForgotPassword} />
+          {/* <Route path="/login" exact component={Login} /> */}
+          {/* <Route path="/signup" exact component={SignUp} /> */}
+          {/* <Route path="/signup/admin" exact component={SignUpAdmin} /> */}
+          {/* <Route path="/forgotpassword" exact component={ForgotPassword} /> */}
+          <Route path="/login">
+            {storedUser !== null ? <Redirect to="/" /> : <Login />}
+          </Route>
+          <Route path="/signup">
+            {storedUser !== null ? <Redirect to="/" /> : <SignUp />}
+          </Route>
+          <Route path="/signup/admin">
+            {storedUser !== null ? <Redirect to="/" /> : <SignUpAdmin />}
+          </Route>
+          <Route path="/forgotpassword">
+            {storedUser !== null ? <Redirect to="/" /> : <ForgotPassword />}
+          </Route>
           <Route path="/orders" exact component={OderDisplay} />
           <Route path="/chats" exact component={ChatManager} />
           <Route path="/sku/display" exact component={SkuDisplay} />
@@ -214,7 +229,7 @@ function App() {
           <Route path="/users" exact component={AccountList} />
           <Route path="/sell" exact component={SellOffline} />
           <Route path="/paydone" exact component={Paydone} />
-          <Route path="/signup/admin" exact component={SignUpAdmin} />
+
           <Route path="/oderUserAll" exact component={OderUserAll} />
           <Route path="/oderUserCTT" exact component={OderUserChoThanhToan} />
           <Route path="/oderUserCVC" exact component={OderUserChoVanChuyen} />
