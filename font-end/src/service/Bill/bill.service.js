@@ -15,8 +15,8 @@ export const createBillAccount = (billAccount) => {
   return httpClient.post(`/customer/bill/account`, billAccount);
 }
 
-export const updateStatusBill = (id) => {
-  return httpClient.put(`/customer/bill/update-status/${id}`);
+export const updateStatusBill = (idAccount, id) => {
+  return httpClient.put(`/customer/bill/update-status/${id}?idAccount=${idAccount}`);
 }
 
 export const findBillByCode = (code) => {

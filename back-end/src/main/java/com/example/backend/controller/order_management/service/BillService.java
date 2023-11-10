@@ -23,7 +23,7 @@ public interface BillService {
 
     List<Bill> searchWithDate(String key, String status, String user, LocalDate dateStart, LocalDate dateEnd);
 
-    void updateStatusBill(int id);
+    void updateStatusBill(Integer idAccount,int id);
 
     Bill findByCode(String code);
 

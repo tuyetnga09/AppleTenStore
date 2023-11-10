@@ -317,8 +317,15 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public void updateStatusBill(int id) {
-        this.billRepository.updateBillStatus(id);
+    public void updateStatusBill(Integer idAccount,int id) {
+        Bill bill = billRepository.findById(id).get();
+        Account account = acountRepository.findById(idAccount).get();
+        StatusBill statusBill = StatusBill.CHO_VAN_CHUYEN;
+        bill.setStatusBill(statusBill);
+        bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
+        bill.setDateUpdate(LocalDate.now());
+        billRepository.save(bill);
+//        this.billRepository.updateBillStatus(id);
     }
 
     @Override
