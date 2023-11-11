@@ -53,5 +53,5 @@ public interface IProductDetailService {
     Boolean checkBoxListImei(List<String> codeImeis,Integer status);
 
     //cập nhật all imei hoạt động -> xoá (xoá all imei)
-    Boolean updateAllImei();
+    Boolean updateAllImei(Integer statusUpdate, Long idSku, Integer status);
 }

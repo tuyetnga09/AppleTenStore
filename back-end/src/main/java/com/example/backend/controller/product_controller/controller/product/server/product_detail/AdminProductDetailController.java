@@ -136,4 +136,23 @@ public class AdminProductDetailController {
         Boolean check = productDetailService.checkBoxListImei(listImei, status);
         return new ResponseEntity<>(check, HttpStatus.OK);
     }
+
+    //cập nhật all imei hoạt động -> xoá
+    @PutMapping("/delete-all-imei")
+    public ResponseEntity<Boolean> deleteAllImei(@RequestParam("idSku") Long idSku) {
+        Integer statusBeforeUpdate = 0;
+        Integer statusAfterUpdate = 1;
+        Boolean check = productDetailService.updateAllImei(statusAfterUpdate,idSku,statusBeforeUpdate);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
+    //cập nhật all imei   xoá ->  hoạt động
+    @PutMapping("/return-all-imei")
+    public ResponseEntity<Boolean> returnAllImei(@RequestParam("idSku") Long idSku) {
+        Integer statusBeforeUpdate = 0;
+        Integer statusAfterUpdate = 1;
+        Boolean check = productDetailService.updateAllImei(statusBeforeUpdate,idSku,statusAfterUpdate);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
 }

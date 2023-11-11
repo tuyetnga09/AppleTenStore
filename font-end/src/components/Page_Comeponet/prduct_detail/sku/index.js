@@ -14,6 +14,8 @@ import {
   getSkuIonAdmin,
   deleteImeiCheckbox,
   updateImeiCheckbox,
+  deleteAllImei,
+  returnAllImei,
 } from "../../../../service/product_detail/sku/sku.service";
 import {
   readImportImei,
@@ -750,27 +752,33 @@ const UserAccountTable = ({ record }) => {
 
   const [selectedOption, setSelectedOption] = useState("");
 
+  //chọn imei đê xoá - checkbox
+  const [selectedCheckboxImeiXoas, setSelectedCheckboxes] = useState([]);
   //khai bbáo list imei lọc thoe idSku and status
   const [dataImeisLoc, setDataImeisLoc] = useState([]);
 
   // Xử lý sự kiện thay đổi lựa chọn lấy list imei lọc thoe idSku and status
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
-    getAllImeiWhereIdSkuAndStatus(dataIdSku, event.target.value)
-      .then((res) => {
-        console.log(event.target.value);
-        if (res.data.length === 0) {
+    if (event.target.value === "99") {
+      setDataImeisLoc([]);
+    } else {
+      getAllImeiWhereIdSkuAndStatus(dataIdSku, event.target.value)
+        .then((res) => {
+          console.log(event.target.value);
           if (res.data.length === 0) {
-            notification.warning({
-              message: "Không có dữ liệu!",
-            });
+            if (res.data.length === 0) {
+              notification.warning({
+                message: "Không có dữ liệu!",
+              });
+            }
           }
-        }
-        setDataImeisLoc(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+          setDataImeisLoc(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   // xoá 1 imei
@@ -778,7 +786,20 @@ const UserAccountTable = ({ record }) => {
     deleteImei(id)
       .then((res) => {
         if (res.data === true) {
-          console.log(dataIdSku + " llllo");
+          // if (dataImeisLoc.length > 0) {
+          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+          //     .then((res) => {
+          //       if (res.data.length === 0) {
+          //         notification.warning({
+          //           message: "Không có dữ liệu!",
+          //         });
+          //       }
+          //       setDataImeisLoc(res.data);
+          //     })
+          //     .catch((err) => {
+          //       console.log(err);
+          //     });
+          // }
           getAllImeisWhereIdSku(dataIdSku)
             .then((res) => {
               setDataImeisWhereIdSku(res.data);
@@ -830,6 +851,20 @@ const UserAccountTable = ({ record }) => {
     returnImei(id)
       .then((res) => {
         if (res.data === true) {
+          // if (dataImeisLoc.length > 0) {
+          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+          //     .then((res) => {
+          //       if (res.data.length === 0) {
+          //         notification.warning({
+          //           message: "Không có dữ liệu!",
+          //         });
+          //       }
+          //       setDataImeisLoc(res.data);
+          //     })
+          //     .catch((err) => {
+          //       console.log(err);
+          //     });
+          // }
           getAllImeisWhereIdSku(dataIdSku)
             .then((res) => {
               setDataImeisWhereIdSku(res.data);
@@ -978,6 +1013,20 @@ const UserAccountTable = ({ record }) => {
               console.log(err);
             });
           setDataCheckGiaSku(false);
+          // if (dataImeisLoc.length > 0) {
+          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+          //     .then((res) => {
+          //       if (res.data.length === 0) {
+          //         notification.warning({
+          //           message: "Không có dữ liệu!",
+          //         });
+          //       }
+          //       setDataImeisLoc(res.data);
+          //     })
+          //     .catch((err) => {
+          //       console.log(err);
+          //     });
+          // }
           toast1.current.show({
             severity: "success",
             summary: "THÔNG BÁO THÀNH CÔNG",
@@ -1056,6 +1105,20 @@ const UserAccountTable = ({ record }) => {
             detail: "Import Imei Thành Công",
             life: 3000,
           });
+          // if (dataImeisLoc.length > 0) {
+          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+          //     .then((res) => {
+          //       if (res.data.length === 0) {
+          //         notification.warning({
+          //           message: "Không có dữ liệu!",
+          //         });
+          //       }
+          //       setDataImeisLoc(res.data);
+          //     })
+          //     .catch((err) => {
+          //       console.log(err);
+          //     });
+          // }
           handleCancelNewImei();
         } else {
           toast1.current.show({
@@ -1077,7 +1140,7 @@ const UserAccountTable = ({ record }) => {
   };
 
   //chọn imei đê xoá - checkbox
-  const [selectedCheckboxImeiXoas, setSelectedCheckboxes] = useState([]);
+  // const [selectedCheckboxImeiXoas, setSelectedCheckboxes] = useState([]);
   function handleCheckboxChange(e) {
     const checkboxValue = e.target.value;
     setSelectedCheckboxes((prevSelectedCheckboxes) => {
@@ -1091,56 +1154,85 @@ const UserAccountTable = ({ record }) => {
     });
   }
   //Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxes và in giá trị mới
-  // useEffect(() => {
-  //   console.log(selectedCheckboxImeiXoas + " :imei da  xoá++--");
-  // }, [selectedCheckboxImeiXoas]);
+  useEffect(() => {
+    console.log(selectedCheckboxImeiXoas + " :imei da  xoá++--");
+  }, [selectedCheckboxImeiXoas]);
   // //xoá các imei đã được chọn - checkbox - phongnh
   const handleClearImeiSkuCheckBox = () => {
-    if (selectedCheckboxImeiXoas.length > 0) {
-      deleteImeiCheckbox(selectedCheckboxImeiXoas)
-        .then((response) => {
-          if (response.data === true) {
-            getAllImeisWhereIdSku(dataIdSku)
-              .then((res) => {
-                setDataImeisWhereIdSku(res.data);
+    getSkuIonAdmin(dataIdSku)
+      .then((res) => {
+        if (res.data.statusSku === 0 && res.data.statusProduct === 0) {
+          if (selectedCheckboxImeiXoas.length > 0) {
+            deleteImeiCheckbox(selectedCheckboxImeiXoas)
+              .then((response) => {
+                if (response.data === true) {
+                  // if (dataImeisLoc.length > 0) {
+                  //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+                  //     .then((res) => {
+                  //       if (res.data.length === 0) {
+                  //         notification.warning({
+                  //           message: "Không có dữ liệu!",
+                  //         });
+                  //       }
+                  //       setDataImeisLoc(res.data);
+                  //     })
+                  //     .catch((err) => {
+                  //       console.log(err);
+                  //     });
+                  // }
+                  getAllImeisWhereIdSku(dataIdSku)
+                    .then((res) => {
+                      setDataImeisWhereIdSku(res.data);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                  readAllSku(dataIdProduct)
+                    .then((res) => {
+                      setDataSkus(res.data);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                  toast1.current.show({
+                    severity: "success",
+                    summary: "THÔNG BÁO THÀNH CÔNG",
+                    detail: "Đã Xoá Danh Sách Imei.",
+                    life: 3000,
+                  });
+                  setSelectedCheckboxes([]);
+                } else {
+                  toast1.current.show({
+                    severity: "error",
+                    summary: "THÔNG BÁO THẤT BẠI!",
+                    detail: "Xoá Danh Sách Imei Thất Bại!",
+                    life: 3000,
+                  });
+                }
               })
-              .catch((err) => {
-                console.log(err);
+              .catch((error) => {
+                console.log(`${error}`);
               });
-            readAllSku(dataIdProduct)
-              .then((res) => {
-                setDataSkus(res.data);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-            toast1.current.show({
-              severity: "success",
-              summary: "THÔNG BÁO THÀNH CÔNG",
-              detail: "Đã Xoá Danh Sách Imei.",
-              life: 3000,
-            });
-            setSelectedCheckboxes([]);
           } else {
             toast1.current.show({
-              severity: "error",
-              summary: "THÔNG BÁO THẤT BẠI!",
-              detail: "Xoá Danh Sách Imei Thất Bại!",
+              severity: "warn",
+              summary: "THÔNG BÁO XOÁ THẤT BẠI!",
+              detail: "Hãy Chọn Danh Sách Imei!",
               life: 3000,
             });
           }
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
-    } else {
-      toast1.current.show({
-        severity: "warn",
-        summary: "THÔNG BÁO XOÁ THẤT BẠI!",
-        detail: "Hãy Chọn Danh Sách Imei!",
-        life: 3000,
+        } else {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO CẢNH BÁO",
+            detail: "Không Thể Thao Tác Do Sản Phẩm Đã Xoá!",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }
   };
   //config khi xoá cehckbox imei  của sku - phongnh
   const rejectDeleteImeiCheckBoxSku = () => {
@@ -1182,51 +1274,80 @@ const UserAccountTable = ({ record }) => {
   }
   //khôi phục các imei đã được chọn - checkbox - phongnh
   const handleReturnImeiSkuCheckBox = () => {
-    if (selectedCheckboxImeiReturn.length > 0) {
-      updateImeiCheckbox(selectedCheckboxImeiReturn)
-        .then((response) => {
-          if (response.data === true) {
-            getAllImeisWhereIdSku(dataIdSku)
-              .then((res) => {
-                setDataImeisWhereIdSku(res.data);
+    getSkuIonAdmin(dataIdSku)
+      .then((res) => {
+        if (res.data.statusSku === 0 && res.data.statusProduct === 0) {
+          if (selectedCheckboxImeiReturn.length > 0) {
+            updateImeiCheckbox(selectedCheckboxImeiReturn)
+              .then((response) => {
+                if (response.data === true) {
+                  // if (dataImeisLoc.length > 0) {
+                  //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+                  //     .then((res) => {
+                  //       if (res.data.length === 0) {
+                  //         notification.warning({
+                  //           message: "Không có dữ liệu!",
+                  //         });
+                  //       }
+                  //       setDataImeisLoc(res.data);
+                  //     })
+                  //     .catch((err) => {
+                  //       console.log(err);
+                  //     });
+                  // }
+                  getAllImeisWhereIdSku(dataIdSku)
+                    .then((res) => {
+                      setDataImeisWhereIdSku(res.data);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                  readAllSku(dataIdProduct)
+                    .then((res) => {
+                      setDataSkus(res.data);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                  toast1.current.show({
+                    severity: "success",
+                    summary: "THÔNG BÁO THÀNH CÔNG",
+                    detail: "Đã Khôi Phục Danh Sách Imei.",
+                    life: 3000,
+                  });
+                  setSelectedCheckboxImeiReturn([]);
+                } else {
+                  toast1.current.show({
+                    severity: "error",
+                    summary: "THÔNG BÁO THẤT BẠI!",
+                    detail: "Khôi Phục Danh Sách Imei Thất Bại!",
+                    life: 3000,
+                  });
+                }
               })
-              .catch((err) => {
-                console.log(err);
+              .catch((error) => {
+                console.log(`${error}`);
               });
-            readAllSku(dataIdProduct)
-              .then((res) => {
-                setDataSkus(res.data);
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-            toast1.current.show({
-              severity: "success",
-              summary: "THÔNG BÁO THÀNH CÔNG",
-              detail: "Đã Khôi Phục Danh Sách Imei.",
-              life: 3000,
-            });
-            setSelectedCheckboxImeiReturn([]);
           } else {
             toast1.current.show({
-              severity: "error",
-              summary: "THÔNG BÁO THẤT BẠI!",
-              detail: "Khôi Phục Danh Sách Imei Thất Bại!",
+              severity: "warn",
+              summary: "THÔNG BÁO KHÔI PHỤC THẤT BẠI!",
+              detail: "Hãy Chọn Danh Sách Imei!",
               life: 3000,
             });
           }
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
-    } else {
-      toast1.current.show({
-        severity: "warn",
-        summary: "THÔNG BÁO KHÔI PHỤC THẤT BẠI!",
-        detail: "Hãy Chọn Danh Sách Imei!",
-        life: 3000,
+        } else {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO CẢNH BÁO",
+            detail: "Không Thể Thao Tác Do Sản Phẩm Đã Xoá!",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }
   };
   //Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxImeiReturn và in giá trị mới
   // useEffect(() => {
@@ -1250,6 +1371,180 @@ const UserAccountTable = ({ record }) => {
       acceptClassName: "p-button-danger",
       accept: () => handleReturnImeiSkuCheckBox(),
       reject: () => rejectDeleteImeiCheckBoxSkuReturn(),
+    });
+  };
+
+  //xoá all imei
+  const handleDeleteAllImeiSku = () => {
+    getSkuIonAdmin(dataIdSku)
+      .then((res) => {
+        if (res.data.statusSku === 0 && res.data.statusProduct === 0) {
+          deleteAllImei(dataIdSku)
+            .then((response) => {
+              if (response.data === true) {
+                if (dataImeisLoc.length > 0) {
+                  setSelectedOption("99");
+                  getAllImeiWhereIdSkuAndStatus(dataIdSku, 99)
+                    .then((res) => {
+                      if (res.data.length === 0) {
+                        notification.warning({
+                          message: "Không có dữ liệu!",
+                        });
+                      }
+                      setDataImeisLoc(res.data);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                }
+                getAllImeisWhereIdSku(dataIdSku)
+                  .then((res) => {
+                    setDataImeisWhereIdSku(res.data);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                readAllSku(dataIdProduct)
+                  .then((res) => {
+                    setDataSkus(res.data);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                toast1.current.show({
+                  severity: "success",
+                  summary: "THÔNG BÁO THÀNH CÔNG",
+                  detail: "Đã Xoá Tất Cả Imei.",
+                  life: 3000,
+                });
+              } else {
+                toast1.current.show({
+                  severity: "error",
+                  summary: "THÔNG BÁO THẤT BẠI!",
+                  detail: "Xoá Tất Cả Imei Thất Bại!",
+                  life: 3000,
+                });
+              }
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        } else {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO CẢNH BÁO",
+            detail: "Không Thể Thao Tác Do Sản Phẩm Đã Xoá!",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const rejectDeleteAllImeiSku = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp Tục Thao Tác.",
+      life: 3000,
+    });
+  };
+  const confirmDeleteAllImeiSku = () => {
+    confirmDialog({
+      message: "Bạn chắc chắn xoá tất cả?",
+      header: "XOÁ TẤT CẢ IMEI",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleDeleteAllImeiSku(),
+      reject: () => rejectDeleteAllImeiSku(),
+    });
+  };
+
+  //khôi phục tất cả
+  const handleReturnAllImeiSku = () => {
+    getSkuIonAdmin(dataIdSku)
+      .then((res) => {
+        if (res.data.statusSku === 0 && res.data.statusProduct === 0) {
+          returnAllImei(dataIdSku)
+            .then((response) => {
+              if (response.data === true) {
+                if (dataImeisLoc.length > 0) {
+                  setSelectedOption("99");
+                  getAllImeiWhereIdSkuAndStatus(dataIdSku, 99)
+                    .then((res) => {
+                      if (res.data.length === 0) {
+                        notification.warning({
+                          message: "Không có dữ liệu!",
+                        });
+                      }
+                      setDataImeisLoc(res.data);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                }
+                getAllImeisWhereIdSku(dataIdSku)
+                  .then((res) => {
+                    setDataImeisWhereIdSku(res.data);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                readAllSku(dataIdProduct)
+                  .then((res) => {
+                    setDataSkus(res.data);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                toast1.current.show({
+                  severity: "success",
+                  summary: "THÔNG BÁO THÀNH CÔNG",
+                  detail: "Khôi Phục Tất Cả Imei Thành Công.",
+                  life: 3000,
+                });
+              } else {
+                toast1.current.show({
+                  severity: "error",
+                  summary: "THÔNG BÁO THẤT BẠI!",
+                  detail: "Khôi Phục Tất Cả Imei Thất Bại!",
+                  life: 3000,
+                });
+              }
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        } else {
+          toast1.current.show({
+            severity: "warn",
+            summary: "THÔNG BÁO CẢNH BÁO",
+            detail: "Không Thể Thao Tác Do Sản Phẩm Đã Xoá!",
+            life: 3000,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const rejectReturnAllImeiSku = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp Tục Thao Tác.",
+      life: 3000,
+    });
+  };
+  const confirmReturnAllImeiSku = () => {
+    confirmDialog({
+      message: "Bạn chắc chắn Khôi Phục tất cả?",
+      header: "KHÔI PHỤC TẤT CẢ IMEI",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleReturnAllImeiSku(),
+      reject: () => rejectReturnAllImeiSku(),
     });
   };
   const moreMenu2 = (sku) => (
@@ -1752,7 +2047,6 @@ const UserAccountTable = ({ record }) => {
                 >
                   Add Imei
                 </Button>
-
                 <Button
                   type="text"
                   style={{
@@ -1770,7 +2064,6 @@ const UserAccountTable = ({ record }) => {
                 >
                   Xoá Imeis
                 </Button>
-
                 <Button
                   type="text"
                   style={{
@@ -1788,6 +2081,21 @@ const UserAccountTable = ({ record }) => {
                 >
                   Khôi Phục
                 </Button>
+                <Button
+                  type="text"
+                  danger
+                  style={{
+                    border: "2px solid black",
+                    backgroundColor: "red",
+                    color: "white",
+                    width: "150px",
+                    marginLeft: "9px",
+                  }}
+                  className="col-2 btn-xoa"
+                  onClick={() => confirmDeleteAllImeiSku()}
+                >
+                  Xoá All Imei
+                </Button>
 
                 <Button
                   type="text"
@@ -1800,9 +2108,9 @@ const UserAccountTable = ({ record }) => {
                     marginLeft: "9px",
                   }}
                   className="col-2 btn-xoa"
-                  // onClick={() => confirmDeleteAllImeiBillDetail()}
+                  onClick={() => confirmReturnAllImeiSku()}
                 >
-                  Xoá All Imei
+                  Return All Imei
                 </Button>
               </p>
               <div style={{ backgroundColor: "#66FFFF" }}>
@@ -1977,20 +2285,6 @@ const UserAccountTable = ({ record }) => {
                               "!"
                             )}
                           </div>
-                          {/* <strong>
-                          <Button
-                            type="text"
-                            danger
-                            // onClick={() =>
-                            //   handleClearImeiDaBan(
-                            //     imei.idImeiDaBan,
-                            //     imei.codeImeiDaBan
-                            //   )
-                            // }
-                          >
-                            Hủy
-                          </Button>
-                        </strong> */}
                           {/* phongnh 1 */}
                           <div
                             style={{
@@ -2018,7 +2312,6 @@ const UserAccountTable = ({ record }) => {
                                         />
                                       }
                                       onClick={() => confirmDeleteImei(imei.id)} // all imei phongnh
-                                      // onClick={() => remove(item.id)}
                                     >
                                       Delete
                                     </Menu.Item>
@@ -2125,19 +2418,20 @@ const UserAccountTable = ({ record }) => {
 
                           <div
                             style={{
-                              margin: "outo",
-                              textAlign: "center",
+                              // margin: "outo",
+                              // textAlign: "center",
                               width: "20px",
+                              paddingLeft: "10px",
                             }}
                           >
                             {imei.status === 0 ? (
                               <input
                                 type="checkbox"
-                                value={imei.codeImeiDaBan}
-                                // checked={selectedCheckboxes.includes(
-                                //   imei.codeImeiDaBan
-                                // )}
-                                // onChange={handleCheckboxChange}
+                                value={imei.codeImei}
+                                checked={selectedCheckboxImeiXoas.includes(
+                                  imei.codeImei
+                                )}
+                                onChange={handleCheckboxChange}
                               />
                             ) : imei.status === 1 ? (
                               <span>-</span>
@@ -2149,15 +2443,6 @@ const UserAccountTable = ({ record }) => {
                               "!"
                             )}
                           </div>
-                          {/* <input
-                      type="checkbox"
-                      value={imei.codeImeiDaBan}
-                      // checked={selectedCheckboxes.includes(
-                      //   imei.codeImeiDaBan
-                      // )}
-                      // onChange={handleCheckboxChange}
-                    /> */}
-
                           <span style={{ paddingLeft: "10px" }}>
                             {imei.codeImei}
                           </span>
@@ -2303,7 +2588,7 @@ const UserAccountTable = ({ record }) => {
                                           }}
                                         />
                                       }
-                                      // onClick={() => confirm2(item.id)}
+                                      onClick={() => confirmDeleteImei(imei.id)} // all imei phongnh
                                     >
                                       Delete
                                     </Menu.Item>

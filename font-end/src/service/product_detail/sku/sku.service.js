@@ -98,3 +98,13 @@ export const updateImeiCheckbox = (listImei) => {
     `/admin/product-detail/update-imeis?listImei=${listImei}`
   );
 };
+
+//cập nhật all imei hoạt động -> xoá
+export const deleteAllImei = (idSku) => {
+  return httpClient.put(`/admin/product-detail/delete-all-imei?idSku=${idSku}`);
+};
+
+//cập nhật all imei   xoá ->  hoạt động
+export const returnAllImei = (idSku) => {
+  return httpClient.put(`/admin/product-detail/return-all-imei?idSku=${idSku}`);
+};

@@ -71,6 +71,8 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
     void updateStatusImei(Integer status, Integer idImei);
 
     //laays ra update imei có status  theo idsku
+    @Modifying
+    @Transactional
     @Query(value = "update imei set status =?1 where sku_id=?2 and status =?3", nativeQuery = true)
-    Boolean updateImeiStatusWherIdSku(Integer statusUpdate, Long idSku, Integer status);
+    void updateImeiStatusWherIdSku(Integer statusUpdate, Long idSku, Integer status);
 }

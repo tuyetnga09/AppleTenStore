@@ -261,11 +261,14 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         }
     }
 
-    //cập nhật all imei hoạt động -> xoá (xoá all imei)
+    //cập nhật all imei hoạt động -> xoá  <=>  xoá ->  hoạt động
     @Override
-    public Boolean updateAllImei() {
-
-
+    public Boolean updateAllImei(Integer statusUpdate, Long idSku, Integer status) {
+        Boolean isCkeck = skuRepositoty.existsById(idSku);
+        if (isCkeck){
+             imeiRepository.updateImeiStatusWherIdSku(statusUpdate, idSku, status);
+            return true;
+        }
         return false;
     }
 
