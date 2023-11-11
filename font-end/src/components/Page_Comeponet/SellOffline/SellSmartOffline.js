@@ -832,14 +832,6 @@ export default function SellSmart() {
       });
   }
 
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
-
   async function createBillSusses(
     codeBill,
     codeAccount,
@@ -894,16 +886,23 @@ export default function SellSmart() {
       font: font,
       color: rgb(0, 0, 0),
     });
-    drawText(`Khach hang: `, {
+    drawText(`Khach hang: ` + '                               SDT: ', {
       x: 50,
       y: height - 180,
       size: 15,
       font: font,
       color: rgb(0, 0, 0),
     });
-    drawText(`SDT: `, {
+    drawText(`Hinh thuc thanh toan: `, {
       x: 50,
       y: height - 210,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Nhan vien ban hang: ${unaccentedCodeAccount}`, {
+      x: 50,
+      y: height - 240,
       size: 15,
       font: font,
       color: rgb(0, 0, 0),
@@ -917,61 +916,61 @@ export default function SellSmart() {
       columns,
       data
     ) => {
-      // drawLine(
-      //   { x: tableX, y: tableY },
-      //   { x: tableX + tableWidth, y: tableY },
-      //   2,
-      //   [0, 0, 0]
-      // );
+      drawLine(
+        { x: tableX, y: tableY },
+        { x: tableX + tableWidth, y: tableY },
+        2,
+        [0, 0, 0]
+      );
 
-      // // Vẽ các đường ngang cho từng dòng
-      // for (let i = 0; i <= data.length; i++) {
-      //   const y = tableY - i * (tableHeight / data.length);
-      //   drawLine({ x: tableX, y }, { x: tableX + tableWidth, y }, 1, [0, 0, 0]);
-      // }
+      // Vẽ các đường ngang cho từng dòng
+      for (let i = 0; i < data.length; i++) {
+        const y = tableY - i * (tableHeight / data.length);
+        drawLine({ x: tableX, y }, { x: tableX + tableWidth, y }, 1, [0, 0, 0]);
+      }
 
-      // // Vẽ các đường dọc cho từng cột
-      // const columnWidth = tableWidth / columns.length;
+      // Vẽ các đường dọc cho từng cột
+      const columnWidth = tableWidth / columns.length;
 
-      // for (let i = 0; i <= columns.length; i++) {
-      //   const x = tableX + i * columnWidth;
-      //   drawLine(
-      //     { x, y: tableY },
-      //     { x, y: tableY - tableHeight },
-      //     1,
-      //     [0, 0, 0]
-      //   );
+      for (let i = 0; i <= columns.length; i++) {
+        const x = tableX + i * columnWidth;
+        drawLine(
+          { x, y: tableY },
+          { x, y: tableY - tableHeight },
+          1,
+          [0, 0, 0]
+        );
 
-      //   if (i < columns.length) {
-      //     // Ghi tên cột
-      //     const textX = x + columnWidth / 2 - columns[i].length * 2;
-      //     const textY = tableY - tableHeight + 5;
-      //     drawText(columns[i], {
-      //       x: textX,
-      //       y: textY,
-      //       size: 10,
-      //       color: rgb(0, 0, 0),
-      //     });
-      //   }
-      // }
+        if (i < columns.length) {
+          // Ghi tên cột
+          const textX = x + columnWidth / 2 - columns[i].length * 2;
+          const textY = tableY - tableHeight + 5;
+          drawText(columns[i], {
+            x: textX,
+            y: textY,
+            size: 10,
+            color: rgb(0, 0, 0),
+          });
+        }
+      }
 
-      // // Vẽ dữ liệu từ mảng
-      // data.forEach((row, rowIndex) => {
-      //   const y = tableY - (rowIndex + 1) * (tableHeight / data.length) + 5;
-      //   row.forEach((cell, columnIndex) => {
-      //     const x = tableX + columnIndex * columnWidth + 5;
-      //     // Xuống dòng tự động dựa trên độ dài của chữ
-      //     page.drawText(cell.toString(), {
-      //       x,
-      //       y,
-      //       width: columnWidth - 10, // Giảm khoảng trắng bên cạnh để tránh lấp qua cột kế tiếp
-      //       size: 10,
-      //       color: rgb(0, 0, 0),
-      //       font: customFont,
-      //       lineHeight: 10, // Điều này giúp đảm bảo độ dài của dòng
-      //     });
-      //   });
-      // });
+      // Vẽ dữ liệu từ mảng
+      data.forEach((row, rowIndex) => {
+        const y = tableY - (rowIndex + 1) * (tableHeight / data.length) + 5;
+        row.forEach((cell, columnIndex) => {
+          const x = tableX + columnIndex * columnWidth + 5;
+          // Xuống dòng tự động dựa trên độ dài của chữ
+          page.drawText(cell.toString(), {
+            x,
+            y,
+            width: columnWidth - 10, // Giảm khoảng trắng bên cạnh để tránh lấp qua cột kế tiếp
+            size: 10,
+            color: rgb(0, 0, 0),
+            font: customFont,
+            lineHeight: 10, // Điều này giúp đảm bảo độ dài của dòng
+          });
+        });
+      });
     };
 
     const columns = ["", "", "", "", "", ""];
@@ -984,19 +983,40 @@ export default function SellSmart() {
       product.totalManyOneBillDetail,
     ]);
 
-    drawTable(50, height - 240, 500, 150, columns, data);
+    drawTable(50, height - 260, 500, 150, columns, data);
 
-    drawText(`Tong tien: ${soTienThanhToan}`, {
+    drawText(`Tong tien hang: ${totalPrice}`, {
       x: 50,
-      y: height - 400,
+      y: height - 440,
       size: 15,
       font: customFont,
       color: rgb(0, 0, 0),
     });
 
+    drawText(`Tong cong tien thanh toan: ${soTienThanhToan}`, {
+      x: 50,
+      y: height - 470,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Nhan vien ban hang` + '                Nguoi mua', {
+      x: 250,
+      y: height - 500,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`(Ky ro ho ten)` + '                                             (Ky ro ho ten)', {
+      x: 270,
+      y: height - 520,
+      size: 10,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
     drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
       x: 100,
-      y: height - 450,
+      y: height - 700,
       size: 18,
       color: rgb(0, 0, 0),
     });
@@ -1005,14 +1025,14 @@ export default function SellSmart() {
     return pdfBytes;
   }
 
-  const [productList, setProductList] = useState([]);
+  // const [productList, setProductList] = useState([]);
   const [customBill, setCustomBill] = useState([]);
 
   async function accept() {
     const pdfBytes = await createBillSusses(
       dataBillOffLine.codeBill,
       dataBillOffLine.codeAccount,
-      productList,
+      dataBillDetailOffline,
       customBill
     );
     if (dataDoneBill.idBill === null) {
@@ -1048,11 +1068,11 @@ export default function SellSmart() {
                   detail: "Thanh toán thành công",
                   life: 3000,
                 });
-                getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
-                  (response) => {
-                    setProductList(response.data);
-                  }
-                );
+                // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
+                //   (response) => {
+                //     setProductList(response.data);
+                //   }
+                // );
                 getThongTinTT(dataBillOffLine.codeBill).then((response) => {
                   setCustomBill(response.data);
                 });
