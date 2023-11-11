@@ -6,7 +6,7 @@ export default function Header() {
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
   const [quantity, setQuantity] = useState([]);
-
+  const storedBill = JSON.parse(localStorage.getItem("bill"));
   const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function Header() {
       );
       setQuantity(totalQuantity);
     }
-  }, []);
+  }, [storedBill]);
 
   // const fetchQuantity = () => {
   //   readQuantityInCart(1)

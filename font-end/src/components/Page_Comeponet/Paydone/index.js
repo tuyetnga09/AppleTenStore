@@ -14,6 +14,7 @@ import { notification } from "antd";
 const Paydone = () => {
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const storedBill = JSON.parse(localStorage.getItem("bill"));
+  const storedBill2 = JSON.parse(localStorage.getItem("bill2"));
   const idAccount = storedUser !== null ? storedUser.id : "";
   const [bill, setBill] = useState({});
   const [test, setTest] = useState(false);
@@ -34,6 +35,7 @@ const Paydone = () => {
     if (parseInt(vnpResponseCode) === 24) {
       setTest(true);
     }
+
     if (test === true) {
       if (parseInt(vnpResponseCode) === 24) {
         notification.error({
@@ -77,6 +79,15 @@ const Paydone = () => {
           sessionStorage.removeItem("cartItems");
         }
       }
+    } else {
+      findBillByCode(storedBill2?.code)
+        .then((response) => {
+          setBill(response.data);
+          localStorage.removeItem("bill2");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
     setTest(true);
   }, [test]);
@@ -141,11 +152,12 @@ const Paydone = () => {
         <div class="row">
           <div class="col-6"></div>
           <div class="col-6">
-            {/* <Link to="/"> */}{" "}
-            <button type="button" class="btn btn-outline-success">
-              Tiếp tục mua sắm
-            </button>
-            {/* </Link> */}
+            <Link to="/">
+              {" "}
+              <button type="button" class="btn btn-outline-success">
+                Tiếp tục mua sắm
+              </button>
+            </Link>
           </div>
         </div>
         <br />

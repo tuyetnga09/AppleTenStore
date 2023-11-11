@@ -213,4 +213,9 @@ public class BillOffLineController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/get-TT-Bill/{codeBill}")
+    public ResponseEntity<List<Bill>> getThongTinThanhToan(@PathVariable("codeBill") String codeBill) {
+        List<Bill> billList = billOffLineService.getThongTinBill(codeBill);
+        return new ResponseEntity<>(billList, HttpStatus.OK);
+    }
 }

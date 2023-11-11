@@ -86,6 +86,7 @@ import {
   getBillInDate,
   getBillCTTByCodeBillInDate,
   searchBillDTT,
+  getThongTinTT,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory } from "react-router-dom";
 import { DateField } from "@refinedev/antd";
@@ -95,6 +96,7 @@ import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
 import { set } from "js-cookie";
+import { format } from "date-fns";
 
 const { Header, Sider, Content } = Layout;
 let arrCodeImeiDaBan = [];
@@ -189,11 +191,15 @@ export default function SellSmart() {
     address: null,
     note: null,
     personUpdate: null,
-    // phoneNumber: null,
-    // userName: null,
     dateUpdate: null,
     idSku: [],
     idCustomer: null,
+    methodPayments: ["TIEN_MAT"],
+    moneyPayment: 0,
+    notePayment: null,
+    cash: 0,
+    transfer: 0,
+    formOfReceipt: "TAI_CUA_HANG",
   });
 
   //hóa đơn trong ngày
@@ -203,7 +209,7 @@ export default function SellSmart() {
   } = theme.useToken();
   const [billInDate, setBillInDate] = useState([]);
 
-  const [selectedOptions, setSelectedOptions] = useState(["cash"]);
+  const [selectedOptions, setSelectedOptions] = useState(["TIEN_MAT"]);
   const [showCashInput, setShowCashInput] = useState(false);
   const [showTransferInput, setShowTransferInput] = useState(false);
 
@@ -288,11 +294,10 @@ export default function SellSmart() {
     }
   };
 
-  const { PDFDocument, rgb, StandardFonts  } = require("pdf-lib");
+  const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
   const unidecode = require("unidecode");
 
   async function createPDFWithInvoice(codeBill, codeAccount) {
-
     // Tạo một tài liệu PDF mới
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 400]);
@@ -308,7 +313,7 @@ export default function SellSmart() {
     // Vẽ thông tin hóa đơn lên trang
     page.drawText("APPLETENSTORE", {
       x: 200,
-      y: height - 50, 
+      y: height - 50,
       size: 24,
       font: customFont,
       color: rgb(0, 0, 0),
@@ -595,11 +600,11 @@ export default function SellSmart() {
       });
 
     // Kiểm tra xem "cash" đã được chọn mặc định hay không
-    if (selectedOptions.includes("cash")) {
+    if (selectedOptions.includes("TIEN_MAT")) {
       setShowCashInput(true);
     }
     // Kiểm tra xem "transfer" đã được chọn mặc định hay không
-    if (selectedOptions.includes("transfer")) {
+    if (selectedOptions.includes("CHUYEN_KHOAN")) {
       setShowTransferInput(true);
     }
   }, [
@@ -757,6 +762,10 @@ export default function SellSmart() {
     setShowProvinces(true);
     setIsChecked1(false);
     setIsChecked2(true);
+    setDataDoneBill({
+      ...dataDoneBill,
+      formOfReceipt: "SHIP_HANG",
+    });
   }
 
   function taiCuaHang() {
@@ -778,12 +787,29 @@ export default function SellSmart() {
       insuranceValue: null,
       quantity: 1,
     });
-    setDataDoneBill({
-      ...dataDoneBill,
-      address: "",
-      moneyShip: 0,
-      totalMoney: totalPrice,
-    });
+    // setDataDoneBill({
+    //   ...dataDoneBill,
+    //   address: "",
+    //   moneyShip: 0,
+    //   formOfReceipt: "TAI_CUA_HANG",
+    // });
+    if (tienThua > 0) {
+      setDataDoneBill({
+        ...dataDoneBill,
+        address: "",
+        moneyShip: 0,
+        formOfReceipt: "TAI_CUA_HANG",
+        totalMoney: totalPrice,
+      });
+    } else {
+      setDataDoneBill({
+        ...dataDoneBill,
+        address: "",
+        moneyShip: 0,
+        formOfReceipt: "TAI_CUA_HANG",
+        totalMoney: 0,
+      });
+    }
     setShowProvinces(false);
     setShowDistricts(false);
     setShowWards(false);
@@ -803,12 +829,6 @@ export default function SellSmart() {
     console.log(arrIdSku);
   };
   function checkSoluongImei() {
-    // if (
-    //   dataBillDetailOffline[indexTest]?.quantity !== dataImeiSelected.length
-    // ) {
-    //   return false;
-    // }
-    // return true;
     for (let index = 0; index < dataBillDetailOffline.length; index++) {
       if (
         dataBillDetailOffline[index]?.quantity !==
@@ -831,7 +851,213 @@ export default function SellSmart() {
       });
   }
 
-  const accept = () => {
+  async function createBillSusses(
+    codeBill,
+    codeAccount,
+    productList,
+    customBilll
+  ) {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 800]);
+    const { width, height } = page.getSize();
+    //bộ font chữ
+    const customFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+    const customFontItalic = await pdfDoc.embedFont(
+      StandardFonts.TimesRomanBoldItalic
+    );
+    const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    //dữ liệu
+    const unaccentedCodeBill = unidecode(codeBill);
+    const unaccentedCodeAccount = unidecode(codeAccount);
+    // const formattedDate = format(new Date(productList.dateCreate), 'dd/MM/yyyy');
+    // const khachHang = unidecode(customBilll.userName);
+    // const sdt = unidecode(customBilll.phoneNumber);
+
+    const drawText = (text, options) =>
+      page.drawText(text, { font: customFont, ...options });
+    const drawLine = (start, end, thickness, color) =>
+      page.drawLine({ start, end, thickness, color: rgb(...color) });
+
+    drawText("APPLE TEN STORE", {
+      x: 200,
+      y: height - 50,
+      size: 20,
+      color: rgb(0, 0, 0),
+    });
+    drawText("HOA DON BAN HANG", {
+      x: 180,
+      y: height - 80,
+      size: 24,
+      font: customFontItalic,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Hoa don so: ${unaccentedCodeBill}`, {
+      x: 50,
+      y: height - 120,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Ngay mua: `, {
+      x: 50,
+      y: height - 150,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Khach hang: ` + "                               SDT: ", {
+      x: 50,
+      y: height - 180,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Hinh thuc thanh toan: `, {
+      x: 50,
+      y: height - 210,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Nhan vien ban hang: ${unaccentedCodeAccount}`, {
+      x: 50,
+      y: height - 240,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+
+    const drawTable = (
+      tableX,
+      tableY,
+      tableWidth,
+      tableHeight,
+      columns,
+      data
+    ) => {
+      drawLine(
+        { x: tableX, y: tableY },
+        { x: tableX + tableWidth, y: tableY },
+        2,
+        [0, 0, 0]
+      );
+
+      // Vẽ các đường ngang cho từng dòng
+      for (let i = 0; i < data.length; i++) {
+        const y = tableY - i * (tableHeight / data.length);
+        drawLine({ x: tableX, y }, { x: tableX + tableWidth, y }, 1, [0, 0, 0]);
+      }
+
+      // Vẽ các đường dọc cho từng cột
+      const columnWidth = tableWidth / columns.length;
+
+      for (let i = 0; i <= columns.length; i++) {
+        const x = tableX + i * columnWidth;
+        drawLine(
+          { x, y: tableY },
+          { x, y: tableY - tableHeight },
+          1,
+          [0, 0, 0]
+        );
+
+        if (i < columns.length) {
+          // Ghi tên cột
+          const textX = x + columnWidth / 2 - columns[i].length * 2;
+          const textY = tableY - tableHeight + 5;
+          drawText(columns[i], {
+            x: textX,
+            y: textY,
+            size: 10,
+            color: rgb(0, 0, 0),
+          });
+        }
+      }
+
+      // Vẽ dữ liệu từ mảng
+      data.forEach((row, rowIndex) => {
+        const y = tableY - (rowIndex + 1) * (tableHeight / data.length) + 5;
+        row.forEach((cell, columnIndex) => {
+          const x = tableX + columnIndex * columnWidth + 5;
+          // Xuống dòng tự động dựa trên độ dài của chữ
+          page.drawText(cell.toString(), {
+            x,
+            y,
+            width: columnWidth - 10, // Giảm khoảng trắng bên cạnh để tránh lấp qua cột kế tiếp
+            size: 10,
+            color: rgb(0, 0, 0),
+            font: customFont,
+            lineHeight: 10, // Điều này giúp đảm bảo độ dài của dòng
+          });
+        });
+      });
+    };
+
+    const columns = ["", "", "", "", "", ""];
+    const data = productList.map((product) => [
+      product.nameProduct,
+      product.skuCapacity,
+      product.skuColor,
+      product.price,
+      product.quantity,
+      product.totalManyOneBillDetail,
+    ]);
+
+    drawTable(50, height - 260, 500, 150, columns, data);
+
+    drawText(`Tong tien hang: ${totalPrice}`, {
+      x: 50,
+      y: height - 440,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
+
+    drawText(`Tong cong tien thanh toan: ${soTienThanhToan}`, {
+      x: 50,
+      y: height - 470,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Nhan vien ban hang` + "                Nguoi mua", {
+      x: 250,
+      y: height - 500,
+      size: 15,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+    drawText(
+      `(Ky ro ho ten)` +
+        "                                             (Ky ro ho ten)",
+      {
+        x: 270,
+        y: height - 520,
+        size: 10,
+        font: font,
+        color: rgb(0, 0, 0),
+      }
+    );
+    drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
+      x: 100,
+      y: height - 700,
+      size: 18,
+      color: rgb(0, 0, 0),
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return pdfBytes;
+  }
+
+  // const [productList, setProductList] = useState([]);
+  const [customBill, setCustomBill] = useState([]);
+
+  async function accept() {
+    const pdfBytes = await createBillSusses(
+      dataBillOffLine.codeBill,
+      dataBillOffLine.codeAccount,
+      dataBillDetailOffline,
+      customBill
+    );
     if (dataDoneBill.idBill === null) {
       toast.current.show({
         severity: "error",
@@ -865,6 +1091,18 @@ export default function SellSmart() {
                   detail: "Thanh toán thành công",
                   life: 3000,
                 });
+                // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
+                //   (response) => {
+                //     setProductList(response.data);
+                //   }
+                // );
+                getThongTinTT(dataBillOffLine.codeBill).then((response) => {
+                  setCustomBill(response.data);
+                });
+                const blob = new Blob([pdfBytes], { type: "application/pdf" });
+                const url = URL.createObjectURL(blob);
+                window.open(url);
+
                 setDataBillDetailOffline([]);
                 setDataTest(!dataTest);
                 setDataBillOffline([]);
@@ -895,7 +1133,7 @@ export default function SellSmart() {
         });
       }
     }
-  };
+  }
   const handleGhiChu = (event) => {
     setDataDoneBill({
       ...dataDoneBill,
@@ -928,6 +1166,7 @@ export default function SellSmart() {
     setDataDoneBill({
       ...dataDoneBill,
       totalMoney: totalPrice + dataDoneBill.moneyShip,
+      // methodPayments: selectedOptions,
     });
     confirmDialog({
       message: "Bạn chắc chắn muốn thanh toán?",
@@ -1812,14 +2051,14 @@ export default function SellSmart() {
     setSelectedOptions(selectedValues); // Cập nhật state khi có sự thay đổi trong việc chọn option
 
     // Kiểm tra nếu "cash" nằm trong danh sách lựa chọn
-    if (selectedValues.includes("cash")) {
+    if (selectedValues.includes("TIEN_MAT")) {
       setShowCashInput(true);
     } else {
       setShowCashInput(false);
     }
 
     // Kiểm tra nếu "transfer" nằm trong danh sách lựa chọn
-    if (selectedValues.includes("transfer")) {
+    if (selectedValues.includes("CHUYEN_KHOAN")) {
       setShowTransferInput(true);
     } else {
       setShowTransferInput(false);
@@ -2233,6 +2472,22 @@ export default function SellSmart() {
                                     ...dataDoneBill,
                                     idSku: arrIdSku,
                                   });
+                                  for (
+                                    let index = 0;
+                                    index < dataBillDetailOffline.length;
+                                    index++
+                                  ) {
+                                    if (
+                                      dataBillDetailOffline[index].idSKU ===
+                                      record.idSKU
+                                    ) {
+                                      const quantity = document.getElementById(
+                                        `quantity-${index}`
+                                      );
+                                      quantity.value =
+                                        parseInt(quantity.value) + 1;
+                                    }
+                                  }
                                 } else {
                                   notification.error({
                                     message: "ADD TO CART",
@@ -2824,10 +3079,10 @@ export default function SellSmart() {
                             value={selectedOptions} // Đặt giá trị được chọn dựa trên state
                             onChange={handleSelectChange} // Sử dụng hàm xử lý sự kiện
                           >
-                            <Select.Option value="transfer">
+                            <Select.Option value="CHUYEN_KHOAN">
                               Thanh toán chuyển khoản
                             </Select.Option>
-                            <Select.Option value="cash">
+                            <Select.Option value="TIEN_MAT">
                               Trả tiền mặt tại quầy
                             </Select.Option>
                           </Select>
@@ -2906,11 +3161,33 @@ export default function SellSmart() {
                               onChange={calculateChange}
                               onBlur={(event) => {
                                 if (event.target.value <= 0) {
-                                  const quantity = document.getElementById(
-                                    `amountGiven`
-                                  );
+                                  const quantity =
+                                    document.getElementById(`amountGiven`);
                                   quantity.value = 0;
                                   setTienThua(soTienThanhToan);
+                                }
+                                if (tienThua > 0) {
+                                  setDataDoneBill({
+                                    ...dataDoneBill,
+                                    totalMoney: soTienThanhToan,
+                                    methodPayments: selectedOptions,
+                                    notePayment:
+                                      document.getElementById(
+                                        "control-all-money"
+                                      ).innerText,
+                                    cash: event.target.value,
+                                  });
+                                } else {
+                                  setDataDoneBill({
+                                    ...dataDoneBill,
+                                    totalMoney: soTienThanhToan,
+                                    methodPayments: selectedOptions,
+                                    notePayment:
+                                      document.getElementById(
+                                        "control-all-money"
+                                      ).innerText,
+                                    cash: event.target.value,
+                                  });
                                 }
                               }}
                             />
@@ -2950,11 +3227,33 @@ export default function SellSmart() {
                               onChange={calculateChange}
                               onBlur={(event) => {
                                 if (event.target.value <= 0) {
-                                  const quantity = document.getElementById(
-                                    `transferAmount`
-                                  );
+                                  const quantity =
+                                    document.getElementById(`transferAmount`);
                                   quantity.value = 0;
                                   setTienThua(soTienThanhToan);
+                                }
+                                if (tienThua > 0) {
+                                  setDataDoneBill({
+                                    ...dataDoneBill,
+                                    totalMoney: soTienThanhToan,
+                                    methodPayments: selectedOptions,
+                                    notePayment:
+                                      document.getElementById(
+                                        "control-all-money"
+                                      ).innerText,
+                                    transfer: event.target.value,
+                                  });
+                                } else {
+                                  setDataDoneBill({
+                                    ...dataDoneBill,
+                                    totalMoney: soTienThanhToan,
+                                    methodPayments: selectedOptions,
+                                    notePayment:
+                                      document.getElementById(
+                                        "control-all-money"
+                                      ).innerText,
+                                    transfer: event.target.value,
+                                  });
                                 }
                               }}
                             />
@@ -2973,7 +3272,10 @@ export default function SellSmart() {
                           }}
                         >
                           <label className="control-label">*** </label>
-                          <p className="control-all-money">
+                          <p
+                            className="control-all-money"
+                            id="control-all-money"
+                          >
                             {" "}
                             {tienThua === 0
                               ? "Đã thu đủ tiền"
@@ -2995,7 +3297,7 @@ export default function SellSmart() {
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
-                          {/* <button
+                          <button
                             className="btn btn-danger luu-san-pham"
                             type="button"
                             style={{
@@ -3005,13 +3307,13 @@ export default function SellSmart() {
                             }}
                             onClick={() => {
                               console.log(dataDoneBill);
-                              console.log(dataBillDetailOffline);
-                              console.log(arrCodeImeiDaBan);
+                              // console.log(dataBillDetailOffline);
+                              // console.log(selectedOptions);
                             }}
                           >
                             {" "}
                             Chờ thanh toán
-                          </button> */}
+                          </button>
                           <button
                             className="btn btn-danger luu-va-in"
                             type="button"
@@ -3182,13 +3484,8 @@ export default function SellSmart() {
                           })}
                         </p>
                         <p style={{ fontSize: "13px" }}>
-                          Cho đơn hàng giá trị từ{" "}
+                          Áp dụng cho đơn hàng giá trị từ{" "}
                           {voucher?.valueMinimum?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}{" "}
-                          đến{" "}
-                          {voucher?.valueMaximum?.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                           })}
@@ -3269,13 +3566,8 @@ export default function SellSmart() {
                           })}
                         </p>
                         <p style={{ fontSize: "13px" }}>
-                          Cho đơn hàng giá trị từ{" "}
+                          Áp dụng cho đơn hàng có giá trị từ{" "}
                           {voucher?.valueMinimum?.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}{" "}
-                          đến{" "}
-                          {voucher?.valueMaximum?.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                           })}

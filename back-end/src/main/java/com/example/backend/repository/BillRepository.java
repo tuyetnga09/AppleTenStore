@@ -161,4 +161,6 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     @Query(value = "select * from bill where status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURDATE() and id_account = ?1 and code like %?2%  ORDER BY id DESC", nativeQuery = true)
     List<Bill> searchBillDaThanhToan(Integer id, String codeBill);
 
+    @Query(value = "SELECT * FROM bill WHERE code like ?1", nativeQuery = true)
+    List<Bill> getThongTinThanhToan(String codeBill);
 }

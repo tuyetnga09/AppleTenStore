@@ -55,6 +55,7 @@ import CreateVoucher from "../Voucher/CreateVoucher";
 import UpdateVoucher from "../Voucher/UpdateVoucher";
 import queryString from "query-string";
 import { Option } from "antd/es/mentions";
+import { DateField } from "@refinedev/antd";
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -80,6 +81,7 @@ const VoucherDisplay = ({}) => {
 
   // Hàm để ẩn Modal
   const handleCancel = () => {
+    setEditedVoucher([]);
     setIsModalVisible(false);
   };
 
@@ -470,20 +472,42 @@ const VoucherDisplay = ({}) => {
                       key="dateStart"
                       dataIndex="dateStart"
                       title={t("DateStart")}
-                      render={(text, record) => <span>{record.dateStart}</span>}
+                      render={(text, record) => (
+                        <span>
+                          <DateField
+                            value={record.dateStart}
+                            format="DD/MM/YYYY"
+                          />
+                        </span>
+                      )}
                     />
                     <Table.Column
                       key="dateEnd"
                       dataIndex="dateEnd"
                       title={t("DateEnd")}
-                      render={(text, record) => <span>{record.dateEnd}</span>}
+                      render={(text, record) => (
+                        <span>
+                          <DateField
+                            value={record.dateEnd}
+                            format="DD/MM/YYYY"
+                          />
+                        </span>
+                      )}
                     />
                     <Table.Column
                       key="conditionsApply"
                       dataIndex="conditionsApply"
                       title={t("ConditionsApply")}
                       render={(text, record) => (
-                        <span>{record.conditionsApply}</span>
+                        <span>
+                          {parseFloat(record.conditionsApply).toLocaleString(
+                            "vi-VN",
+                            {
+                              style: "currency",
+                              currency: "VND",
+                            }
+                          )}
+                        </span>
                       )}
                     />
                     <Table.Column
@@ -491,7 +515,15 @@ const VoucherDisplay = ({}) => {
                       dataIndex="valueVoucher"
                       title={t("ValueVoucher")}
                       render={(text, record) => (
-                        <span>{record.valueVoucher}</span>
+                        <span>
+                          {parseFloat(record.valueVoucher).toLocaleString(
+                            "vi-VN",
+                            {
+                              style: "currency",
+                              currency: "VND",
+                            }
+                          )}
+                        </span>
                       )}
                     />
                     <Table.Column
@@ -499,7 +531,15 @@ const VoucherDisplay = ({}) => {
                       dataIndex="valueMinimum"
                       title={t("ValueMinimum")}
                       render={(text, record) => (
-                        <span>{record.valueMinimum}</span>
+                        <span>
+                          {parseFloat(record.valueMinimum).toLocaleString(
+                            "vi-VN",
+                            {
+                              style: "currency",
+                              currency: "VND",
+                            }
+                          )}
+                        </span>
                       )}
                     />
                     <Table.Column
@@ -507,7 +547,15 @@ const VoucherDisplay = ({}) => {
                       dataIndex="valueMaximum"
                       title={t("ValueMaximum")}
                       render={(text, record) => (
-                        <span>{record.valueMaximum}</span>
+                        <span>
+                          {parseFloat(record.valueMaximum).toLocaleString(
+                            "vi-VN",
+                            {
+                              style: "currency",
+                              currency: "VND",
+                            }
+                          )}
+                        </span>
                       )}
                     />
                     <Table.Column
@@ -515,7 +563,15 @@ const VoucherDisplay = ({}) => {
                       dataIndex="typeVoucher"
                       title={t("TypeVoucher")}
                       render={(text, record) => (
-                        <span>{record.typeVoucher}</span>
+                        <span>
+                          {parseFloat(record.typeVoucher).toLocaleString(
+                            "vi-VN",
+                            {
+                              style: "currency",
+                              currency: "VND",
+                            }
+                          )}
+                        </span>
                       )}
                     />
                     <Table.Column

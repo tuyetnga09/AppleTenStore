@@ -48,12 +48,15 @@ const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
 const OderDisplay = ({}) => {
-  const t = useTranslate();
-  const history = useHistory();
-  const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+    const storedUser = JSON.parse(localStorage.getItem("account"));
+    const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
+
+    const t = useTranslate();
+    const history = useHistory();
+    const [collapsed, setCollapsed] = useState(false);
+    const {
+        token: {colorBgContainer},
+    } = theme.useToken();
 
   const [oder, setOder] = useState([]);
   const [user, setUser] = useState([]);
@@ -322,8 +325,13 @@ const OderDisplay = ({}) => {
   };
 
   function confirm2(id) {
-    updateStatusBill(id).then((response) => console.log(response.data));
-  }
+    updateStatusBill(idAccount, id)
+        .then(response => {
+        })
+        .catch(error => {
+            console.error("Error updating status:", error);
+        });
+}
 
   function delete2(id) {
     deleteBillById(id).then((response) => console.log(response.data));
@@ -514,8 +522,8 @@ const OderDisplay = ({}) => {
                       title={t("User")}
                       render={(text, record) => (
                         // <span>{record.account.user.fullName}</span>
-                        // <span>{record?.customer?.fullName}</span>
-                        <span>{record?.userName}</span>
+                        <span>{record?.customer?.fullName}</span>
+                        
                       )}
                     />
 

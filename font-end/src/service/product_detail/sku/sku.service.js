@@ -69,3 +69,42 @@ export const deleteImei = (idImei) => {
 export const returnImei = (idImei) => {
   return httpClient.get(`/admin/product-detail/return-imei?idImei=${idImei}`);
 };
+
+//add 1 imei
+export const addOneImei = (imeiRequest) => {
+  return httpClient.post(`/admin/product-detail/add-imei`, imeiRequest);
+};
+
+//check gia sku đã tồn tại chưa
+export const checkGiaSku = (idSku) => {
+  return httpClient.get(`/admin/product-detail/check-gia-sku?idSku=${idSku}`);
+};
+
+//lấy ra đối tượng SkuIonAdmin
+export const getSkuIonAdmin = (idSku) => {
+  return httpClient.get(`/admin/product-detail/get-skuionadmin?idSku=${idSku}`);
+};
+
+// cập nhật các imei đã được chọn thành status =1 (đã xoá)
+export const deleteImeiCheckbox = (listImei) => {
+  return httpClient.put(
+    `/admin/product-detail/delete-imeis?listImei=${listImei}`
+  );
+};
+
+// cập nhật các imei đã được chọn thành status =0 (hoat dong)
+export const updateImeiCheckbox = (listImei) => {
+  return httpClient.put(
+    `/admin/product-detail/update-imeis?listImei=${listImei}`
+  );
+};
+
+//cập nhật all imei hoạt động -> xoá
+export const deleteAllImei = (idSku) => {
+  return httpClient.put(`/admin/product-detail/delete-all-imei?idSku=${idSku}`);
+};
+
+//cập nhật all imei   xoá ->  hoạt động
+export const returnAllImei = (idSku) => {
+  return httpClient.put(`/admin/product-detail/return-all-imei?idSku=${idSku}`);
+};

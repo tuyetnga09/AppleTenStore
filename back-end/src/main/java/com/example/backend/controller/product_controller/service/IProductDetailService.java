@@ -2,6 +2,7 @@ package com.example.backend.controller.product_controller.service;
 
 import com.example.backend.controller.product_controller.model.product_detail.ion.ProductDetailIonAdmin;
 import com.example.backend.controller.product_controller.model.product_detail.ion.SkuIonAdmin;
+import com.example.backend.controller.product_controller.model.request.ImeiCreateRequest;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
 import org.springframework.data.jpa.repository.Query;
@@ -28,14 +29,29 @@ public interface IProductDetailService {
     Boolean returnProduct(Integer idProduct);
 
     //xoá sku theo idSku and idProduct
-    Boolean deleteSku(Long idSku , Integer idProduct);
+    Boolean deleteSku(Long idSku, Integer idProduct);
 
     //return Product theo idProduct
-    Boolean returnSku(Long idSku , Integer idProduct);
+    Boolean returnSku(Long idSku, Integer idProduct);
 
     //delete imei (cập nhật status imei =1)
     Boolean deleteImei(Integer idImei);
 
     //return imei (cập nhật status imei =0)
-     Boolean returnImei(Integer idImei);
+    Boolean returnImei(Integer idImei);
+
+    // add 1 imei
+    Imei addOneImei(ImeiCreateRequest imeiCreateRequest);
+
+    //check gia sku đã tồn tại chưa
+     Boolean checkGiaSku(Long idSku);
+
+     //lấy ra đối tượng SkuIonAdmin
+    SkuIonAdmin getSkuIonAdmin(Long idSku);
+
+    // cập nhật các imei đã được chọn thành status =1 (đã xoá)
+    Boolean checkBoxListImei(List<String> codeImeis,Integer status);
+
+    //cập nhật all imei hoạt động -> xoá (xoá all imei)
+    Boolean updateAllImei(Integer statusUpdate, Long idSku, Integer status);
 }
