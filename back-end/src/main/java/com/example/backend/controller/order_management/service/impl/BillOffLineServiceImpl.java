@@ -18,6 +18,7 @@ import com.example.backend.entity.BillDetails;
 import com.example.backend.entity.Customer;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.ImeiDaBan;
+import com.example.backend.entity.Payments;
 import com.example.backend.entity.SKU;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.BillDetailRepository;
@@ -25,13 +26,16 @@ import com.example.backend.repository.BillRepository;
 import com.example.backend.repository.CustomerRepository;
 import com.example.backend.repository.ImeiDaBanRepository;
 import com.example.backend.repository.ImeiRepository;
+import com.example.backend.repository.PaymentsRepository;
 import com.example.backend.repository.SKURepositoty;
 import com.example.backend.untils.Roles;
 import com.example.backend.untils.StatusBill;
 import com.example.backend.untils.TypeBill;
+import com.example.backend.untils.TypePayment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -62,6 +66,9 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private PaymentsRepository paymentsRepository;
 
     @Override
     public Account getAccount(Integer idAccount) {
@@ -393,7 +400,11 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         bill.setPersonUpdate(doneBill.getPersonUpdate());
         bill.setPhoneNumber(customer.getPhoneNumber());
         bill.setUserName(customer.getFullName());
-        bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+        if (doneBill.getFormOfReceipt().equals("TAI_CUA_HANG")){
+            bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+        }else {
+            bill.setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+        }
         bill.setCustomer(customer);
         billRepository.save(bill);
         List<BillDetails> billDetails = billDetailRepository.findByBillDetailOfIdBill(doneBill.getIdBill());
@@ -418,6 +429,21 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         for (Long idSku : doneBill.getIdSku()
         ) {
             skuRepositoty.updateQuantity(idSku, skuRepositoty.quantitySkuInBillDetails(idSku, doneBill.getIdBill()));
+        }
+        for (String methodPayment : doneBill.getMethodPayments()
+             ) {
+            Payments payment = Payments.builder()
+                    .bill(bill)
+                    .moneyPayment(doneBill.getMoneyPayment())
+                    .confirmer(doneBill.getPersonUpdate())
+                    .method(TypePayment.valueOf(methodPayment))
+                    .note(doneBill.getNotePayment()).build();
+            if (methodPayment.equals("TIEN_MAT")){
+                payment.setMoneyPayment(doneBill.getCash());
+            } else {
+                payment.setMoneyPayment(doneBill.getTransfer());
+            }
+            paymentsRepository.save(payment);
         }
     }
 

@@ -33,13 +33,21 @@ public class DoneBill {
 
     private String personUpdate;
 
-//    private String phoneNumber;
-//
-//    private String userName;
-
     private LocalDate dateUpdate;
 
     private List<Long> idSku;
 
     private Integer idCustomer;
+
+    private List<String> methodPayments;
+
+    private BigDecimal moneyPayment;
+
+    private String notePayment;
+
+    private BigDecimal cash;
+
+    private BigDecimal transfer;
+
+    private String formOfReceipt;
 }
