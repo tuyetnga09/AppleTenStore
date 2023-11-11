@@ -24,6 +24,7 @@ import {
   FileDoneOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
+const { SubMenu } = Menu;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -68,6 +69,27 @@ const DashboardPage = () => {
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
               <Link to="/categories">Categories</Link>
             </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Product-Detail"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
             <Menu.Item key="7" icon={<LogoutOutlined />}>
               <Link to="/logout">Logout</Link>
             </Menu.Item>

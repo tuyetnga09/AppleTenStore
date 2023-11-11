@@ -72,6 +72,20 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
             " order by s.id desc", nativeQuery = true)
     List<SkuIonAdmin> getAllSkuIonWhereIdProduct(Integer idProduct);
 
+
+
+    //lấy ra đối tượng sku theo idproduct- phongnh
+    @Query(value = "select p.id as 'idProduct', p.name as 'nameProduct', s.id as 'idSku' ,\n" +
+            "    s.capacity as 'skuCapacity', s.color as 'skuColor',count(DISTINCT s.id) as 'sumSKU',\n" +
+            "    count(i.code_imei)as 'sumImei', SUM(CASE WHEN i.status = 3 THEN 1 ELSE 0 END) AS 'sumImeiDaBan',\n" +
+            "    SUM(CASE WHEN i.status = 2 THEN 1 ELSE 0 END) AS 'sumImeiTrongGioHang',\n" +
+            "    SUM(CASE WHEN i.status = 0 THEN 1 ELSE 0 END) AS 'sumImeiTrongKho',\n" +
+            "    SUM(CASE WHEN i.status = 1 THEN 1 ELSE 0 END) AS 'sumImeiNgungHoatDong', p.status as 'statusProduct',\n" +
+            "    s.status as 'statusSku', s.price as 'priceSKU'\n" +
+            "    from product p  left join sku s on p.id = s.product_id left join imei i on s.id = i.sku_id  where s.id =?1\n" +
+            "    group by p.id, p.name,  s.capacity, s.color,  s.id , p.status , s.price", nativeQuery = true)
+    SkuIonAdmin getOneSkuIonWhereIdSku(Long idSku);
+
     //update status sku where product_id
     @Modifying
     @Transactional

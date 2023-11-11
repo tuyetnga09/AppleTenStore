@@ -50,6 +50,8 @@ const OderUserHoanThanh = () => {
             <span style={{ paddingTop: "20px", float: "right", color: "red" }}>
               {b.statusBill === "CHO_XAC_NHAN"
                 ? "Chờ xác nhận"
+                : b.statusBill === "CHO_VAN_CHUYEN"
+                ? "Chờ vận chuyển"
                 : b.statusBill === "VAN_CHUYEN"
                 ? "Vận chuyển"
                 : b.statusBill === "DA_THANH_TOAN"
@@ -90,6 +92,10 @@ const OderUserHoanThanh = () => {
               <p>
                 Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
               </p>
+            ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
+              <p>
+                Dự kiến giao hàng ngày <u>23-07-2003</u>
+              </p>
             ) : b.statusBill === "VAN_CHUYEN" ? (
               <p>
                 Dự kiến giao hàng ngày <u>23-07-2003</u>
@@ -115,6 +121,8 @@ const OderUserHoanThanh = () => {
                 <button type="button" class="btn btn-light">
                   Hủy đơn
                 </button>
+              ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
+                ""
               ) : b.statusBill === "VAN_CHUYEN" ? (
                 ""
               ) : b.statusBill === "DA_THANH_TOAN" ? (
@@ -148,6 +156,11 @@ const OderUserHoanThanh = () => {
           <li class="nav-item">
             <Link class="nav-link" to="/oderUserCTT">
               Chờ xác nhận
+            </Link>
+          </li>
+          <li class="nav-item">
+            <Link class="nav-link" to="/oderUserCVC">
+              Chờ vận chuyển
             </Link>
           </li>
           <li class="nav-item">

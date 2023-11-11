@@ -27,7 +27,7 @@ const Login = () => {
             description: "Đăng nhập thành công",
           });
           localStorage.setItem("account", JSON.stringify(account));
-          history.push("/");
+          history.replace("/");
         } else {
           notification.error({
             message: "ĐĂNG NHẬP",

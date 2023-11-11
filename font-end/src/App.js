@@ -71,13 +71,17 @@ import Paydone from "./components/Page_Comeponet/Paydone";
 import SignUpAdmin from "./components/Page_Comeponet/Login/signupAdmin";
 import OderUserAll from "./components/Page_Comeponet/OderUser/TatCa";
 import OderUserChoThanhToan from "./components/Page_Comeponet/OderUser/ChoXacNhan";
+import OderUserChoVanChuyen from "./components/Page_Comeponet/OderUser/ChoVanChuyen";
 import OderUserVanChuyen from "./components/Page_Comeponet/OderUser/VanChuyen";
 import OderUserHoanThanh from "./components/Page_Comeponet/OderUser/HoanThanh";
 import OderUserDaHuy from "./components/Page_Comeponet/OderUser/DaHuy";
 import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
 import product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/sku/index";
+import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 function App() {
+  const storedUser = localStorage.getItem("account");
   return (
     <div>
       <Router>
@@ -202,19 +206,33 @@ function App() {
           <Route path="/voucher" exact component={Voucher} />
           <Route path="/cart" exact component={Cart} />
           <Route path="/checkout" exact component={Checkout} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/signup" exact component={SignUp} />
-          <Route path="/forgotpassword" exact component={ForgotPassword} />
+          {/* <Route path="/login" exact component={Login} /> */}
+          {/* <Route path="/signup" exact component={SignUp} /> */}
+          {/* <Route path="/signup/admin" exact component={SignUpAdmin} /> */}
+          {/* <Route path="/forgotpassword" exact component={ForgotPassword} /> */}
+          <Route path="/login">
+            {storedUser !== null ? <Redirect to="/" /> : <Login />}
+          </Route>
+          <Route path="/signup">
+            {storedUser !== null ? <Redirect to="/" /> : <SignUp />}
+          </Route>
+          <Route path="/signup/admin">
+            {storedUser !== null ? <Redirect to="/" /> : <SignUpAdmin />}
+          </Route>
+          <Route path="/forgotpassword">
+            {storedUser !== null ? <Redirect to="/" /> : <ForgotPassword />}
+          </Route>
           <Route path="/orders" exact component={OderDisplay} />
           <Route path="/chats" exact component={ChatManager} />
           <Route path="/sku/display" exact component={SkuDisplay} />
           <Route path="/categories" exact component={CategoryDisplay} />
           <Route path="/users" exact component={AccountList} />
           <Route path="/sell" exact component={SellOffline} />
-          <Route path="/paydone/:code" exact component={Paydone} />
-          <Route path="/signup/admin" exact component={SignUpAdmin} />
+          <Route path="/paydone" exact component={Paydone} />
+
           <Route path="/oderUserAll" exact component={OderUserAll} />
           <Route path="/oderUserCTT" exact component={OderUserChoThanhToan} />
+          <Route path="/oderUserCVC" exact component={OderUserChoVanChuyen} />
           <Route path="/oderUserVC" exact component={OderUserVanChuyen} />
           <Route path="/oderUserHT" exact component={OderUserHoanThanh} />
           <Route path="/oderUserDH" exact component={OderUserDaHuy} />
@@ -224,7 +242,7 @@ function App() {
             exact
             component={product_detail_dashbroad}
           />
-          {/* <Route path="/logout" exact component={Login} /> */}
+          <Route path="/oderCustomerAll" exact component={OderCustomerAll} />
         </Switch>
       </Router>
     </div>

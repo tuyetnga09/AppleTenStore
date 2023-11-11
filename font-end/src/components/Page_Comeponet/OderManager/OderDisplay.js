@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
-import { useTranslate } from "@refinedev/core";
+import {useEffect, useRef, useState} from "react";
+import {useTranslate} from "@refinedev/core";
 import {
-    AppstoreAddOutlined,
+    AppstoreAddOutlined, CheckCircleOutlined,
     CloseCircleOutlined,
     DashboardOutlined,
     FormOutlined,
@@ -12,9 +12,7 @@ import {
     MoreOutlined,
     SearchOutlined,
     ShopOutlined,
-    UserOutlined,
-    CheckCircleOutlined,
-    WarningFilled,
+    UserOutlined, WarningFilled,
 } from "@ant-design/icons";
 import {
     Badge,
@@ -23,74 +21,71 @@ import {
     Col,
     DatePicker,
     Dropdown,
-    Form,
+    Form, Grid,
     Input,
     Layout,
-    Menu,
+    Menu, Modal, notification,
     Row,
     Select,
     Table,
     theme,
     Typography,
-    Modal,
-    Grid, notification,
 } from "antd";
-import { DateField, List, NumberField, BooleanField } from "@refinedev/antd";
-import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import {DateField, List, NumberField} from "@refinedev/antd";
+import {Link, useHistory} from "react-router-dom/cjs/react-router-dom.min";
 import {
     deleteBillById,
     searchNoDate,
     searchWithDate,
     updateStatusBill,
 } from "../../../service/Bill/bill.service";
-import {readAllUser, readAllUserByRole} from "../../../service/User/user.service";
+import {readAllUser} from "../../../service/User/user.service";
 import queryString from "query-string";
-import { Option } from "antd/es/mentions";
-import { Toast } from "primereact/toast";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import {findBillDetails} from "../../../service/BillDetail/billDetail.service";
-import AvatarProduct from "../../product_component/Product/AvatarProduct";
+import {Option} from "antd/es/mentions";
 import {
     addImeiDaBan,
-    deleteAllImeisDaBanOffLine,
-    deleteImeisDaBanOffLineCheckBox,
+    deleteAllImeisDaBanOffLine, deleteImeisDaBanOffLineCheckBox,
     getAllImeisDaBanOffLine,
     getBilDetailOfBillWhereIdBill,
     getIdBill,
-    getImeisOfSku,
-    getListImeiDaBanOfSku,
-    getListImeiThatLac,
-    getOneSkuSelected,
-    seachImeis,
-    seachImeisDaBan
+    getImeisOfSku, getListImeiDaBanOfSku, getListImeiThatLac, getOneSkuSelected, seachImeis, seachImeisDaBan
 } from "../../../service/SellOffLine/sell_off_line.service";
+import {ConfirmDialog, confirmDialog} from "primereact/confirmdialog";
+import AvatarProduct from "../../product_component/Product/AvatarProduct";
+import {Toast} from "primereact/toast";
+import {findBillDetails} from "../../../service/BillDetail/billDetail.service";
 
-const { RangePicker } = DatePicker;
-const { Text } = Typography;
-const { Header, Sider, Content } = Layout;
+const {RangePicker} = DatePicker;
+const {Text} = Typography;
+const {Header, Sider, Content} = Layout;
 
 const OderDisplay = ({}) => {
+    const storedUser = JSON.parse(localStorage.getItem("account"));
+    const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
+
     const t = useTranslate();
     const history = useHistory();
     const [collapsed, setCollapsed] = useState(false);
     const {
-        token: { colorBgContainer },
+        token: {colorBgContainer},
     } = theme.useToken();
 
     const [oder, setOder] = useState([]);
     const [user, setUser] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+    const breakpoint = Grid.useBreakpoint();
+
 
     const orderSelectProps = {
         options: [
-            { label: "Tạo hóa đơn", value: "TAO_HOA_DON" },
-            { label: "Chờ xác nhận", value: "CHO_XAC_NHAN" },
-            { label: "Chờ vận chuyển", value: "CHO_VAN_CHUYEN" },
-            { label: "Vận chuyển", value: "VAN_CHUYEN" },
-            { label: "Đã thanh toán", value: "DA_THANH_TOAN" },
-            { label: "Không trả hàng", value: "KHONG_TRA_HANG" },
-            { label: "Trả hàng", value: "TRA_HANG" },
-            { label: "Đã hủy", value: "DA_HUY" },
+            {label: "Tạo hóa đơn", value: "TAO_HOA_DON"},
+            {label: "Chờ xác nhận", value: "CHO_XAC_NHAN"},
+            {label: "Chờ vận chuyển", value: "CHO_VAN_CHUYEN"},
+            {label: "Vận chuyển", value: "VAN_CHUYEN"},
+            {label: "Đã thanh toán", value: "DA_THANH_TOAN"},
+            {label: "Không trả hàng", value: "KHONG_TRA_HANG"},
+            {label: "Trả hàng", value: "TRA_HANG"},
+            {label: "Đã hủy", value: "DA_HUY"},
             // Thêm các giá trị khác nếu cần
         ],
     };
@@ -108,16 +103,17 @@ const OderDisplay = ({}) => {
     const [filtersNoDate, setFiltersNoDate] = useState({
         key: "",
         status: "",
-        user: "",
+        // user: "",
     });
 
     const [filtersWithDate, setFiltersWithDate] = useState({
         key: "",
         status: "",
-        user: "",
+        // user: "",
         dateStart: "",
         dateEnd: "",
     });
+
 
     useEffect(() => {
         const paramsString = queryString.stringify(filtersNoDate);
@@ -162,11 +158,11 @@ const OderDisplay = ({}) => {
         let item = {};
         const dateFilter = document.getElementById("dateFilter");
         if (dateFilter.value == "") {
-            item = { ...filtersNoDate };
+            item = {...filtersNoDate};
             item[name] = value;
             setFiltersNoDate(item);
         } else {
-            item = { ...filtersWithDate };
+            item = {...filtersWithDate};
             item[name] = value;
             setFiltersWithDate(item);
         }
@@ -176,50 +172,50 @@ const OderDisplay = ({}) => {
         let item = {};
         const dateFilter = document.getElementById("dateFilter");
         if (dateFilter.value == "") {
-            item = { ...filtersNoDate };
+            item = {...filtersNoDate};
             item["status"] = value;
             setFiltersNoDate(item);
             if (value == null) {
-                item = { ...filtersNoDate };
+                item = {...filtersNoDate};
                 item["status"] = "";
                 setFiltersNoDate(item);
             }
             console.log(filtersNoDate);
         } else {
-            item = { ...filtersWithDate };
+            item = {...filtersWithDate};
             item["status"] = value;
             setFiltersWithDate(item);
             if (value == null) {
-                item = { ...filtersWithDate };
+                item = {...filtersWithDate};
                 item["status"] = "";
                 setFiltersWithDate(item);
             }
         }
     }
 
-    function handleChangeUser(value) {
-        let item = {};
-        const dateFilter = document.getElementById("dateFilter");
-        if (dateFilter.value == "") {
-            item = { ...filtersNoDate };
-            item["user"] = value;
-            setFiltersNoDate(item);
-            if (value == null) {
-                item = { ...filtersNoDate };
-                item["user"] = "";
-                setFiltersNoDate(item);
-            }
-        } else {
-            item = { ...filtersWithDate };
-            item["user"] = value;
-            setFiltersWithDate(item);
-            if (value == null) {
-                item = { ...filtersWithDate };
-                item["user"] = "";
-                setFiltersWithDate(item);
-            }
-        }
-    }
+    // function handleChangeUser(value) {
+    //   let item = {};
+    //   const dateFilter = document.getElementById("dateFilter");
+    //   if (dateFilter.value == "") {
+    //     item = { ...filtersNoDate };
+    //     item["user"] = value;
+    //     setFiltersNoDate(item);
+    //     if (value == null) {
+    //       item = { ...filtersNoDate };
+    //       item["user"] = "";
+    //       setFiltersNoDate(item);
+    //     }
+    //   } else {
+    //     item = { ...filtersWithDate };
+    //     item["user"] = value;
+    //     setFiltersWithDate(item);
+    //     if (value == null) {
+    //       item = { ...filtersWithDate };
+    //       item["user"] = "";
+    //       setFiltersWithDate(item);
+    //     }
+    //   }
+    // }
 
     function handleChangeDate(value) {
         let item = {};
@@ -238,13 +234,13 @@ const OderDisplay = ({}) => {
             const formattedDateEnd = `${yearEnd}-${monthEnd
                 .toString()
                 .padStart(2, "0")}-${dayEnd.toString().padStart(2, "0")}`;
-            item = { ...filtersWithDate };
+            item = {...filtersWithDate};
             item["dateStart"] = formattedDateStart;
             item["dateEnd"] = formattedDateEnd;
             setFiltersWithDate(item);
             console.log(filtersWithDate);
         } else {
-            item = { ...filtersNoDate };
+            item = {...filtersNoDate};
             setFiltersNoDate(item);
         }
     }
@@ -289,103 +285,104 @@ const OderDisplay = ({}) => {
             <Badge
                 className="site-badge-count-109"
                 count={"Tạo hóa đơn"}
-                style={{ backgroundColor: "#52c41a" }}
+                style={{backgroundColor: "#52c41a"}}
             />
         ),
         CHO_XAC_NHAN: (
             <Badge
                 className="site-badge-count-109"
                 count={"Chờ xác nhận"}
-                style={{ backgroundColor: "orange" }}
+                style={{backgroundColor: "orange"}}
             />
         ),
         CHO_VAN_CHUYEN: (
             <Badge
                 className="site-badge-count-109"
                 count={"Chờ vận chuyển"}
-                style={{ backgroundColor: "orangered" }}
+                style={{backgroundColor: "orangered"}}
             />
         ),
         VAN_CHUYEN: (
             <Badge
                 className="site-badge-count-109"
                 count={"Vận chuyển"}
-                style={{ backgroundColor: "aqua" }}
+                style={{backgroundColor: "aqua"}}
             />
         ),
         DA_THANH_TOAN: (
             <Badge
                 className="site-badge-count-109"
                 count={"Đã thanh toán"}
-                style={{ backgroundColor: "#52c41a" }}
+                style={{backgroundColor: "#52c41a"}}
             />
         ),
         KHONG_TRA_HANG: (
             <Badge
                 className="site-badge-count-109"
                 count={"Không trả hàng"}
-                style={{ backgroundColor: "grey" }}
+                style={{backgroundColor: "grey"}}
             />
         ),
         TRA_HANG: (
             <Badge
                 className="site-badge-count-109"
                 count={"Trả hàng"}
-                style={{ backgroundColor: "khaki" }}
+                style={{backgroundColor: "khaki"}}
             />
         ),
         DA_HUY: (
             <Badge
                 className="site-badge-count-109"
                 count={"Đã hủy"}
-                style={{ backgroundColor: "red" }}
+                style={{backgroundColor: "red"}}
             />
         ),
     };
 
     function confirm2(id) {
-        updateStatusBill(id).then((response) => console.log(response.data));
+        updateStatusBill(idAccount, id)
+            .then(response => {
+            })
+            .catch(error => {
+                console.error("Error updating status:", error);
+            });
     }
 
     function delete2(id) {
         deleteBillById(id).then((response) => console.log(response.data));
     }
 
-    const breakpoint = Grid.useBreakpoint();
-
-    const UserAccountTable = ({ record }) => {};
-
     return (
         <>
             <Layout>
                 <Sider trigger={null} collapsible collapsed={collapsed}>
-                    <div className="demo-logo-vertical" />
+                    <div className="demo-logo-vertical"/>
                     <Menu theme="dark" mode="inline" defaultSelectedKeys={["2"]}>
-                        <Menu.Item key="1" icon={<DashboardOutlined />}>
+                        <Menu.Item key="1" icon={<DashboardOutlined/>}>
                             <Link to="/dashboard">Dashboard</Link>
                         </Menu.Item>
-                        <Menu.Item key="2" icon={<ShopOutlined />}>
+                        <Menu.Item key="2" icon={<ShopOutlined/>}>
                             <Link to="/orders">Orders</Link>
                         </Menu.Item>
-                        <Menu.Item key="3" icon={<UserOutlined />}>
+                        <Menu.Item key="3" icon={<UserOutlined/>}>
                             <Link to="/users">Users</Link>
                         </Menu.Item>
-                        <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
+                        <Menu.Item key="4" icon={<AppstoreAddOutlined/>}>
                             <Link to="/product">Product</Link>
                         </Menu.Item>
-                        <Menu.Item key="5" icon={<GiftOutlined />}>
+                        <Menu.Item key="5" icon={<GiftOutlined/>}>
                             <Link to="/voucher">Voucher</Link>
                         </Menu.Item>
-                        <Menu.Item key="6" icon={<LogoutOutlined />}>
+                        <Menu.Item key="6" icon={<LogoutOutlined/>}>
                             <Link to="/logout">Logout</Link>
                         </Menu.Item>
                     </Menu>
                 </Sider>
                 <Layout>
-                    <Header style={{ padding: 0, background: colorBgContainer }}>
+                    <Header style={{padding: 0, background: colorBgContainer}}>
                         <Button
                             type="text"
-                            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                            icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
                             onClick={() => setCollapsed(!collapsed)}
                             style={{
                                 fontSize: "16px",
@@ -402,7 +399,7 @@ const OderDisplay = ({}) => {
                             background: colorBgContainer,
                         }}
                     >
-                        <Text style={{ fontSize: "24px", color: "blue" }} strong>
+                        <Text style={{fontSize: "24px", color: "blue"}} strong>
                             ODERS
                         </Text>
                         <Row gutter={[16, 16]}>
@@ -422,7 +419,7 @@ const OderDisplay = ({}) => {
                                                     <Input
                                                         name="key"
                                                         placeholder={t("Code, Person Create")}
-                                                        prefix={<SearchOutlined />}
+                                                        prefix={<SearchOutlined/>}
                                                         onChange={handleChangeSearch}
                                                     />
                                                 </Form.Item>
@@ -448,27 +445,28 @@ const OderDisplay = ({}) => {
                           <Select allowClear />
                         </Form.Item>
                       </Col> */}
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item label={t("User")} name="user">
-                                                    <Select
-                                                        name="user"
-                                                        onChange={handleChangeUser}
-                                                        allowClear
-                                                        placeholder={"Users"}
-                                                    >
-                                                        {user.map((us) => {
-                                                            return (
-                                                                <Option value={us.id}>{us.fullName}</Option>
-                                                            );
-                                                        })}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
+
+                                            {/* <Col xl={24} md={8} sm={12} xs={24}>
+                        <Form.Item label={t("User")} name="user">
+                          <Select
+                            name="user"
+                            onChange={handleChangeUser}
+                            allowClear
+                            placeholder={"Users"}
+                          >
+                            {user.map((us) => {
+                              return (
+                                <Option value={us.id}>{us.fullName}</Option>
+                              );
+                            })}
+                          </Select>
+                        </Form.Item>
+                      </Col> */}
                                             <Col xl={24} md={8} sm={12} xs={24}>
                                                 <Form.Item label={t("Date")} name="createdAt">
                                                     <RangePicker
                                                         id="dateFilter"
-                                                        style={{ width: "100%" }}
+                                                        style={{width: "100%"}}
                                                         onChange={handleChangeDate}
                                                     />
                                                 </Form.Item>
@@ -490,200 +488,22 @@ const OderDisplay = ({}) => {
                                     </Form>
                                 </Card>
                             </Col>
-                            {/* <Col xl={18} xs={24}>
-                <List>
-                  <Table
-                    rowKey="idSku"
-                    dataSource={oder}
-                    scroll={{ x: "max-content" }}
-                    pagination={{
-                      pageSize: 5,
-                      showSizeChanger: false,
-                      showTotal: (total) => `Tổng số ${total} mục`,
-                      showLessItems: true,
-                    }}
-                  >
-                    <Table.Column
-                      key="code"
-                      dataIndex="code"
-                      title={t("Code")}
-                      render={(text, record) => <span>{record.code}</span>}
-                    />
-                    <Table.Column
-                      key="status"
-                      dataIndex="status"
-                      title={t("Status")}
-                      render={(text, record) => (
-                        <span>{statusBadgeMapping[record.statusBill]}</span>
-                      )}
-                    />
-                    <Table.Column
-                      key="total"
-                      dataIndex="total"
-                      title={t("Total")}
-                      render={(text, record) => {
-                        return (
-                          <NumberField
-                            options={{
-                              currency: "VND",
-                              style: "currency",
-                            }}
-                            value={record.totalMoney}
-                          />
-                        );
-                      }}
-                      sorter={(a, b) => a.totalMoney - b.totalMoney}
-                    />
-                    <Table.Column
-                      key="user"
-                      dataIndex="user"
-                      title={t("User")}
-                      render={(text, record) => (
-                        <span>{record?.customer?.fullName}</span>
-                      )}
-                    />
-
-                    <Table.Column
-                      key="address"
-                      dataIndex="address"
-                      title={t("Address")}
-                      render={(text, record) => <span>{record.address}</span>}
-                    />
-                    <Table.Column
-                      key="personCreate"
-                      dataIndex="personCreate"
-                      title={t("PersonCreate")}
-                      render={(text, record) => (
-                        <span>{record.personCreate}</span>
-                      )}
-                    />
-                    <Table.Column
-                      key="personUpdate"
-                      dataIndex="personUpdate"
-                      title={t("PersonUpdate")}
-                      render={(text, record) => (
-                        <span>{record.personUpdate}</span>
-                      )}
-                    />
-                    <Table.Column
-                      key="dateCreate"
-                      dataIndex="dateCreate"
-                      title={t("DateCreate")}
-                      render={(text, record) => (
-                        <DateField
-                          value={record.dateCreate}
-                          format="DD/MM/YYYY"
-                        />
-                      )}
-                      sorter={(a, b) => a.dateCreate > b.dateCreate}
-                    />
-                    <Table.Column
-                      key="dateUpdate"
-                      dataIndex="dateUpdate"
-                      title={t("DateUpdate")}
-                      render={(text, record) => (
-                        <DateField
-                          value={record.dateUpdate}
-                          format="DD/MM/YYYY"
-                        />
-                      )}
-                      sorter={(a, b) => a.dateUpdate > b.dateUpdate}
-                    />
-
-                    <Table.Column
-                      key="actions"
-                      dataIndex="actions"
-                      title={t("Action")}
-                      fixed="right"
-                      align="center"
-                      render={(text, record) => (
-                        <span>
-                          <Dropdown
-                            overlay={
-                              <Menu mode="vertical">
-                                <Menu.Item
-                                  key="1"
-                                  disabled={record.stock <= 0}
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <CloseCircleOutlined
-                                      style={{
-                                        color: "red",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => confirm2(record.id)}
-                                >
-                                  Accept
-                                </Menu.Item>
-                                <Menu.Item
-                                  key="2"
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <FormOutlined
-                                      style={{
-                                        color: "green",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => delete2(record.id)}
-                                >
-                                  Delete
-                                </Menu.Item>
-                                <Menu.Item
-                                  key="1"
-                                  disabled={record.stock <= 0}
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <CloseCircleOutlined
-                                      style={{
-                                        color: "red",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => openModalAddImei(record.id)}
-                                >
-                                  test imei
-                                </Menu.Item>
-                              </Menu>
-                            }
-                            trigger={["click"]}
-                          >
-                            <MoreOutlined
-                              style={{
-                                fontSize: 24,
-                              }}
-                            />
-                          </Dropdown>
-                        </span>
-                      )}
-                    />
-                  </Table>
-                </List>
-              </Col> */}
-                            {/* phongnh */}
                             <Col xl={18} xs={24}>
                                 <List>
                                     <Table
                                         rowKey="id"
                                         dataSource={oder}
-                                        scroll={{ x: "max-content" }}
-                                        expandable={{
-                                            expandedRowRender: !breakpoint.xs
-                                                ? expandedRowRender
-                                                : undefined,
-                                        }}
+                                        scroll={{x: "max-content"}}
                                         pagination={{
                                             pageSize: 5,
                                             showSizeChanger: false,
                                             showTotal: (total) => `Tổng số ${total} mục`,
-                                            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                                            showLessItems: true,
+                                        }}
+                                        expandable={{
+                                            expandedRowRender: !breakpoint.xs
+                                                ? expandedRowRender
+                                                : undefined,
                                         }}
                                     >
                                         <Table.Column
@@ -722,8 +542,8 @@ const OderDisplay = ({}) => {
                                             dataIndex="user"
                                             title={t("User")}
                                             render={(text, record) => (
-                                                // <span>{record.account.user.fullName}</span>
                                                 <span>{record?.customer?.fullName}</span>
+
                                             )}
                                         />
 
@@ -781,6 +601,7 @@ const OderDisplay = ({}) => {
                                             )}
                                             sorter={(a, b) => a.dateUpdate > b.dateUpdate}
                                         />
+
                                         <Table.Column
                                             key="actions"
                                             dataIndex="actions"
@@ -800,7 +621,7 @@ const OderDisplay = ({}) => {
                                                             <Menu mode="vertical">
                                                                 <Menu.Item
                                                                     key="1"
-                                                                    disabled={record.stock <= 0 || record.type === "OFFLINE"}
+                                                                    disabled={record.stock <= 0}
                                                                     style={{
                                                                         fontWeight: 500,
                                                                     }}
@@ -854,7 +675,7 @@ const OderDisplay = ({}) => {
         </>
     );
 };
-const UserAccountTable = ({ record }) => {
+const UserAccountTable = ({record}) => {
     const [users, setUsers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [user, setUser] = useState({});
@@ -870,7 +691,8 @@ const UserAccountTable = ({ record }) => {
     //     setIsModalVisible(false);
     //   };
 
-    const editRole = (role, idUser) => {};
+    const editRole = (role, idUser) => {
+    };
 
     useEffect(() => {
         // readAllUserByRole(record)
@@ -961,19 +783,20 @@ const UserAccountTable = ({ record }) => {
         // item[name] = value;
         // setDataImeiThatLac(item);
         if (value !== undefined) {
-          getListImeiThatLac(value)
-            .then((response) => {
-              setDataImeiThatLac(response.data);
-              console.log(response.data + " check imei - response.data");
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
+            getListImeiThatLac(value)
+                .then((response) => {
+                    setDataImeiThatLac(response.data);
+                    console.log(response.data + " check imei - response.data");
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
         }
     }
 
     //tìm kiếm imei đã bán - phongnh
     const [dataSeachImeiDaBan, setDataSeachImeiDaBan] = useState([]);
+
     function handleChangeImeisDaBan(event) {
         //comment lại vì chưa có dữ liệu
         const target = event.target;
@@ -985,13 +808,13 @@ const UserAccountTable = ({ record }) => {
         // item[name] = value;
         // setDataImeiThatLac(item);
         if (value !== undefined) {
-          seachImeisDaBan(dataIdBillDetail, dataIdSKU, value)
-            .then((response) => {
-              setDataSeachImeiDaBan(response.data);
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
+            seachImeisDaBan(dataIdBillDetail, dataIdSKU, value)
+                .then((response) => {
+                    setDataSeachImeiDaBan(response.data);
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
         }
     }
 
@@ -1020,53 +843,53 @@ const UserAccountTable = ({ record }) => {
     const handleClearImeiDaBanCheckBox = () => {
         //coment lại vì chưa có dữ liệu
         if (selectedCheckboxes.length > 0) {
-          deleteImeisDaBanOffLineCheckBox(selectedCheckboxes)
-            .then((response) => {
-              setSelectedCheckboxes([]);
-              getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
+            deleteImeisDaBanOffLineCheckBox(selectedCheckboxes)
                 .then((response) => {
-                  setDataImeiSelected(response.data);
-                })
-                .catch((error) => {
-                  console.log(`Lỗi đọc sku: ${error}`);
-                });
-              getImeisOfSku(dataIdSKU)
-                .then((response) => {
-                  setDataImeiClick(response.data);
-                })
-                .catch((error) => {
-                  console.log(`Lỗi đọc imei của sku: ${error}`);
-                });
-              setDataSeachImeiDaBan([]);
-              //load lại bill_detaill để update số lượng imei_da_chon -phongnh
-              getIdBill(dataIdBillDetail)
-                .then((response) => {
-                  getBilDetailOfBillWhereIdBill(response.data)
-                    .then((response) => {
-                      setDataBillDetailOffline(response.data);
-                    })
-                    .catch((error) => {
-                      console.log(`${error}`);
+                    setSelectedCheckboxes([]);
+                    getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
+                        .then((response) => {
+                            setDataImeiSelected(response.data);
+                        })
+                        .catch((error) => {
+                            console.log(`Lỗi đọc sku: ${error}`);
+                        });
+                    getImeisOfSku(dataIdSKU)
+                        .then((response) => {
+                            setDataImeiClick(response.data);
+                        })
+                        .catch((error) => {
+                            console.log(`Lỗi đọc imei của sku: ${error}`);
+                        });
+                    setDataSeachImeiDaBan([]);
+                    //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+                    getIdBill(dataIdBillDetail)
+                        .then((response) => {
+                            getBilDetailOfBillWhereIdBill(response.data)
+                                .then((response) => {
+                                    setDataBillDetailOffline(response.data);
+                                })
+                                .catch((error) => {
+                                    console.log(`${error}`);
+                                });
+                        })
+                        .catch((error) => {
+                            console.log(`${error}`);
+                        });
+                    toast.current.show({
+                        severity: "success",
+                        summary: "THÔNG BÁO THÀNH CÔNG",
+                        detail: "Đã Xoá Danh Sách Imei.",
+                        life: 3000,
                     });
                 })
                 .catch((error) => {
-                  console.log(`${error}`);
+                    console.log(`${error}`);
                 });
-              toast.current.show({
-                severity: "success",
-                summary: "THÔNG BÁO THÀNH CÔNG",
-                detail: "Đã Xoá Danh Sách Imei.",
-                life: 3000,
-              });
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
         } else {
-          notification.error({
-            message: "Xoá Thất Bại!",
-            description: "Hãy Chọn Danh Sách Imei.",
-          });
+            notification.error({
+                message: "Xoá Thất Bại!",
+                description: "Hãy Chọn Danh Sách Imei.",
+            });
         }
     };
 
@@ -1074,60 +897,60 @@ const UserAccountTable = ({ record }) => {
     const handleClearAllImeiDaBan = () => {
         //coment lại vì chưa có dữ liệu
         getAllImeisDaBanOffLine(dataIdBillDetail)
-          .then((response) => {
-            if (response.data.length > 0) {
-              deleteAllImeisDaBanOffLine(dataIdBillDetail)
-                .then((response) => {
-                  setSelectedCheckboxes([]);
-                  getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
-                    .then((response) => {
-                      setDataImeiSelected(response.data);
-                    })
-                    .catch((error) => {
-                      console.log(`Lỗi đọc sku: ${error}`);
-                    });
-                  getImeisOfSku(dataIdSKU)
-                    .then((response) => {
-                      setDataImeiClick(response.data);
-                    })
-                    .catch((error) => {
-                      console.log(`Lỗi đọc imei của sku: ${error}`);
-                    });
-                  setDataSeachImeiDaBan([]);
-                  //load lại bill_detaill để update số lượng imei_da_chon -phongnh
-                  getIdBill(dataIdBillDetail)
-                    .then((response) => {
-                      getBilDetailOfBillWhereIdBill(response.data)
+            .then((response) => {
+                if (response.data.length > 0) {
+                    deleteAllImeisDaBanOffLine(dataIdBillDetail)
                         .then((response) => {
-                          setDataBillDetailOffline(response.data);
+                            setSelectedCheckboxes([]);
+                            getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
+                                .then((response) => {
+                                    setDataImeiSelected(response.data);
+                                })
+                                .catch((error) => {
+                                    console.log(`Lỗi đọc sku: ${error}`);
+                                });
+                            getImeisOfSku(dataIdSKU)
+                                .then((response) => {
+                                    setDataImeiClick(response.data);
+                                })
+                                .catch((error) => {
+                                    console.log(`Lỗi đọc imei của sku: ${error}`);
+                                });
+                            setDataSeachImeiDaBan([]);
+                            //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+                            getIdBill(dataIdBillDetail)
+                                .then((response) => {
+                                    getBilDetailOfBillWhereIdBill(response.data)
+                                        .then((response) => {
+                                            setDataBillDetailOffline(response.data);
+                                        })
+                                        .catch((error) => {
+                                            console.log(`${error}`);
+                                        });
+                                })
+                                .catch((error) => {
+                                    console.log(`${error}`);
+                                });
+                            toast.current.show({
+                                severity: "success",
+                                summary: "THÔNG BÁO THÀNH CÔNG",
+                                detail: "Đã Xoá Tất Cả Imei.",
+                                life: 3000,
+                            });
                         })
                         .catch((error) => {
-                          console.log(`${error}`);
+                            console.log(`Lỗi đọc imei_da_ban: ${error}`);
                         });
-                    })
-                    .catch((error) => {
-                      console.log(`${error}`);
+                } else {
+                    notification.error({
+                        message: "Xoá Thất Bại!",
+                        description: "Danh Sách Imei Rỗng.",
                     });
-                  toast.current.show({
-                    severity: "success",
-                    summary: "THÔNG BÁO THÀNH CÔNG",
-                    detail: "Đã Xoá Tất Cả Imei.",
-                    life: 3000,
-                  });
-                })
-                .catch((error) => {
-                  console.log(`Lỗi đọc imei_da_ban: ${error}`);
-                });
-            } else {
-              notification.error({
-                message: "Xoá Thất Bại!",
-                description: "Danh Sách Imei Rỗng.",
-              });
-            }
-          })
-          .catch((error) => {
-            console.log(`Lỗi đọc bill_detail: ${error}`);
-          });
+                }
+            })
+            .catch((error) => {
+                console.log(`Lỗi đọc bill_detail: ${error}`);
+            });
     };
     //config khi xoá all imei của bill_detail - phongnh
     const rejectDeleteAllImeiBillDetail = () => {
@@ -1202,18 +1025,19 @@ const UserAccountTable = ({ record }) => {
         //comment vì chưa có dữ liệu
         const checkboxValue = e.target.value;
         setSelectedCheckboxes((prevSelectedCheckboxes) => {
-          if (e.target.checked) {
-            // Nếu được chọn, thêm giá trị vào danh sách
-            return [...prevSelectedCheckboxes, checkboxValue];
-          } else {
-            // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
-            return prevSelectedCheckboxes.filter((item) => item !== checkboxValue);
-          }
+            if (e.target.checked) {
+                // Nếu được chọn, thêm giá trị vào danh sách
+                return [...prevSelectedCheckboxes, checkboxValue];
+            } else {
+                // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
+                return prevSelectedCheckboxes.filter((item) => item !== checkboxValue);
+            }
         });
     }
 
     //tìm kiếm imei - phongnh
     const [dataSeachImeis, setDataSeachImeis] = useState([]);
+
     function handleChangeImeis(event) {
         //comment vì chưa có dữ liệu
         // const target = event.target;
@@ -1240,68 +1064,68 @@ const UserAccountTable = ({ record }) => {
         //comment vì chưa có dữ liệu
         // Tạo một đối tượng AddCart để gửi lên API
         const item = {
-          codeImei: codeImei,
-          idBillDetail: idBillDetail,
-          codeAccount: idAccount,
+            codeImei: codeImei,
+            idBillDetail: idBillDetail,
+            codeAccount: idAccount,
         };
         addImeiDaBan(item)
-          .then((response) => {
-            if (response.data === "") {
-              notification.error({
-                message: "Thêm Imei Thất Bại!",
-                description: "imei đã có trong giỏ hàng hoặc đã bán!",
-              });
-            } else {
-              getListImeiDaBanOfSku(idBillDetail, dataIdSKU)
-                .then((response) => {
-                  setDataImeiSelected(response.data);
-                })
-                .catch((error) => {
-                  console.log(`Lỗi đọc sku: ${error}`);
-                });
-              getImeisOfSku(dataIdSKU)
-                .then((response) => {
-                  setDataImeiClick(response.data);
-                })
-                .catch((error) => {
-                  console.log(`Lỗi đọc imei của sku: ${error}`);
-                });
-              seachImeis(dataIdSKU, codeImei)
-                .then((response) => {
-                  setDataSeachImeis(response.data);
-                })
-                .catch((error) => {
-                  console.log(`${error}`);
-                });
-              //load lại bill_detaill để update số lượng imei_da_chon -phongnh
-              getIdBill(idBillDetail)
-                .then((response) => {
-                  getBilDetailOfBillWhereIdBill(response.data)
-                    .then((response) => {
-                      setDataBillDetailOffline(response.data);
-                    })
-                    .catch((error) => {
-                      console.log(`${error}`);
+            .then((response) => {
+                if (response.data === "") {
+                    notification.error({
+                        message: "Thêm Imei Thất Bại!",
+                        description: "imei đã có trong giỏ hàng hoặc đã bán!",
                     });
-                })
-                .catch((error) => {
-                  console.log(`${error}`);
-                });
-              notification.success({
-                message: "Thêm Imei Thành Công",
-              });
-            }
-          })
-          .catch((error) => {
-            console.log(`Lỗi khi cập nhật số lượng: ${error}`);
-          });
+                } else {
+                    getListImeiDaBanOfSku(idBillDetail, dataIdSKU)
+                        .then((response) => {
+                            setDataImeiSelected(response.data);
+                        })
+                        .catch((error) => {
+                            console.log(`Lỗi đọc sku: ${error}`);
+                        });
+                    getImeisOfSku(dataIdSKU)
+                        .then((response) => {
+                            setDataImeiClick(response.data);
+                        })
+                        .catch((error) => {
+                            console.log(`Lỗi đọc imei của sku: ${error}`);
+                        });
+                    seachImeis(dataIdSKU, codeImei)
+                        .then((response) => {
+                            setDataSeachImeis(response.data);
+                        })
+                        .catch((error) => {
+                            console.log(`${error}`);
+                        });
+                    //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+                    getIdBill(idBillDetail)
+                        .then((response) => {
+                            getBilDetailOfBillWhereIdBill(response.data)
+                                .then((response) => {
+                                    setDataBillDetailOffline(response.data);
+                                })
+                                .catch((error) => {
+                                    console.log(`${error}`);
+                                });
+                        })
+                        .catch((error) => {
+                            console.log(`${error}`);
+                        });
+                    notification.success({
+                        message: "Thêm Imei Thành Công",
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(`Lỗi khi cập nhật số lượng: ${error}`);
+            });
     };
     const moreMenu2 = (record1) => (
         <>
             {record1.statusSku === 0 && record1.statusProduct === 0 ? (
                 <Menu
                     mode="vertical2"
-                    onClick={({ domEvent }) => domEvent.stopPropagation()}
+                    onClick={({domEvent}) => domEvent.stopPropagation()}
                 >
                     <Menu.Item
                         key="deleteSku"
@@ -1326,7 +1150,7 @@ const UserAccountTable = ({ record }) => {
             ) : record1.statusSku === 1 && record1.statusProduct === 0 ? (
                 <Menu
                     mode="vertical2"
-                    onClick={({ domEvent }) => domEvent.stopPropagation()}
+                    onClick={({domEvent}) => domEvent.stopPropagation()}
                 >
                     <Menu.Item
                         key="edit"
@@ -1365,15 +1189,15 @@ const UserAccountTable = ({ record }) => {
     return (
         <>
             {" "}
-            <Toast ref={toast} />
-            <ConfirmDialog />
+            <Toast ref={toast}/>
+            <ConfirmDialog/>
             <List title="Bill Detail" createButtonProps={undefined}>
                 <Col>
                     <List>
                         <Table
                             rowKey="id"
                             dataSource={users}
-                            scroll={{ x: "max-content" }}
+                            scroll={{x: "max-content"}}
                             pagination={{
                                 pageSize: 5,
                                 showSizeChanger: false,
@@ -1417,7 +1241,7 @@ const UserAccountTable = ({ record }) => {
                                 dataIndex="code"
                                 title={"Imei"}
                                 render={(text, record) => (
-                                    <Form.Item name="title" style={{ margin: 0 }}>
+                                    <Form.Item name="title" style={{margin: 0}}>
                                         <p>
                                             <button
                                                 type="button"
@@ -1535,7 +1359,7 @@ const UserAccountTable = ({ record }) => {
                     onCancel={handleCancelAddImei}
                     width={550}
                     footer={null}
-                    bodyStyle={{ minHeight: "800px" }}
+                    bodyStyle={{minHeight: "800px"}}
                 >
                     <div className="container py-5">
                         <div className="row d-flex justify-content-center">
@@ -1543,14 +1367,14 @@ const UserAccountTable = ({ record }) => {
                             <div>
                                 <h4
                                     className="mb-0"
-                                    style={{ textAlign: "center", margin: "auto" }}
+                                    style={{textAlign: "center", margin: "auto"}}
                                 >
                                     DANH SÁCH IMEI
                                 </h4>
                             </div>
                             <div
                                 className="card-header d-flex justify-content-between align-items-center p-3"
-                                style={{ borderTop: "4px solid #ffa900" }}
+                                style={{borderTop: "4px solid #ffa900"}}
                             ></div>
                             <p
                                 style={{
@@ -1575,31 +1399,31 @@ const UserAccountTable = ({ record }) => {
                                 <ul class="list-group mb-3">
                                     <li
                                         class="list-group-item d-flex justify-content-between"
-                                        style={{ backgroundColor: "yellowgreen" }}
+                                        style={{backgroundColor: "yellowgreen"}}
                                     >
                                         <span>STT</span>
-                                        <span style={{ paddingLeft: "10px" }}>Mã Hoá Đơn</span>
-                                        <span style={{ paddingLeft: "10px" }}>Tên Sản Phẩm</span>
-                                        <span style={{ paddingLeft: "10px" }}>Dung Lượng</span>
-                                        <span style={{ paddingLeft: "10px" }}>Màu Sắc</span>
-                                        <span style={{ paddingLeft: "10px" }}>Giá</span>
-                                        <span style={{ paddingLeft: "10px" }}>Trạng Thái HĐ</span>
+                                        <span style={{paddingLeft: "10px"}}>Mã Hoá Đơn</span>
+                                        <span style={{paddingLeft: "10px"}}>Tên Sản Phẩm</span>
+                                        <span style={{paddingLeft: "10px"}}>Dung Lượng</span>
+                                        <span style={{paddingLeft: "10px"}}>Màu Sắc</span>
+                                        <span style={{paddingLeft: "10px"}}>Giá</span>
+                                        <span style={{paddingLeft: "10px"}}>Trạng Thái HĐ</span>
                                     </li>
                                     {dataImeiThatLac.map((imei, index) => (
                                         <ul class="list-group mb-3">
                                             <li class="list-group-item d-flex justify-content-between">
                                                 <span>{index + 1}:</span>
                                                 <span>{imei.codeBill}</span>
-                                                <span style={{ paddingLeft: "10px" }}>{""}</span>
-                                                <span style={{ paddingLeft: "10px" }}>{""}</span>
-                                                <span style={{ paddingLeft: "10px" }}>{""}</span>
-                                                <span style={{ paddingLeft: "10px" }}>{""}</span>
-                                                <span style={{ paddingLeft: "10px" }}>{""}</span>
-                                                <span style={{ paddingLeft: "10px" }}>{""}</span>
-                                                <span style={{ paddingLeft: "10px" }}>{""}</span>
+                                                <span style={{paddingLeft: "10px"}}>{""}</span>
+                                                <span style={{paddingLeft: "10px"}}>{""}</span>
+                                                <span style={{paddingLeft: "10px"}}>{""}</span>
+                                                <span style={{paddingLeft: "10px"}}>{""}</span>
+                                                <span style={{paddingLeft: "10px"}}>{""}</span>
+                                                <span style={{paddingLeft: "10px"}}>{""}</span>
+                                                <span style={{paddingLeft: "10px"}}>{""}</span>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between">
-                        <span style={{ paddingLeft: "25px" }}>
+                        <span style={{paddingLeft: "25px"}}>
                           {" - "} {imei.nameProduct}
                             {" - "}
                             {imei.capacitySKU}
@@ -1613,11 +1437,11 @@ const UserAccountTable = ({ record }) => {
                                     ))}
                                 </ul>
                             ) : (
-                                <p style={{ color: "red" }}>* Không có dữ liệu!</p>
+                                <p style={{color: "red"}}>* Không có dữ liệu!</p>
                             )}
                             <div
                                 className="card-header d-flex justify-content-between align-items-center"
-                                style={{ borderTop: "4px solid #ffa900" }}
+                                style={{borderTop: "4px solid #ffa900"}}
                             ></div>
                             <p
                                 style={{
@@ -1640,7 +1464,7 @@ const UserAccountTable = ({ record }) => {
                                 onChange={handleChangeImeisDaBan}
                             />
                             <p></p>
-                            <p style={{ textAlign: "right" }}>
+                            <p style={{textAlign: "right"}}>
                                 <Button
                                     type="text"
                                     style={{
@@ -1672,7 +1496,7 @@ const UserAccountTable = ({ record }) => {
                             <div
                                 className="card-body"
                                 data-mdb-perfect-scrollbar="true"
-                                style={{ position: "relative", height: 250, overflowY: "auto" }}
+                                style={{position: "relative", height: 250, overflowY: "auto"}}
                             >
                                 {/* dataSeachImeiDaBan */}
                                 {dataSeachImeiDaBan.length === 0 ? (
@@ -1690,7 +1514,7 @@ const UserAccountTable = ({ record }) => {
                                                         )}
                                                         onChange={handleCheckboxChange}
                                                     />
-                                                    <span style={{ paddingLeft: "10px" }}>
+                                                    <span style={{paddingLeft: "10px"}}>
                             {imei.codeImeiDaBan}
                           </span>
                                                     <strong>
@@ -1717,7 +1541,7 @@ const UserAccountTable = ({ record }) => {
                                             <ul class="list-group mb-3">
                                                 <li class="list-group-item d-flex justify-content-between">
                                                     <span>{index + 1}</span>
-                                                    <span style={{ paddingLeft: "10px" }}>
+                                                    <span style={{paddingLeft: "10px"}}>
                             {imei.codeImeiDaBan}
                           </span>
                                                     <strong>
@@ -1742,7 +1566,7 @@ const UserAccountTable = ({ record }) => {
                             </div>
                             <div
                                 className="card-header d-flex justify-content-between align-items-center"
-                                style={{ borderTop: "4px solid #ffa900" }}
+                                style={{borderTop: "4px solid #ffa900"}}
                             ></div>
                             <p
                                 style={{
@@ -1767,7 +1591,7 @@ const UserAccountTable = ({ record }) => {
                             <div
                                 className="card-body"
                                 data-mdb-perfect-scrollbar="true"
-                                style={{ position: "relative", height: 330, overflowY: "auto" }}
+                                style={{position: "relative", height: 330, overflowY: "auto"}}
                             >
                                 {/* dataSeachImeis */}
                                 {dataSeachImeis.length === 0 ? (
@@ -1776,9 +1600,9 @@ const UserAccountTable = ({ record }) => {
                                             <ul class="list-group mb-3">
                                                 <li class="list-group-item d-flex justify-content-between">
                                                     <span>{index + 1}</span>
-                                                    <span style={{ paddingLeft: "10px" }}>
+                                                    <span style={{paddingLeft: "10px"}}>
                             {imei.codeImei}
-                                                        <br />
+                                                        <br/>
                           </span>
                                                     <strong>
                                                         <Button
@@ -1801,9 +1625,9 @@ const UserAccountTable = ({ record }) => {
                                             <ul class="list-group mb-3">
                                                 <li class="list-group-item d-flex justify-content-between">
                                                     <span>{index + 1}</span>
-                                                    <span style={{ paddingLeft: "10px" }}>
+                                                    <span style={{paddingLeft: "10px"}}>
                             {imei.codeImei}
-                                                        <br />
+                                                        <br/>
                           </span>
                                                     <strong>
                                                         <Button
@@ -1830,7 +1654,7 @@ const UserAccountTable = ({ record }) => {
     );
 };
 const expandedRowRender = (record) => {
-    return <UserAccountTable record={record} />;
+    return <UserAccountTable record={record}/>;
 };
 export default OderDisplay;
 

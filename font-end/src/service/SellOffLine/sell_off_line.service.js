@@ -185,3 +185,9 @@ export const searchBillDTT = (idAccount, codeBill) => {
     `/admin/bill-offline/searchBill-DTT?idAccount=${idAccount}&codeBill=${codeBill}`
   );
 };
+
+export const getThongTinTT = (codeBill) => {
+  return httpClient.get(
+    `/admin/bill-offline/get-TT-Bill/${codeBill}`
+  );
+};
