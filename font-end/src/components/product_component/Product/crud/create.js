@@ -1,56 +1,28 @@
-import { useEffect, useState } from "react";
-import { useTranslate, useApiUrl } from "@refinedev/core";
-import { Create, getValueFromEvent } from "@refinedev/antd";
-import { add } from "../../../../service/product.service";
-import { addImage } from "../../../../service/image.service";
+import {useEffect, useState} from "react";
+import {useApiUrl, useTranslate} from "@refinedev/core";
+import {Create, getValueFromEvent} from "@refinedev/antd";
 import {
-  readImportImei,
-  ImportImeiExcel,
-} from "../../../../service/imei.service";
-import QRScanner from "./QRScanner";
-import { Option } from "antd/es/mentions";
-import { importImei } from "../../../../service/imei.service";
-import { readAllProductNew } from "../../../../service/sku.service";
-import ExportImei from "./ExportImei";
-import * as XLSX from "xlsx";
-
-import {
-  readAll,
-  readAllColor,
-  readAllChip,
+  add,
   readAllBattery,
   readAllCapacity,
   readAllCategory,
+  readAllChip,
+  readAllColor,
   readAllManufacture,
   readAllRam,
   readAllScreen,
-  readAllSize,
+  readAllSize
 } from "../../../../service/product.service";
-import {
-  Drawer,
-  Form,
-  Input,
-  InputNumber,
-  Radio,
-  Select,
-  Space,
-  Avatar,
-  Typography,
-  Upload,
-  Button,
-  Modal,
-  notification,
-} from "antd";
-import { Link, useHistory } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faClose,
-  faEdit,
-  faFileExcel,
-  faDownload,
-} from "@fortawesome/free-solid-svg-icons";
-import queryString from "query-string";
+import {addImage} from "../../../../service/image.service";
+import {ImportImeiExcel,} from "../../../../service/imei.service";
+import QRScanner from "./QRScanner";
+import {Option} from "antd/es/mentions";
+import {readAllProductNew} from "../../../../service/sku.service";
+import * as XLSX from "xlsx";
+import {Avatar, Form, Input, InputNumber, Modal, notification, Select, Space, Typography, Upload,} from "antd";
+import {useHistory} from "react-router-dom";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faFileExcel,} from "@fortawesome/free-solid-svg-icons";
 
 const Test = (setDisplay, setPagination) => {
   const { Text } = Typography;

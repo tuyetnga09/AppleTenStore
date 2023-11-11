@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.service.impl;
 
 import com.example.backend.controller.order_management.model.billDetail.request.FindBillDetailRequest;
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerResponse;
+import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.service.BillDetailService;
 import com.example.backend.entity.BillDetails;
 import com.example.backend.entity.CartDetail;
@@ -53,5 +54,10 @@ public class BillDetailServiceImpl implements BillDetailService {
             }
 
         }
+    }
+
+    @Override
+    public List<BillDetailOffLineIon> findBillDetails(Integer id) {
+        return this.billDetailRepository.findByBillDetailOffLineIdBill(id);
     }
 }

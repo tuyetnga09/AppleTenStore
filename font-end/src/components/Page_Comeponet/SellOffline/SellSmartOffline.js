@@ -1038,8 +1038,6 @@ export default function SellSmart() {
     //   dateUpdate: null,
     //   totalMoney: totalPrice,
     // });
-    console.log(dataDoneBill);
-    console.log(dataBillDetailOffline);
   };
 
   //danh sách imei - của sku được chọn
