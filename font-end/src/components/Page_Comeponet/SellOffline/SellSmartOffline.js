@@ -855,7 +855,8 @@ export default function SellSmart() {
     codeBill,
     codeAccount,
     productList,
-    customBilll
+    customBilll,
+    dataDoneBill
   ) {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 800]);
@@ -912,7 +913,7 @@ export default function SellSmart() {
       font: font,
       color: rgb(0, 0, 0),
     });
-    drawText(`Hinh thuc thanh toan: `, {
+    drawText(`Hinh thuc thanh toan: ${dataDoneBill.methodPayments}`, {
       x: 50,
       y: height - 210,
       size: 15,
@@ -1056,7 +1057,8 @@ export default function SellSmart() {
       dataBillOffLine.codeBill,
       dataBillOffLine.codeAccount,
       dataBillDetailOffline,
-      customBill
+      customBill,
+      dataDoneBill
     );
     if (dataDoneBill.idBill === null) {
       toast.current.show({
