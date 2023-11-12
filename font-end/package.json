@@ -56,6 +56,7 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "5.0.1",
+    "react-slideshow-image": "^4.3.0",
     "react-stomp": "^5.1.0",
     "react-use-websocket": "^3.0.0",
     "react-zxing": "^2.0.0",

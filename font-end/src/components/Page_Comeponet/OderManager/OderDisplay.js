@@ -44,7 +44,7 @@ import queryString from "query-string";
 import {Option} from "antd/es/mentions";
 import {
     addImeiDaBan,
-    deleteAllImeisDaBanOffLine, deleteImeisDaBanOffLineCheckBox,
+    deleteAllImeisDaBanOffLine, deleteImeiDaBan, deleteImeisDaBanOffLineCheckBox,
     getAllImeisDaBanOffLine,
     getBilDetailOfBillWhereIdBill,
     getIdBill,
@@ -975,50 +975,50 @@ const UserAccountTable = ({record}) => {
     // xoá imei đã bán ra khỏi bảng imei đã bán và cập nhật lại status imei trong bảng imei - phongnh
     const handleClearImeiDaBan = (idImeiDaBan, codeImeiDaBan) => {
         //coment lại vì chưa có dữ liệu
-        // deleteImeiDaBan(idImeiDaBan, codeImeiDaBan)
-        //   .then((response) => {
-        //     getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
-        //       .then((response) => {
-        //         setDataImeiSelected(response.data);
-        //       })
-        //       .catch((error) => {
-        //         console.log(`Lỗi đọc sku: ${error}`);
-        //       });
-        //     getImeisOfSku(dataIdSKU)
-        //       .then((response) => {
-        //         setDataImeiClick(response.data);
-        //       })
-        //       .catch((error) => {
-        //         console.log(`Lỗi đọc imei của sku: ${error}`);
-        //       });
-        //     seachImeisDaBan(dataIdBillDetail, dataIdSKU, codeImeiDaBan)
-        //       .then((response) => {
-        //         setDataSeachImeiDaBan(response.data);
-        //       })
-        //       .catch((error) => {
-        //         console.log(`${error}`);
-        //       });
-        //     //load lại bill_detaill để update số lượng imei_da_chon -phongnh
-        //     getIdBill(dataIdBillDetail)
-        //       .then((response) => {
-        //         getBilDetailOfBillWhereIdBill(response.data)
-        //           .then((response) => {
-        //             setDataBillDetailOffline(response.data);
-        //           })
-        //           .catch((error) => {
-        //             console.log(`${error}`);
-        //           });
-        //       })
-        //       .catch((error) => {
-        //         console.log(`${error}`);
-        //       });
-        //     notification.success({
-        //       message: "Xoá Imei Thành Công",
-        //     });
-        //   })
-        //   .catch((error) => {
-        //     console.log(`Lỗi xoá imei_da_ban: ${error}`);
-        //   });
+        deleteImeiDaBan(idImeiDaBan, codeImeiDaBan)
+          .then((response) => {
+            getListImeiDaBanOfSku(dataIdBillDetail, dataIdSKU)
+              .then((response) => {
+                setDataImeiSelected(response.data);
+              })
+              .catch((error) => {
+                console.log(`Lỗi đọc sku: ${error}`);
+              });
+            getImeisOfSku(dataIdSKU)
+              .then((response) => {
+                setDataImeiClick(response.data);
+              })
+              .catch((error) => {
+                console.log(`Lỗi đọc imei của sku: ${error}`);
+              });
+            seachImeisDaBan(dataIdBillDetail, dataIdSKU, codeImeiDaBan)
+              .then((response) => {
+                setDataSeachImeiDaBan(response.data);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+            //load lại bill_detaill để update số lượng imei_da_chon -phongnh
+            getIdBill(dataIdBillDetail)
+              .then((response) => {
+                getBilDetailOfBillWhereIdBill(response.data)
+                  .then((response) => {
+                    setDataBillDetailOffline(response.data);
+                  })
+                  .catch((error) => {
+                    console.log(`${error}`);
+                  });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+            notification.success({
+              message: "Xoá Imei Thành Công",
+            });
+          })
+          .catch((error) => {
+            console.log(`Lỗi xoá imei_da_ban: ${error}`);
+          });
     };
 
     function handleCheckboxChange(e) {
