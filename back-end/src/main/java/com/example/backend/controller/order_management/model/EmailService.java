@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
-    @Value("${spring.mail.username}")
     private String sender;
     public void sendEmailWithHtml(String to, String subject, String htmlContent) {
         try {
