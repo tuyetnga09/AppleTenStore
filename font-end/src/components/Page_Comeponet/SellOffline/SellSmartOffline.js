@@ -169,6 +169,11 @@ export default function SellSmart() {
         cash: 0,
         transfer: 0,
         formOfReceipt: "TAI_CUA_HANG",
+        itemDiscount: 0,
+        itemDiscountFreeShip: 0,
+        idVoucher: null,
+        idVoucherFreeShip: null,
+        beforePrice: 0,
     });
 
     //hóa đơn trong ngày
@@ -1024,12 +1029,6 @@ export default function SellSmart() {
     const [customBill, setCustomBill] = useState([]);
 
     async function accept() {
-        const pdfBytes = await createBillSusses(
-            dataBillOffLine.codeBill,
-            dataBillOffLine.codeAccount,
-            dataBillDetailOffline,
-            customBill
-        );
         if (dataDoneBill.idBill === null) {
             toast.current.show({
                 severity: "error",
@@ -1052,6 +1051,12 @@ export default function SellSmart() {
                 life: 3000,
             });
         } else {
+            const pdfBytes = await createBillSusses(
+                dataBillOffLine.codeBill,
+                dataBillOffLine.codeAccount,
+                dataBillDetailOffline,
+                customBill
+            );
             if (checkSoluongImei() === true) {
                 if (tienThua <= 0) {
                     doneBill(dataDoneBill)
@@ -1082,6 +1087,8 @@ export default function SellSmart() {
                                 document.getElementById("transferAmount").value = 0;
                                 getBillChoThanhToanOff();
                                 setSelectedVoucher(0);
+                                setSelectedVoucherFreeShip(0);
+
                             }
                         })
                         .catch((err) => {
@@ -1746,6 +1753,10 @@ export default function SellSmart() {
     useEffect(() => {
         calculateTotalPrice();
         calculateChange();
+        setDataDoneBill({
+            ...dataDoneBill,
+            beforePrice: totalPrice,
+          });
     }, [
         dataBillDetailOffline,
         dataTest,
@@ -1870,6 +1881,11 @@ export default function SellSmart() {
             });
         } else {
             setSelectedVoucher(voucher);
+            setDataDoneBill({
+                ...dataDoneBill,
+                itemDiscount: voucher.valueVoucher,
+                idVoucher: voucher.id,
+              });
             readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
                 .then((response) => {
                     setCartItems(response.data);
@@ -1909,8 +1925,18 @@ export default function SellSmart() {
                 message: "VOUCHER",
                 description: "Voucher đã hết lượt sử dụng",
             });
-        } else {
+        } else if (fee == null) {
+            notification.error({
+              message: "VOUCHER",
+              description: "Vui lòng chọn địa chỉ giao hàng để áp dụng",
+            });
+          }else {
             setSelectedVoucherFreeShip(voucher);
+            setDataDoneBill({
+                ...dataDoneBill,
+                itemDiscountFreeShip: voucher.valueVoucher,
+                idVoucherFreeShip: voucher.id,
+              });
             readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
                 .then((response) => {
                     setCartItems(response.data);

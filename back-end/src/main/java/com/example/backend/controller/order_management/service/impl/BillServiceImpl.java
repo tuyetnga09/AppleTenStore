@@ -12,6 +12,7 @@ import com.example.backend.untils.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -53,6 +54,9 @@ public class BillServiceImpl implements BillService {
     // CLIENT
     @Override
     public Bill createBillCustomerOnlineRequest(BillRequestOnline request) {
+        BigDecimal value1 = new BigDecimal(String.valueOf(request.getItemDiscount()));
+        BigDecimal value2 = new BigDecimal(String.valueOf(request.getItemDiscountFreeShip()));
+
         Customer customer = Customer.builder()
                 .fullName(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
@@ -96,7 +100,7 @@ public class BillServiceImpl implements BillService {
                 .address(request.getAddress() + '-' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
-                .itemDiscount(request.getItemDiscount())
+                .itemDiscount(value1.add(value2))
                 .totalMoney(request.getAfterPrice())
                 .dateCreate(LocalDate.now())
                 .typeBill(TypeBill.ONLINE)
@@ -158,6 +162,33 @@ public class BillServiceImpl implements BillService {
         } else {
             return null;
         }
+        // thông tin voucher freeship
+        Optional<Voucher> optionalVoucherFreeShip = voucherRepository.findById(request.getIdVoucherFreeShip());
+        if (optionalVoucherFreeShip.isPresent()) {
+            Voucher voucher = optionalVoucherFreeShip.get();
+
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforePrice(request.getTotalMoney())
+                    .afterPrice(request.getAfterPrice())
+                    .discountPrice(request.getItemDiscountFreeShip())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        } else {
+            return null;
+        }
+        //trừ số lượng voucher - voucher freeship
+        if(request.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+        }
+        if(request.getIdVoucherFreeShip() != null) {
+            Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
+            voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+            voucherRepository.save(voucherFreeShip);
+        }
 
         return bill;
 
@@ -166,7 +197,8 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill createBillAccountOnlineRequest(BillRequestOnlineAccount request) {
         Optional<Account> accountOptional = acountRepository.findById(request.getAccount());
-
+        BigDecimal value1 = new BigDecimal(String.valueOf(request.getItemDiscount()));
+        BigDecimal value2 = new BigDecimal(String.valueOf(request.getItemDiscountFreeShip()));
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
             Bill bill = Bill.builder()
@@ -175,7 +207,7 @@ public class BillServiceImpl implements BillService {
                     .address(request.getAddress())
                     .userName(request.getUserName())
                     .moneyShip(request.getMoneyShip())
-                    .itemDiscount(request.getItemDiscount())
+                    .itemDiscount(value1.add(value2))
                     .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
                     .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -209,16 +241,7 @@ public class BillServiceImpl implements BillService {
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
-            if(request.getIdVoucher().equals("")){
-                VoucherDetail voucherDetail = VoucherDetail.builder()
-                        .voucher(null)
-                        .bill(bill)
-                        .beforePrice(request.getTotalMoney())
-                        .afterPrice(request.getAfterPrice())
-                        .discountPrice(request.getItemDiscount())
-                        .build();
-                voucherDetailRepository.save(voucherDetail);
-            }else{
+            if(request.getIdVoucher() != null){
                 Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
                 VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -230,6 +253,19 @@ public class BillServiceImpl implements BillService {
                         .build();
                 voucherDetailRepository.save(voucherDetail);
             }
+            //lấy thoong tin voucher freeship
+            if(request.getIdVoucherFreeShip() != null){
+                Voucher voucher = voucherRepository.findById(request.getIdVoucherFreeShip()).get();
+
+                VoucherDetail voucherDetail = VoucherDetail.builder()
+                        .voucher(voucher)
+                        .bill(bill)
+                        .beforePrice(request.getTotalMoney())
+                        .afterPrice(request.getAfterPrice())
+                        .discountPrice(request.getItemDiscountFreeShip())
+                        .build();
+                voucherDetailRepository.save(voucherDetail);
+            }
 
             Cart cart = cartRepository.getCartByAccount_Id(request.getAccount());
             for (BillAskClient x : request.getBillDetail()) {
@@ -238,19 +274,32 @@ public class BillServiceImpl implements BillService {
             }
             return bill;
         }
+        //trừ só lương voucher
+        if(request.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+        }
+        if(request.getIdVoucherFreeShip() != null) {
+            Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
+            voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+            voucherRepository.save(voucherFreeShip);
+        }
 
         return null;
     }
 
     @Override
     public String createBillCustomerOfflineRequest(BillRequestOffline request) {
+        BigDecimal value1 = new BigDecimal(String.valueOf(request.getItemDiscount()));
+        BigDecimal value2 = new BigDecimal(String.valueOf(request.getItemDiscountFreeShip()));
         // thông tin hoá đơn
         Bill bill = Bill.builder()
                 .code(new Random().randomToString("Bill"))
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
-                .itemDiscount(request.getItemDiscount())
+                .itemDiscount(value1.add(value2))
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.OFFLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -297,6 +346,33 @@ public class BillServiceImpl implements BillService {
             voucherDetailRepository.save(voucherDetail);
         } else {
             return "Lỗi";
+        }
+        // thông tin voucherfreeship
+        Optional<Voucher> optionalVoucherFreeShip = voucherRepository.findById(request.getIdVoucherFreeShip());
+        if (optionalVoucherFreeShip.isPresent()) {
+            Voucher voucher = optionalVoucher.get();
+
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforePrice(request.getTotalMoney())
+                    .afterPrice(request.getAfterPrice())
+                    .discountPrice(request.getItemDiscountFreeShip())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        } else {
+            return "Lỗi";
+        }
+        //trừ số lượng
+        if(request.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+        }
+        if(request.getIdVoucherFreeShip() != null) {
+            Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
+            voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+            voucherRepository.save(voucherFreeShip);
         }
 
         return "Finished";

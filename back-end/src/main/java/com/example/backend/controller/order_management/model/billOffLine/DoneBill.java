@@ -27,6 +27,8 @@ public class DoneBill {
 
     private BigDecimal totalMoney;
 
+    private BigDecimal beforePrice;
+
     private String address;
 
     private String note;
@@ -50,4 +52,10 @@ public class DoneBill {
     private BigDecimal transfer;
 
     private String formOfReceipt;
+
+    private BigDecimal itemDiscount;
+    private BigDecimal itemDiscountFreeShip;
+
+    private Integer idVoucher;
+    private Integer idVoucherFreeShip;
 }

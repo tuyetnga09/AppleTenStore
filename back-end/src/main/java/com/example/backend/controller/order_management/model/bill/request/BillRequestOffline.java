@@ -11,6 +11,8 @@ import java.util.List;
 @Setter
 public class BillRequestOffline {
 
+    private String code;
+
     private String userName;
 
     private String phoneNumber;
@@ -23,7 +25,11 @@ public class BillRequestOffline {
 
     private String district;
 
+    private BigDecimal moneyShip;
+
     private BigDecimal itemDiscount;
+
+    private BigDecimal itemDiscountFreeShip;
 
     private BigDecimal totalMoney;
 
@@ -34,6 +40,8 @@ public class BillRequestOffline {
     private BigDecimal afterPrice;
 
     private Integer idVoucher;
+
+    private Integer idVoucherFreeShip;
 
     private String wards;
 

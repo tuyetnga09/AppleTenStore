@@ -18,6 +18,7 @@ public class BillRequestOnlineAccount {
 
     private BigDecimal moneyShip;
     private BigDecimal itemDiscount;
+    private BigDecimal itemDiscountFreeShip;
 
     private BigDecimal totalMoney;
     private String paymentMethod;
@@ -27,6 +28,7 @@ public class BillRequestOnlineAccount {
     private BigDecimal afterPrice;
 
     private Integer idVoucher;
+    private Integer idVoucherFreeShip;
     private Integer account;
     private String wards;
 }
