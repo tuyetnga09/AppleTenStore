@@ -117,7 +117,7 @@ public class BillController {
         message.append("<h3>Tiền giảm giá Voucher: ").append(request.getItemDiscount() + " VNĐ").append("</h3>");
         message.append("<h3>Tiền giảm giá vận chuyển: ").append(request.getItemDiscountFreeShip() + " VNĐ").append("</h3>");
         message.append("<h3>Số tiền đã thanh toán: ").append(request.getAfterPrice() + " VNĐ").append("</h3>");
-
+        message.append("<h1>ĐỂ TRA CỨU ĐƠN HÀNG, MỜI QUÝ KHÁCH HÀNG LÀM THEO CÁC BƯỚC SAU:  https://docs.google.com/document/d/1kiyWIvSPK-4bmuVOtOEqBTCkoHSpd9dBOuf43YrkP4U/edit</h1>");
         message.append("</body></html>");
 
         emailService.sendEmailWithHtml(userEmail, subject, message.toString());
