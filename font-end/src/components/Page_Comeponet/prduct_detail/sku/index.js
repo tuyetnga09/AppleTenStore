@@ -2595,7 +2595,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                             }}
                                           />
                                         }
-                                        onClick={() => openDetailModal(item.id)}
+                                        // onClick={() => openDetailModal(item.id)}
                                       >
                                         Edit
                                       </Menu.Item>
@@ -2879,7 +2879,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                             }}
                                           />
                                         }
-                                        onClick={() => openDetailModal(item.id)}
+                                        // onClick={() => openDetailModal(item.id)}
                                       >
                                         Edit
                                       </Menu.Item>
