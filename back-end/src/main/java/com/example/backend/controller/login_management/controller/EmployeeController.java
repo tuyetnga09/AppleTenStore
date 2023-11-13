@@ -34,10 +34,11 @@ public class EmployeeController {
 //    }
 
     @PostMapping("/create")
-    public ResponseObj add(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseObj add(@RequestBody EmployeeDTO employeeDTO, @RequestParam("role") String role) {
         User user = employeeDTO.getUser();
         Address address = employeeDTO.getAddress();
         Account account = employeeDTO.getAccount();
+        account.setRoles(Roles.valueOf(role));
         return new ResponseObj(employeeService.add(user, address, account));
     }
 }

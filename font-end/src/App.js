@@ -93,7 +93,9 @@ function App() {
           <Route path="/chat" exact component={chat} />
           {/* <Route path="/product" exact component={product} /> */}
           <Route path="/product">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            {storedUser?.roles === "CUSTOMER" ||
+            storedUser === null ||
+            storedUser?.roles === "NHAN_VIEN_BAN_HANG" ? (
               <Redirect to="/" />
             ) : (
               <Product />
@@ -541,7 +543,7 @@ function App() {
           </Route>
           {/* <Route path="/dashboard" exact component={Dashboard} /> */}
           <Route path="/dashboard">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               // notification.error({
@@ -554,7 +556,7 @@ function App() {
           <Route path="/productDetail/:id" exact component={SingleProduct} />
           {/* <Route path="/voucher" exact component={Voucher} /> */}
           <Route path="/voucher">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <Voucher />
@@ -568,7 +570,7 @@ function App() {
           <Route path="/signup">
             {storedUser !== null ? <Redirect to="/" /> : <SignUp />}
           </Route>
-          <Route path="/signup/admin">
+          <Route path="/signupAdmin">
             {storedUser !== null ? <Redirect to="/" /> : <SignUpAdmin />}
           </Route>
           <Route path="/forgotpassword">
@@ -576,7 +578,9 @@ function App() {
           </Route>
           {/* <Route path="/orders" exact component={OderDisplay} /> */}
           <Route path="/orders">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            {storedUser?.roles === "CUSTOMER" ||
+            storedUser === null ||
+            storedUser?.roles === "NHAN_VIEN_BAN_HANG" ? (
               <Redirect to="/" />
             ) : (
               <OderDisplay />
@@ -593,7 +597,7 @@ function App() {
           </Route>
           {/* <Route path="/categories" exact component={CategoryDisplay} /> */}
           <Route path="/categories">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <CategoryDisplay />
@@ -601,7 +605,7 @@ function App() {
           </Route>
           {/* <Route path="/users" exact component={AccountList} /> */}
           <Route path="/users">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <AccountList />
@@ -609,9 +613,7 @@ function App() {
           </Route>
           {/* <Route path="/sell" exact component={SellOffline} /> */}
           <Route path="/sell">
-            {storedUser?.roles === "CUSTOMER" ||
-            storedUser === null ||
-            storedUser === null ? (
+            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <SellOffline />
@@ -631,7 +633,7 @@ function App() {
             component={product_detail_dashbroad}
           /> */}
           <Route path="/admin/product-detail">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <Product_detail_dashbroad />
