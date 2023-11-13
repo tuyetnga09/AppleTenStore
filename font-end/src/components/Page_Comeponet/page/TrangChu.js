@@ -97,7 +97,7 @@ export default function TrangChu() {
           response.data.content.map((dl) => {
             return (
               <li className="sanPham" onClick={() => goToTop()}>
-                <Link to={`/product/${dl.id}`}>
+                <Link to={`/productDetail/${dl.id}`}>
                   <ImageProduct product={dl.id}></ImageProduct>
                   <h3>{dl.name}</h3>
                   <div className="price">
@@ -148,7 +148,7 @@ export default function TrangChu() {
           response.data.content.map((prn) => {
             return (
               <li className="sanPham" onClick={() => goToTop()} key={prn.id}>
-                <Link to={`/product/${prn.id}`}>
+                <Link to={`/productDetail/${prn.id}`}>
                   <ImageProduct product={prn.id}></ImageProduct>
                   <h3>{prn.name}</h3>
                   <div className="price">
@@ -197,7 +197,7 @@ export default function TrangChu() {
           response.data.content.map((prc) => {
             return (
               <li className="sanPham" onClick={() => goToTop()} key={prc.id}>
-                <Link to={`/product/${prc.id}`}>
+                <Link to={`/productDetail/${prc.id}`}>
                   <ImageProduct product={prc.id}></ImageProduct>
                   <h3>{prc.name}</h3>
                   <div className="price">
@@ -245,7 +245,7 @@ export default function TrangChu() {
           response.data.content.map((prp) => {
             return (
               <li className="sanPham" onClick={() => goToTop()} key={prp.id}>
-                <Link to={`/product/${prp.id}`}>
+                <Link to={`/productDetail/${prp.id}`}>
                   <ImageProduct product={prp.id}></ImageProduct>
                   <h3>{prp.name}</h3>
                   <div className="price">
@@ -291,7 +291,7 @@ export default function TrangChu() {
           response.data.content.map((prcg) => {
             return (
               <li className="sanPham" onClick={() => goToTop()} key={prcg.id}>
-                <Link to={`/product/${prcg.id}`}>
+                <Link to={`/productDetail/${prcg.id}`}>
                   <ImageProduct product={prcg.id}></ImageProduct>
                   <h3>{prcg.name}</h3>
                   <div className="price">
@@ -337,7 +337,7 @@ export default function TrangChu() {
           response.data.content.map((prap) => {
             return (
               <li className="sanPham" onClick={() => goToTop()} key={prap.id}>
-                <Link to={`/product/${prap.id}`}>
+                <Link to={`/productDetail/${prap.id}`}>
                   <ImageProduct product={prap.id}></ImageProduct>
                   <h3>{prap.name}</h3>
                   <div className="price">
@@ -383,7 +383,7 @@ export default function TrangChu() {
           response.data.content.map((prdp) => {
             return (
               <li className="sanPham" onClick={() => goToTop()} key={prdp.id}>
-                <Link to={`/product/${prdp.id}`}>
+                <Link to={`/productDetail/${prdp.id}`}>
                   <ImageProduct product={prdp.id}></ImageProduct>
                   <h3>{prdp.name}</h3>
                   <div className="price">
@@ -543,7 +543,7 @@ export default function TrangChu() {
   const outstandingProducts = display.map((dl) => {
     return (
       <li className="sanPham" onClick={() => goToTop()}>
-        <Link to={`/product/${dl.id}`}>
+        <Link to={`/productDetail/${dl.id}`}>
           <ImageProduct product={dl.id}></ImageProduct>
           <h3>{dl.name}</h3>
           <div className="price">
@@ -584,7 +584,7 @@ export default function TrangChu() {
   const listProductNew = productNew.map((prn) => {
     return (
       <li className="sanPham" onClick={() => goToTop()} key={prn.id}>
-        <Link to={`/product/${prn.id}`}>
+        <Link to={`/productDetail/${prn.id}`}>
           <ImageProduct product={prn.id}></ImageProduct>
           <h3>{prn.name}</h3>
           <div className="price">
@@ -623,7 +623,7 @@ export default function TrangChu() {
   const listProductCheap = productCheap.map((prc) => {
     return (
       <li className="sanPham" onClick={() => goToTop()} key={prc.id}>
-        <Link to={`/product/${prc.id}`}>
+        <Link to={`/productDetail/${prc.id}`}>
           <ImageProduct product={prc.id}></ImageProduct>
           <h3>{prc.name}</h3>
           <div className="price">
