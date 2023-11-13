@@ -27,7 +27,12 @@ const Login = () => {
             description: "Đăng nhập thành công",
           });
           localStorage.setItem("account", JSON.stringify(account));
-          history.replace("/");
+          // history.replace("/");
+          if (res.data.roles === "CUSTOMER") {
+            window.location.replace("/");
+          } else {
+            window.location.replace("/dashboard");
+          }
         } else {
           notification.error({
             message: "ĐĂNG NHẬP",

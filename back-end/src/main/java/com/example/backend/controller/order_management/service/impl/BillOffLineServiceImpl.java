@@ -20,6 +20,8 @@ import com.example.backend.entity.Imei;
 import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.Payments;
 import com.example.backend.entity.SKU;
+import com.example.backend.entity.Voucher;
+import com.example.backend.entity.VoucherDetail;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.BillDetailRepository;
 import com.example.backend.repository.BillRepository;
@@ -28,6 +30,8 @@ import com.example.backend.repository.ImeiDaBanRepository;
 import com.example.backend.repository.ImeiRepository;
 import com.example.backend.repository.PaymentsRepository;
 import com.example.backend.repository.SKURepositoty;
+import com.example.backend.repository.VoucherDetailRepository;
+import com.example.backend.repository.VoucherRepository;
 import com.example.backend.untils.Roles;
 import com.example.backend.untils.StatusBill;
 import com.example.backend.untils.TypeBill;
@@ -69,6 +73,12 @@ public class BillOffLineServiceImpl implements BillOffLineService {
 
     @Autowired
     private PaymentsRepository paymentsRepository;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
+
+    @Autowired
+    private VoucherDetailRepository voucherDetailRepository;
 
     @Override
     public Account getAccount(Integer idAccount) {
@@ -391,9 +401,13 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     @Override
     public void thanhToan(DoneBill doneBill) {
         Customer customer = customerRepository.findById(doneBill.getIdCustomer()).get();
+        BigDecimal value1 = new BigDecimal(String.valueOf(doneBill.getItemDiscount()));
+        BigDecimal value2 = new BigDecimal(String.valueOf(doneBill.getItemDiscountFreeShip()));
+
         Bill bill = billRepository.findById(doneBill.getIdBill()).orElse(null);
         bill.setDateUpdate(LocalDate.now());
         bill.setMoneyShip(doneBill.getMoneyShip());
+        bill.setItemDiscount(value1.add(value2));
         bill.setTotalMoney(doneBill.getTotalMoney());
         bill.setAddress(doneBill.getAddress());
         bill.setNote(doneBill.getNote());
@@ -444,6 +458,43 @@ public class BillOffLineServiceImpl implements BillOffLineService {
                 payment.setMoneyPayment(doneBill.getTransfer());
             }
             paymentsRepository.save(payment);
+        }
+        //add voucher giảm giá
+        if(doneBill.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.findById(doneBill.getIdVoucher()).get();
+
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforePrice(doneBill.getBeforePrice())
+                    .afterPrice(doneBill.getTotalMoney())
+                    .discountPrice(doneBill.getItemDiscount())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        }
+        //add voucher freeship
+        if(doneBill.getIdVoucherFreeShip() != null){
+            Voucher voucher = voucherRepository.findById(doneBill.getIdVoucherFreeShip()).get();
+
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforePrice(doneBill.getBeforePrice())
+                    .afterPrice(doneBill.getTotalMoney())
+                    .discountPrice(doneBill.getItemDiscountFreeShip())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        }
+        //trừ số lượng
+        if(doneBill.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.getOne(doneBill.getIdVoucher());
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+        }
+        if(doneBill.getIdVoucherFreeShip() != null) {
+            Voucher voucherFreeShip = voucherRepository.getOne(doneBill.getIdVoucherFreeShip());
+            voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+            voucherRepository.save(voucherFreeShip);
         }
     }
 

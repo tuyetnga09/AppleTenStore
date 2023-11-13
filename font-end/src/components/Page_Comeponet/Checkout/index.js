@@ -67,12 +67,14 @@ const Checkout = () => {
     district: "",
     moneyShip: 0,
     itemDiscount: 0,
+    itemDiscountFreeShip: 0,
     totalMoney: 0,
     paymentMethod: "ONLINE",
     billDetail: [],
     quantity: 0,
     afterPrice: 0,
     idVoucher: null,
+    idVoucherFreeShip: null,
     account: idAccount,
     wards: "",
   });
@@ -407,8 +409,18 @@ const Checkout = () => {
         message: "VOUCHER",
         description: "Voucher đã hết lượt sử dụng",
       });
+    } else if (fee == null) {
+      notification.error({
+        message: "VOUCHER",
+        description: "Vui lòng chọn địa chỉ giao hàng để áp dụng",
+      });
     } else {
       setSelectedVoucherFreeShip(voucher);
+      setBill({
+        ...bill,
+        itemDiscountFreeShip: voucher.valueVoucher,
+        idVoucherFreeShip: voucher.id,
+      });
       if (storedUser !== null) {
         readAll(idAccount)
           .then((response) => {
