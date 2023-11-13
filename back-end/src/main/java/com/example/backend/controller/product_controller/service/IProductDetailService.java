@@ -3,6 +3,7 @@ package com.example.backend.controller.product_controller.service;
 import com.example.backend.controller.product_controller.model.product_detail.ion.ProductDetailIonAdmin;
 import com.example.backend.controller.product_controller.model.product_detail.ion.SkuIonAdmin;
 import com.example.backend.controller.product_controller.model.request.ImeiCreateRequest;
+import com.example.backend.controller.product_controller.model.respon.ImeiThatLac;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
 import org.springframework.data.jpa.repository.Query;
@@ -54,4 +55,13 @@ public interface IProductDetailService {
 
     //cập nhật all imei hoạt động -> xoá (xoá all imei)
     Boolean updateAllImei(Integer statusUpdate, Long idSku, Integer status);
+
+    //seach imei (codeImei , status)
+    List<Imei> seachImeis(String codeImei, Integer status,  Long idSku);
+
+    //tìm kiếm imei thất lạc
+     List<ImeiThatLac> seachImeisThatLac(String codeImei);
+
+     //update imei
+    Imei update(Integer idImei, String codeImei);
 }

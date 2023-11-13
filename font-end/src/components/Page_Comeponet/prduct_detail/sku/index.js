@@ -16,6 +16,8 @@ import {
   updateImeiCheckbox,
   deleteAllImei,
   returnAllImei,
+  seachImeis,
+  seachImeiThatLac,
 } from "../../../../service/product_detail/sku/sku.service";
 import {
   readImportImei,
@@ -81,6 +83,25 @@ const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu;
 
 export const AccountList = () => {
+  // State để lưu trữ dữ liệu từ component con
+  const [dataFromChild, setDataFromChild] = useState(null);
+
+  // Hàm callback để nhận dữ liệu từ component con
+  const receiveDataFromChild = (data) => {
+    // Xử lý dữ liệu từ component con ở đây
+    // Lưu trữ dữ liệu vào state
+    setDataFromChild(data);
+    if (data === true) {
+      readAllProduct()
+        .then((res) => {
+          setDataProducts(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
@@ -291,6 +312,11 @@ export const AccountList = () => {
       )}
     </>
   );
+  const expandedRowRender = (record) => {
+    return (
+      <UserAccountTable record={record} onSomeAction={receiveDataFromChild} />
+    );
+  };
 
   const breakpoint = Grid.useBreakpoint();
 
@@ -580,12 +606,17 @@ export const AccountList = () => {
     </>
   );
 };
-const UserAccountTable = ({ record }) => {
+const UserAccountTable = ({ record, onSomeAction }) => {
+  //truyền thông tin ra bnagr bên ngoài
+  const handleClick = () => {
+    // Gọi hàm callback và truyền dữ liệu cần thiết lên
+    onSomeAction(true);
+  };
   const [dataSkus, setDataSkus] = useState([]);
   // const [users, setUsers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   // const [user, setUser] = useState({});
-  const [dataSku, setDataSku] = useState();
+
   const [isUpdate, setIsUpdate] = useState(false);
   const editShow = (user) => {
     // setDataSku(user);
@@ -717,6 +748,7 @@ const UserAccountTable = ({ record }) => {
   const handleImeiOpen = (idSku, idProduct) => {
     setDataIdSku(idSku);
     setDataIdProduct(idProduct);
+    // alert(selectedOption);
     setIsModalVisibleImei(true);
   };
   // Hàm để ẩn Modal imei
@@ -727,6 +759,11 @@ const UserAccountTable = ({ record }) => {
     setSelectedOption("");
     setSelectedCheckboxes([]);
     setSelectedCheckboxImeiReturn([]);
+    setDataSku([]);
+    setDataImeiThatLac([]);
+    document.getElementById("id-imeithatlac").value = "";
+    document.getElementById("id-imei-seach").value = "";
+    handleClick();
     setIsModalVisibleImei(false);
   };
 
@@ -736,9 +773,18 @@ const UserAccountTable = ({ record }) => {
   const [dataIdSku, setDataIdSku] = useState(null);
   // idProduct
   const [dataIdProduct, setDataIdProduct] = useState(null);
+  //đối tượng sku
+  const [dataSku, setDataSku] = useState({});
 
   // lấy ra list imei theo idSku
   const handleGetAllImei = (idSku, idProduct) => {
+    getSkuIonAdmin(idSku)
+      .then((res) => {
+        setDataSku(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     getAllImeisWhereIdSku(idSku)
       .then((res) => {
         setDataImeisWhereIdSku(res.data);
@@ -760,6 +806,8 @@ const UserAccountTable = ({ record }) => {
   // Xử lý sự kiện thay đổi lựa chọn lấy list imei lọc thoe idSku and status
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
+    // alert(event.target.value);
+
     if (event.target.value === "99") {
       setDataImeisLoc([]);
     } else {
@@ -786,20 +834,21 @@ const UserAccountTable = ({ record }) => {
     deleteImei(id)
       .then((res) => {
         if (res.data === true) {
-          // if (dataImeisLoc.length > 0) {
-          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
-          //     .then((res) => {
-          //       if (res.data.length === 0) {
-          //         notification.warning({
-          //           message: "Không có dữ liệu!",
-          //         });
-          //       }
-          //       setDataImeisLoc(res.data);
-          //     })
-          //     .catch((err) => {
-          //       console.log(err);
-          //     });
-          // }
+          if (dataImeisLoc.length > 0) {
+            getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+              .then((res) => {
+                if (res.data.length === 0) {
+                  setSelectedOption("99");
+                  notification.warning({
+                    message: "Không có dữ liệu!",
+                  });
+                }
+                setDataImeisLoc(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
           getAllImeisWhereIdSku(dataIdSku)
             .then((res) => {
               setDataImeisWhereIdSku(res.data);
@@ -826,6 +875,7 @@ const UserAccountTable = ({ record }) => {
         console.log(err);
       });
   };
+
   //config khi xoá 1 imei - phongnh
   const rejectDeleteImei = () => {
     toast1.current.show({
@@ -851,20 +901,21 @@ const UserAccountTable = ({ record }) => {
     returnImei(id)
       .then((res) => {
         if (res.data === true) {
-          // if (dataImeisLoc.length > 0) {
-          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
-          //     .then((res) => {
-          //       if (res.data.length === 0) {
-          //         notification.warning({
-          //           message: "Không có dữ liệu!",
-          //         });
-          //       }
-          //       setDataImeisLoc(res.data);
-          //     })
-          //     .catch((err) => {
-          //       console.log(err);
-          //     });
-          // }
+          if (dataImeisLoc.length > 0) {
+            getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+              .then((res) => {
+                if (res.data.length === 0) {
+                  setSelectedOption("99");
+                  notification.warning({
+                    message: "Không có dữ liệu!",
+                  });
+                }
+                setDataImeisLoc(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
           getAllImeisWhereIdSku(dataIdSku)
             .then((res) => {
               setDataImeisWhereIdSku(res.data);
@@ -1013,20 +1064,24 @@ const UserAccountTable = ({ record }) => {
               console.log(err);
             });
           setDataCheckGiaSku(false);
-          // if (dataImeisLoc.length > 0) {
-          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
-          //     .then((res) => {
-          //       if (res.data.length === 0) {
-          //         notification.warning({
-          //           message: "Không có dữ liệu!",
-          //         });
-          //       }
-          //       setDataImeisLoc(res.data);
-          //     })
-          //     .catch((err) => {
-          //       console.log(err);
-          //     });
-          // }
+          if (dataImeisLoc.length > 0) {
+            getAllImeiWhereIdSkuAndStatus(dataIdSku, 99)
+              .then((res) => {
+                if (res.data.length === 0) {
+                  setSelectedOption("99");
+                  notification.warning({
+                    message: "Không có dữ liệu!",
+                  });
+                }
+                setDataImeisLoc(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+
+          document.getElementById("code-imei").value = "";
+
           toast1.current.show({
             severity: "success",
             summary: "THÔNG BÁO THÀNH CÔNG",
@@ -1105,20 +1160,21 @@ const UserAccountTable = ({ record }) => {
             detail: "Import Imei Thành Công",
             life: 3000,
           });
-          // if (dataImeisLoc.length > 0) {
-          //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
-          //     .then((res) => {
-          //       if (res.data.length === 0) {
-          //         notification.warning({
-          //           message: "Không có dữ liệu!",
-          //         });
-          //       }
-          //       setDataImeisLoc(res.data);
-          //     })
-          //     .catch((err) => {
-          //       console.log(err);
-          //     });
-          // }
+          if (dataImeisLoc.length > 0) {
+            getAllImeiWhereIdSkuAndStatus(dataIdSku, 99)
+              .then((res) => {
+                if (res.data.length === 0) {
+                  setSelectedOption("99");
+                  notification.warning({
+                    message: "Không có dữ liệu!",
+                  });
+                }
+                setDataImeisLoc(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
           handleCancelNewImei();
         } else {
           toast1.current.show({
@@ -1166,20 +1222,21 @@ const UserAccountTable = ({ record }) => {
             deleteImeiCheckbox(selectedCheckboxImeiXoas)
               .then((response) => {
                 if (response.data === true) {
-                  // if (dataImeisLoc.length > 0) {
-                  //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
-                  //     .then((res) => {
-                  //       if (res.data.length === 0) {
-                  //         notification.warning({
-                  //           message: "Không có dữ liệu!",
-                  //         });
-                  //       }
-                  //       setDataImeisLoc(res.data);
-                  //     })
-                  //     .catch((err) => {
-                  //       console.log(err);
-                  //     });
-                  // }
+                  if (dataImeisLoc.length > 0) {
+                    getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+                      .then((res) => {
+                        if (res.data.length === 0) {
+                          setSelectedOption("99");
+                          notification.warning({
+                            message: "Không có dữ liệu!",
+                          });
+                        }
+                        setDataImeisLoc(res.data);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                  }
                   getAllImeisWhereIdSku(dataIdSku)
                     .then((res) => {
                       setDataImeisWhereIdSku(res.data);
@@ -1281,20 +1338,21 @@ const UserAccountTable = ({ record }) => {
             updateImeiCheckbox(selectedCheckboxImeiReturn)
               .then((response) => {
                 if (response.data === true) {
-                  // if (dataImeisLoc.length > 0) {
-                  //   getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
-                  //     .then((res) => {
-                  //       if (res.data.length === 0) {
-                  //         notification.warning({
-                  //           message: "Không có dữ liệu!",
-                  //         });
-                  //       }
-                  //       setDataImeisLoc(res.data);
-                  //     })
-                  //     .catch((err) => {
-                  //       console.log(err);
-                  //     });
-                  // }
+                  if (dataImeisLoc.length > 0) {
+                    getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+                      .then((res) => {
+                        if (res.data.length === 0) {
+                          setSelectedOption("99");
+                          notification.warning({
+                            message: "Không có dữ liệu!",
+                          });
+                        }
+                        setDataImeisLoc(res.data);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                  }
                   getAllImeisWhereIdSku(dataIdSku)
                     .then((res) => {
                       setDataImeisWhereIdSku(res.data);
@@ -1546,6 +1604,101 @@ const UserAccountTable = ({ record }) => {
       accept: () => handleReturnAllImeiSku(),
       reject: () => rejectReturnAllImeiSku(),
     });
+  };
+
+  //tìm kiếm imei theo sku - phongnh
+  function handleChangeImeisDaBan(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(target + " check imei");
+    console.log(value + " check imei - name");
+
+    // let item = { key: "" };
+    // item[name] = value;
+    // setDataImeiThatLac(item);
+    if (value !== undefined) {
+      if (selectedOption === "99" || selectedOption === "") {
+        seachImeis(value, 99, dataIdSku)
+          .then((response) => {
+            setDataImeisWhereIdSku(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      } else {
+        seachImeis(value, selectedOption, dataIdSku)
+          .then((response) => {
+            if (response.data.length > 0) {
+              setDataImeisLoc(response.data);
+            } else {
+              getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+                .then((res) => {
+                  console.log(selectedOption + " kk");
+                  if (res.data.length === 0) {
+                    if (res.data.length === 0) {
+                      notification.warning({
+                        message: "Không có dữ liệu!",
+                      });
+                    }
+                  }
+                  setDataImeisLoc(res.data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
+
+      // seachImeisDaBan(dataIdBillDetail, dataIdSKU, value)
+      //   .then((response) => {
+      //     setDataSeachImeiDaBan(response.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log(`${error}`);
+      //   });
+    }
+  }
+
+  //tạo danh sach imei thất lạc
+  const [dataImeiThatLac, setDataImeiThatLac] = useState([]);
+  //tìm kiếm imei thất lạc - phongnh
+  function handleChangeImeiThatLac(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(target + " check imei");
+    console.log(value + " check imei - name");
+
+    // let item = { key: "" };
+    // item[name] = value;
+    // setDataImeiThatLac(item);
+    if (value !== undefined) {
+      seachImeiThatLac(value)
+        .then((response) => {
+          setDataImeiThatLac(response.data);
+          console.log(response.data + " check imei - response.data");
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
+  }
+
+  //edit imei
+  // taoj 1 modal khi xem imei
+  const [openlModalEditImei, setOpenlModalEditImei] = useState(false); // Trạng thái hiển thị Modal
+  //hàm mở modal new imei
+  const handleOpenlEditImei = (dataIdSku, dataIdProduct) => {
+    setOpenlModalEditImei(true);
+  };
+  // Hàm để ẩn Modal new imei
+  const handleCancelEditImei = () => {
+    setOpenlModalEditImei(false);
   };
   const moreMenu2 = (sku) => (
     <>
@@ -1920,69 +2073,159 @@ const UserAccountTable = ({ record }) => {
                 className="card-header d-flex justify-content-between align-items-center p-3"
                 style={{ borderTop: "4px solid #ffa900" }}
               ></div>
-              {/* <p
-              style={{
-                marginTop: "10px",
-                fontWeight: "bold",
-                backgroundColor: "orange",
-              }}
-            >
-              Imei Thất Lạc
-            </p>
-            <input
-              id="id-imeithatlac"
-              className="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-              name="key"
-              onChange={handleChangeImeiThatLac}
-            /> */}
+              <p
+                style={{
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  backgroundColor: "orange",
+                }}
+              >
+                Imei Thất Lạc
+              </p>
+              <input
+                id="id-imeithatlac"
+                className="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                name="key"
+                onChange={handleChangeImeiThatLac}
+              />
               <p></p>
-              {/* {dataImeiThatLac.length > 0 ? (
-              <ul class="list-group mb-3">
-                <li
-                  class="list-group-item d-flex justify-content-between"
-                  style={{ backgroundColor: "yellowgreen" }}
-                >
-                  <span>STT</span>
-                  <span style={{ paddingLeft: "10px" }}>Mã Hoá Đơn</span>
-                  <span style={{ paddingLeft: "10px" }}>Tên Sản Phẩm</span>
-                  <span style={{ paddingLeft: "10px" }}>Dung Lượng</span>
-                  <span style={{ paddingLeft: "10px" }}>Màu Sắc</span>
-                  <span style={{ paddingLeft: "10px" }}>Giá</span>
-                  <span style={{ paddingLeft: "10px" }}>Trạng Thái HĐ</span>
-                </li>
-                {dataImeiThatLac.map((imei, index) => (
-                  <ul class="list-group mb-3">
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span>{index + 1}:</span>
-                      <span>{imei.codeBill}</span>
-                      <span style={{ paddingLeft: "10px" }}>{""}</span>
-                      <span style={{ paddingLeft: "10px" }}>{""}</span>
-                      <span style={{ paddingLeft: "10px" }}>{""}</span>
-                      <span style={{ paddingLeft: "10px" }}>{""}</span>
-                      <span style={{ paddingLeft: "10px" }}>{""}</span>
-                      <span style={{ paddingLeft: "10px" }}>{""}</span>
-                      <span style={{ paddingLeft: "10px" }}>{""}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                      <span style={{ paddingLeft: "25px" }}>
-                        {" - "} {imei.nameProduct}
-                        {" - "}
-                        {imei.capacitySKU}
-                        {" - "} {imei.colorSKU}
-                        {" - "} {imei.priceSKU}
-                        {" - "}
-                        {imei.statusBill}
-                      </span>
-                    </li>
-                  </ul>
-                ))}
-              </ul>
-            ) : (
-              <p style={{ color: "red" }}>* Không có dữ liệu!</p>
-            )} */}
+              {dataImeiThatLac.length > 0 ? (
+                <ul class="list-group mb-3">
+                  <li
+                    class="list-group-item  justify-content-between"
+                    style={{ backgroundColor: "yellowgreen" }}
+                  >
+                    <Row>
+                      <div className="col-2" style={{ textAlign: "left" }}>
+                        <span>STT</span>
+                      </div>
+                      <div className="col-4" style={{ textAlign: "center" }}>
+                        <span>Hoá Đơn</span>
+                      </div>
+                      <div className="col-3" style={{ textAlign: "center" }}>
+                        <span>Sản Phẩm</span>
+                      </div>
+                      <div className="col-3" style={{ textAlign: "center" }}>
+                        <span>Giá</span>
+                      </div>
+                    </Row>
+                  </li>
+                  {dataImeiThatLac.map((imei, index) => (
+                    <ul class="list-group mb-3">
+                      <li class="list-group-item  justify-content-between">
+                        <Row>
+                          <div className="col-1">
+                            <span>{index + 1}:</span>
+                          </div>
+                          <div
+                            className="col-5"
+                            style={{ textAlign: "center" }}
+                          >
+                            <span>{imei.codeBill}</span>
+                            <p></p>
+                            <span>{imei.typeBill}</span>
+                          </div>
+                          <div
+                            className="col-3"
+                            style={{ textAlign: "center" }}
+                          >
+                            <span>{imei.nameProduct}</span>
+                            <p>
+                              {imei.capacity}
+                              {" - "} {imei.color}
+                            </p>
+                          </div>
+                          <div
+                            className="col-3"
+                            style={{ textAlign: "center" }}
+                          >
+                            <span>
+                              {parseFloat(imei.gia).toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </span>
+                            <p></p>
+                            <span>
+                              {imei.statusImei === 0 ? (
+                                <span
+                                  style={{
+                                    // paddingLeft: "5px",
+                                    // paddingRight: "5px",
+                                    backgroundColor: "#FF99FF",
+                                    margin: "outo",
+                                    textAlign: "center",
+                                    borderRadius: "5px",
+                                  }}
+                                >
+                                  Trong Kho
+                                </span>
+                              ) : imei.statusImei === 1 ? (
+                                <span
+                                  style={{
+                                    // paddingLeft: "5px",
+                                    // paddingRight: "5px",
+                                    backgroundColor: "red",
+                                    margin: "outo",
+                                    textAlign: "center",
+                                    borderRadius: "5px",
+                                  }}
+                                >
+                                  Đã Xoá
+                                </span>
+                              ) : imei.statusImei === 2 ? (
+                                <span
+                                  style={{
+                                    // paddingLeft: "5px",
+                                    // paddingRight: "5px",
+                                    backgroundColor: "#FF6600",
+                                    margin: "outo",
+                                    textAlign: "center",
+                                    borderRadius: "5px",
+                                  }}
+                                >
+                                  Giỏ Hàng
+                                </span>
+                              ) : imei.statusImei === 3 ? (
+                                <span
+                                  style={{
+                                    // paddingLeft: "5px",
+                                    // paddingRight: "5px",
+                                    backgroundColor: "#00FF66",
+                                    margin: "outo",
+                                    textAlign: "center",
+                                    borderRadius: "5px",
+                                  }}
+                                >
+                                  Đã Bán
+                                </span>
+                              ) : (
+                                <span
+                                  style={{
+                                    // paddingLeft: "5px",
+                                    // paddingRight: "5px",
+                                    backgroundColor: "#FFFF33",
+                                    margin: "outo",
+                                    textAlign: "center",
+                                    borderRadius: "5px",
+                                  }}
+                                >
+                                  !
+                                </span>
+                              )}
+                            </span>
+                          </div>
+                        </Row>
+                      </li>
+                    </ul>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ color: "red" }}>* Không có dữ liệu!</p>
+              )}
 
               {/* <Row> */}
               {/* <div className="col-3"> */}
@@ -1997,31 +2240,25 @@ const UserAccountTable = ({ record }) => {
                   backgroundColor: "orange",
                 }}
               >
-                Danh Sách Imei Đã Chọn Của {dataIdSku} hihi {dataIdProduct}
+                Danh Sách Imei Của {dataSku.nameProduct} - {dataSku.skuCapacity}{" "}
+                - {dataSku.skuColor}
               </p>
 
-              <input
-                id="id-imei-da-ban"
-                className="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-                name="key"
-                // onChange={handleChangeImeisDaBan}
-              />
-
               <p></p>
-              <p style={{ textAlign: "center" }}>
+
+              {/* <p style={{ textAlign: "center" }}> */}
+              <Row>
                 <select
                   id="selectOption"
                   value={selectedOption}
                   onChange={handleSelectChange}
-                  className="col-3 btn-loc"
+                  className="col-3 btn-loc "
                   style={{
                     border: "2px solid black",
                     backgroundColor: "#009999",
                     color: "white",
                     width: "130px",
+                    height: "36px",
                   }}
                 >
                   <option selected value="99">
@@ -2032,6 +2269,21 @@ const UserAccountTable = ({ record }) => {
                   <option value="2">Giỏ Hàng</option>
                   <option value="3">Đã Bán</option>
                 </select>
+                <span className="col-1"></span>
+
+                <input
+                  id="id-imei-seach"
+                  className="form-control me-2 col-8"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                  name="key"
+                  onChange={handleChangeImeisDaBan}
+                />
+              </Row>
+              {/* </p> */}
+              <p></p>
+              <Row>
                 <Button
                   type="text"
                   style={{
@@ -2039,7 +2291,7 @@ const UserAccountTable = ({ record }) => {
                     backgroundColor: "#006699",
                     color: "white",
                     width: "150px",
-                    marginLeft: "18px",
+                    // marginLeft: "18px",
                   }}
                   className="col-2 btn-xoa"
                   danger
@@ -2107,30 +2359,31 @@ const UserAccountTable = ({ record }) => {
                     width: "150px",
                     marginLeft: "9px",
                   }}
-                  className="col-2 btn-xoa"
+                  className="col-3 btn-xoa"
                   onClick={() => confirmReturnAllImeiSku()}
                 >
                   Return All Imei
                 </Button>
-              </p>
+              </Row>
+              <p></p>
               <div style={{ backgroundColor: "#66FFFF" }}>
                 <Row>
-                  <div>
+                  <div style={{ paddingLeft: "10px" }}>
                     <span>STT</span>
                   </div>
-                  <div style={{ paddingLeft: "10px" }}>
+                  <div style={{ paddingLeft: "16px" }}>
                     <span>Xoá Imei</span>
                   </div>
-                  <div style={{ paddingLeft: "118px" }}>
+                  <div style={{ paddingLeft: "128px" }}>
                     <span>Mã Imei</span>
                   </div>
-                  <div style={{ paddingLeft: "120px" }}>
+                  <div style={{ paddingLeft: "140px" }}>
                     <span>Trạng Thái</span>
                   </div>
-                  <div style={{ paddingLeft: "33px" }}>
+                  <div style={{ paddingLeft: "10px" }}>
                     <span>Khôi Phục</span>
                   </div>
-                  <div style={{ paddingLeft: "28px" }}>
+                  <div style={{ paddingLeft: "10px" }}>
                     <span>Acition</span>
                   </div>
                 </Row>
@@ -2149,262 +2402,282 @@ const UserAccountTable = ({ record }) => {
                   <ul class="list-group mb-3">
                     {dataImeisWhereIdSku.map((imei, index) => (
                       <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                          <span>{index + 1}</span>
-
-                          <div
-                            style={{
-                              // margin: "outo",
-                              // textAlign: "center",
-                              width: "20px",
-                              paddingLeft: "10px",
-                            }}
-                          >
-                            {imei.status === 0 ? (
-                              <input
-                                type="checkbox"
-                                value={imei.codeImei}
-                                checked={selectedCheckboxImeiXoas.includes(
-                                  imei.codeImei
-                                )}
-                                onChange={handleCheckboxChange}
-                              />
-                            ) : imei.status === 1 ? (
-                              <span>-</span>
-                            ) : imei.status === 2 ? (
-                              <span>-</span>
-                            ) : imei.status === 3 ? (
-                              <span>-</span>
-                            ) : (
-                              "!"
-                            )}
-                          </div>
-
-                          <span style={{ paddingLeft: "10px" }}>
-                            {imei.codeImei}
-                          </span>
-                          <div
-                            style={{
-                              margin: "outo",
-                              textAlign: "center",
-                              width: "80px",
-                            }}
-                          >
-                            <span>
+                        <li class="list-group-item  justify-content-between">
+                          <Row>
+                            <div className="col-1">
+                              <span>{index + 1}</span>
+                            </div>
+                            <div
+                              className="col-1"
+                              // style={{
+                              //   // margin: "outo",
+                              //   // textAlign: "center",
+                              //   width: "20px",
+                              //   paddingLeft: "10px",
+                              // }}
+                            >
                               {imei.status === 0 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#FF99FF",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Trong Kho
-                                </span>
+                                <input
+                                  type="checkbox"
+                                  value={imei.codeImei}
+                                  checked={selectedCheckboxImeiXoas.includes(
+                                    imei.codeImei
+                                  )}
+                                  onChange={handleCheckboxChange}
+                                />
                               ) : imei.status === 1 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "red",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Đã Xoá
-                                </span>
+                                <span>-</span>
                               ) : imei.status === 2 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#FF6600",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Giỏ Hàng
-                                </span>
+                                <span>-</span>
                               ) : imei.status === 3 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#00FF66",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Đã Bán
-                                </span>
+                                <span>-</span>
                               ) : (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#FFFF33",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  !
-                                </span>
+                                "!"
                               )}
-                            </span>
-                          </div>
-                          <div
-                            style={{
-                              margin: "outo",
-                              textAlign: "center",
-                              width: "20px",
-                            }}
-                          >
-                            {imei.status === 0 ? (
-                              <span>-</span>
-                            ) : imei.status === 1 ? (
-                              <input
-                                type="checkbox"
-                                value={imei.codeImei}
-                                checked={selectedCheckboxImeiReturn.includes(
-                                  imei.codeImei
+                            </div>
+
+                            <div className="col-6">
+                              <span
+                              // style={{ paddingLeft: "10px" }}
+                              >
+                                {imei.codeImei}
+                              </span>
+                            </div>
+
+                            <div
+                              className="col-2"
+                              style={{
+                                margin: "outo",
+                                textAlign: "center",
+                                // width: "80px",
+                              }}
+                            >
+                              <span>
+                                {imei.status === 0 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#FF99FF",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Trong Kho
+                                  </span>
+                                ) : imei.status === 1 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "red",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Đã Xoá
+                                  </span>
+                                ) : imei.status === 2 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#FF6600",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Giỏ Hàng
+                                  </span>
+                                ) : imei.status === 3 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#00FF66",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Đã Bán
+                                  </span>
+                                ) : (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#FFFF33",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    !
+                                  </span>
                                 )}
-                                onChange={handleCheckboxChangeImeiReturn}
-                              />
-                            ) : imei.status === 2 ? (
-                              <span>-</span>
-                            ) : imei.status === 3 ? (
-                              <span>-</span>
-                            ) : (
-                              "!"
-                            )}
-                          </div>
-                          {/* phongnh 1 */}
-                          <div
-                            style={{
-                              // position: "absolute",
-                              // top: "10px",
-                              right: "5px",
-                              paddingLeft: "12px",
-                            }}
-                          >
-                            {imei.status === 0 ? (
-                              <Dropdown
-                                overlay={
-                                  <Menu mode="vertical3">
-                                    <Menu.Item
-                                      key="1"
-                                      // disabled={item.stock <= 0}
-                                      style={{
-                                        fontWeight: 500,
-                                      }}
-                                      icon={
-                                        <CloseCircleOutlined
-                                          style={{
-                                            color: "red",
-                                          }}
-                                        />
-                                      }
-                                      onClick={() => confirmDeleteImei(imei.id)} // all imei phongnh
-                                    >
-                                      Delete
-                                    </Menu.Item>
-                                    <Menu.Item
-                                      key="2"
-                                      style={{
-                                        fontWeight: 500,
-                                      }}
-                                      icon={
-                                        <FormOutlined
-                                          style={{
-                                            color: "green",
-                                          }}
-                                        />
-                                      }
-                                      // onClick={() => openDetailModal(item)}
-                                    >
-                                      Edit
-                                    </Menu.Item>
-                                  </Menu>
-                                }
-                                trigger={["click"]}
-                              >
-                                <MoreOutlined
-                                  style={{
-                                    fontSize: 24,
-                                  }}
-                                />
-                              </Dropdown>
-                            ) : imei.status === 1 ? (
-                              <Dropdown
-                                overlay={
-                                  <Menu mode="vertical3">
-                                    <Menu.Item
-                                      key="2"
-                                      style={{
-                                        fontWeight: 500,
-                                      }}
-                                      icon={
-                                        <FormOutlined
-                                          style={{
-                                            color: "green",
-                                          }}
-                                        />
-                                      }
-                                      onClick={() =>
-                                        confirmReturnOneImei(imei.id)
-                                      }
-                                    >
-                                      Return
-                                    </Menu.Item>
-                                  </Menu>
-                                }
-                                trigger={["click"]}
-                              >
-                                <MoreOutlined
-                                  style={{
-                                    fontSize: 24,
-                                  }}
-                                />
-                              </Dropdown>
-                            ) : imei.status === 2 ? (
-                              <di
-                                style={{
-                                  // position: "absolute",
-                                  // top: "10px",
-                                  right: "5px",
-                                  width: "35px",
-                                  paddingLeft: "10px",
-                                  paddingRight: "10px",
-                                  textAlign: "center",
-                                }}
-                              >
+                              </span>
+                            </div>
+                            <div
+                              className="col-1"
+                              style={{
+                                margin: "outo",
+                                textAlign: "center",
+                                // width: "20px",
+                              }}
+                            >
+                              {imei.status === 0 ? (
                                 <span>-</span>
-                              </di>
-                            ) : imei.status === 3 ? (
-                              <di
-                                style={{
-                                  // position: "absolute",
-                                  // top: "10px",
-                                  right: "5px",
-                                  width: "35px",
-                                  paddingLeft: "10px",
-                                  paddingRight: "10px",
-                                  textAlign: "center",
-                                }}
-                              >
+                              ) : imei.status === 1 ? (
+                                <input
+                                  type="checkbox"
+                                  value={imei.codeImei}
+                                  checked={selectedCheckboxImeiReturn.includes(
+                                    imei.codeImei
+                                  )}
+                                  onChange={handleCheckboxChangeImeiReturn}
+                                />
+                              ) : imei.status === 2 ? (
                                 <span>-</span>
-                              </di>
-                            ) : (
-                              "!"
-                            )}
-                          </div>
+                              ) : imei.status === 3 ? (
+                                <span>-</span>
+                              ) : (
+                                "!"
+                              )}
+                            </div>
+                            {/* phongnh 1 */}
+                            <div
+                              className="col-1"
+                              style={{
+                                // position: "absolute",
+                                // top: "10px",
+                                // right: "5px",
+                                // paddingLeft: "12px",
+                                textAlign: "center",
+                                margin: "auto",
+                              }}
+                            >
+                              {imei.status === 0 ? (
+                                <Dropdown
+                                  overlay={
+                                    <Menu mode="vertical3">
+                                      <Menu.Item
+                                        key="1"
+                                        // disabled={item.stock <= 0}
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <CloseCircleOutlined
+                                            style={{
+                                              color: "red",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() =>
+                                          confirmDeleteImei(imei.id)
+                                        } // all imei phongnh
+                                      >
+                                        Delete
+                                      </Menu.Item>
+                                      <Menu.Item
+                                        key="2"
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <FormOutlined
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() => openDetailModal(item.id)}
+                                      >
+                                        Edit
+                                      </Menu.Item>
+                                    </Menu>
+                                  }
+                                  trigger={["click"]}
+                                >
+                                  <MoreOutlined
+                                    style={{
+                                      fontSize: 24,
+                                    }}
+                                  />
+                                </Dropdown>
+                              ) : imei.status === 1 ? (
+                                <Dropdown
+                                  overlay={
+                                    <Menu mode="vertical3">
+                                      <Menu.Item
+                                        key="2"
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <FormOutlined
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() =>
+                                          confirmReturnOneImei(imei.id)
+                                        }
+                                      >
+                                        Return
+                                      </Menu.Item>
+                                    </Menu>
+                                  }
+                                  trigger={["click"]}
+                                >
+                                  <MoreOutlined
+                                    style={{
+                                      fontSize: 24,
+                                    }}
+                                  />
+                                </Dropdown>
+                              ) : imei.status === 2 ? (
+                                <di
+                                  style={
+                                    {
+                                      // position: "absolute",
+                                      // top: "10px",
+                                      // right: "5px",
+                                      // width: "35px",
+                                      // paddingLeft: "10px",
+                                      // paddingRight: "10px",
+                                      // textAlign: "center",
+                                    }
+                                  }
+                                >
+                                  <span>-</span>
+                                </di>
+                              ) : imei.status === 3 ? (
+                                <di
+                                  style={
+                                    {
+                                      // position: "absolute",
+                                      // top: "10px",
+                                      // right: "5px",
+                                      // width: "35px",
+                                      // paddingLeft: "10px",
+                                      // paddingRight: "10px",
+                                      // textAlign: "center",
+                                    }
+                                  }
+                                >
+                                  <span>-</span>
+                                </di>
+                              ) : (
+                                "!"
+                              )}
+                            </div>
+                          </Row>
                         </li>
                       </ul>
                     ))}
@@ -2413,276 +2686,270 @@ const UserAccountTable = ({ record }) => {
                   <ul class="list-group mb-3">
                     {dataImeisLoc.map((imei, index) => (
                       <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                          <span>{index + 1}</span>
-
-                          <div
-                            style={{
-                              // margin: "outo",
-                              // textAlign: "center",
-                              width: "20px",
-                              paddingLeft: "10px",
-                            }}
-                          >
-                            {imei.status === 0 ? (
-                              <input
-                                type="checkbox"
-                                value={imei.codeImei}
-                                checked={selectedCheckboxImeiXoas.includes(
-                                  imei.codeImei
-                                )}
-                                onChange={handleCheckboxChange}
-                              />
-                            ) : imei.status === 1 ? (
-                              <span>-</span>
-                            ) : imei.status === 2 ? (
-                              <span>-</span>
-                            ) : imei.status === 3 ? (
-                              <span>-</span>
-                            ) : (
-                              "!"
-                            )}
-                          </div>
-                          <span style={{ paddingLeft: "10px" }}>
-                            {imei.codeImei}
-                          </span>
-                          <div
-                            style={{
-                              margin: "outo",
-                              textAlign: "center",
-                              width: "80px",
-                            }}
-                          >
-                            <span>
+                        <li class="list-group-item  justify-content-between">
+                          <Row>
+                            <div className="col-1">
+                              <span>{index + 1}</span>
+                            </div>
+                            <div
+                              className="col-1"
+                              // style={{
+                              //   // margin: "outo",
+                              //   // textAlign: "center",
+                              //   width: "20px",
+                              //   paddingLeft: "10px",
+                              // }}
+                            >
                               {imei.status === 0 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#FF99FF",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Trong Kho
-                                </span>
+                                <input
+                                  type="checkbox"
+                                  value={imei.codeImei}
+                                  checked={selectedCheckboxImeiXoas.includes(
+                                    imei.codeImei
+                                  )}
+                                  onChange={handleCheckboxChange}
+                                />
                               ) : imei.status === 1 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "red",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Đã Xoá
-                                </span>
+                                <span>-</span>
                               ) : imei.status === 2 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#99FF99",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Giỏ Hàng
-                                </span>
+                                <span>-</span>
                               ) : imei.status === 3 ? (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#00FF66",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  Đã Bán
-                                </span>
+                                <span>-</span>
                               ) : (
-                                <span
-                                  style={{
-                                    paddingLeft: "5px",
-                                    paddingRight: "5px",
-                                    backgroundColor: "#FFFF33",
-                                    margin: "outo",
-                                    textAlign: "center",
-                                    borderRadius: "5px",
-                                  }}
-                                >
-                                  !
-                                </span>
+                                "!"
                               )}
-                            </span>
-                          </div>
-                          <div
-                            style={{
-                              margin: "outo",
-                              textAlign: "center",
-                              width: "20px",
-                            }}
-                          >
-                            {imei.status === 0 ? (
-                              <span>-</span>
-                            ) : imei.status === 1 ? (
-                              <input
-                                type="checkbox"
-                                value={imei.codeImeiDaBan}
-                                // checked={selectedCheckboxes.includes(
-                                //   imei.codeImeiDaBan
-                                // )}
-                                // onChange={handleCheckboxChange}
-                              />
-                            ) : imei.status === 2 ? (
-                              <span>-</span>
-                            ) : imei.status === 3 ? (
-                              <span>-</span>
-                            ) : (
-                              "!"
-                            )}
-                          </div>
-                          {/* <strong>
-                          <Button
-                            type="text"
-                            danger
-                            // onClick={() =>
-                            //   handleClearImeiDaBan(
-                            //     imei.idImeiDaBan,
-                            //     imei.codeImeiDaBan
-                            //   )
-                            // }
-                          >
-                            Huỷ
-                          </Button>
-                        </strong> */}
-                          {/* phongnh 2 */}
-                          <div
-                            style={{
-                              // position: "absolute",
-                              // top: "10px",
-                              right: "5px",
-                              paddingLeft: "12px",
-                            }}
-                          >
-                            {imei.status === 0 ? (
-                              <Dropdown
-                                overlay={
-                                  <Menu mode="vertical4">
-                                    <Menu.Item
-                                      key="1"
-                                      // disabled={item.stock <= 0}
-                                      style={{
-                                        fontWeight: 500,
-                                      }}
-                                      icon={
-                                        <CloseCircleOutlined
-                                          style={{
-                                            color: "red",
-                                          }}
-                                        />
-                                      }
-                                      onClick={() => confirmDeleteImei(imei.id)} // all imei phongnh
-                                    >
-                                      Delete
-                                    </Menu.Item>
-                                    <Menu.Item
-                                      key="2"
-                                      style={{
-                                        fontWeight: 500,
-                                      }}
-                                      icon={
-                                        <FormOutlined
-                                          style={{
-                                            color: "green",
-                                          }}
-                                        />
-                                      }
-                                      // onClick={() => openDetailModal(item)}
-                                    >
-                                      Edit
-                                    </Menu.Item>
-                                  </Menu>
-                                }
-                                trigger={["click"]}
+                            </div>
+
+                            <div className="col-6">
+                              <span
+                              // style={{ paddingLeft: "10px" }}
                               >
-                                <MoreOutlined
-                                  style={{
-                                    fontSize: 24,
-                                  }}
-                                />
-                              </Dropdown>
-                            ) : imei.status === 1 ? (
-                              <Dropdown
-                                overlay={
-                                  <Menu mode="vertical4">
-                                    <Menu.Item
-                                      key="2"
-                                      style={{
-                                        fontWeight: 500,
-                                      }}
-                                      icon={
-                                        <FormOutlined
-                                          style={{
-                                            color: "green",
-                                          }}
-                                        />
-                                      }
-                                      // onClick={() => openDetailModal(item)}
-                                    >
-                                      Return
-                                    </Menu.Item>
-                                  </Menu>
-                                }
-                                trigger={["click"]}
-                              >
-                                <MoreOutlined
-                                  style={{
-                                    fontSize: 24,
-                                  }}
-                                />
-                              </Dropdown>
-                            ) : imei.status === 2 ? (
-                              <di
-                                style={{
-                                  // position: "absolute",
-                                  // top: "10px",
-                                  right: "5px",
-                                  width: "35px",
-                                  paddingLeft: "10px",
-                                  paddingRight: "10px",
-                                  textAlign: "center",
-                                }}
-                              >
+                                {imei.codeImei}
+                              </span>
+                            </div>
+
+                            <div
+                              className="col-2"
+                              style={{
+                                margin: "outo",
+                                textAlign: "center",
+                                // width: "80px",
+                              }}
+                            >
+                              <span>
+                                {imei.status === 0 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#FF99FF",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Trong Kho
+                                  </span>
+                                ) : imei.status === 1 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "red",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Đã Xoá
+                                  </span>
+                                ) : imei.status === 2 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#FF6600",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Giỏ Hàng
+                                  </span>
+                                ) : imei.status === 3 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#00FF66",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Đã Bán
+                                  </span>
+                                ) : (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "#FFFF33",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    !
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                            <div
+                              className="col-1"
+                              style={{
+                                margin: "outo",
+                                textAlign: "center",
+                                // width: "20px",
+                              }}
+                            >
+                              {imei.status === 0 ? (
                                 <span>-</span>
-                              </di>
-                            ) : imei.status === 3 ? (
-                              <di
-                                style={{
-                                  // position: "absolute",
-                                  // top: "10px",
-                                  right: "5px",
-                                  width: "35px",
-                                  paddingLeft: "10px",
-                                  paddingRight: "10px",
-                                  textAlign: "center",
-                                }}
-                              >
+                              ) : imei.status === 1 ? (
+                                <input
+                                  type="checkbox"
+                                  value={imei.codeImei}
+                                  checked={selectedCheckboxImeiReturn.includes(
+                                    imei.codeImei
+                                  )}
+                                  onChange={handleCheckboxChangeImeiReturn}
+                                />
+                              ) : imei.status === 2 ? (
                                 <span>-</span>
-                              </di>
-                            ) : (
-                              "!"
-                            )}
-                          </div>
-                          {/* );
-                          }}
-                        /> */}
+                              ) : imei.status === 3 ? (
+                                <span>-</span>
+                              ) : (
+                                "!"
+                              )}
+                            </div>
+                            {/* phongnh 1 */}
+                            <div
+                              className="col-1"
+                              style={{
+                                // position: "absolute",
+                                // top: "10px",
+                                // right: "5px",
+                                // paddingLeft: "12px",
+                                textAlign: "center",
+                                margin: "auto",
+                              }}
+                            >
+                              {imei.status === 0 ? (
+                                <Dropdown
+                                  overlay={
+                                    <Menu mode="vertical3">
+                                      <Menu.Item
+                                        key="1"
+                                        // disabled={item.stock <= 0}
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <CloseCircleOutlined
+                                            style={{
+                                              color: "red",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() =>
+                                          confirmDeleteImei(imei.id)
+                                        } // all imei phongnh
+                                      >
+                                        Delete
+                                      </Menu.Item>
+                                      <Menu.Item
+                                        key="2"
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <FormOutlined
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() => openDetailModal(item.id)}
+                                      >
+                                        Edit
+                                      </Menu.Item>
+                                    </Menu>
+                                  }
+                                  trigger={["click"]}
+                                >
+                                  <MoreOutlined
+                                    style={{
+                                      fontSize: 24,
+                                    }}
+                                  />
+                                </Dropdown>
+                              ) : imei.status === 1 ? (
+                                <Dropdown
+                                  overlay={
+                                    <Menu mode="vertical3">
+                                      <Menu.Item
+                                        key="2"
+                                        style={{
+                                          fontWeight: 500,
+                                        }}
+                                        icon={
+                                          <FormOutlined
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        }
+                                        onClick={() =>
+                                          confirmReturnOneImei(imei.id)
+                                        }
+                                      >
+                                        Return
+                                      </Menu.Item>
+                                    </Menu>
+                                  }
+                                  trigger={["click"]}
+                                >
+                                  <MoreOutlined
+                                    style={{
+                                      fontSize: 24,
+                                    }}
+                                  />
+                                </Dropdown>
+                              ) : imei.status === 2 ? (
+                                <di
+                                  style={
+                                    {
+                                      // position: "absolute",
+                                      // top: "10px",
+                                      // right: "5px",
+                                      // width: "35px",
+                                      // paddingLeft: "10px",
+                                      // paddingRight: "10px",
+                                      // textAlign: "center",
+                                    }
+                                  }
+                                >
+                                  <span>-</span>
+                                </di>
+                              ) : imei.status === 3 ? (
+                                <di>
+                                  <span>-</span>
+                                </di>
+                              ) : (
+                                "!"
+                              )}
+                            </div>
+                          </Row>
                         </li>
                       </ul>
                     ))}
@@ -2836,9 +3103,10 @@ const UserAccountTable = ({ record }) => {
               <div style={{ marginBottom: "10px" }}>
                 <h6
                   className="mb-0"
-                  style={{ textAlign: "left", margin: "auto" }}
+                  style={{ textAlign: "left", margin: "auto", color: "green" }}
                 >
-                  Tên Sản Phẩm: {dataIdProduct} - {"Phiên bản"} - {dataIdSku}
+                  Sản Phẩm: {dataSku.nameProduct} - {dataSku.skuCapacity} -{" "}
+                  {dataSku.skuColor}
                 </h6>
               </div>
               <div style={{ marginTop: "10px", marginBottom: "10px" }}>
@@ -2851,7 +3119,7 @@ const UserAccountTable = ({ record }) => {
                           required
                           value={imeiItem.codeImei || ""}
                           onChange={handleChange}
-                          id="codeImei"
+                          id="code-imei"
                           name="codeImei"
                         ></Input>
                         <div className="underline"></div>
@@ -2987,14 +3255,17 @@ const UserAccountTable = ({ record }) => {
                           <div>
                             <span>STT</span>
                           </div>
-                          <div style={{ paddingLeft: "10px" }}>
-                            <span>Sản Phẩm</span>
+                          <div className="col-3">
+                            <span style={{ marginLeft: "0px" }}>Sản Phẩm</span>
                           </div>
-                          <div style={{ paddingLeft: "118px" }}>
+                          <div
+                            className="col-6"
+                            style={{ textAlign: "center" }}
+                          >
                             <span>Mã Imei</span>
                           </div>
-                          <div style={{ paddingLeft: "10px" }}>
-                            <span>price</span>
+                          <div className="col-2">
+                            <span style={{ marginRight: "0px" }}>price</span>
                           </div>
                         </Row>
                       </div>
@@ -3048,13 +3319,111 @@ const UserAccountTable = ({ record }) => {
             </div>
           </div>
         </Modal>
+
+        {/* modal edit imei */}
+        <Modal
+          visible={openlModalEditImei}
+          onCancel={handleCancelEditImei}
+          width={500}
+          footer={null}
+          bodyStyle={{ minHeight: "600px" }}
+        >
+          <div className="container py-15">
+            <div className="row d-flex justify-content-center">
+              {/* <div className="card"> */}
+              <div>
+                <h4
+                  className="mb-0"
+                  style={{ textAlign: "center", margin: "auto" }}
+                >
+                  EDIT IMEI
+                </h4>
+              </div>
+              <div
+                className="card-header d-flex justify-content-between align-items-center p-3"
+                style={{ borderTop: "4px solid green" }}
+              ></div>
+              <div style={{ marginBottom: "10px" }}>
+                <h6
+                  className="mb-0"
+                  style={{ textAlign: "left", margin: "auto", color: "green" }}
+                >
+                  Sản Phẩm: {dataSku.nameProduct} - {dataSku.skuCapacity} -{" "}
+                  {dataSku.skuColor}
+                </h6>
+              </div>
+              <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+                <form onSubmit={handleSubmit}>
+                  <div className="form-row">
+                    <div className="col-8" style={{ marginLeft: "0px" }}>
+                      <div className="input-data">
+                        <Input
+                          type="text"
+                          required
+                          value={imeiItem.codeImei || ""}
+                          onChange={handleChange}
+                          id="code-imei"
+                          name="codeImei"
+                        ></Input>
+                        <div className="underline"></div>
+                        <label htmlFor="">Mã Imei</label>
+                      </div>
+                    </div>
+                    <div className="col-2"></div>
+                    <div className="col-2" style={{ marginLeft: "0px" }}>
+                      <div
+                        style={{
+                          borderRadius: "10px",
+                          marginLeft: "0px",
+                        }}
+                      >
+                        <button
+                          type="submit"
+                          class="btn btn-outline-success"
+                          style={{
+                            marginLeft: "0px",
+                          }}
+                        >
+                          Update
+                        </button>
+                      </div>
+                      {/* <button class="btn btn-light" type="button">
+                          <Link to="">
+                            <FontAwesomeIcon icon={faTimesCircle} />X
+                          </Link>
+                        </button> */}
+                    </div>
+                    <br />
+                  </div>
+                </form>
+              </div>
+              <div
+                className="card-header d-flex justify-content-between align-items-center p-3"
+                style={{ borderTop: "4px solid green" }}
+              ></div>
+              <div style={{ marginTop: "10px" }}>
+                <div
+                  className="card-body"
+                  data-mdb-perfect-scrollbar="true"
+                  style={{
+                    position: "relative",
+                    height: 500, // điều chỉnh table dài ra
+                    overflowY: "auto",
+                  }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </List>
     </>
   );
 };
 
-const expandedRowRender = (record) => {
-  return <UserAccountTable record={record} />;
-};
+// const expandedRowRender = (record) => {
+//   return (
+//     <UserAccountTable record={record} onSomeAction={receiveDataFromChild} />
+//   );
+// };
 
 export default AccountList;

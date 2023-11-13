@@ -45,11 +45,11 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
 
 
     //laays ra lisst imei theo idsku
-    @Query(value = "select * from imei i where i.sku_id=?1", nativeQuery = true)
+    @Query(value = "select * from imei i where i.sku_id=?1 ORDER BY Id DESC ", nativeQuery = true)
     List<Imei> getAllImeiWherIdSku(Long idSku);
 
     //laays ra lisst imei theo idsku and status
-    @Query(value = "select * from imei i where i.sku_id=?1 and i.status =?2", nativeQuery = true)
+    @Query(value = "select * from imei i where i.sku_id=?1 and i.status =?2 ORDER BY Id DESC", nativeQuery = true)
     List<Imei> getAllImeiWherIdSkuAndStatus(Long idSku, Integer status);
 
     //update status imei where id_product
@@ -75,4 +75,12 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
     @Transactional
     @Query(value = "update imei set status =?1 where sku_id=?2 and status =?3", nativeQuery = true)
     void updateImeiStatusWherIdSku(Integer statusUpdate, Long idSku, Integer status);
+
+    //seach imei -> list imei (co where status)
+    @Query(value = "select * from imei where code_imei  like %?1% and status =?2 and sku_id=?3 ORDER BY Id DESC", nativeQuery = true)
+    List<Imei> seachImeisWhereStatus(String codeImei, Integer status, Long idSku);
+
+    //seach all imei
+    @Query(value = "select * from imei where code_imei  like %?1% and sku_id=?2  ORDER BY Id DESC", nativeQuery = true)
+    List<Imei> seachAllImeis(String codeImei,  Long idSku);
 }

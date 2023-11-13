@@ -3,6 +3,8 @@ package com.example.backend.controller.product_controller.controller.product.ser
 import com.example.backend.controller.product_controller.model.product_detail.ion.ProductDetailIonAdmin;
 import com.example.backend.controller.product_controller.model.product_detail.ion.SkuIonAdmin;
 import com.example.backend.controller.product_controller.model.request.ImeiCreateRequest;
+import com.example.backend.controller.product_controller.model.respon.ImeiThatLac;
+import com.example.backend.controller.product_controller.service.impl.ImeiServiceImpl;
 import com.example.backend.controller.product_controller.service.impl.product_detail.ProductDetailServiceImpl;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +31,8 @@ import java.util.List;
 public class AdminProductDetailController {
     @Autowired
     private ProductDetailServiceImpl productDetailService;
+    @Autowired
+    private ImeiServiceImpl imeiService;
 
     @GetMapping("/get-all-product-detail")
     public ResponseEntity<List<ProductDetailIonAdmin>> getAllProduct() {
@@ -122,7 +127,7 @@ public class AdminProductDetailController {
     }
 
     // cập nhật các imei đã được chọn thành status =1 (đã xoá)
-    @PutMapping ("/delete-imeis")
+    @PutMapping("/delete-imeis")
     public ResponseEntity<Boolean> deleteImeiCheckbox(@RequestParam("listImei") List<String> listImei) {
         Integer status = 1;
         Boolean check = productDetailService.checkBoxListImei(listImei, status);
@@ -142,7 +147,7 @@ public class AdminProductDetailController {
     public ResponseEntity<Boolean> deleteAllImei(@RequestParam("idSku") Long idSku) {
         Integer statusBeforeUpdate = 0;
         Integer statusAfterUpdate = 1;
-        Boolean check = productDetailService.updateAllImei(statusAfterUpdate,idSku,statusBeforeUpdate);
+        Boolean check = productDetailService.updateAllImei(statusAfterUpdate, idSku, statusBeforeUpdate);
         return new ResponseEntity<>(check, HttpStatus.OK);
     }
 
@@ -151,8 +156,35 @@ public class AdminProductDetailController {
     public ResponseEntity<Boolean> returnAllImei(@RequestParam("idSku") Long idSku) {
         Integer statusBeforeUpdate = 0;
         Integer statusAfterUpdate = 1;
-        Boolean check = productDetailService.updateAllImei(statusBeforeUpdate,idSku,statusAfterUpdate);
+        Boolean check = productDetailService.updateAllImei(statusBeforeUpdate, idSku, statusAfterUpdate);
         return new ResponseEntity<>(check, HttpStatus.OK);
     }
+
+    //seach imei (codeImei , status)
+    @GetMapping("/seach-imeis")
+    public ResponseEntity<List<Imei>> seachImeis(@RequestParam("codeImei") String codeImei,
+                                                 @RequestParam("status") Integer status,
+                                                 @RequestParam("idSku") Long idSku) {
+        List<Imei> imeis = productDetailService.seachImeis(codeImei, status, idSku);
+        return new ResponseEntity<>(imeis, HttpStatus.OK);
+    }
+
+    //seach imei thất lạc(tìm kiêm trên all imei)
+    @GetMapping("/seach-imei-that-lac")
+    public ResponseEntity<List<ImeiThatLac>> seachImeiThatLac(@RequestParam("codeImei")String codeImei){
+        List<ImeiThatLac> imeiThatLacs = productDetailService.seachImeisThatLac(codeImei);
+        return new ResponseEntity<>(imeiThatLacs, HttpStatus.OK);
+    }
+
+    //detail imei
+    @GetMapping("{id}")
+    public ResponseEntity<Imei> detail(@RequestParam("id") Integer id) {
+        return new ResponseEntity<>(imeiService.getOne(id), HttpStatus.OK);
+    }
+    //update imei
+//    @PutMapping("/update-imei")
+//    public ResponseEntity<Boolean> updateImei(){
+//
+//    }
 
 }
