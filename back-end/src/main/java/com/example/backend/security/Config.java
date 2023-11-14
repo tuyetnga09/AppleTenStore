@@ -65,7 +65,7 @@ public class Config implements WebMvcConfigurer {
                 .requestMatchers("/**").permitAll()
 //                .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/customer/**").hasRole(String.valueOf(Roles.CUSTOMER))
-                .requestMatchers("/employee/**").hasRole(String.valueOf(Roles.NHAN_VIEN))
+//                .requestMatchers("/employee/**").hasRole(String.valueOf(Roles.NHAN_VIEN))
                 .requestMatchers("/admin/**").hasRole(String.valueOf(Roles.ADMIN))
                 .anyRequest().authenticated()
                 .and()

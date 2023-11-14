@@ -100,7 +100,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         //check role account khi tạo hoá đơn
         Roles rolesCustmer = Roles.CUSTOMER;
         Roles rolesAdmin = Roles.ADMIN;
-        Roles rolesNhanVien = Roles.NHAN_VIEN;
+        Roles rolesNhanVien = Roles.NHAN_VIEN_BAN_HANG;
 
         //idAccount truyền vào là null hoăck rỗng thì retunr null
 
@@ -113,7 +113,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             return "ADMIN";
         }
         if (account.getRoles() == rolesNhanVien) {
-            return "NHAN_VIEN";
+            return "NHAN_VIEN_BAN_HANG";
         }
         return null;
     }

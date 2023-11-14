@@ -165,7 +165,7 @@ export const AccountList = () => {
                       ? expandedRowRender
                       : undefined,
                   }}
-                  rowKey="1"
+                  rowKey={(record, index) => index}
                   pagination={{
                     pageSize: 5,
                     showSizeChanger: false,
@@ -184,8 +184,10 @@ export const AccountList = () => {
                             ? "Admin"
                             : record === "CUSTOMER"
                             ? "Khách hàng"
-                            : record === "NHAN_VIEN"
-                            ? "Nhân viên"
+                            : record === "NHAN_VIEN_BAN_HANG"
+                            ? "Nhân viên bán hàng"
+                            : record === "NHAN_VIEN_QUAN_LY"
+                            ? "Nhân viên quản lý"
                             : ""}
                         </Form.Item>
                       );
@@ -309,9 +311,9 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("NHAN_VIEN", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_BAN_HANG", record1.id)}
           >
-            Nhân viên
+            Nhân viên bán hàng
           </Menu.Item>
           <Menu.Item
             key="edit"
@@ -330,12 +332,12 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("CUSTOMER", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_QUAN_LY", record1.id)}
           >
-            Khách hàng
+            Nhân viên quản lý
           </Menu.Item>
         </Menu>
-      ) : record === "NHAN_VIEN" ? (
+      ) : record === "NHAN_VIEN_BAN_HANG" ? (
         <Menu
           mode="vertical"
           onClick={({ domEvent }) => domEvent.stopPropagation()}
@@ -378,12 +380,12 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("CUSTOMER", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_QUAN_LY", record1.id)}
           >
-            Khách hàng
+            Nhân viên quản lý
           </Menu.Item>
         </Menu>
-      ) : record === "CUSTOMER" ? (
+      ) : record === "NHAN_VIEN_QUAN_LY" ? (
         <Menu
           mode="vertical"
           onClick={({ domEvent }) => domEvent.stopPropagation()}
@@ -426,9 +428,9 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("NHAN_VIEN", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_BAN_HANG", record1.id)}
           >
-            Nhân viên
+            Nhân viên bán hàng
           </Menu.Item>
         </Menu>
       ) : (

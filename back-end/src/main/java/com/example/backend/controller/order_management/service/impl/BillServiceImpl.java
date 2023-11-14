@@ -405,12 +405,33 @@ public class BillServiceImpl implements BillService {
     @Override
     public void updateStatusBill(Integer idAccount,int id) {
         Bill bill = billRepository.findById(id).get();
+        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
+            bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+        }
+        if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)){
+            bill.setStatusBill(StatusBill.VAN_CHUYEN);
+        }
+        if (bill.getStatusBill().equals(StatusBill.CHO_XAC_NHAN)){
+            bill.setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+        }
         Account account = acountRepository.findById(idAccount).get();
-        StatusBill statusBill = StatusBill.CHO_VAN_CHUYEN;
-        bill.setStatusBill(statusBill);
         bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
         bill.setDateUpdate(LocalDate.now());
         billRepository.save(bill);
+        if (bill.getTypeBill().equals(TypeBill.ONLINE) && bill.getStatusBill().equals(StatusBill.DA_THANH_TOAN)){
+        Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
+        User user = userRepository.findById(account1.getUser().getId()).get();
+        if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == 0){
+            user.setPoints(user.getPoints() + 100);
+        } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == 0){
+            user.setPoints(user.getPoints() + 200);
+        } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == 0){
+            user.setPoints(user.getPoints() + 300);
+        } else {
+            user.setPoints(user.getPoints() + 500);
+        }
+        userRepository.save(user);
+        }
 //        this.billRepository.updateBillStatus(id);
     }
 

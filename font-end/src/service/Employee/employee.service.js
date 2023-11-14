@@ -11,5 +11,5 @@ const config = {
 // };
 
 export const add = (employee, role) => {
-  return httpClient.post(`/admin/employee/create?roles=${role}`, employee);
+  return httpClient.post(`/admin/employee/create?role=${role}`, employee);
 };

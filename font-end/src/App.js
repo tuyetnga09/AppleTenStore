@@ -626,7 +626,10 @@ function App() {
           <Route path="/oderUserVC" exact component={OderUserVanChuyen} />
           <Route path="/oderUserHT" exact component={OderUserHoanThanh} />
           <Route path="/oderUserDH" exact component={OderUserDaHuy} />
-          <Route path="/profile" exact component={ProfileCustomer} />
+          {/* <Route path="/profile" exact component={ProfileCustomer} /> */}
+          <Route path="/profile">
+            {storedUser === null ? <Redirect to="/" /> : <ProfileCustomer />}
+          </Route>
           {/* <Route
             path="/admin/product-detail"
             exact
