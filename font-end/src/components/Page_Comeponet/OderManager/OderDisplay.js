@@ -351,6 +351,7 @@ const OderDisplay = ({}) => {
     function confirm2(id) {
         updateStatusBill(idAccount, id)
             .then(response => {
+                setLoad(!load);
             })
             .catch(error => {
                 console.error("Error updating status:", error);
@@ -359,6 +360,7 @@ const OderDisplay = ({}) => {
 
     function delete2(id) {
         deleteBillById(id).then((response) => console.log(response.data));
+        setLoad(!load);
     }
 
     function checkSoluongImei() {
@@ -690,60 +692,130 @@ const OderDisplay = ({}) => {
                                             align="center"
                                             render={(text, record) => (
                                                 <span>
-                          {/* <Button type="danger" >
-                                            <FontAwesomeIcon icon={faTimes} />
-                                        </Button>
-                                        <Button type="danger" >
-                                            <FontAwesomeIcon icon={faPencilAlt} />
-                                        </Button> */}
+                                                  {/* <Button type="danger" >
+                                                                    <FontAwesomeIcon icon={faTimes} />
+                                                                </Button>
+                                                                <Button type="danger" >
+                                                                    <FontAwesomeIcon icon={faPencilAlt} />
+                                                                </Button> */}
+                                                  {record.statusBill === "CHO_XAC_NHAN" ? (
                                                     <Dropdown
-                                                        overlay={
-                                                            <Menu mode="vertical">
-                                                                <Menu.Item
-                                                                    key="1"
-                                                                    disabled={record.stock <= 0}
-                                                                    style={{
-                                                                        fontWeight: 500,
-                                                                    }}
-                                                                    icon={
-                                                                        <CloseCircleOutlined
-                                                                            style={{
-                                                                                color: "red",
-                                                                            }}
-                                                                        />
-                                                                    }
-                                                                    onClick={() => confirm2(record.id)}
-                                                                >
-                                                                    Accept
-                                                                </Menu.Item>
-                                                                <Menu.Item
-                                                                    key="2"
-                                                                    style={{
-                                                                        fontWeight: 500,
-                                                                    }}
-                                                                    icon={
-                                                                        <FormOutlined
-                                                                            style={{
-                                                                                color: "green",
-                                                                            }}
-                                                                        />
-                                                                    }
-                                                                    onClick={() => delete2(record.id)}
-                                                                >
-                                                                    Delete
-                                                                </Menu.Item>
-                                                            </Menu>
-                                                        }
-                                                        trigger={["click"]}
+                                                      overlay={
+                                                        <Menu mode="vertical">
+                                                          <Menu.Item
+                                                            key="1"
+                                                            disabled={record.stock <= 0}
+                                                            style={{
+                                                              fontWeight: 500,
+                                                            }}
+                                                            icon={
+                                                              <FormOutlined
+                                                                style={{
+                                                                  color: "green",
+                                                                }}
+                                                              />
+                                                            }
+                                                            onClick={() => {
+                                                              //   console.log(record);
+                                                              confirm2(record.id);
+                                                            }}
+                                                          >
+                                                            Xác nhận
+                                                          </Menu.Item>
+                                                          <Menu.Item
+                                                            key="2"
+                                                            style={{
+                                                              fontWeight: 500,
+                                                            }}
+                                                            icon={
+                                                              <CloseCircleOutlined
+                                                                style={{
+                                                                  color: "red",
+                                                                }}
+                                                              />
+                                                            }
+                                                            onClick={() => delete2(record.id)}
+                                                          >
+                                                            Hủy đơn
+                                                          </Menu.Item>
+                                                        </Menu>
+                                                      }
+                                                      trigger={["click"]}
                                                     >
-                            <MoreOutlined
-                                style={{
-                                    fontSize: 24,
-                                }}
-                            />
-                          </Dropdown>
-                        </span>
-                                            )}
+                                                      <MoreOutlined
+                                                        style={{
+                                                          fontSize: 24,
+                                                        }}
+                                                      />
+                                                    </Dropdown>
+                                                  ) : record.statusBill === "CHO_VAN_CHUYEN" ? (
+                                                    <Dropdown
+                                                      overlay={
+                                                        <Menu mode="vertical">
+                                                            <Menu.Item
+                                                            key="1"
+                                                            disabled={record.stock <= 0}
+                                                            style={{
+                                                              fontWeight: 500,
+                                                            }}
+                                                            icon={
+                                                              <CloseCircleOutlined
+                                                                style={{
+                                                                  color: "green",
+                                                                }}
+                                                              />
+                                                            }
+                                                            onClick={() => confirm2(record.id)}
+                                                          >
+                                                            Đã lấy hàng
+                                                          </Menu.Item>
+                                                        </Menu>
+                                                      }
+                                                      trigger={["click"]}
+                                                    >
+                                                      <MoreOutlined
+                                                        style={{
+                                                          fontSize: 24,
+                                                        }}
+                                                      />
+                                                    </Dropdown>
+                                                  ) : record.statusBill === "VAN_CHUYEN" ? (
+                                                    <Dropdown
+                                                      overlay={
+                                                        <Menu mode="vertical">
+                                                          <Menu.Item
+                                                            key="1"
+                                                            disabled={record.stock <= 0}
+                                                            style={{
+                                                              fontWeight: 500,
+                                                            }}
+                                                            icon={
+                                                              <CloseCircleOutlined
+                                                                style={{
+                                                                  color: "green",
+                                                                }}
+                                                              />
+                                                            }
+                                                            onClick={() => confirm2(record.id)}
+                                                          >
+                                                            Đã thanh toán
+                                                          </Menu.Item>
+                                                        </Menu>
+                                                      }
+                                                      trigger={["click"]}
+                                                    >
+                                                      <MoreOutlined
+                                                        style={{
+                                                          fontSize: 24,
+                                                        }}
+                                                      />
+                                                    </Dropdown>
+                                                  ) : (
+                                                    ""
+                                                  )}
+                                                </span>
+                                              )}
+                        
                                         />
                                     </Table>
                                 </List>
