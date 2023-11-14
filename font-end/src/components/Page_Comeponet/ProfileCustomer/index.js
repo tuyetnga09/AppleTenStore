@@ -22,9 +22,9 @@ const ProfileCustomer = () => {
   const month = storedUser?.user?.dateOfBirth[1]?.toString().padStart(2, "0");
   const day = storedUser?.user?.dateOfBirth[2]?.toString().padStart(2, "0");
   const [editCustomer, setEditCustomer] = useState({
-    fullName: storedUser.user.fullName,
-    email: storedUser.user.email,
-    phoneNumber: storedUser.user.phoneNumber,
+    fullName: storedUser?.user?.fullName,
+    email: storedUser?.user?.email,
+    phoneNumber: storedUser?.user?.phoneNumber,
     dateOfBirth: `${year}-${month}-${day}`,
   });
 
@@ -175,7 +175,14 @@ const ProfileCustomer = () => {
                   alt=""
                 />
                 <div class="small font-italic text-muted mb-4">
-                  JPG or PNG no larger than 5 MB
+                  {/* JPG or PNG no larger than 5 MB */}
+                  {storedUser?.user?.points <= 0
+                    ? ""
+                    : storedUser?.user?.points <= 1000000
+                    ? "Hạng bạc - Điểm: " + storedUser?.user?.points
+                    : storedUser?.user?.points <= 2000000
+                    ? "Hạng vàng - Điểm: " + storedUser?.user?.points
+                    : "Hạng kim cương - Điểm: " + storedUser?.user?.points}
                 </div>
                 <button class="btn btn-primary" type="button">
                   Upload new image

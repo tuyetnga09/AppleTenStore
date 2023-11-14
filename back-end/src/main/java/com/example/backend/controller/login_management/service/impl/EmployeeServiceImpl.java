@@ -70,8 +70,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Account account1 = new Account();
         account1.setCode(this.randomMaNhanVien());
         account1.setUser(user1);
-        account1.setRoles(Roles.NHAN_VIEN);
-//        account1.setRoles(account.getRoles());
+//        account1.setRoles(Roles.NHAN_VIEN);
+        account1.setRoles(account.getRoles());
         account1.setEmail(user1.getEmail());
         account1.setPassword(Base64.getEncoder().encodeToString(account.getPassword().getBytes()));
         account1.setStatus(Status.DANG_SU_DUNG);
