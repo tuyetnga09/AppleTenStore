@@ -801,6 +801,85 @@ const Checkout = () => {
                     </strong>
                   </li>
                 </ul>
+                <div hidden={storedUser !== null ? false : true}>
+                  <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between">
+                      <span>
+                        <input
+                          id="point"
+                          type="number"
+                          min={0}
+                          class="form-control"
+                          placeholder="Nhập điểm muốn áp dụng"
+                          // onChange={hanldeName}
+                          onBlur={(event) => {
+                            if (event.target.value <= 0) {
+                              const quantity = document.getElementById(`point`);
+                              quantity.value = 0;
+                            }
+                            if (totalPrice >= 100000 && totalPrice <= 50000000) {
+                              if (event.target.value > 50000) {
+                                const quantity = document.getElementById(`point`);
+                                quantity.value = 0;
+                              }
+                            }
+                            if (totalPrice >= 51000000 && totalPrice <= 100000000) {
+                              if (event.target.value > 100000) {
+                                const quantity = document.getElementById(`point`);
+                                quantity.value = 0;
+                              }
+                            }
+                            if (totalPrice >= 110000000 && totalPrice <= 150000000) {
+                              if (event.target.value > 150000) {
+                                const quantity = document.getElementById(`point`);
+                                quantity.value = 0;
+                              }
+                            }
+                            if (totalPrice >= 151000000 && totalPrice <= 200000000) {
+                              if (event.target.value > 200000) {
+                                const quantity = document.getElementById(`point`);
+                                quantity.value = 0;
+                              }
+                            }
+                            if (totalPrice >= 200000000) {
+                              if (event.target.value > 250000) {
+                                const quantity = document.getElementById(`point`);
+                                quantity.value = 0;
+                              }
+                            }
+                          }}
+                        ></input>
+                        <p style={{fontSize: "13px", color: "red", fontWeight: "bold"}}>
+                          Số điểm đang có là 100000 Point
+                        </p>
+                      </span>
+                      <strong>
+                          <button
+                          class="btn btn-warning"
+                          name="btnDatHang"
+                          type="submit"
+                        >
+                          Áp dụng
+                        </button>
+                      </strong>
+                    </li>
+                  </ul>
+                </div>
+                <div className="d-flex justify-content-between px-x">
+                  <p className="fw-bold">Số điểm sử dụng:</p>
+                  <p className="fw-bold">
+                    -
+                    {selecteVoucher && selecteVoucher.valueVoucher
+                      ? selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })
+                      : 0?.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                  </p>
+                </div>
                 <div className="d-flex justify-content-between px-x">
                   <p className="fw-bold">Giảm giá Voucher:</p>
                   <p className="fw-bold">

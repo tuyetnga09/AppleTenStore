@@ -4,6 +4,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
+import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.*;
 import com.example.backend.repository.*;
@@ -454,6 +455,18 @@ public class BillServiceImpl implements BillService {
         this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
         this.billRepository.deleteBill(id);
+    }
+
+    @Override
+    public void updateAllChoThanhToan(String personUpdate) {
+         billRepository.updateAllChoVanChuyen(personUpdate);
+    }
+
+    //lấy ra list bill_detail của 1 bill theo id_bill
+    @Override
+    public List<BillDetailOffLineIon> getAllBillChoXacNhan() {
+        List<BillDetailOffLineIon> billDetailsList = billRepository.getAllBillChoXacNhan();
+        return billDetailsList;
     }
 
 }

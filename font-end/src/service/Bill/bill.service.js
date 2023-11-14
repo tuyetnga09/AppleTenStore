@@ -26,3 +26,11 @@ export const findBillByCode = (code) => {
 export const deleteBillById = (id) => {
   return httpClient.delete(`/customer/bill/delete/${id}`);
 }
+
+export const updateAllCVC = (personUpdate) => {
+  return httpClient.put(`/manager/bill/updateAll/${personUpdate}`);
+}
+
+export const getAllBillCXN = () => {
+  return httpClient.get("/manager/bill/getAll-bill-detail-CXN");
+}

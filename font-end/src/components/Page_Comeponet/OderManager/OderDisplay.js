@@ -37,7 +37,7 @@ import {
     deleteBillById,
     searchNoDate,
     searchWithDate,
-    updateStatusBill,
+    updateStatusBill,updateAllCVC,getAllBillCXN
 } from "../../../service/Bill/bill.service";
 import {readAllUser} from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -74,7 +74,8 @@ const OderDisplay = ({}) => {
     const [user, setUser] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
     const breakpoint = Grid.useBreakpoint();
-
+    const [load, setLoad] = useState(true);
+    const [billCXN, setBillCXN] = useState([]);
 
     const orderSelectProps = {
         options: [
@@ -149,7 +150,15 @@ const OderDisplay = ({}) => {
             .catch((error) => {
                 console.log(`${error}`);
             });
-    }, [filtersNoDate, filtersWithDate]);
+            //lấy toàn bộ bill chờ xác nhận để check
+        getAllBillCXN()
+            .then((response) => {
+                setBillCXN(response.data);
+            })
+            .catch((error) => {
+                console.log(`${error}`);
+            });
+    }, [filtersNoDate, filtersWithDate, load]);
 
     function handleChangeSearch(event) {
         const target = event.target;
@@ -352,6 +361,65 @@ const OderDisplay = ({}) => {
         deleteBillById(id).then((response) => console.log(response.data));
     }
 
+    function checkSoluongImei() {
+        for (let index = 0; index < billCXN.length; index++) {
+            if (
+                billCXN[index]?.quantity !==
+                billCXN[index]?.soLuongImeiDaChon
+            ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function handUpdateTrangThai(){
+        if (checkSoluongImei() === true) {
+            const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
+            updateAllCVC(personUpdate)
+            .then((response) => {
+              setLoad(!load);
+              notification.success({
+                message: "Accept",
+                description: "Xác nhận thành công",
+            });
+            })
+            .catch((error) => {
+              console.error('Error updating data:', error);
+            });
+        }else{
+            notification.error({
+                message: "KIỂM TRA IMEI",
+                description: "Vui lòng kiểm tra lại imei",
+            });
+        }
+    }
+
+            // State để lưu trữ dữ liệu từ component con
+        const [dataFromChild, setDataFromChild] = useState(null);
+
+        // Hàm callback để nhận dữ liệu từ component con
+        const receiveDataFromChild = (data) => {
+            // Xử lý dữ liệu từ component con ở đây
+            // Lưu trữ dữ liệu vào state
+            setDataFromChild(data);
+            if (data === true) {
+                getAllBillCXN()
+                .then((response) => {
+                    setBillCXN(response.data);
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+            }
+        };
+
+    const expandedRowRender = (record) => {
+        return (
+          <UserAccountTable record={record} onSomeAction={receiveDataFromChild} />
+        );
+      };
+
     return (
         <>
             <Layout>
@@ -402,6 +470,18 @@ const OderDisplay = ({}) => {
                         <Text style={{fontSize: "24px", color: "blue"}} strong>
                             ODERS
                         </Text>
+                        <div
+                          class="d-grid gap-2 d-md-flex justify-content-md-end"
+                          style={{ marginTop: "10px" }}
+                        >
+                          <button
+                            class="btn btn-success"
+                            type="button"
+                            onClick={() => handUpdateTrangThai()}
+                          >
+                            ACCEPT ALL
+                          </button>
+                        </div>
                         <Row gutter={[16, 16]}>
                             <Col
                                 xl={6}
@@ -675,7 +755,7 @@ const OderDisplay = ({}) => {
         </>
     );
 };
-const UserAccountTable = ({record}) => {
+const UserAccountTable = ({record, onSomeAction}) => {
     const [users, setUsers] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [user, setUser] = useState({});
@@ -698,6 +778,7 @@ const UserAccountTable = ({record}) => {
         // readAllUserByRole(record)
         findBillDetails(record.id).then(response => {
             setUsers(response.data);
+            setDataBillDetailOffline(response.data);
         })
         //   .then((res) => {
         //   })
@@ -1114,6 +1195,7 @@ const UserAccountTable = ({record}) => {
                     notification.success({
                         message: "Thêm Imei Thành Công",
                     });
+                    handleClick();
                 }
             })
             .catch((error) => {
@@ -1185,6 +1267,12 @@ const UserAccountTable = ({record}) => {
             )}
         </>
     );
+
+    //truyền thông tin ra bnagr bên ngoài
+    const handleClick = () => {
+        // Gọi hàm callback và truyền dữ liệu cần thiết lên
+        onSomeAction(true);
+    };
 
     return (
         <>
@@ -1653,9 +1741,9 @@ const UserAccountTable = ({record}) => {
         </>
     );
 };
-const expandedRowRender = (record) => {
-    return <UserAccountTable record={record}/>;
-};
+// const expandedRowRender = (record) => {
+//     return <UserAccountTable record={record}/>;
+// };
 export default OderDisplay;
 
 

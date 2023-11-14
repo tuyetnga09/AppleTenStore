@@ -3309,8 +3309,8 @@ export default function SellSmart() {
                                                             backgroundColor: "orange",
                                                         }}
                                                         onClick={() => {
-                                                            console.log(dataDoneBill);
-                                                            // console.log(dataBillDetailOffline);
+                                                            // console.log(dataDoneBill);
+                                                            console.log(dataBillDetailOffline);
                                                             // console.log(selectedOptions);
                                                         }}
                                                     >
