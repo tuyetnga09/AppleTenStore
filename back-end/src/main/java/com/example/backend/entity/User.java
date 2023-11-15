@@ -52,6 +52,9 @@ public class User {
     @Column(name = "points")
     private Integer points;
 
+    @Column(name = "pointsHistory")
+    private Integer pointsHistory;
+
     @Column(name = "person_create")
     private String  personCreate;
 
