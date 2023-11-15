@@ -6,7 +6,7 @@ import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import { readAll, getbysku } from "../../../service/cart.service";
 import { readQuantityInCart } from "../../../service/cart.service";
-import { GiftOutlined } from "@ant-design/icons";
+import { GiftOutlined,CloseCircleOutlined,InfoCircleOutlined } from "@ant-design/icons";
 import { Image, Checkbox, Modal, notification, Button, Input } from "antd";
 import {
   getVoucher,
@@ -77,6 +77,9 @@ const Checkout = () => {
     idVoucherFreeShip: null,
     account: idAccount,
     wards: "",
+    idUser: null,
+    point: 0,
+    pointHistory: 0,
   });
   const [defaultAddress, setDefaultAddress] = useState([]);
   const [showDistricts, setShowDistricts] = useState(true);
@@ -88,6 +91,10 @@ const Checkout = () => {
   const skuIds = cartItems.map((item) => item.idSKU); // Lấy danh sách idSKU từ mảng cartItems
 
   const requests = skuIds.map((idSKU) => getbysku(idSKU)); // Tạo mảng các promise từ việc gọi API
+
+  const [ponit, setPonit] = useState(0);
+  const [isModalVisiblePoint, setIsModalVisiblePoint] = useState(false); // Trạng thái hiển thị Modal
+
 
   useEffect(() => {
     const checked1 = document.getElementById("htnn_4");
@@ -283,7 +290,7 @@ const Checkout = () => {
       moneyShip: priceShip,
       afterPrice: soTienThanhToan,
     });
-  }, [products, fee, soTienThanhToan]);
+  }, [products, fee, soTienThanhToan, ponit]);
   //tính số tiền cẩn thanh toán
   const calculatePriceSucsses = () => {
     //tính thành tiền sản phẩm
@@ -315,26 +322,27 @@ const Checkout = () => {
     setPriceShip(priceS);
     //tính số tiền cẩn thanh toán
     let price = 0;
+    let pointValue = parseFloat(ponit);
 
     if (selecteVoucherFreeShip && selecteVoucher) {
       const voucherValue = parseFloat(selecteVoucher.valueVoucher);
       const voucherVoucherFree = parseFloat(
         selecteVoucherFreeShip.valueVoucher
       );
-      price = total + priceS - (voucherValue + voucherVoucherFree);
+      price = total + priceS - (voucherValue + voucherVoucherFree) - pointValue;
     } else if (selecteVoucher) {
       // Nếu selectedVoucher có giá trị, sử dụng giá trị voucher
       const voucherValue = parseFloat(selecteVoucher.valueVoucher);
-      price = total + priceS - voucherValue;
+      price = total + priceS - voucherValue - pointValue;
     } else if (selecteVoucherFreeShip) {
       // Nếu chỉ có selectedVoucherFreeShip có giá trị, sử dụng giá trị voucherfreeship
       const voucherVoucherFree = parseFloat(
         selecteVoucherFreeShip.valueVoucher
       );
-      price = total + priceS - voucherVoucherFree;
+      price = total + priceS - voucherVoucherFree - pointValue;
     } else {
       // Nếu cả hai đều không có giá trị, không sử dụng giảm giá
-      price = total + priceS;
+      price = total + priceS - pointValue;
     }
     setSoTienThanhToan(price);
   };
@@ -713,6 +721,60 @@ const Checkout = () => {
     setIsChecked3(true);
   }
 
+  function clickPonit(){
+    const pointElement = document.getElementById('point');
+    const pointValue = parseFloat(pointElement.value);
+    const pointCustomer = parseFloat(storedUser?.user?.points);
+    if(pointValue == "" || pointValue == null){
+      notification.error({
+        message: "Nhập số điểm bạn cần dùng!",
+      });
+      setPonit(0);
+    }else{
+      if(pointValue > pointCustomer){
+      notification.error({
+        message: "Số điểm của bạn không đủ!",
+      });
+      setPonit(0);
+    }else if(pointValue == 0 || pointValue == null){
+      notification.success({
+        message: "Mời nhập số điểm bạn muốn sử dụng!",
+      });
+    } else{
+      setPonit(pointValue);
+      setBill({
+        ...bill,
+        idUser: storedUser?.user?.id,
+        point: pointValue,
+        pointHistory: pointValue,
+      });
+      console.log(bill);
+    }
+    }
+    
+  }
+
+  function clearPoint(){
+    setPonit(0);
+    setBill({
+      ...bill,
+      idUser: storedUser?.user?.id,
+      point: 0,
+      pointHistory: 0,
+    });
+    document.getElementById('point').value = 0;
+  }
+
+    // Hàm để hiển thị Modal khi cần
+    const handleEditClickPoint = (record) => {
+      setIsModalVisiblePoint(true);
+    };
+  
+    // Hàm để ẩn Modal
+    const handleCancelPoint = () => {
+      setIsModalVisiblePoint(false);
+    };
+  
   return (
     <>
       <Header />
@@ -810,75 +872,118 @@ const Checkout = () => {
                           type="number"
                           min={0}
                           class="form-control"
-                          placeholder="Nhập điểm muốn áp dụng"
+                          defaultValue={0}
+                          // placeholder="Nhập điểm muốn áp dụng"
                           // onChange={hanldeName}
                           onBlur={(event) => {
                             if (event.target.value <= 0) {
                               const quantity = document.getElementById(`point`);
                               quantity.value = 0;
+                              setPonit(0);
                             }
                             if (totalPrice >= 100000 && totalPrice <= 50000000) {
                               if (event.target.value > 50000) {
                                 const quantity = document.getElementById(`point`);
                                 quantity.value = 0;
+                                setPonit(0);
+                                notification.error({
+                                  message: "Đơn hàng không đủ điều kiện!",
+                                });
                               }
                             }
                             if (totalPrice >= 51000000 && totalPrice <= 100000000) {
                               if (event.target.value > 100000) {
                                 const quantity = document.getElementById(`point`);
                                 quantity.value = 0;
+                                setPonit(0);
+                                notification.error({
+                                  message: "Đơn hàng không đủ điều kiện!",
+                                });
                               }
                             }
                             if (totalPrice >= 110000000 && totalPrice <= 150000000) {
                               if (event.target.value > 150000) {
                                 const quantity = document.getElementById(`point`);
                                 quantity.value = 0;
+                                setPonit(0);
+                                notification.error({
+                                  message: "Đơn hàng không đủ điều kiện!",
+                                });
                               }
                             }
                             if (totalPrice >= 151000000 && totalPrice <= 200000000) {
                               if (event.target.value > 200000) {
                                 const quantity = document.getElementById(`point`);
                                 quantity.value = 0;
+                                setPonit(0);
+                                notification.error({
+                                  message: "Đơn hàng không đủ điều kiện!",
+                                });
                               }
                             }
-                            if (totalPrice >= 200000000) {
+                            if (totalPrice > 200000000) {
                               if (event.target.value > 250000) {
                                 const quantity = document.getElementById(`point`);
                                 quantity.value = 0;
+                                setPonit(0);
+                                notification.error({
+                                  message: "Đơn hàng không đủ điều kiện!",
+                                });
                               }
                             }
                           }}
                         ></input>
                         <p style={{fontSize: "13px", color: "red", fontWeight: "bold"}}>
-                          Số điểm đang có là 100000 Point
+                          Số điểm đang có là {storedUser?.user?.points} Point
                         </p>
                       </span>
                       <strong>
                           <button
                           class="btn btn-warning"
-                          name="btnDatHang"
-                          type="submit"
+                          type="button"
+                          onClick={() => clickPonit()}
                         >
                           Áp dụng
                         </button>
                       </strong>
+                      <strong>
+                        <CloseCircleOutlined
+                            style={{
+                              color: "red",
+                              fontSize: 17,
+                              fontWeight: 500,
+                              marginRight: "10px"
+                            }}
+                            onClick={() => clearPoint()}
+                          />
+                          <InfoCircleOutlined 
+                            style={{
+                                color: "red",
+                                fontSize: 17,
+                                fontWeight: 500,
+                              }}
+                              onClick={() => handleEditClickPoint()}
+                          />
+                      </strong>
                     </li>
                   </ul>
                 </div>
-                <div className="d-flex justify-content-between px-x">
-                  <p className="fw-bold">Số điểm sử dụng:</p>
-                  <p className="fw-bold">
-                    -
-                    {selecteVoucher && selecteVoucher.valueVoucher
-                      ? selecteVoucher?.valueVoucher?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      : 0?.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                  </p>
+                <div hidden={storedUser !== null ? false : true}>
+                  <div className="d-flex justify-content-between px-x" >
+                    <p className="fw-bold">Số điểm sử dụng:</p>
+                    <p className="fw-bold">
+                      -
+                      {ponit
+                        ? ponit?.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })
+                        : 0?.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                    </p>
+                  </div>
                 </div>
                 <div className="d-flex justify-content-between px-x">
                   <p className="fw-bold">Giảm giá Voucher:</p>
@@ -1357,6 +1462,54 @@ const Checkout = () => {
                 </ul>
               ))}
             </div>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        visible={isModalVisiblePoint}
+        onCancel={handleCancelPoint}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "500px" }}
+      >
+        <div className="container py-5">
+          <div className="row d-flex justify-content-center">
+            <div
+              className="card-header d-flex justify-content-between align-items-center p-3"
+              style={{ borderTop: "4px solid #ffa900",fontWeight: "bold" }}
+            >
+              <h5 className="mb-0">HƯỚNG DẪN SỬ DỤNG ĐIỂM</h5>
+            </div>
+            <div
+                className="card-body"
+                data-mdb-perfect-scrollbar="true"
+                style={{ position: "relative", height: 380, overflowY: "auto" }}
+            >
+              <h6 className="mb-0" style={{fontWeight: "bold", color: "#ffa900"}}>KHI MUA HÀNG</h6>
+              <p style={{fontWeight: "bold"}}>Đơn hàng trên 30.000.000 vnđ *</p>
+              <p>- Quý khách được cộng 100 Point</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng từ 31.000.000 vnđ đển 50.000.000 vnđ *</p>
+              <p>- Quý khách được cộng 200 Point</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng từ 51.000.000 vnđ đển 70.000.000 vnđ *</p>
+              <p>- Quý khách được cộng 300 Point</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng trên 80.000.000 vnđ *</p>
+              <p>- Quý khách được cộng 500 Point</p>
+
+              <h6 className="mb-0" style={{fontWeight: "bold", color: "#ffa900"}}>SỬ DỤNG ĐIỂM</h6>
+              <p style={{fontWeight: "bold", color: "red", fontSize: "15px"}}>1000 Point = 1000 vnđ *</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng từ 10.000.000 vnđ đến 50.000.000 vnđ *</p>
+              <p>- Được sử dụng tối đa 50.000 Point</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng từ 51.000.000 vnđ đến 100.000.000 vnđ *</p>
+              <p>- Được sử dụng tối đa 100.000 Point</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng từ 110.000.000 vnđ đến 150.000.000 vnđ *</p>
+              <p>- Được sử dụng tối đa 150.000 Point</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng từ 151.000.000 vnđ đến 200.000.000 vnđ *</p>
+              <p>- Được sử dụng tối đa 200.000 Point</p>
+              <p style={{fontWeight: "bold"}}>Đơn hàng trên 250.000.000 vnđ *</p>
+              <p>- Được sử dụng tối đa 250.000 Point</p>
+            </div>
+            
           </div>
         </div>
       </Modal>

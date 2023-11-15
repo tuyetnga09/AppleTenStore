@@ -147,10 +147,40 @@ public class BillServiceImpl implements BillService {
                 .typePayment(StatusPayment.THANH_TOAN).build();
         paymentsRepository.save(payments);
 
-        // thông tin voucher
-        Optional<Voucher> optionalVoucher = voucherRepository.findById(request.getIdVoucher());
-        if (optionalVoucher.isPresent()) {
-            Voucher voucher = optionalVoucher.get();
+//        // thông tin voucher
+//        Optional<Voucher> optionalVoucher = voucherRepository.findById(request.getIdVoucher());
+//        if (optionalVoucher.isPresent()) {
+//            Voucher voucher = optionalVoucher.get();
+//
+//            VoucherDetail voucherDetail = VoucherDetail.builder()
+//                    .voucher(voucher)
+//                    .bill(bill)
+//                    .beforePrice(request.getTotalMoney())
+//                    .afterPrice(request.getAfterPrice())
+//                    .discountPrice(request.getItemDiscount())
+//                    .build();
+//            voucherDetailRepository.save(voucherDetail);
+//        } else {
+//            return null;
+//        }
+//        // thông tin voucher freeship
+//        Optional<Voucher> optionalVoucherFreeShip = voucherRepository.findById(request.getIdVoucherFreeShip());
+//        if (optionalVoucherFreeShip.isPresent()) {
+//            Voucher voucher = optionalVoucherFreeShip.get();
+//
+//            VoucherDetail voucherDetail = VoucherDetail.builder()
+//                    .voucher(voucher)
+//                    .bill(bill)
+//                    .beforePrice(request.getTotalMoney())
+//                    .afterPrice(request.getAfterPrice())
+//                    .discountPrice(request.getItemDiscountFreeShip())
+//                    .build();
+//            voucherDetailRepository.save(voucherDetail);
+//        } else {
+//            return null;
+//        }
+        if(request.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
                     .voucher(voucher)
@@ -160,13 +190,10 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(request.getItemDiscount())
                     .build();
             voucherDetailRepository.save(voucherDetail);
-        } else {
-            return null;
         }
-        // thông tin voucher freeship
-        Optional<Voucher> optionalVoucherFreeShip = voucherRepository.findById(request.getIdVoucherFreeShip());
-        if (optionalVoucherFreeShip.isPresent()) {
-            Voucher voucher = optionalVoucherFreeShip.get();
+        //lấy thoong tin voucher freeship
+        if(request.getIdVoucherFreeShip() != null){
+            Voucher voucher = voucherRepository.findById(request.getIdVoucherFreeShip()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
                     .voucher(voucher)
@@ -176,8 +203,6 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(request.getItemDiscountFreeShip())
                     .build();
             voucherDetailRepository.save(voucherDetail);
-        } else {
-            return null;
         }
         //trừ số lượng voucher - voucher freeship
         if(request.getIdVoucher() != null){
@@ -200,6 +225,8 @@ public class BillServiceImpl implements BillService {
         Optional<Account> accountOptional = acountRepository.findById(request.getAccount());
         BigDecimal value1 = new BigDecimal(String.valueOf(request.getItemDiscount()));
         BigDecimal value2 = new BigDecimal(String.valueOf(request.getItemDiscountFreeShip()));
+        BigDecimal value3 = new BigDecimal(String.valueOf(request.getPoint()));
+
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
             Bill bill = Bill.builder()
@@ -208,7 +235,7 @@ public class BillServiceImpl implements BillService {
                     .address(request.getAddress())
                     .userName(request.getUserName())
                     .moneyShip(request.getMoneyShip())
-                    .itemDiscount(value1.add(value2))
+                    .itemDiscount(value1.add(value2).add(value3))
                     .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
                     .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -273,20 +300,35 @@ public class BillServiceImpl implements BillService {
                 List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndSku_Id(cart.getId(), x.getSku());
                 cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
             }
+
+            //trừ só lương voucher
+            if(request.getIdVoucher() != null){
+                Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
+                voucher.setQuantity(voucher.getQuantity() - 1);
+                voucherRepository.save(voucher);
+            }
+            if(request.getIdVoucherFreeShip() != null) {
+                Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
+                voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+                voucherRepository.save(voucherFreeShip);
+            }
+
+            //tính điểm
+            if(request.getIdUser() != null){
+                User user = userRepository.getOne(request.getIdUser());
+                user.setPoints(user.getPoints() - request.getPoint());
+                userRepository.save(user);
+                if(user.getPointsHistory() == null){
+                    user.setPointsHistory(request.getPointHistory());
+                    userRepository.save(user);
+                }else{
+                    user.setPointsHistory(user.getPointsHistory() + request.getPointHistory());
+                    userRepository.save(user);
+                }
+            }
+
             return bill;
         }
-        //trừ só lương voucher
-        if(request.getIdVoucher() != null){
-            Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
-            voucher.setQuantity(voucher.getQuantity() - 1);
-            voucherRepository.save(voucher);
-        }
-        if(request.getIdVoucherFreeShip() != null) {
-            Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
-            voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
-            voucherRepository.save(voucherFreeShip);
-        }
-
         return null;
     }
 
