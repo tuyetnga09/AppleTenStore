@@ -16,6 +16,8 @@ import queryString from "query-string";
 import Pagination from "../Chip/PageNext";
 import * as XLSX from "xlsx";
 import * as FileSaver from "file-saver";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { notification } from "antd";
 
 const Display = () => {
   const [display, setDisplay] = useState([]);
@@ -34,18 +36,26 @@ const Display = () => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
   useEffect(() => {
-    const paramsString = queryString.stringify(filters);
-    readAll(paramsString)
-      .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data); 
-      })
-      .catch((error) => {
-        console.log(`${error}`);
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      const paramsString = queryString.stringify(filters);
+      readAll(paramsString)
+        .then((response) => {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, [filters]);
 
   function handlePageChange(newPage) {
@@ -82,138 +92,144 @@ const Display = () => {
 
   return (
     <div className="bodyform">
-    <section class="ftco-section">  
-   <div class="container">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center mb-4">
-            <h2 className="heading-section">Chip</h2>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <form className="d-flex" role="search">
-              <Link to="/chip/displayDelete">
-                <button
-                  class="btn btn-outline-success"
-                  type="submit"
-                  style={{ marginRight: "15px" }}
-                >
-                  <FontAwesomeIcon icon={faTrash} />
-                </button>
-              </Link>
-
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-                name="key"
-                onChange={handleChange}
-              />
-              <Link to="/chip/scan">
-                <button
-                  className="btn btn-outline-success"
-                  style={{ marginLeft: "15px" }}
-                >
-                  <FontAwesomeIcon icon={faQrcode} className="search-icon" />
-                </button>
-              </Link>
-              <Link to="/chip/new">
-                <button
-                  type="button"
-                  className="btn btn-outline-success"
-                  style={{ marginRight: "15px", marginLeft: "15px" }}
-                >
-                  <FontAwesomeIcon icon={faPlus} className="add-icon" />
-                </button>
-              </Link>
-              <Link to="/chip/im">
-                <button
-                  type="button"
-                  className="btn btn-outline-success"
-                  style={{ marginRight: "15px" }}
-                >
-                  <FontAwesomeIcon icon={faFileExcel} className="excel-icon" />
-                </button>
-              </Link>
-
-              <button
-                type="button"
-                className="btn btn-outline-success"
-                style={{ marginRight: "15px" }}
-                onClick={() => handleDownload(display, "chip")}
-              >
-                <FontAwesomeIcon icon={faDownload} className="download-icon" />
-              </button>
-            </form>
-            <br />
-            <div className="table-wrap">
-              <table className="table">
-                <thead className="thead-primary">
-                  <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Date Create</th>
-                    <th>Date Update</th>
-                    <th>Person Create</th>
-                    <th>Person Update</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {display.map((s) => {
-                    const dateCreate = new Date(s.dateCreate);
-                    const dateUpdate = new Date(s.dateUpdate);
-                    const dateCreateText = dateCreate.toLocaleDateString();
-                    const dateUpdateText = dateUpdate.toLocaleDateString();
-                    return (
-                      <tr className="alert" role="alert" key={s.id}>
-                        <td>{s.code}</td>
-                        <td>{s.name}</td>
-                        <td>{dateCreateText}</td>
-                        <td>{dateUpdateText}</td>
-                        <td>{s.personCreate}</td>
-                        <td>{s.personUpdate}</td>
-                        <td>
-                          {s.status === 0 ? "Hoạt động" : "Không hoạt động"}
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            className="close"
-                            data-dismiss="alert"
-                            aria-label="Edit"
-                          >
-                            <Link to={"/chip/" + s.id}>
-                              <span aria-hidden="true">
-                                <FontAwesomeIcon icon={faEdit} />
-                              </span>
-                            </Link>
-                          </button>
-                          <button
-                            type="button"
-                            className="close"
-                            data-dismiss="alert"
-                            aria-label="Close"
-                            onClick={() => remove(s.id)}
-                          >
-                            <span aria-hidden="true">
-                              <FontAwesomeIcon icon={faClose} />
-                            </span>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+      <section class="ftco-section">
+        <div class="container">
+          <div className="row justify-content-center">
+            <div className="col-md-6 text-center mb-4">
+              <h2 className="heading-section">Chip</h2>
             </div>
           </div>
+          <div className="row">
+            <div className="col-md-12">
+              <form className="d-flex" role="search">
+                <Link to="/chip/displayDelete">
+                  <button
+                    class="btn btn-outline-success"
+                    type="submit"
+                    style={{ marginRight: "15px" }}
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </Link>
+
+                <input
+                  className="form-control me-2"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                  name="key"
+                  onChange={handleChange}
+                />
+                <Link to="/chip/scan">
+                  <button
+                    className="btn btn-outline-success"
+                    style={{ marginLeft: "15px" }}
+                  >
+                    <FontAwesomeIcon icon={faQrcode} className="search-icon" />
+                  </button>
+                </Link>
+                <Link to="/chip/new">
+                  <button
+                    type="button"
+                    className="btn btn-outline-success"
+                    style={{ marginRight: "15px", marginLeft: "15px" }}
+                  >
+                    <FontAwesomeIcon icon={faPlus} className="add-icon" />
+                  </button>
+                </Link>
+                <Link to="/chip/im">
+                  <button
+                    type="button"
+                    className="btn btn-outline-success"
+                    style={{ marginRight: "15px" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faFileExcel}
+                      className="excel-icon"
+                    />
+                  </button>
+                </Link>
+
+                <button
+                  type="button"
+                  className="btn btn-outline-success"
+                  style={{ marginRight: "15px" }}
+                  onClick={() => handleDownload(display, "chip")}
+                >
+                  <FontAwesomeIcon
+                    icon={faDownload}
+                    className="download-icon"
+                  />
+                </button>
+              </form>
+              <br />
+              <div className="table-wrap">
+                <table className="table">
+                  <thead className="thead-primary">
+                    <tr>
+                      <th>Code</th>
+                      <th>Name</th>
+                      <th>Date Create</th>
+                      <th>Date Update</th>
+                      <th>Person Create</th>
+                      <th>Person Update</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {display.map((s) => {
+                      const dateCreate = new Date(s.dateCreate);
+                      const dateUpdate = new Date(s.dateUpdate);
+                      const dateCreateText = dateCreate.toLocaleDateString();
+                      const dateUpdateText = dateUpdate.toLocaleDateString();
+                      return (
+                        <tr className="alert" role="alert" key={s.id}>
+                          <td>{s.code}</td>
+                          <td>{s.name}</td>
+                          <td>{dateCreateText}</td>
+                          <td>{dateUpdateText}</td>
+                          <td>{s.personCreate}</td>
+                          <td>{s.personUpdate}</td>
+                          <td>
+                            {s.status === 0 ? "Hoạt động" : "Không hoạt động"}
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className="close"
+                              data-dismiss="alert"
+                              aria-label="Edit"
+                            >
+                              <Link to={"/chip/" + s.id}>
+                                <span aria-hidden="true">
+                                  <FontAwesomeIcon icon={faEdit} />
+                                </span>
+                              </Link>
+                            </button>
+                            <button
+                              type="button"
+                              className="close"
+                              data-dismiss="alert"
+                              aria-label="Close"
+                              onClick={() => remove(s.id)}
+                            >
+                              <span aria-hidden="true">
+                                <FontAwesomeIcon icon={faClose} />
+                              </span>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <Pagination pagination={pagination} onPageChange={handlePageChange} />
         </div>
-        <Pagination pagination={pagination} onPageChange={handlePageChange} />
-      </div>
-    </section>
+      </section>
     </div>
   );
 };

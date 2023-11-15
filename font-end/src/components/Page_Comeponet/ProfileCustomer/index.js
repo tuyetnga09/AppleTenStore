@@ -126,37 +126,44 @@ const ProfileCustomer = () => {
         console.log(err);
       });
   };
-
+  const history = useHistory();
   useEffect(() => {
-    detail(storedUser?.id)
-      .then((res) => {
-        setData(res.data);
-        // Lấy năm, tháng và ngày từ mảng
-        const year = res.data.data.user.dateOfBirth[0];
-        const month = res.data.data.user.dateOfBirth[1]
-          ?.toString()
-          .padStart(2, "0");
-        const day = res.data.data.user.dateOfBirth[2]
-          ?.toString()
-          .padStart(2, "0");
-        setDateOfBirth(`${year}-${month}-${day}`);
-        setEditCustomer({
-          fullName: res.data.data.user.fullName,
-          email: res.data.data.user.email,
-          phoneNumber: res.data.data.user.phoneNumber,
-          dateOfBirth: `${year}-${month}-${day}`,
+    if (storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
+    } else {
+      detail(storedUser?.id)
+        .then((res) => {
+          setData(res.data);
+          // Lấy năm, tháng và ngày từ mảng
+          const year = res.data.data.user.dateOfBirth[0];
+          const month = res.data.data.user.dateOfBirth[1]
+            ?.toString()
+            .padStart(2, "0");
+          const day = res.data.data.user.dateOfBirth[2]
+            ?.toString()
+            .padStart(2, "0");
+          setDateOfBirth(`${year}-${month}-${day}`);
+          setEditCustomer({
+            fullName: res.data.data.user.fullName,
+            email: res.data.data.user.email,
+            phoneNumber: res.data.data.user.phoneNumber,
+            dateOfBirth: `${year}-${month}-${day}`,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    readAllByIdUser(storedUser?.user?.id)
-      .then((res) => {
-        setAddress(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      readAllByIdUser(storedUser?.user?.id)
+        .then((res) => {
+          setAddress(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, [isModalVisibleAddress]);
 
   return (

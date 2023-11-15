@@ -44,7 +44,7 @@ import {
   ShopOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../Page_Comeponet/header/index";
 import moment from "moment";
 import EditAccount from "./edit";
@@ -57,15 +57,23 @@ export const AccountList = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const [roles, setRoles] = useState([]);
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
   useEffect(() => {
-    listRoles()
-      .then((res) => {
-        setRoles(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      listRoles()
+        .then((res) => {
+          setRoles(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, []);
 
   const moreMenu = (accounts) => (

@@ -5,12 +5,13 @@ import "../../../css/form.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import {
-    useHistory,
-    useParams,
-  } from "react-router-dom/cjs/react-router-dom.min";
+  useHistory,
+  useParams,
+} from "react-router-dom/cjs/react-router-dom.min";
+import { notification } from "antd";
 
 const DisplayScreenCreateOrUpdate = () => {
-    const [ScreenItems, setScreenItem] = useState({});
+  const [ScreenItems, setScreenItem] = useState({});
 
   const { id } = useParams();
 
@@ -19,17 +20,25 @@ const DisplayScreenCreateOrUpdate = () => {
   );
 
   const history = useHistory();
+  const storedUser = JSON.parse(localStorage.getItem("account"));
 
   useEffect(() => {
-    if (id !== "new") {
-      detail(id)
-        .then((response) => {
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
+    } else {
+      if (id !== "new") {
+        detail(id)
+          .then((response) => {
             setScreenItem(response.data);
-          console.log(ScreenItems);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+            console.log(ScreenItems);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
     }
   }, []);
 
@@ -50,7 +59,7 @@ const DisplayScreenCreateOrUpdate = () => {
     if (id !== "new") {
       update(id, items);
     } else {
-        create(items);
+      create(items);
     }
 
     console.log(items);
@@ -58,59 +67,57 @@ const DisplayScreenCreateOrUpdate = () => {
     history.push("/screen/display");
   }
 
-
-    return (
-      <div className="bodyform">
+  return (
+    <div className="bodyform">
       <div className="containerForm">
-          {title}
-          <form onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="input-data">
-                <Input
-                  type="text"
-                  required
-                  value={ScreenItems.code || ""}
-                  onChange={handleChange}
-                  id="code"
-                  name="code"
-                ></Input>
-                <div className="underline"></div>
-                <label htmlFor="">Code</label>
-              </div>
-              <br />
-              <div className="input-data">
-                <Input
-                  type="text"
-                  required
-                  value={ScreenItems.name || ""}
-                  onChange={handleChange}
-                  id="name"
-                  name="name"
-                ></Input>
-                <div className="underline"></div>
-                <label htmlFor="">Name</label>
-              </div>
+        {title}
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={ScreenItems.code || ""}
+                onChange={handleChange}
+                id="code"
+                name="code"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Code</label>
             </div>
-            <div className="form-row">
-              <div className="input-data textarea">
-                <div className="form-row submit-btn">
-                  <div className="input-data">
-                    <div className="inner"></div>
-                    <Input type="submit" value={"SUBMIT"}></Input>
-                  </div>
-
-                  <button class="btn btn-light">
-                    <a href="/screen/display">
-                        <FontAwesomeIcon icon={faTimesCircle} />
-                    </a>
-                  </button>
-                  
+            <br />
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={ScreenItems.name || ""}
+                onChange={handleChange}
+                id="name"
+                name="name"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Name</label>
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="input-data textarea">
+              <div className="form-row submit-btn">
+                <div className="input-data">
+                  <div className="inner"></div>
+                  <Input type="submit" value={"SUBMIT"}></Input>
                 </div>
+
+                <button class="btn btn-light">
+                  <a href="/screen/display">
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                  </a>
+                </button>
               </div>
             </div>
-          </form>
-        </div>
-        </div>
-      );
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 export default DisplayScreenCreateOrUpdate;
