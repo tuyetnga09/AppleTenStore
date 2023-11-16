@@ -24,6 +24,7 @@ import {
   Button,
   theme,
   Layout,
+  notification,
 } from "antd";
 import {
   SearchOutlined,
@@ -132,18 +133,25 @@ const StoreProducts = ({}) => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
-    const paramsString = queryString.stringify(filters);
-    returnDeleteAll(paramsString)
-      .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      const paramsString = queryString.stringify(filters);
+      returnDeleteAll(paramsString)
+        .then((response) => {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, [filters]);
 
   function handleChange(event) {

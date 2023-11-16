@@ -9,6 +9,7 @@ import {
 } from "react-router-dom/cjs/react-router-dom.min";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { notification } from "antd";
 
 const FormAddOrUpdate = () => {
   const [sizeItem, setSizeItem] = useState({});
@@ -20,17 +21,25 @@ const FormAddOrUpdate = () => {
   );
 
   const history = useHistory();
+  const storedUser = JSON.parse(localStorage.getItem("account"));
 
   useEffect(() => {
-    if (id !== "new") {
-      detail(id)
-        .then((response) => {
-          setSizeItem(response.data);
-          console.log(sizeItem);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
+    } else {
+      if (id !== "new") {
+        detail(id)
+          .then((response) => {
+            setSizeItem(response.data);
+            console.log(sizeItem);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
     }
   }, []);
 

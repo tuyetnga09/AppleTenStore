@@ -4,6 +4,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
+import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.*;
 import com.example.backend.repository.*;
@@ -12,6 +13,7 @@ import com.example.backend.untils.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -59,6 +61,9 @@ public class BillServiceImpl implements BillService {
     // CLIENT
     @Override
     public Bill createBillCustomerOnlineRequest(BillRequestOnline request) {
+        BigDecimal value1 = new BigDecimal(String.valueOf(request.getItemDiscount()));
+        BigDecimal value2 = new BigDecimal(String.valueOf(request.getItemDiscountFreeShip()));
+
         Customer customer = Customer.builder()
                 .fullName(request.getUserName())
                 .phoneNumber(request.getPhoneNumber())
@@ -102,7 +107,7 @@ public class BillServiceImpl implements BillService {
                 .address(request.getAddress() + '-' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
                 .moneyShip(request.getMoneyShip())
-                .itemDiscount(request.getItemDiscount())
+                .itemDiscount(value1.add(value2))
                 .totalMoney(request.getAfterPrice())
                 .dateCreate(LocalDate.now())
                 .typeBill(TypeBill.ONLINE)
@@ -148,10 +153,40 @@ public class BillServiceImpl implements BillService {
                 .typePayment(StatusPayment.THANH_TOAN).build();
         paymentsRepository.save(payments);
 
-        // thông tin voucher
-        Optional<Voucher> optionalVoucher = voucherRepository.findById(request.getIdVoucher());
-        if (optionalVoucher.isPresent()) {
-            Voucher voucher = optionalVoucher.get();
+//        // thông tin voucher
+//        Optional<Voucher> optionalVoucher = voucherRepository.findById(request.getIdVoucher());
+//        if (optionalVoucher.isPresent()) {
+//            Voucher voucher = optionalVoucher.get();
+//
+//            VoucherDetail voucherDetail = VoucherDetail.builder()
+//                    .voucher(voucher)
+//                    .bill(bill)
+//                    .beforePrice(request.getTotalMoney())
+//                    .afterPrice(request.getAfterPrice())
+//                    .discountPrice(request.getItemDiscount())
+//                    .build();
+//            voucherDetailRepository.save(voucherDetail);
+//        } else {
+//            return null;
+//        }
+//        // thông tin voucher freeship
+//        Optional<Voucher> optionalVoucherFreeShip = voucherRepository.findById(request.getIdVoucherFreeShip());
+//        if (optionalVoucherFreeShip.isPresent()) {
+//            Voucher voucher = optionalVoucherFreeShip.get();
+//
+//            VoucherDetail voucherDetail = VoucherDetail.builder()
+//                    .voucher(voucher)
+//                    .bill(bill)
+//                    .beforePrice(request.getTotalMoney())
+//                    .afterPrice(request.getAfterPrice())
+//                    .discountPrice(request.getItemDiscountFreeShip())
+//                    .build();
+//            voucherDetailRepository.save(voucherDetail);
+//        } else {
+//            return null;
+//        }
+        if(request.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
                     .voucher(voucher)
@@ -161,8 +196,30 @@ public class BillServiceImpl implements BillService {
                     .discountPrice(request.getItemDiscount())
                     .build();
             voucherDetailRepository.save(voucherDetail);
-        } else {
-            return null;
+        }
+        //lấy thoong tin voucher freeship
+        if(request.getIdVoucherFreeShip() != null){
+            Voucher voucher = voucherRepository.findById(request.getIdVoucherFreeShip()).get();
+
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforePrice(request.getTotalMoney())
+                    .afterPrice(request.getAfterPrice())
+                    .discountPrice(request.getItemDiscountFreeShip())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        }
+        //trừ số lượng voucher - voucher freeship
+        if(request.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+        }
+        if(request.getIdVoucherFreeShip() != null) {
+            Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
+            voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+            voucherRepository.save(voucherFreeShip);
         }
 
         return bill;
@@ -172,6 +229,9 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill createBillAccountOnlineRequest(BillRequestOnlineAccount request) {
         Optional<Account> accountOptional = acountRepository.findById(request.getAccount());
+        BigDecimal value1 = new BigDecimal(String.valueOf(request.getItemDiscount()));
+        BigDecimal value2 = new BigDecimal(String.valueOf(request.getItemDiscountFreeShip()));
+        BigDecimal value3 = new BigDecimal(String.valueOf(request.getPoint()));
 
         if (accountOptional.isPresent()) {
             Account account = accountOptional.get();
@@ -181,7 +241,7 @@ public class BillServiceImpl implements BillService {
                     .address(request.getAddress())
                     .userName(request.getUserName())
                     .moneyShip(request.getMoneyShip())
-                    .itemDiscount(request.getItemDiscount())
+                    .itemDiscount(value1.add(value2).add(value3))
                     .totalMoney(request.getAfterPrice())
                     .typeBill(TypeBill.ONLINE)
                     .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -215,16 +275,7 @@ public class BillServiceImpl implements BillService {
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
-            if(request.getIdVoucher().equals("")){
-                VoucherDetail voucherDetail = VoucherDetail.builder()
-                        .voucher(null)
-                        .bill(bill)
-                        .beforePrice(request.getTotalMoney())
-                        .afterPrice(request.getAfterPrice())
-                        .discountPrice(request.getItemDiscount())
-                        .build();
-                voucherDetailRepository.save(voucherDetail);
-            }else{
+            if(request.getIdVoucher() != null){
                 Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
                 VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -236,27 +287,68 @@ public class BillServiceImpl implements BillService {
                         .build();
                 voucherDetailRepository.save(voucherDetail);
             }
+            //lấy thoong tin voucher freeship
+            if(request.getIdVoucherFreeShip() != null){
+                Voucher voucher = voucherRepository.findById(request.getIdVoucherFreeShip()).get();
+
+                VoucherDetail voucherDetail = VoucherDetail.builder()
+                        .voucher(voucher)
+                        .bill(bill)
+                        .beforePrice(request.getTotalMoney())
+                        .afterPrice(request.getAfterPrice())
+                        .discountPrice(request.getItemDiscountFreeShip())
+                        .build();
+                voucherDetailRepository.save(voucherDetail);
+            }
 
             Cart cart = cartRepository.getCartByAccount_Id(request.getAccount());
             for (BillAskClient x : request.getBillDetail()) {
                 List<CartDetail> cartDetail = cartDetailRepository.getCartDetailByCart_IdAndSku_Id(cart.getId(), x.getSku());
                 cartDetail.forEach(detail -> cartDetailRepository.deleteById(detail.getId()));
             }
+
+            //trừ só lương voucher
+            if(request.getIdVoucher() != null){
+                Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
+                voucher.setQuantity(voucher.getQuantity() - 1);
+                voucherRepository.save(voucher);
+            }
+            if(request.getIdVoucherFreeShip() != null) {
+                Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
+                voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+                voucherRepository.save(voucherFreeShip);
+            }
+
+            //tính điểm
+            if(request.getIdUser() != null){
+                User user = userRepository.getOne(request.getIdUser());
+                user.setPoints(user.getPoints() - request.getPoint());
+                userRepository.save(user);
+                if(user.getPointsHistory() == null){
+                    user.setPointsHistory(request.getPointHistory());
+                    userRepository.save(user);
+                }else{
+                    user.setPointsHistory(user.getPointsHistory() + request.getPointHistory());
+                    userRepository.save(user);
+                }
+            }
+
             return bill;
         }
-
         return null;
     }
 
     @Override
     public String createBillCustomerOfflineRequest(BillRequestOffline request) {
+        BigDecimal value1 = new BigDecimal(String.valueOf(request.getItemDiscount()));
+        BigDecimal value2 = new BigDecimal(String.valueOf(request.getItemDiscountFreeShip()));
         // thông tin hoá đơn
         Bill bill = Bill.builder()
                 .code(new Random().randomToString("Bill"))
                 .phoneNumber(request.getPhoneNumber())
                 .address(request.getAddress() + ',' + request.getWards() + '-' + request.getDistrict() + '-' + request.getProvince())
                 .userName(request.getUserName())
-                .itemDiscount(request.getItemDiscount())
+                .itemDiscount(value1.add(value2))
                 .totalMoney(request.getTotalMoney())
                 .typeBill(TypeBill.OFFLINE)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
@@ -304,6 +396,33 @@ public class BillServiceImpl implements BillService {
         } else {
             return "Lỗi";
         }
+        // thông tin voucherfreeship
+        Optional<Voucher> optionalVoucherFreeShip = voucherRepository.findById(request.getIdVoucherFreeShip());
+        if (optionalVoucherFreeShip.isPresent()) {
+            Voucher voucher = optionalVoucher.get();
+
+            VoucherDetail voucherDetail = VoucherDetail.builder()
+                    .voucher(voucher)
+                    .bill(bill)
+                    .beforePrice(request.getTotalMoney())
+                    .afterPrice(request.getAfterPrice())
+                    .discountPrice(request.getItemDiscountFreeShip())
+                    .build();
+            voucherDetailRepository.save(voucherDetail);
+        } else {
+            return "Lỗi";
+        }
+        //trừ số lượng
+        if(request.getIdVoucher() != null){
+            Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
+            voucher.setQuantity(voucher.getQuantity() - 1);
+            voucherRepository.save(voucher);
+        }
+        if(request.getIdVoucherFreeShip() != null) {
+            Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
+            voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
+            voucherRepository.save(voucherFreeShip);
+        }
 
         return "Finished";
     }
@@ -335,15 +454,36 @@ public class BillServiceImpl implements BillService {
     @Override
     public void updateStatusBill(Integer idAccount, int id) {
         Bill bill = billRepository.findById(id).get();
+        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
+            bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+        }
+        if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)){
+            bill.setStatusBill(StatusBill.VAN_CHUYEN);
+        }
+        if (bill.getStatusBill().equals(StatusBill.CHO_XAC_NHAN)){
+            bill.setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+        }
         Account account = acountRepository.findById(idAccount).get();
-        StatusBill statusBill = StatusBill.CHO_VAN_CHUYEN;
-        bill.setStatusBill(statusBill);
         bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
         bill.setDateUpdate(LocalDate.now());
         imeiRepository.updateStatusImeiWhereIdBill(id);
         imeiDaBanRepository.updateStatusImeiWhereIdBill(id);
         billDetailRepository.updateStatusBillDetailWhereIdBill(id);
         billRepository.save(bill);
+        if (bill.getTypeBill().equals(TypeBill.ONLINE) && bill.getStatusBill().equals(StatusBill.DA_THANH_TOAN)){
+        Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
+        User user = userRepository.findById(account1.getUser().getId()).get();
+        if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == 0){
+            user.setPoints(user.getPoints() + 100);
+        } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == 0){
+            user.setPoints(user.getPoints() + 200);
+        } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == 0){
+            user.setPoints(user.getPoints() + 300);
+        } else {
+            user.setPoints(user.getPoints() + 500);
+        }
+        userRepository.save(user);
+        }
 //        this.billRepository.updateBillStatus(id);
     }
 
@@ -387,6 +527,18 @@ public class BillServiceImpl implements BillService {
         this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
         this.billRepository.deleteBill(id);
+    }
+
+    @Override
+    public void updateAllChoThanhToan(String personUpdate) {
+         billRepository.updateAllChoVanChuyen(personUpdate);
+    }
+
+    //lấy ra list bill_detail của 1 bill theo id_bill
+    @Override
+    public List<BillDetailOffLineIon> getAllBillChoXacNhan() {
+        List<BillDetailOffLineIon> billDetailsList = billRepository.getAllBillChoXacNhan();
+        return billDetailsList;
     }
 
 }

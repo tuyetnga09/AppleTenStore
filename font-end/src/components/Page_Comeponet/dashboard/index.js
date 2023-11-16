@@ -1,4 +1,14 @@
-import { Row, Col, Card, Typography, Layout, Menu, Button, theme } from "antd";
+import {
+  Row,
+  Col,
+  Card,
+  Typography,
+  Layout,
+  Menu,
+  Button,
+  theme,
+  notification,
+} from "antd";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import DailyRevenue from "../dashboard/dailyRevenue/index";
@@ -23,7 +33,8 @@ import {
   UnorderedListOutlined,
   FileDoneOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useEffect } from "react";
 const { SubMenu } = Menu;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -34,6 +45,16 @@ const DashboardPage = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
+  useEffect(() => {
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
+    }
+  });
 
   return (
     <>

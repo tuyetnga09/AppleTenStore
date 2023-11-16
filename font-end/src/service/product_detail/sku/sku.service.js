@@ -108,3 +108,17 @@ export const deleteAllImei = (idSku) => {
 export const returnAllImei = (idSku) => {
   return httpClient.put(`/admin/product-detail/return-all-imei?idSku=${idSku}`);
 };
+
+//seach imei (codeImei , status)
+export const seachImeis = (codeImei, status, idSku) => {
+  return httpClient.get(
+    `/admin/product-detail/seach-imeis?codeImei=${codeImei}&status=${status}&idSku=${idSku}`
+  );
+};
+
+//seach imei thất lạc(tìm kiêm trên all imei)
+export const seachImeiThatLac = (codeImei) => {
+  return httpClient.get(
+    `/admin/product-detail/seach-imei-that-lac?codeImei=${codeImei}`
+  );
+};

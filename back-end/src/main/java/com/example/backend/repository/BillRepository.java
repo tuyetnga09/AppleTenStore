@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import jakarta.transaction.Transactional;
@@ -155,7 +156,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     List<Bill> searchBillChoThanhToan(Integer id, String codeBill);
 
     @Query(value = "SELECT * FROM bill\n" +
-            "WHERE status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURRENT_DATE or date_update = CURRENT_DATE ORDER BY id DESC", nativeQuery = true)
+            "WHERE status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURRENT_DATE ORDER BY id DESC", nativeQuery = true)
     List<Bill> billInDate();
 
     @Query(value = "select * from bill where status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURDATE() and id_account = ?1 and code like %?2%  ORDER BY id DESC", nativeQuery = true)
@@ -163,4 +164,23 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
     @Query(value = "SELECT * FROM bill WHERE code like ?1", nativeQuery = true)
     List<Bill> getThongTinThanhToan(String codeBill);
+
+    @Modifying
+    @Query(value = "update bill\n" +
+            "set status_bill = 'CHO_VAN_CHUYEN', date_update = CURRENT_DATE(), person_update = ?1\n" +
+            "where status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
+    void updateAllChoVanChuyen(String personUpdate);
+
+    @Query(value = "select b.id as 'id', b.quantity as 'quantity', b.price as 'price', b.status_bill as 'statusBillDetail',\n" +
+            "             b.id_bill as 'bill', b2.code as 'CodeBill',\n" +
+            "             b.person_create as  'personCreate', b.person_update as 'personUpdate', b.date_create as 'dateCreate',\n" +
+            "             b.date_update as 'dateUpdate',\n" +
+            "             s.id as 'idSKU', s.capacity as 'skuCapacity', s.color as 'skuColor' , s.price as 'skuPrice' ,\n" +
+            "             p.id as 'idProduct', p.name as 'nameProduct', b.price * b.quantity  as 'totalManyOneBillDetail',\n" +
+            "             count(i.code_imei) as 'soLuongImeiDaChon'\n" +
+            "             from bill_detail b LEFT JOIN imei_da_ban i on b.id = i.id_bill_detail join sku s on b.id_sku = s.id\n" +
+            "             join product p on s.product_id = p.id join bill b2 on b2.id = b.id_bill where b2.type = 'ONLINE' and b2.status_bill = 'CHO_XAC_NHAN'\n" +
+            "             group by id, quantity, price, statusBillDetail, bill, CodeBill, personCreate, personUpdate, dateCreate,\n" +
+            "             dateUpdate, idSKU, skuCapacity, skuColor, skuPrice, idProduct, nameProduct, totalManyOneBillDetail", nativeQuery = true)
+    List<BillDetailOffLineIon> getAllBillChoXacNhan();
 }

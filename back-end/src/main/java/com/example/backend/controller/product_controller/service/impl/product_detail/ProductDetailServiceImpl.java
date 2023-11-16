@@ -3,11 +3,18 @@ package com.example.backend.controller.product_controller.service.impl.product_d
 import com.example.backend.controller.product_controller.model.product_detail.ion.ProductDetailIonAdmin;
 import com.example.backend.controller.product_controller.model.product_detail.ion.SkuIonAdmin;
 import com.example.backend.controller.product_controller.model.request.ImeiCreateRequest;
+import com.example.backend.controller.product_controller.model.respon.ImeiThatLac;
 import com.example.backend.controller.product_controller.service.IProductDetailService;
+import com.example.backend.entity.Bill;
+import com.example.backend.entity.BillDetails;
 import com.example.backend.entity.Color;
 import com.example.backend.entity.Imei;
+import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
+import com.example.backend.repository.BillDetailRepository;
+import com.example.backend.repository.BillRepository;
+import com.example.backend.repository.ImeiDaBanRepository;
 import com.example.backend.repository.ImeiRepository;
 import com.example.backend.repository.ProductRepository;
 import com.example.backend.repository.SKURepositoty;
@@ -27,6 +34,15 @@ public class ProductDetailServiceImpl implements IProductDetailService {
 
     @Autowired
     private ImeiRepository imeiRepository;
+
+    @Autowired
+    private ImeiDaBanRepository imeiDaBanRepository;
+
+    @Autowired
+    private BillRepository billRepository;
+
+    @Autowired
+    private BillDetailRepository billDetailRepository;
 
     @Override
     public List<ProductDetailIonAdmin> getAllProduct() {
@@ -186,9 +202,9 @@ public class ProductDetailServiceImpl implements IProductDetailService {
 
     //check gia sku đã tồn tại chưa
     @Override
-    public Boolean checkGiaSku(Long idSku){
+    public Boolean checkGiaSku(Long idSku) {
         SKU sku = skuRepositoty.findById(idSku).get();
-        if (sku.getPrice() == null){
+        if (sku.getPrice() == null) {
             return false;
         }
         return true;
@@ -203,12 +219,12 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             Imei imeiCreate = new Imei();
             imeiCreate.setCodeImei(imeiCreateRequest.getCodeImei());
             SKU sku = skuRepositoty.findById(imeiCreateRequest.getIdSku()).get();
-            if (sku.getPrice() == null){
+            if (sku.getPrice() == null) {
                 sku.setPrice(imeiCreateRequest.getPrice());
                 sku.setQuantity(1);
                 skuRepositoty.save(sku);
-            }else {
-                sku.setQuantity(sku.getQuantity() +1);
+            } else {
+                sku.setQuantity(sku.getQuantity() + 1);
                 skuRepositoty.save(sku);
             }
 
@@ -235,25 +251,25 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     public Boolean checkBoxListImei(List<String> codeImeis, Integer status) {
         List<Imei> imeiList = new ArrayList<>();
         //kiểm tra list imei có giá trị không
-        if (codeImeis.size()==0 || codeImeis == null){
+        if (codeImeis.size() == 0 || codeImeis == null) {
             return false;
-        }else {
-            for (String codeImei: codeImeis) {
-                Imei imei= imeiRepository.findByCodeImei(codeImei);
+        } else {
+            for (String codeImei : codeImeis) {
+                Imei imei = imeiRepository.findByCodeImei(codeImei);
                 //kiểm tra đối tượng được tìm kiếm có hay không
-                if (imei != null){
+                if (imei != null) {
                     imeiList.add(imei);
-                }else {
+                } else {
                     return false;
                 }
             }
         }
         //nếu list mà rỗng thì list imei tuyền vào có vấn đề
-        if (imeiList.size() ==0){
+        if (imeiList.size() == 0) {
             return false;
-        }else {
+        } else {
             //nếu ok rồi thì update lại tất cả imei trong list là status = 1 - status =0 (hoat dong)
-            for (Imei imei: imeiList) {
+            for (Imei imei : imeiList) {
                 //cập nhâtj imei (updateStatusImei(status, idImei))
                 imeiRepository.updateStatusImei(status, imei.getId()); // xoá
             }
@@ -265,11 +281,78 @@ public class ProductDetailServiceImpl implements IProductDetailService {
     @Override
     public Boolean updateAllImei(Integer statusUpdate, Long idSku, Integer status) {
         Boolean isCkeck = skuRepositoty.existsById(idSku);
-        if (isCkeck){
-             imeiRepository.updateImeiStatusWherIdSku(statusUpdate, idSku, status);
+        if (isCkeck) {
+            imeiRepository.updateImeiStatusWherIdSku(statusUpdate, idSku, status);
             return true;
         }
         return false;
     }
 
+    //seach imei (codeImei , status)
+    @Override
+    public List<Imei> seachImeis(String codeImei, Integer status, Long idSku) {
+        List<Imei> imeis = new ArrayList<>();
+
+        if (status == 99 || status.equals("")) {
+            imeis = imeiRepository.seachAllImeis(codeImei.trim(), idSku);
+        } else {
+            imeis = imeiRepository.seachImeisWhereStatus(codeImei.trim(), status, idSku);
+        }
+        return imeis;
+    }
+
+    //tìm kiếm imei thất lạc
+    @Override
+    public List<ImeiThatLac> seachImeisThatLac(String codeImei) {
+        // lấy ra đối tượng imei theo codeImei xem có trong DB không
+        Imei imeiFind = imeiRepository.findByCodeImei(codeImei.trim());
+        List<ImeiThatLac> imeiThatLacs = new ArrayList<>();
+        if (imeiFind == null) {
+            return imeiThatLacs;
+        }
+        if (imeiFind.getStatus() == 0 || imeiFind.getStatus() == 1) {
+            ImeiThatLac imeiThatLac = new ImeiThatLac();
+            imeiThatLac.setCodeBill("-");
+            imeiThatLac.setTypeBill("-");
+            imeiThatLac.setStatusImei(imeiFind.getStatus());
+            imeiThatLac.setNameProduct(imeiFind.getIdProduct().getName());
+            imeiThatLac.setCapacity(imeiFind.getIdSku().getCapacity());
+            imeiThatLac.setColor(imeiFind.getIdSku().getColor());
+            imeiThatLac.setGia(imeiFind.getIdSku().getPrice());
+
+            imeiThatLacs.add(imeiThatLac);
+            return imeiThatLacs;
+        }
+
+        if (imeiFind.getStatus() == 2 || imeiFind.getStatus() == 3) {
+            ImeiThatLac imeiThatLac = new ImeiThatLac();
+            imeiThatLac.setStatusImei(imeiFind.getStatus());
+            imeiThatLac.setNameProduct(imeiFind.getIdProduct().getName());
+            imeiThatLac.setCapacity(imeiFind.getIdSku().getCapacity());
+            imeiThatLac.setColor(imeiFind.getIdSku().getColor());
+            imeiThatLac.setGia(imeiFind.getIdSku().getPrice());
+
+            ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(codeImei.trim());
+//            BillDetails billDetails = billDetailRepository.findById(imeiDaBan.getBillDetail().getId()).get();
+            imeiThatLac.setCodeBill(imeiDaBan.getBillDetail().getBill().getCode());
+            imeiThatLac.setTypeBill(String.valueOf(imeiDaBan.getBillDetail().getBill().getTypeBill()));
+
+            imeiThatLacs.add(imeiThatLac);
+            return imeiThatLacs;
+        }
+
+        return imeiThatLacs;
+    }
+
+    //update imei
+    @Override
+    public Imei update(Integer idImei, String codeImei) {
+        Boolean idCheck = imeiRepository.existsById(idImei);
+        if (idCheck){
+            Imei imei = imeiRepository.findById(idImei).get();
+            imei.setCodeImei(codeImei);
+            return  imeiRepository.save(imei);
+        }
+        return null;
+    }
 }

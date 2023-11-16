@@ -44,7 +44,7 @@ import {
   ShopOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../Page_Comeponet/header/index";
 import moment from "moment";
 import EditAccount from "./edit";
@@ -57,15 +57,23 @@ export const AccountList = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const [roles, setRoles] = useState([]);
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
   useEffect(() => {
-    listRoles()
-      .then((res) => {
-        setRoles(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      listRoles()
+        .then((res) => {
+          setRoles(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, []);
 
   const moreMenu = (accounts) => (
@@ -165,7 +173,7 @@ export const AccountList = () => {
                       ? expandedRowRender
                       : undefined,
                   }}
-                  rowKey="1"
+                  rowKey={(record, index) => index}
                   pagination={{
                     pageSize: 5,
                     showSizeChanger: false,
@@ -184,8 +192,10 @@ export const AccountList = () => {
                             ? "Admin"
                             : record === "CUSTOMER"
                             ? "Khách hàng"
-                            : record === "NHAN_VIEN"
-                            ? "Nhân viên"
+                            : record === "NHAN_VIEN_BAN_HANG"
+                            ? "Nhân viên bán hàng"
+                            : record === "NHAN_VIEN_QUAN_LY"
+                            ? "Nhân viên quản lý"
                             : ""}
                         </Form.Item>
                       );
@@ -309,9 +319,9 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("NHAN_VIEN", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_BAN_HANG", record1.id)}
           >
-            Nhân viên
+            Nhân viên bán hàng
           </Menu.Item>
           <Menu.Item
             key="edit"
@@ -330,12 +340,12 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("CUSTOMER", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_QUAN_LY", record1.id)}
           >
-            Khách hàng
+            Nhân viên quản lý
           </Menu.Item>
         </Menu>
-      ) : record === "NHAN_VIEN" ? (
+      ) : record === "NHAN_VIEN_BAN_HANG" ? (
         <Menu
           mode="vertical"
           onClick={({ domEvent }) => domEvent.stopPropagation()}
@@ -378,12 +388,12 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("CUSTOMER", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_QUAN_LY", record1.id)}
           >
-            Khách hàng
+            Nhân viên quản lý
           </Menu.Item>
         </Menu>
-      ) : record === "CUSTOMER" ? (
+      ) : record === "NHAN_VIEN_QUAN_LY" ? (
         <Menu
           mode="vertical"
           onClick={({ domEvent }) => domEvent.stopPropagation()}
@@ -426,9 +436,9 @@ const UserAccountTable = ({ record }) => {
                 }}
               />
             }
-            onClick={() => editRole("NHAN_VIEN", record1.id)}
+            onClick={() => editRole("NHAN_VIEN_BAN_HANG", record1.id)}
           >
-            Nhân viên
+            Nhân viên bán hàng
           </Menu.Item>
         </Menu>
       ) : (

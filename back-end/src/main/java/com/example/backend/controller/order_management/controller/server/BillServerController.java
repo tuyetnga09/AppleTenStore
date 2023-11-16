@@ -1,9 +1,12 @@
 package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
+import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -31,6 +34,16 @@ public class BillServerController {
         return billService.searchWithDate(key, status, dateStart, dateEnd);
     }
 
+    @PutMapping("/updateAll/{personUpdate}")
+    public void updateAllCVC(@PathVariable("personUpdate") String personUpdate){
+         billService.updateAllChoThanhToan(personUpdate);
+    }
+
+    @GetMapping("/getAll-bill-detail-CXN")
+    public ResponseEntity<List<BillDetailOffLineIon>> getAllBillChoXacNhan() {
+        List<BillDetailOffLineIon> billDetailsList = billService.getAllBillChoXacNhan();
+        return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
+    }
 //    @RestController
 //    @CrossOrigin("*")
 //    @RequestMapping("/admin/billDetail")

@@ -15,9 +15,9 @@ const SignUpAdmin = () => {
 
   const [isChecked, setIsChecked] = useState([true]);
 
-  // const [isChecked2, setIsChecked2] = useState([true]);
+  const [isChecked2, setIsChecked2] = useState([true]);
 
-  // const [role, setRole] = useState("ADMIN");
+  const [role, setRole] = useState("NHAN_VIEN_BAN_HANG");
 
   const [data, setData] = useState({
     user: {
@@ -153,13 +153,13 @@ const SignUpAdmin = () => {
     console.log(data);
   };
 
-  // const handleRole = (event) => {
-  //   const target = event.target;
-  //   const value = target.value;
-  //   setRole(value);
-  //   setIsChecked2(!isChecked2);
-  //   console.log(data);
-  // };
+  const handleRole = (event) => {
+    const target = event.target;
+    const value = target.value;
+    setRole(value);
+    setIsChecked2(!isChecked2);
+    console.log(data);
+  };
 
   const handleSubmit = (event) => {
     setLoading(true);
@@ -167,7 +167,7 @@ const SignUpAdmin = () => {
 
     const items = { ...data };
 
-    add(items)
+    add(items, role)
       .then((res) => {
         if (res !== null) {
           notification.success({
@@ -247,7 +247,7 @@ const SignUpAdmin = () => {
       )}
       <div class="bgr">
         <div class="login-box">
-          <h2>Đăng ký</h2>
+          <h2>Đăng ký nhân viên</h2>
           <form onSubmit={handleSubmit}>
             <label style={{ color: "#03e9f4", fontSize: "12px" }}>
               Ảnh đại diện
@@ -491,7 +491,7 @@ const SignUpAdmin = () => {
                 {/* </div> */}
               </div>
             </div>
-            {/* <div className="row">
+            <div className="row">
               <div className="col-6">
                 <label style={{ color: "#03e9f4", fontSize: "12px" }}>
                   Chức vụ
@@ -502,7 +502,7 @@ const SignUpAdmin = () => {
                     type="radio"
                     name="roles"
                     id="flexRadioDefault3"
-                    value={"ADMIN"}
+                    value={"NHAN_VIEN_BAN_HANG"}
                     onChange={handleRole}
                     checked={isChecked2}
                   />
@@ -515,14 +515,14 @@ const SignUpAdmin = () => {
                       marginRight: "50px",
                     }}
                   >
-                    Admin
+                    Nhân viên bán hàng
                   </label>
                   <input
                     class="form-check-input"
                     type="radio"
                     name="roles"
                     id="flexRadioDefault4"
-                    value={"NHAN_VIEN"}
+                    value={"NHAN_VIEN_QUAN_LY"}
                     onChange={handleRole}
                   />
                   <label
@@ -530,11 +530,11 @@ const SignUpAdmin = () => {
                     for="flexRadioDefault4"
                     style={{ color: "#fff", fontSize: "12px" }}
                   >
-                    Nhân viên
+                    Nhân viên quản lý
                   </label>
                 </div>
               </div>
-            </div> */}
+            </div>
             <button type="submit">
               <span></span>
               <span></span>

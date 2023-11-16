@@ -1,35 +1,49 @@
 import { useEffect, useState } from "react";
-import { createCapacity, update, detail } from "../../../service/capacity.service";
+import {
+  createCapacity,
+  update,
+  detail,
+} from "../../../service/capacity.service";
 import { Input } from "reactstrap";
 import "../../../css/form.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import {
-    useHistory,
-    useParams,
-  } from "react-router-dom/cjs/react-router-dom.min";
+  useHistory,
+  useParams,
+} from "react-router-dom/cjs/react-router-dom.min";
+import { notification } from "antd";
 
 const SaveOrUpdateCapacity = () => {
-    const [CapacityItems, setCapacityItem] = useState({});
+  const [CapacityItems, setCapacityItem] = useState({});
 
   const { id } = useParams();
 
   const title = (
-    <div className="text">{id !== "new" ? "Edit Capacity" : "Add Capacity"}</div>
+    <div className="text">
+      {id !== "new" ? "Edit Capacity" : "Add Capacity"}
+    </div>
   );
 
   const history = useHistory();
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
-    if (id !== "new") {
-      detail(id)
-        .then((response) => {
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
+    } else {
+      if (id !== "new") {
+        detail(id)
+          .then((response) => {
             setCapacityItem(response.data);
-          console.log(CapacityItems);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+            console.log(CapacityItems);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
     }
   }, []);
 
@@ -50,7 +64,7 @@ const SaveOrUpdateCapacity = () => {
     if (id !== "new") {
       update(id, items);
     } else {
-        createCapacity(items);
+      createCapacity(items);
     }
 
     console.log(items);
@@ -58,57 +72,56 @@ const SaveOrUpdateCapacity = () => {
     history.push("/capacity/display");
   }
 
-
-    return (
-      <div className="bodyform">
+  return (
+    <div className="bodyform">
       <div className="containerForm">
-          {title}
-          <form onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div className="input-data">
-                <Input
-                  type="text"
-                  required
-                  value={CapacityItems.code || ""}
-                  onChange={handleChange}
-                  id="code"
-                  name="code"
-                ></Input>
-                <div className="underline"></div>
-                <label htmlFor="">Code</label>
-              </div>
-              <br />
-              <div className="input-data">
-                <Input
-                  type="text"
-                  required
-                  value={CapacityItems.name || ""}
-                  onChange={handleChange}
-                  id="name"
-                  name="name"
-                ></Input>
-                <div className="underline"></div>
-                <label htmlFor="">Name</label>
-              </div>
+        {title}
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={CapacityItems.code || ""}
+                onChange={handleChange}
+                id="code"
+                name="code"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Code</label>
             </div>
-            <div className="form-row">
-              <div className="input-data textarea">
-                <div className="form-row submit-btn">
-                  <div className="input-data">
-                    <div className="inner"></div>
-                    <Input type="submit" value={"SUBMIT"}></Input>
-                  </div>
-                  <button class="btn btn-light">
-                    <a href="/capacity/display">
-                        <FontAwesomeIcon icon={faTimesCircle} />
-                    </a>
-                  </button>
+            <br />
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={CapacityItems.name || ""}
+                onChange={handleChange}
+                id="name"
+                name="name"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Name</label>
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="input-data textarea">
+              <div className="form-row submit-btn">
+                <div className="input-data">
+                  <div className="inner"></div>
+                  <Input type="submit" value={"SUBMIT"}></Input>
                 </div>
+                <button class="btn btn-light">
+                  <a href="/capacity/display">
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                  </a>
+                </button>
               </div>
             </div>
-          </form>
-        </div>
-        </div>
-      );
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 export default SaveOrUpdateCapacity;

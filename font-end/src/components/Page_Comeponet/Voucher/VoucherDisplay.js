@@ -104,7 +104,7 @@ const VoucherDisplay = ({}) => {
       // Thêm các giá trị khác nếu cần
     ],
   };
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
     // readAll()
     //   .then((response) => {
@@ -115,29 +115,36 @@ const VoucherDisplay = ({}) => {
     //   .catch((error) => {
     //     console.log(`${error}`);
     //   });
-    const paramsString = queryString.stringify(filtersNoDate);
-    const paramsString2 = queryString.stringify(filtersWithDate);
-    const dateFilter = document.getElementById("dateFilter");
-    if (dateFilter.value == "") {
-      searchNoDate(paramsString)
-        .then((response) => {
-          // console.log(response.data);
-          setVoucher(response.data);
-          // setEditedVoucher(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
     } else {
-      searchWithDate(paramsString2)
-        .then((response) => {
-          // console.log(response.data);
-          setVoucher(response.data);
-          // setEditedVoucher(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      const paramsString = queryString.stringify(filtersNoDate);
+      const paramsString2 = queryString.stringify(filtersWithDate);
+      const dateFilter = document.getElementById("dateFilter");
+      if (dateFilter.value == "") {
+        searchNoDate(paramsString)
+          .then((response) => {
+            // console.log(response.data);
+            setVoucher(response.data);
+            // setEditedVoucher(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      } else {
+        searchWithDate(paramsString2)
+          .then((response) => {
+            // console.log(response.data);
+            setVoucher(response.data);
+            // setEditedVoucher(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
     }
   }, [filtersNoDate, filtersWithDate]);
 
