@@ -2,6 +2,7 @@ package com.example.backend.entity.dto;
 
 import com.example.backend.entity.*;
 import com.example.backend.repository.*;
+import com.example.backend.untils.Roles;
 import com.example.backend.untils.Status;
 import com.example.backend.untils.StatusPayment;
 import com.example.backend.untils.TypePayment;
@@ -14,7 +15,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 
 @SpringBootApplication
 @EnableJpaRepositories(
@@ -126,11 +126,11 @@ public class DBContext implements CommandLineRunner {
         addUser("Van Hieu", LocalDate.of(2003, 9, 8), "0355933499", "vanhieu673@gmail.com", true, 50000, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Account
-        addAccount("NV1","trunghieunguyen673@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("NV2","congminh673@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("NV3","hongphong673@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("NV4","ngaptt1409@gmail.com", "123456", Status.DANG_SU_DUNG);
-        addAccount("NV5","hoanghieu673@gmail.com", "123456", Status.DANG_SU_DUNG);
+        addAccount("NV1","trunghieunguyen673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV2","congminh673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV3","hongphong673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV4","ngaptt1409@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV5","hoanghieu673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Product
         addProduct("PR1", "Iphone 11 Pro Max", "Khung viền thép", 0, new BigDecimal(11000000));
@@ -223,13 +223,14 @@ public class DBContext implements CommandLineRunner {
             userRepository.save(user);
         }
     }
-    private void addAccount(String code, String email, String password, Status status) {
+    private void addAccount(String code, String email, String password, Roles admin, Status status) {
         if (accountRepository.findByEmail(email) == null) {
             Account account = Account.builder()
                     .code(code)
                     .email(email)
                     .password(password)
                     .status(status)
+                    .roles(admin)
                     .build();
             accountRepository.save(account);
         }

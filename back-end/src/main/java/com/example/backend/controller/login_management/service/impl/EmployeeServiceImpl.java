@@ -92,7 +92,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
         String subject = "Xin chào, bạn đã đăng ký thành công ";
-        emailService.sendEmailPasword(account1.getEmail(), subject, new String(Base64.getDecoder().decode(account1.getPassword())));
+//        emailService.sendEmailPasword(account1.getEmail(), subject, new String(Base64.getDecoder().decode(account1.getPassword())));
 
         return user;
     }
