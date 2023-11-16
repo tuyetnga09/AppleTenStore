@@ -383,6 +383,18 @@ const OderDisplay = ({}) => {
                     <Text style={{fontSize: "24px", color: "blue"}} strong>
                         ODERS
                     </Text>
+                    <div
+                        className="d-grid gap-2 d-md-flex justify-content-md-end"
+                        style={{marginTop: "10px"}}
+                    >
+                        <button
+                            className="btn btn-success"
+                            type="button"
+                            onClick={() => handUpdateTrangThai()}
+                        >
+                            ACCEPT ALL
+                        </button>
+                    </div>
                     <Row gutter={[16, 16]}>
                         <Col
                             xl={6}
