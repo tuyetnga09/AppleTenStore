@@ -532,4 +532,9 @@ public class BillServiceImpl implements BillService {
         return billDetailsList;
     }
 
+    @Override
+    public Integer getCountBillCXN() {
+        return billRepository.getCountBillCXN();
+    }
+
 }

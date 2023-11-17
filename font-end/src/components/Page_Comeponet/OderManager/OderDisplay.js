@@ -15,6 +15,8 @@ import {
   ShopOutlined,
   UserOutlined,
   WarningFilled,
+  BellOutlined,
+  SettingOutlined
 } from "@ant-design/icons";
 import {
   Badge,
@@ -35,6 +37,8 @@ import {
   Table,
   theme,
   Typography,
+  Space,
+  Switch,
 } from "antd";
 import { DateField, List, NumberField } from "@refinedev/antd";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -45,6 +49,7 @@ import {
   updateStatusBill,
   updateAllCVC,
   getAllBillCXN,
+  getCountBillChoXacNhan,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -68,6 +73,7 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
 import { Toast } from "primereact/toast";
 import { findBillDetails } from "../../../service/BillDetail/billDetail.service";
+import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
@@ -90,6 +96,9 @@ const OderDisplay = ({}) => {
   const breakpoint = Grid.useBreakpoint();
   const [load, setLoad] = useState(true);
   const [billCXN, setBillCXN] = useState([]);
+  const [pendingBills, setPendingBills] = useState(0);
+  const [playSound, setPlaySound] = useState(true);
+  const [show, setShow] = useState(true);
 
   const orderSelectProps = {
     options: [
@@ -128,6 +137,10 @@ const OderDisplay = ({}) => {
     dateStart: "",
     dateEnd: "",
   });
+
+  const toggleSound = () => {
+    setPlaySound(!playSound);
+  };
 
   useEffect(() => {
     if (
@@ -181,8 +194,56 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
+      //thông báo khi có hóa đơn mới
+        let lastPendingBills = null;
+        let timeout = null;
+        let originalTitle = document.title;
+
+        const interval = setInterval(async () => {
+          getCountBillChoXacNhan()
+            .then((response) => {
+              const newPendingBills = response.data;
+        
+              if (lastPendingBills !== null && newPendingBills > lastPendingBills && playSound) {
+                // Nếu có hóa đơn mới, thì phát âm thanh thông báo
+                const audio = new Audio(AudioTT);
+                audio.play();
+        
+                // Cập nhật số hóa đơn chờ xác nhận
+                setPendingBills(newPendingBills);
+        
+                // Hiển thị thông báo trong tiêu đề
+                document.title = "🟢 Có đơn hàng mới!";
+
+                // Clear timeout cũ (nếu có)
+                if (timeout) {
+                  clearTimeout(timeout);
+                }
+
+                // Sau 5 giây, tiêu đề sẽ trở về ban đầu
+                timeout = setTimeout(() => {
+                  document.title = originalTitle;
+                }, 5000);
+              } else {
+                // Cập nhật số hóa đơn chờ xác nhận
+                setPendingBills(newPendingBills);
+              }
+        
+              // Cập nhật giá trị cuối cùng
+              lastPendingBills = newPendingBills;
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        }, 5000);
+        
+        return () => {
+          clearInterval(interval);
+          clearTimeout(timeout);
+        };
+        
     }
-  }, [filtersNoDate, filtersWithDate, load]);
+  }, [filtersNoDate, filtersWithDate, load,playSound]);
 
   function handleChangeSearch(event) {
     const target = event.target;
@@ -443,6 +504,17 @@ const OderDisplay = ({}) => {
     );
   };
 
+  const menu = (
+    <Menu>
+      <Menu.Item key="1">
+        Thông báo:  <Switch checked={show} onChange={() => {
+                setShow(!show);
+                toggleSound();
+              }} />
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <>
       <Layout>
@@ -481,6 +553,28 @@ const OderDisplay = ({}) => {
                 height: 64,
               }}
             />
+            <Dropdown overlay={menu} placement="bottomLeft">
+              <Button
+                type="text"
+                icon={<SettingOutlined />}
+                style={{
+                  fontSize: "16px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
+            </Dropdown>
+            <Space size="middle" style={{float: "right", marginRight: "40px"}}>
+                <Badge count={pendingBills} overflowCount={100}>
+                  <Button 
+                     type="text"
+                     icon={<BellOutlined />}
+                     style={{
+                       fontSize: "16px",
+                     }}
+                  />
+                </Badge>
+              </Space>
           </Header>
           <Content
             style={{
