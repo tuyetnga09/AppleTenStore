@@ -1,11 +1,6 @@
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  useHistory,
-} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch,} from "react-router-dom";
 import RamDisplay from "./components/product_component/Ram/DisplayRam";
 import RamCreateOrUpdate from "./components/product_component/Ram/DisplayRamCreate";
 import ReturnDeleteRam from "./components/product_component/Ram/DisplayReturnDelete";
@@ -83,8 +78,7 @@ import OderUserDaHuy from "./components/Page_Comeponet/OderUser/DaHuy";
 import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
 import Product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/sku/index";
 import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
-import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
-import { notification } from "antd";
+import {Redirect} from "react-router-dom/cjs/react-router-dom.min";
 
 const storedUser = JSON.parse(localStorage.getItem("account"));
 const fetchData = async () => {

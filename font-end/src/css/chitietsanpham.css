@@ -83,8 +83,8 @@
 
 .overlaycertainimg-content .div_smallimg
 
-/*hình nhỏ ở certainimg*/
-    {
+    /*hình nhỏ ở certainimg*/
+{
     display: block;
     margin-top: 25px;
     width: 100%;
@@ -115,12 +115,13 @@
 }
 
 .picture img {
-    display: block;
-    height: auto;
-    margin: auto;
-    cursor: pointer;
+    width: 70%;
+    margin-left: 10px;
+    /*display: block;*/
+    /*max-height: 30%;*/
+    /*with: 100%;*/
+    /*cursor: pointer;*/
     /*thay đổi trỏ chuột đi đưa vào*/
-    max-width: 100%;
 }
 
 .price_sale {

@@ -3,7 +3,9 @@ package com.example.backend.repository;
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
 import com.example.backend.entity.ImeiDaBan;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -36,4 +38,10 @@ public interface ImeiDaBanRepository extends JpaRepository<ImeiDaBan, Long> {
     @Query(value = "select i.id as 'idImeiDaBan', i.code_imei as 'codeImeiDaBan' " +
             " from imei_da_ban i join bill_detail b on i.id_bill_detail = b.id where b.id =?1", nativeQuery = true)
     List<ImeiDaBanOffLineIonRespon> listAllImeiDaBanWhereIdBillDetail(Integer idBillDetail);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update imei_da_ban set status = 3 where id_bill_detail in (select id from bill_detail where id_bill = ?1)", nativeQuery = true)
+    void updateStatusImeiWhereIdBill(int id);
+
 }
