@@ -20,7 +20,7 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     Image searchImageByIdProduct(int id);
 
     @Transactional
-    @Query(value = "select * from image where id_product = 6",  nativeQuery = true)
+    @Query(value = "select * from image where id_product = ?1",  nativeQuery = true)
     List<Image> getAllImagesByIdProduct(int id);
 
 }

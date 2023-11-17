@@ -373,13 +373,22 @@ const OderDisplay = ({}) => {
     };
 
     function confirm2(id) {
-        updateStatusBill(idAccount, id)
-            .then((response) => {
-                setLoad(!load);
-            })
-            .catch((error) => {
-                console.error("Error updating status:", error);
+        if (checkImeiSelectInBillDetail(id) === true){
+            updateStatusBill(idAccount, id)
+                .then((response) => {
+                    setLoad(!load);
+                })
+                .catch((error) => {
+                    console.error("Error updating status:", error);
+                });
+            notification.success({
+                messege:"Xác nhận thành công!"
             });
+        } else {
+            notification.error({
+                message:"Kiểm tra lại số lượng imei!"
+            });
+        }
     }
 
     function delete2(id) {
@@ -394,6 +403,18 @@ const OderDisplay = ({}) => {
             }
         }
         return true;
+    }
+
+    function checkImeiSelectInBillDetail(id){
+        let tempObj = {};
+        for (let index = 0; index < billCXN.length; index++) {
+            if (billCXN[index]?.id === id) {
+                tempObj = billCXN[index];
+                break;
+            }
+        }
+        return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
+
     }
 
     function handUpdateTrangThai() {
@@ -868,6 +889,7 @@ const UserAccountTable = ({record, onSomeAction}) => {
         // readAllUserByRole(record)
         findBillDetails(record.id).then((response) => {
             setUsers(response.data);
+            console.log(response.data)
             setDataBillDetailOffline(response.data);
         });
         //   .then((res) => {
@@ -1210,6 +1232,7 @@ const UserAccountTable = ({record, onSomeAction}) => {
     //tìm kiếm imei - phongnh
     const [dataSeachImeis, setDataSeachImeis] = useState([]);
     const [isModelShowImei, setIsModelShowImei] = useState(false);
+    const [tempStatus, setTempStatus] = useState(false);
 
     function handleChangeImeis(event) {
         //comment vì chưa có dữ liệu
@@ -1294,71 +1317,67 @@ const UserAccountTable = ({record, onSomeAction}) => {
                 console.log(`Lỗi khi cập nhật số lượng: ${error}`);
             });
     };
-    const moreMenu2 = (record1) => (
-        <>
-            {record1.statusSku === 0 && record1.statusProduct === 0 ? (
-                <Menu
-                    mode="vertical2"
-                    onClick={({domEvent}) => domEvent.stopPropagation()}
-                >
-                    <Menu.Item
-                        key="deleteSku"
-                        style={{
-                            fontSize: 15,
-                            display: "flex",
-                            alignItems: "center",
-                            fontWeight: 500,
-                        }}
-                        icon={
-                            <CloseCircleOutlined
-                                style={{
-                                    color: "red",
-                                }}
-                            />
-                        }
-                        // onClick={() => confirmDeleteSku(sku)}
-                    >
-                        Delete
-                    </Menu.Item>
-                </Menu>
-            ) : record1.statusSku === 1 && record1.statusProduct === 0 ? (
-                <Menu
-                    mode="vertical2"
-                    onClick={({domEvent}) => domEvent.stopPropagation()}
-                >
-                    <Menu.Item
-                        key="edit"
-                        style={{
-                            fontSize: 15,
-                            display: "flex",
-                            alignItems: "center",
-                            fontWeight: 500,
-                        }}
-                        icon={
-                            <CheckCircleOutlined
-                                style={{
-                                    color: "#52c41a",
-                                    fontSize: 17,
-                                    fontWeight: 500,
-                                }}
-                            />
-                        }
-                        // onClick={() => confirmReturnSku(sku)}
-                    >
-                        Return
-                    </Menu.Item>
-                </Menu>
-            ) : record1.statusProduct === 1 ? (
-                <WarningFilled
+
+    function returnTempStatus() {
+        notification.error({
+            message: "Không thể thay đổi imei!",
+        });
+    }
+
+    function checkSoluongImei() {
+        let check = true;
+        for (let index = 0; index < dataBillDetailOffline.length; index++) {
+            if (dataBillDetailOffline[index]?.quantity !== dataBillDetailOffline[index]?.soLuongImeiDaChon) {
+                check = false;
+                break;
+            }
+        }
+        if (check) {
+            toast.current.show({
+                severity: "success", summary: "Thành công!", detail: "Xác nhận thành công", life: 3000,
+            });
+            setTempStatus(true);
+        } else {
+            toast.current.show({
+                severity: "error", summary: "KIỂM TRA IMEI", detail: "Vui lòng kiểm tra lại imei", life: 3000,
+            });
+            setTempStatus(false);
+        }
+
+    }
+
+    const moreMenu2 = (record) => (<>
+        <Menu mode="vertical">
+            {record.statusBill === 'CHO_XAC_NHAN' ? (<Menu.Item
+                key="1"
+                style={{
+                    fontWeight: 500,
+                }}
+                icon={<FormOutlined
                     style={{
-                        color: "#FFCC00",
+                        color: "green",
                     }}
-                />
-            ) : (
-                "!"
-            )}
-        </>
-    );
+                />}
+                onClick={() => checkSoluongImei()}
+            >
+                Accept
+            </Menu.Item>) : (<Menu.Item
+                key="1"
+                style={{
+                    fontWeight: 500,
+                }}
+                icon={<FormOutlined
+                    style={{
+                        color: "red",
+                    }}
+                />}
+                onClick={() => returnTempStatus()}
+            >
+                !
+            </Menu.Item>)}
+        </Menu>
+    </>);
+
 
     //truyền thông tin ra bnagr bên ngoài
     const handleClick = () => {

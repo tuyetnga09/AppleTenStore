@@ -112,7 +112,6 @@ export default function ProductDetail() {
 
         getAllImage(id).then((response) => {
             setListImages(response.data);
-            console.log(response.data)
         }).catch((error) => {
             console.log(error)
         })

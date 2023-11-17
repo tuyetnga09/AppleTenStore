@@ -69,7 +69,7 @@ const Checkout = () => {
     itemDiscount: 0,
     itemDiscountFreeShip: 0,
     totalMoney: 0,
-    paymentMethod: "ONLINE",
+    paymentMethod: "OFFLINE",
     billDetail: [],
     quantity: 0,
     afterPrice: 0,
