@@ -98,4 +98,9 @@ public class Bill  {
     @Column(name = "date_update")
     private LocalDate dateUpdate;
 
+    @Column(name = "number_of_points_used")
+    private Integer numberOfPointsUsed;
+
+    @Column(name = "point_conversion_amount")
+    private BigDecimal pointConversionAmount;
 }

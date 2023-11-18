@@ -241,6 +241,8 @@ public class BillServiceImpl implements BillService {
                     .statusBill(StatusBill.CHO_XAC_NHAN)
                     .dateCreate(LocalDate.now())
                     .account(account)
+                    .numberOfPointsUsed(request.getPoint())
+                    .pointConversionAmount(request.getPointConversionAmount())
                     .build();
             billRepository.save(bill);
 
@@ -518,6 +520,13 @@ public class BillServiceImpl implements BillService {
         this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
         this.billRepository.deleteBill(id);
+        Bill bill = billRepository.findById(id).get();
+        if (bill.getNumberOfPointsUsed() != 0 || bill.getNumberOfPointsUsed() != null){
+            Account account = acountRepository.findById(bill.getAccount().getId()).get();
+            User user = userRepository.findById(account.getUser().getId()).get();
+            user.setPoints(user.getPoints() + bill.getNumberOfPointsUsed());
+            userRepository.save(user);
+        }
     }
 
     @Override

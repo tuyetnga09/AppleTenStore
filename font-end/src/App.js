@@ -84,7 +84,6 @@ import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
 import Product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/sku/index";
 import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
-import { notification } from "antd";
 
 const storedUser = JSON.parse(localStorage.getItem("account"));
 const fetchData = async () => {

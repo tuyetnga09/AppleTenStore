@@ -6,7 +6,11 @@ import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import { readAll, getbysku } from "../../../service/cart.service";
 import { readQuantityInCart } from "../../../service/cart.service";
-import { GiftOutlined,CloseCircleOutlined,InfoCircleOutlined } from "@ant-design/icons";
+import {
+  GiftOutlined,
+  CloseCircleOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 import { Image, Checkbox, Modal, notification, Button, Input } from "antd";
 import {
   getVoucher,
@@ -25,6 +29,7 @@ import {
 } from "../../../service/Bill/bill.service";
 import { DateField } from "@refinedev/antd";
 import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
+import { getOne } from "../../../service/Point/point.service";
 
 const Checkout = () => {
   const history = useHistory();
@@ -80,6 +85,7 @@ const Checkout = () => {
     idUser: null,
     point: 0,
     pointHistory: 0,
+    pointConversionAmount: 0,
   });
   const [defaultAddress, setDefaultAddress] = useState([]);
   const [showDistricts, setShowDistricts] = useState(true);
@@ -94,7 +100,7 @@ const Checkout = () => {
 
   const [ponit, setPonit] = useState(0);
   const [isModalVisiblePoint, setIsModalVisiblePoint] = useState(false); // Trạng thái hiển thị Modal
-
+  const [pointMoney, setPointMoney] = useState(0);
 
   useEffect(() => {
     const checked1 = document.getElementById("htnn_4");
@@ -237,6 +243,17 @@ const Checkout = () => {
       })
       .catch((err) => {
         console.log(err);
+      });
+    getOne()
+      .then((response) => {
+        if (response.data.data !== null) {
+          setPointMoney(response.data.data.pointsConsumptionMoney);
+        } else {
+          setPointMoney(0);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, [province_id, district_id, transportationFeeDTO, priceShip]);
 
@@ -721,40 +738,40 @@ const Checkout = () => {
     setIsChecked3(true);
   }
 
-  function clickPonit(){
-    const pointElement = document.getElementById('point');
+  function clickPonit() {
+    const pointElement = document.getElementById("point");
     const pointValue = parseFloat(pointElement.value);
     const pointCustomer = parseFloat(storedUser?.user?.points);
-    if(pointValue == "" || pointValue == null){
-      notification.error({
-        message: "Nhập số điểm bạn cần dùng!",
-      });
-      setPonit(0);
-    }else{
-      if(pointValue > pointCustomer){
+    // if (pointValue == "" || pointValue == null) {
+    //   notification.error({
+    //     message: "Nhập số điểm bạn cần dùng!",
+    //   });
+    //   setPonit(0);
+    // } else {
+    if (pointValue > pointCustomer) {
       notification.error({
         message: "Số điểm của bạn không đủ!",
       });
       setPonit(0);
-    }else if(pointValue == 0 || pointValue == null){
-      notification.success({
+    } else if (pointValue == null) {
+      notification.error({
         message: "Mời nhập số điểm bạn muốn sử dụng!",
       });
-    } else{
-      setPonit(pointValue);
+    } else {
+      setPonit(pointValue * pointMoney);
       setBill({
         ...bill,
         idUser: storedUser?.user?.id,
         point: pointValue,
         pointHistory: pointValue,
+        pointConversionAmount: pointValue * pointMoney,
       });
       console.log(bill);
     }
-    }
-    
+    // }
   }
 
-  function clearPoint(){
+  function clearPoint() {
     setPonit(0);
     setBill({
       ...bill,
@@ -762,19 +779,19 @@ const Checkout = () => {
       point: 0,
       pointHistory: 0,
     });
-    document.getElementById('point').value = 0;
+    document.getElementById("point").value = 0;
   }
 
-    // Hàm để hiển thị Modal khi cần
-    const handleEditClickPoint = (record) => {
-      setIsModalVisiblePoint(true);
-    };
-  
-    // Hàm để ẩn Modal
-    const handleCancelPoint = () => {
-      setIsModalVisiblePoint(false);
-    };
-  
+  // Hàm để hiển thị Modal khi cần
+  const handleEditClickPoint = (record) => {
+    setIsModalVisiblePoint(true);
+  };
+
+  // Hàm để ẩn Modal
+  const handleCancelPoint = () => {
+    setIsModalVisiblePoint(false);
+  };
+
   return (
     <>
       <Header />
@@ -881,9 +898,13 @@ const Checkout = () => {
                               quantity.value = 0;
                               setPonit(0);
                             }
-                            if (totalPrice >= 100000 && totalPrice <= 50000000) {
-                              if (event.target.value > 50000) {
-                                const quantity = document.getElementById(`point`);
+                            if (
+                              totalPrice >= 100000 &&
+                              totalPrice <= 50000000
+                            ) {
+                              if (event.target.value > 50000 / pointMoney) {
+                                const quantity =
+                                  document.getElementById(`point`);
                                 quantity.value = 0;
                                 setPonit(0);
                                 notification.error({
@@ -891,9 +912,13 @@ const Checkout = () => {
                                 });
                               }
                             }
-                            if (totalPrice >= 51000000 && totalPrice <= 100000000) {
-                              if (event.target.value > 100000) {
-                                const quantity = document.getElementById(`point`);
+                            if (
+                              totalPrice >= 51000000 &&
+                              totalPrice <= 100000000
+                            ) {
+                              if (event.target.value > 100000 / pointMoney) {
+                                const quantity =
+                                  document.getElementById(`point`);
                                 quantity.value = 0;
                                 setPonit(0);
                                 notification.error({
@@ -901,9 +926,13 @@ const Checkout = () => {
                                 });
                               }
                             }
-                            if (totalPrice >= 110000000 && totalPrice <= 150000000) {
-                              if (event.target.value > 150000) {
-                                const quantity = document.getElementById(`point`);
+                            if (
+                              totalPrice >= 110000000 &&
+                              totalPrice <= 150000000
+                            ) {
+                              if (event.target.value > 150000 / pointMoney) {
+                                const quantity =
+                                  document.getElementById(`point`);
                                 quantity.value = 0;
                                 setPonit(0);
                                 notification.error({
@@ -911,9 +940,13 @@ const Checkout = () => {
                                 });
                               }
                             }
-                            if (totalPrice >= 151000000 && totalPrice <= 200000000) {
-                              if (event.target.value > 200000) {
-                                const quantity = document.getElementById(`point`);
+                            if (
+                              totalPrice >= 151000000 &&
+                              totalPrice <= 200000000
+                            ) {
+                              if (event.target.value > 200000 / pointMoney) {
+                                const quantity =
+                                  document.getElementById(`point`);
                                 quantity.value = 0;
                                 setPonit(0);
                                 notification.error({
@@ -922,8 +955,9 @@ const Checkout = () => {
                               }
                             }
                             if (totalPrice > 200000000) {
-                              if (event.target.value > 250000) {
-                                const quantity = document.getElementById(`point`);
+                              if (event.target.value > 250000 / pointMoney) {
+                                const quantity =
+                                  document.getElementById(`point`);
                                 quantity.value = 0;
                                 setPonit(0);
                                 notification.error({
@@ -933,12 +967,18 @@ const Checkout = () => {
                             }
                           }}
                         ></input>
-                        <p style={{fontSize: "13px", color: "red", fontWeight: "bold"}}>
+                        <p
+                          style={{
+                            fontSize: "13px",
+                            color: "red",
+                            fontWeight: "bold",
+                          }}
+                        >
                           Số điểm đang có là {storedUser?.user?.points} Point
                         </p>
                       </span>
                       <strong>
-                          <button
+                        <button
                           class="btn btn-warning"
                           type="button"
                           onClick={() => clickPonit()}
@@ -948,28 +988,28 @@ const Checkout = () => {
                       </strong>
                       <strong>
                         <CloseCircleOutlined
-                            style={{
-                              color: "red",
-                              fontSize: 17,
-                              fontWeight: 500,
-                              marginRight: "10px"
-                            }}
-                            onClick={() => clearPoint()}
-                          />
-                          <InfoCircleOutlined 
-                            style={{
-                                color: "red",
-                                fontSize: 17,
-                                fontWeight: 500,
-                              }}
-                              onClick={() => handleEditClickPoint()}
-                          />
+                          style={{
+                            color: "red",
+                            fontSize: 17,
+                            fontWeight: 500,
+                            marginRight: "10px",
+                          }}
+                          onClick={() => clearPoint()}
+                        />
+                        <InfoCircleOutlined
+                          style={{
+                            color: "red",
+                            fontSize: 17,
+                            fontWeight: 500,
+                          }}
+                          onClick={() => handleEditClickPoint()}
+                        />
                       </strong>
                     </li>
                   </ul>
                 </div>
                 <div hidden={storedUser !== null ? false : true}>
-                  <div className="d-flex justify-content-between px-x" >
+                  <div className="d-flex justify-content-between px-x">
                     <p className="fw-bold">Số điểm sử dụng:</p>
                     <p className="fw-bold">
                       -
@@ -1339,7 +1379,7 @@ const Checkout = () => {
                         })}
                       </p>
                       <p style={{ fontSize: "13px" }}>
-                       Áp dụng cho đơn hàng giá trị từ{" "}
+                        Áp dụng cho đơn hàng giá trị từ{" "}
                         {voucher?.valueMinimum?.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
@@ -1477,39 +1517,68 @@ const Checkout = () => {
           <div className="row d-flex justify-content-center">
             <div
               className="card-header d-flex justify-content-between align-items-center p-3"
-              style={{ borderTop: "4px solid #ffa900",fontWeight: "bold" }}
+              style={{ borderTop: "4px solid #ffa900", fontWeight: "bold" }}
             >
               <h5 className="mb-0">HƯỚNG DẪN SỬ DỤNG ĐIỂM</h5>
             </div>
             <div
-                className="card-body"
-                data-mdb-perfect-scrollbar="true"
-                style={{ position: "relative", height: 380, overflowY: "auto" }}
+              className="card-body"
+              data-mdb-perfect-scrollbar="true"
+              style={{ position: "relative", height: 380, overflowY: "auto" }}
             >
-              <h6 className="mb-0" style={{fontWeight: "bold", color: "#ffa900"}}>KHI MUA HÀNG</h6>
-              <p style={{fontWeight: "bold"}}>Đơn hàng trên 30.000.000 vnđ *</p>
+              <h6
+                className="mb-0"
+                style={{ fontWeight: "bold", color: "#ffa900" }}
+              >
+                KHI MUA HÀNG
+              </h6>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng dưới 30.000.000 vnđ *
+              </p>
               <p>- Quý khách được cộng 100 Point</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng từ 31.000.000 vnđ đển 50.000.000 vnđ *</p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng từ 31.000.000 vnđ đển 50.000.000 vnđ *
+              </p>
               <p>- Quý khách được cộng 200 Point</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng từ 51.000.000 vnđ đển 70.000.000 vnđ *</p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng từ 51.000.000 vnđ đển 70.000.000 vnđ *
+              </p>
               <p>- Quý khách được cộng 300 Point</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng trên 80.000.000 vnđ *</p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng trên 70.000.000 vnđ *
+              </p>
               <p>- Quý khách được cộng 500 Point</p>
 
-              <h6 className="mb-0" style={{fontWeight: "bold", color: "#ffa900"}}>SỬ DỤNG ĐIỂM</h6>
-              <p style={{fontWeight: "bold", color: "red", fontSize: "15px"}}>1000 Point = 1000 vnđ *</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng từ 10.000.000 vnđ đến 50.000.000 vnđ *</p>
-              <p>- Được sử dụng tối đa 50.000 Point</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng từ 51.000.000 vnđ đến 100.000.000 vnđ *</p>
-              <p>- Được sử dụng tối đa 100.000 Point</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng từ 110.000.000 vnđ đến 150.000.000 vnđ *</p>
-              <p>- Được sử dụng tối đa 150.000 Point</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng từ 151.000.000 vnđ đến 200.000.000 vnđ *</p>
-              <p>- Được sử dụng tối đa 200.000 Point</p>
-              <p style={{fontWeight: "bold"}}>Đơn hàng trên 250.000.000 vnđ *</p>
-              <p>- Được sử dụng tối đa 250.000 Point</p>
+              <h6
+                className="mb-0"
+                style={{ fontWeight: "bold", color: "#ffa900" }}
+              >
+                SỬ DỤNG ĐIỂM
+              </h6>
+              <p style={{ fontWeight: "bold", color: "red", fontSize: "15px" }}>
+                1 Point = {pointMoney} vnđ *
+              </p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng từ 10.000.000 vnđ đến 50.000.000 vnđ *
+              </p>
+              <p>- Được sử dụng tối đa {50000 / pointMoney} Point</p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng từ 51.000.000 vnđ đến 100.000.000 vnđ *
+              </p>
+              <p>- Được sử dụng tối đa {100000 / pointMoney} Point</p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng từ 110.000.000 vnđ đến 150.000.000 vnđ *
+              </p>
+              <p>- Được sử dụng tối đa {150000 / pointMoney} Point</p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng từ 151.000.000 vnđ đến 200.000.000 vnđ *
+              </p>
+              <p>- Được sử dụng tối đa {200000 / pointMoney} Point</p>
+              <p style={{ fontWeight: "bold" }}>
+                Đơn hàng trên 250.000.000 vnđ *
+              </p>
+              <p>- Được sử dụng tối đa {250000 / pointMoney} Point</p>
             </div>
-            
           </div>
         </div>
       </Modal>
