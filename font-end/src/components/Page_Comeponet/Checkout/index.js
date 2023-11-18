@@ -74,7 +74,7 @@ const Checkout = () => {
     itemDiscount: 0,
     itemDiscountFreeShip: 0,
     totalMoney: 0,
-    paymentMethod: "ONLINE",
+    paymentMethod: "OFFLINE",
     billDetail: [],
     quantity: 0,
     afterPrice: 0,
@@ -907,9 +907,6 @@ const Checkout = () => {
                                   document.getElementById(`point`);
                                 quantity.value = 0;
                                 setPonit(0);
-                                notification.error({
-                                  message: "Đơn hàng không đủ điều kiện!",
-                                });
                               }
                             }
                             if (
@@ -963,6 +960,17 @@ const Checkout = () => {
                                 notification.error({
                                   message: "Đơn hàng không đủ điều kiện!",
                                 });
+                              }
+                              if (totalPrice > 200000000) {
+                                if (event.target.value > 250000) {
+                                  const quantity =
+                                    document.getElementById(`point`);
+                                  quantity.value = 0;
+                                  setPonit(0);
+                                  notification.error({
+                                    message: "Đơn hàng không đủ điều kiện!",
+                                  });
+                                }
                               }
                             }
                           }}

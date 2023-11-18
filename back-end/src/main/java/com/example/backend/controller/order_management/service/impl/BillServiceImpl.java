@@ -52,6 +52,12 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private ImeiDaBanRepository imeiDaBanRepository;
+
+    @Autowired
+    private ImeiRepository imeiRepository;
+
     // CLIENT
     @Override
     public Bill createBillCustomerOnlineRequest(BillRequestOnline request) {
@@ -248,13 +254,13 @@ public class BillServiceImpl implements BillService {
 
             BillHistory billHistory = BillHistory.builder()
                     .bill(bill)
-                    .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                    .statusBill(request.getPaymentMethod().equals("OFFLINE") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
                     .actionDescription("Đã thanh toán").build();
             billHistoryRepository.save(billHistory);
 
             for (BillAskClient d : request.getBillDetail()) {
                 BillDetails billDetail = BillDetails.builder()
-                        .statusBill(request.getPaymentMethod().equals("paymentReceive") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                        .statusBill(request.getPaymentMethod().equals("OFFLINE") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
                         .sku(skuRepositoty.findById(d.getSku()).orElse(null))
                         .price(d.getPrice())
                         .quantity(d.getQuantity())
@@ -265,7 +271,7 @@ public class BillServiceImpl implements BillService {
             }
 
             Payments payments = Payments.builder()
-                    .method(request.getPaymentMethod().equals("paymentReceive") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
+                    .method(request.getPaymentMethod().equals("OFFLINE") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                     .bill(bill)
                     .moneyPayment(request.getTotalMoney())
                     .typePayment(StatusPayment.THANH_TOAN).build();
@@ -448,7 +454,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public void updateStatusBill(Integer idAccount,int id) {
+    public void updateStatusBill(Integer idAccount, int id) {
         Bill bill = billRepository.findById(id).get();
         if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
             bill.setStatusBill(StatusBill.DA_THANH_TOAN);
@@ -462,6 +468,9 @@ public class BillServiceImpl implements BillService {
         Account account = acountRepository.findById(idAccount).get();
         bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
         bill.setDateUpdate(LocalDate.now());
+        imeiRepository.updateStatusImeiWhereIdBill(id);
+        imeiDaBanRepository.updateStatusImeiWhereIdBill(id);
+        billDetailRepository.updateStatusBillDetailWhereIdBill(id);
         billRepository.save(bill);
         if (bill.getTypeBill().equals(TypeBill.ONLINE) && bill.getStatusBill().equals(StatusBill.DA_THANH_TOAN)){
         Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
@@ -539,6 +548,11 @@ public class BillServiceImpl implements BillService {
     public List<BillDetailOffLineIon> getAllBillChoXacNhan() {
         List<BillDetailOffLineIon> billDetailsList = billRepository.getAllBillChoXacNhan();
         return billDetailsList;
+    }
+
+    @Override
+    public Integer getCountBillCXN() {
+        return billRepository.getCountBillCXN();
     }
 
 }

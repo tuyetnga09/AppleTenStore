@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class ImageService implements Iservice<Image> {
@@ -72,6 +73,10 @@ public class ImageService implements Iservice<Image> {
 
     public Image searchImageByIdProduct(int id){
         return this.imageRepository.searchImageByIdProduct(id);
+    }
+
+    public List<Image> getAllImagesByIdProduct(int id){
+        return this.imageRepository.getAllImagesByIdProduct(id);
     }
 
 }

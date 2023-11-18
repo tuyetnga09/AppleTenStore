@@ -77,4 +77,9 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
             " idSKU, skuCapacity, skuColor, skuPrice, idProduct, nameProduct, totalManyOneBillDetail;\n", nativeQuery = true)
     List<ListBillChoThanhToan> findBillbyCodeBillInDate(String codeBill);
 
+    @Modifying
+    @Transactional
+    @Query(value = "update bill_detail set status_bill = 'XAC_NHAN' where id_bill = ?1", nativeQuery = true)
+    void updateStatusBillDetailWhereIdBill(int id);
+
 }

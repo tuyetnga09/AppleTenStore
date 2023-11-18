@@ -46,4 +46,6 @@ public interface BillService {
 
     List<BillDetailOffLineIon> getAllBillChoXacNhan();
 
+    Integer getCountBillCXN();
+
 }

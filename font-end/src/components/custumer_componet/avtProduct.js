@@ -18,7 +18,7 @@ const AvtProduct = (props) => {
   return (
     <>
       <div className="picture">
-        <img src={`/imageUpload/` + image} onClick="opencertain()" />
+        <img src={`/imageUpload/` + image} />
       </div>
     </>
   );

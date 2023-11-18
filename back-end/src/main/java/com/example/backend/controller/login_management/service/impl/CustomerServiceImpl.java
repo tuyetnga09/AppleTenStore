@@ -88,7 +88,7 @@ public class CustomerServiceImpl  implements CustomerService {
 
 
         String subject = "Xin chào, bạn đã đăng ký thành công ";
-        emailService.sendEmailPasword(account.getEmail(), subject, account.getPassword());
+//        emailService.sendEmailPasword(account.getEmail(), subject, account.getPassword());
 
         return user;
     }
@@ -146,7 +146,7 @@ public class CustomerServiceImpl  implements CustomerService {
 
 
         String subject = "Xin chào, bạn đã đăng ký thành công ";
-        emailService.sendEmailPasword(account1.getEmail(), subject, new String(Base64.getDecoder().decode(account1.getPassword())));
+//        emailService.sendEmailPasword(account1.getEmail(), subject, new String(Base64.getDecoder().decode(account1.getPassword())));
 
         return user;
     }

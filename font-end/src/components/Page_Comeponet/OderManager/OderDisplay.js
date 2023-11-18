@@ -15,6 +15,8 @@ import {
   ShopOutlined,
   UserOutlined,
   WarningFilled,
+  BellOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -35,6 +37,8 @@ import {
   Table,
   theme,
   Typography,
+  Space,
+  Switch,
 } from "antd";
 import { DateField, List, NumberField } from "@refinedev/antd";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -45,6 +49,7 @@ import {
   updateStatusBill,
   updateAllCVC,
   getAllBillCXN,
+  getCountBillChoXacNhan,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -61,6 +66,7 @@ import {
   getListImeiDaBanOfSku,
   getListImeiThatLac,
   getOneSkuSelected,
+  listImeiDaBanByIdBillDetail,
   seachImeis,
   seachImeisDaBan,
 } from "../../../service/SellOffLine/sell_off_line.service";
@@ -68,6 +74,7 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
 import { Toast } from "primereact/toast";
 import { findBillDetails } from "../../../service/BillDetail/billDetail.service";
+import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
@@ -90,6 +97,9 @@ const OderDisplay = ({}) => {
   const breakpoint = Grid.useBreakpoint();
   const [load, setLoad] = useState(true);
   const [billCXN, setBillCXN] = useState([]);
+  const [pendingBills, setPendingBills] = useState(0);
+  const [playSound, setPlaySound] = useState(true);
+  const [show, setShow] = useState(true);
 
   const orderSelectProps = {
     options: [
@@ -128,6 +138,10 @@ const OderDisplay = ({}) => {
     dateStart: "",
     dateEnd: "",
   });
+
+  const toggleSound = () => {
+    setPlaySound(!playSound);
+  };
 
   useEffect(() => {
     if (
@@ -181,8 +195,59 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
+      //thông báo khi có hóa đơn mới
+      let lastPendingBills = null;
+      let timeout = null;
+      let originalTitle = document.title;
+
+      const interval = setInterval(async () => {
+        getCountBillChoXacNhan()
+          .then((response) => {
+            const newPendingBills = response.data;
+
+            if (
+              lastPendingBills !== null &&
+              newPendingBills > lastPendingBills &&
+              playSound
+            ) {
+              // Nếu có hóa đơn mới, thì phát âm thanh thông báo
+              const audio = new Audio(AudioTT);
+              audio.play();
+
+              // Cập nhật số hóa đơn chờ xác nhận
+              setPendingBills(newPendingBills);
+
+              // Hiển thị thông báo trong tiêu đề
+              document.title = "🟢 Có đơn hàng mới!";
+
+              // Clear timeout cũ (nếu có)
+              if (timeout) {
+                clearTimeout(timeout);
+              }
+
+              // Sau 5 giây, tiêu đề sẽ trở về ban đầu
+              timeout = setTimeout(() => {
+                document.title = originalTitle;
+              }, 5000);
+            } else {
+              // Cập nhật số hóa đơn chờ xác nhận
+              setPendingBills(newPendingBills);
+            }
+
+            // Cập nhật giá trị cuối cùng
+            lastPendingBills = newPendingBills;
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }, 5000);
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
     }
-  }, [filtersNoDate, filtersWithDate, load]);
+  }, [filtersNoDate, filtersWithDate, load, playSound]);
 
   function handleChangeSearch(event) {
     const target = event.target;
@@ -373,13 +438,22 @@ const OderDisplay = ({}) => {
   };
 
   function confirm2(id) {
-    updateStatusBill(idAccount, id)
-      .then((response) => {
-        setLoad(!load);
-      })
-      .catch((error) => {
-        console.error("Error updating status:", error);
+    if (checkImeiSelectInBillDetail(id) === true) {
+      updateStatusBill(idAccount, id)
+        .then((response) => {
+          setLoad(!load);
+        })
+        .catch((error) => {
+          console.error("Error updating status:", error);
+        });
+      notification.success({
+        messege: "Xác nhận thành công!",
       });
+    } else {
+      notification.error({
+        message: "Kiểm tra lại số lượng imei!",
+      });
+    }
   }
 
   function delete2(id) {
@@ -394,6 +468,17 @@ const OderDisplay = ({}) => {
       }
     }
     return true;
+  }
+
+  function checkImeiSelectInBillDetail(id) {
+    let tempObj = {};
+    for (let index = 0; index < billCXN.length; index++) {
+      if (billCXN[index]?.id === id) {
+        tempObj = billCXN[index];
+        break;
+      }
+    }
+    return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
   }
 
   function handUpdateTrangThai() {
@@ -443,6 +528,21 @@ const OderDisplay = ({}) => {
     );
   };
 
+  const menu = (
+    <Menu>
+      <Menu.Item key="1">
+        Thông báo:{" "}
+        <Switch
+          checked={show}
+          onChange={() => {
+            setShow(!show);
+            toggleSound();
+          }}
+        />
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <>
       <Layout>
@@ -481,6 +581,31 @@ const OderDisplay = ({}) => {
                 height: 64,
               }}
             />
+            <Dropdown overlay={menu} placement="bottomLeft">
+              <Button
+                type="text"
+                icon={<SettingOutlined />}
+                style={{
+                  fontSize: "16px",
+                  width: 64,
+                  height: 64,
+                }}
+              />
+            </Dropdown>
+            <Space
+              size="middle"
+              style={{ float: "right", marginRight: "40px" }}
+            >
+              <Badge count={pendingBills} overflowCount={100}>
+                <Button
+                  type="text"
+                  icon={<BellOutlined />}
+                  style={{
+                    fontSize: "16px",
+                  }}
+                />
+              </Badge>
+            </Space>
           </Header>
           <Content
             style={{
@@ -856,7 +981,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
   //     setIsModalVisible(true);
   //     console.log(user);
   //   };
-
   //   // Hàm để ẩn Modal
   //   const handleCancel = () => {
   //     setIsModalVisible(false);
@@ -868,6 +992,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
     // readAllUserByRole(record)
     findBillDetails(record.id).then((response) => {
       setUsers(response.data);
+      console.log(response.data);
       setDataBillDetailOffline(response.data);
     });
     //   .then((res) => {
@@ -983,6 +1108,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
         .then((response) => {
           setDataSeachImeiDaBan(response.data);
         })
+
         .catch((error) => {
           console.log(`${error}`);
         });
@@ -1208,6 +1334,8 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 
   //tìm kiếm imei - phongnh
   const [dataSeachImeis, setDataSeachImeis] = useState([]);
+  const [isModelShowImei, setIsModelShowImei] = useState(false);
+  const [tempStatus, setTempStatus] = useState(false);
 
   function handleChangeImeis(event) {
     //comment vì chưa có dữ liệu
@@ -1292,69 +1420,82 @@ const UserAccountTable = ({ record, onSomeAction }) => {
         console.log(`Lỗi khi cập nhật số lượng: ${error}`);
       });
   };
-  const moreMenu2 = (record1) => (
+
+  function returnTempStatus() {
+    notification.error({
+      message: "Không thể thay đổi imei!",
+    });
+  }
+
+  function checkSoluongImei() {
+    let check = true;
+    for (let index = 0; index < dataBillDetailOffline.length; index++) {
+      if (
+        dataBillDetailOffline[index]?.quantity !==
+        dataBillDetailOffline[index]?.soLuongImeiDaChon
+      ) {
+        check = false;
+        break;
+      }
+    }
+    if (check) {
+      toast.current.show({
+        severity: "success",
+        summary: "Thành công!",
+        detail: "Xác nhận thành công",
+        life: 3000,
+      });
+      setTempStatus(true);
+    } else {
+      toast.current.show({
+        severity: "error",
+        summary: "KIỂM TRA IMEI",
+        detail: "Vui lòng kiểm tra lại imei",
+        life: 3000,
+      });
+      setTempStatus(false);
+    }
+  }
+
+  const moreMenu2 = (record) => (
     <>
-      {record1.statusSku === 0 && record1.statusProduct === 0 ? (
-        <Menu
-          mode="vertical2"
-          onClick={({ domEvent }) => domEvent.stopPropagation()}
-        >
+      <Menu mode="vertical">
+        {record.statusBill === "CHO_XAC_NHAN" ? (
           <Menu.Item
-            key="deleteSku"
+            key="1"
             style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
               fontWeight: 500,
             }}
             icon={
-              <CloseCircleOutlined
+              <FormOutlined
+                style={{
+                  color: "green",
+                }}
+              />
+            }
+            onClick={() => checkSoluongImei()}
+          >
+            Accept
+          </Menu.Item>
+        ) : (
+          <Menu.Item
+            key="1"
+            style={{
+              fontWeight: 500,
+            }}
+            icon={
+              <FormOutlined
                 style={{
                   color: "red",
                 }}
               />
             }
-            // onClick={() => confirmDeleteSku(sku)}
+            onClick={() => returnTempStatus()}
           >
-            Delete
+            !
           </Menu.Item>
-        </Menu>
-      ) : record1.statusSku === 1 && record1.statusProduct === 0 ? (
-        <Menu
-          mode="vertical2"
-          onClick={({ domEvent }) => domEvent.stopPropagation()}
-        >
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <CheckCircleOutlined
-                style={{
-                  color: "#52c41a",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            // onClick={() => confirmReturnSku(sku)}
-          >
-            Return
-          </Menu.Item>
-        </Menu>
-      ) : record1.statusProduct === 1 ? (
-        <WarningFilled
-          style={{
-            color: "#FFCC00",
-          }}
-        />
-      ) : (
-        "!"
-      )}
+        )}
+      </Menu>
     </>
   );
 
@@ -1362,6 +1503,22 @@ const UserAccountTable = ({ record, onSomeAction }) => {
   const handleClick = () => {
     // Gọi hàm callback và truyền dữ liệu cần thiết lên
     onSomeAction(true);
+  };
+
+  const showImeiSold = (id) => {
+    listImeiDaBanByIdBillDetail(id)
+      .then((response) => {
+        setDataImeiSelected(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsModelShowImei(true);
+  };
+  // Cancel show imei
+  const hideModelShowImei = () => {
+    setIsModelShowImei(false);
   };
 
   return (
@@ -1424,25 +1581,44 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 title={"Imei"}
                 render={(text, record) => (
                   <Form.Item name="title" style={{ margin: 0 }}>
-                    <p>
-                      <button
-                        type="button"
-                        class="btn btn-secondary"
-                        className="btn btn-primary btn-sm trash"
-                        style={{
-                          backgroundColor: "green",
-                        }}
-                        onClick={() => {
-                          handleAddImei(record.idSKU, record.id);
-                          openModalAddImei(record.idSKU);
-                        }}
-                      >
-                        Add imei
-                      </button>
-                    </p>
+                    {record.statusBill === "CHO_XAC_NHAN" ? (
+                      <p>
+                        <button
+                          type="button"
+                          // className="btn btn-secondary"
+                          className="btn btn-primary btn-sm trash"
+                          style={{
+                            backgroundColor: "green",
+                          }}
+                          onClick={() => {
+                            handleAddImei(record.idSKU, record.id);
+                            openModalAddImei(record.idSKU);
+                          }}
+                        >
+                          Add imei
+                        </button>
+                      </p>
+                    ) : (
+                      <p>
+                        <button
+                          type="button"
+                          // className="btn btn-secondary"
+                          className="btn btn-primary btn-sm trash"
+                          style={{
+                            backgroundColor: "orange",
+                          }}
+                          onClick={() => {
+                            showImeiSold(record.id);
+                          }}
+                        >
+                          Xem imei
+                        </button>
+                      </p>
+                    )}
                   </Form.Item>
                 )}
               />
+
               <Table.Column
                 key="total"
                 dataIndex="total"
@@ -1480,56 +1656,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                     />
                   </Dropdown>
                 )}
-                //   render={(text, record) => (
-                //     <span>
-                //       <Dropdown
-                //         overlay={
-                //           <Menu mode="vertical">
-                //             <Menu.Item
-                //               key="1"
-                //               disabled={record.stock <= 0}
-                //               style={{
-                //                 fontWeight: 500,
-                //               }}
-                //               icon={
-                //                 <CloseCircleOutlined
-                //                   style={{
-                //                     color: "red",
-                //                   }}
-                //                 />
-                //               }
-                //               //   onClick={() => confirm2(record.id)}
-                //             >
-                //               Accept
-                //             </Menu.Item>
-                //             <Menu.Item
-                //               key="2"
-                //               style={{
-                //                 fontWeight: 500,
-                //               }}
-                //               icon={
-                //                 <FormOutlined
-                //                   style={{
-                //                     color: "green",
-                //                   }}
-                //                 />
-                //               }
-                //               //   onClick={() => delete2(record.id)}
-                //             >
-                //               Delete
-                //             </Menu.Item>
-                //           </Menu>
-                //         }
-                //         trigger={["click"]}
-                //       >
-                //         <MoreOutlined
-                //           style={{
-                //             fontSize: 24,
-                //           }}
-                //         />
-                //       </Dropdown>
-                //     </span>
-                //   )}
               />
             </Table>
           </List>
@@ -1831,11 +1957,66 @@ const UserAccountTable = ({ record, onSomeAction }) => {
             </div>
           </div>
         </Modal>
+        {/*
+                    Hiển thị list imei đã chọn ở bill detail
+                */}
+        <Modal
+          visible={isModelShowImei}
+          onCancel={hideModelShowImei}
+          width={550}
+          footer={null}
+          bodyStyle={{ minHeight: "800px" }}
+        >
+          <div className="container py-5">
+            <div className="row d-flex justify-content-center">
+              {/* <div className="card"> */}
+              <div>
+                <h4
+                  className="mb-0"
+                  style={{ textAlign: "center", margin: "auto" }}
+                >
+                  DANH SÁCH IMEI
+                </h4>
+              </div>
+              <div
+                className="card-header d-flex justify-content-between align-items-center p-3"
+                style={{ borderTop: "4px solid #ffa900" }}
+              ></div>
+              <p
+                style={{
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  backgroundColor: "orange",
+                }}
+              >
+                Danh Sách Imei Đã Chọn
+              </p>
+              <p></p>
+              <div
+                className="card-body"
+                data-mdb-perfect-scrollbar="true"
+                style={{ position: "relative", height: 250, overflowY: "auto" }}
+              >
+                {/* dataSeachImeiDaBan */}
+                <ul class="list-group mb-3">
+                  {dataImeiSelected.map((imei, index) => (
+                    <ul class="list-group mb-3">
+                      <li class="list-group-item d-flex justify-content-between">
+                        <span>{index + 1}</span>
+                        <span style={{ paddingLeft: "10px" }}>
+                          {imei.codeImei}
+                        </span>
+                      </li>
+                    </ul>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </List>
     </>
   );
 };
-// const expandedRowRender = (record) => {
-//     return <UserAccountTable record={record}/>;
-// };
+
 export default OderDisplay;

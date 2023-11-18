@@ -82,7 +82,8 @@ public class Config implements WebMvcConfigurer {
     /*Quản lý người dữ liệu người sử dụng*/
     public List<UserDetails> test(PasswordEncoder encoder) {
         List<UserDetails> userDetails = new ArrayList<>();
-        for (Account account : accountService.findAll()) {
+        List<Account> accounts = new ArrayList<>(accountService.findAll()); // Tạo bản sao
+        for (Account account : accounts) {
             UserDetails details = User.withUsername(account.getEmail())
                     .password(encoder.encode(account.getPassword()))
                     .roles(String.valueOf(account.getRoles()))
@@ -91,6 +92,7 @@ public class Config implements WebMvcConfigurer {
         }
         return userDetails;
     }
+
 
     @Bean
     // authentication

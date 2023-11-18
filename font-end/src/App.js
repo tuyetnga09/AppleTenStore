@@ -1,11 +1,6 @@
-import React, { lazy, Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  useHistory,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import RamDisplay from "./components/product_component/Ram/DisplayRam";
 import RamCreateOrUpdate from "./components/product_component/Ram/DisplayRamCreate";
 import ReturnDeleteRam from "./components/product_component/Ram/DisplayReturnDelete";

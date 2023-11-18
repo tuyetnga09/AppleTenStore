@@ -183,4 +183,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             "             group by id, quantity, price, statusBillDetail, bill, CodeBill, personCreate, personUpdate, dateCreate,\n" +
             "             dateUpdate, idSKU, skuCapacity, skuColor, skuPrice, idProduct, nameProduct, totalManyOneBillDetail", nativeQuery = true)
     List<BillDetailOffLineIon> getAllBillChoXacNhan();
+
+    @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN'\n", nativeQuery = true)
+    Integer getCountBillCXN();
 }
