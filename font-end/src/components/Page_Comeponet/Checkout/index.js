@@ -907,6 +907,9 @@ const Checkout = () => {
                                   document.getElementById(`point`);
                                 quantity.value = 0;
                                 setPonit(0);
+                                notification.error({
+                                  message: "Đơn hàng không đủ điều kiện!",
+                                });
                               }
                             }
                             if (
