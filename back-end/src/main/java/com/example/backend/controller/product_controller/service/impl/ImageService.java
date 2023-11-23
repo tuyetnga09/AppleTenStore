@@ -49,6 +49,12 @@ public class ImageService implements Iservice<Image> {
         }
     }
 
+    public void insert(MultipartFile image) throws IOException {
+        Path path = Paths.get(UPLOAD_DIRECTORY, image.getOriginalFilename());
+        File fileImage = new File(path.toString());
+        Files.write(path, image.getBytes());
+    }
+
     @Override
     public void update(Image image, Integer id) {
         this.imageRepository.save(image);

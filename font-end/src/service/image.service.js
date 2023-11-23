@@ -18,6 +18,10 @@ export const addImage = (image) => {
   return httpClient.post(`/admin/image/save`, image, config);
 };
 
+export const saveImageAccount = (image) => {
+  return httpClient.post(`/admin/image/save/imgAccount`, image, config);
+};
+
 export const update = (id, image) => {
   return httpClient.put(`/admin/image/update/${id}`, image);
 };

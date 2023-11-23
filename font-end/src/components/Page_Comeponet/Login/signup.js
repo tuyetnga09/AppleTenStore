@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { readAllWard } from "../../../service/AddressAPI/ward.service";
 import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
+import {saveImageAccount} from "../../../service/image.service";
 
 const SignUp = () => {
   const { Text } = Typography;
@@ -17,6 +18,7 @@ const SignUp = () => {
 
   const [data, setData] = useState({
     user: {
+      avatar: "",
       fullName: "",
       phoneNumber: "",
       email: "",
@@ -41,6 +43,8 @@ const SignUp = () => {
   const [showDistricts, setShowDistricts] = useState(true);
   const [showWards, setShowWards] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [avt, setAvt] = useState({});
+  const form = new FormData();
 
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
@@ -149,31 +153,33 @@ const SignUp = () => {
     console.log(data);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setLoading(true);
     event.preventDefault();
 
-    const items = { ...data };
+    const items = {...data};
 
     add(items)
-      .then((res) => {
-        if (res !== null) {
-          notification.success({
-            message: "ĐĂNG KÍ",
-            description: "Đăng kí thành công",
-          });
-          setLoading(false);
-          history.push("/login");
-        } else {
-          notification.error({
-            message: "ĐĂNG KÍ",
-            description: "Đăng kí thất bại",
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((res) => {
+          if (res !== null) {
+            notification.success({
+              message: "ĐĂNG KÍ",
+              description: "Đăng kí thành công",
+            });
+            setLoading(false);
+            history.push("/login");
+          } else {
+            notification.error({
+              message: "ĐĂNG KÍ",
+              description: "Đăng kí thất bại",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    await form.append("file", avt);
+    await saveImageAccount(form);
 
     console.log(items);
   };
@@ -211,6 +217,17 @@ const SignUp = () => {
         console.log(`${error}`);
       });
   }, [province_id, district_id, showDistricts, showWards]);
+
+  function handleChangeImage(value) {
+    setAvt(value.file.originFileObj);
+    setData({
+      ...data, // Giữ nguyên các giá trị cũ của data
+      user: {
+        ...data.user,
+        avatar: value.file.originFileObj.name,
+      },
+    });
+  }
 
   return (
     <>
@@ -257,7 +274,7 @@ const SignUp = () => {
                   listType="picture"
                   accept="image/*"
                   // multiple={true}
-                  // onChange={handleChangeImage}
+                  onChange={handleChangeImage}
                 >
                   <Space direction="vertical" size={2}>
                     <Avatar

@@ -45,6 +45,7 @@ public class Account {
 
     @Column(name = "password")
     private String password;
+
     @OneToOne
     @JoinColumn(name = "id_user",referencedColumnName = "id")
     private User user;
@@ -60,8 +61,11 @@ public class Account {
 
     @Column(name = "date_update")
     private Date dateUpdate;
+
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @Enumerated(EnumType.STRING)
     private Roles roles;
+
 }
