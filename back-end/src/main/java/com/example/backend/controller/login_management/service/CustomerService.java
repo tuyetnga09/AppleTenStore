@@ -6,10 +6,12 @@ import com.example.backend.controller.login_management.model.request.FindEmploye
 import com.example.backend.controller.login_management.model.response.EmployeeResponse;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Address;
+import com.example.backend.entity.Customer;
 import com.example.backend.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerService {
     List<EmployeeResponse> findAll(FindEmployeeRequest req);
@@ -19,4 +21,6 @@ public interface CustomerService {
                 MultipartFile file);
 
     User add(User user, Address address, Account account);
+
+    Optional<Customer> getOneUser(Integer id);
 }

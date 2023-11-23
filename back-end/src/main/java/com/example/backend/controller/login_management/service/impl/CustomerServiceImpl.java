@@ -8,9 +8,11 @@ import com.example.backend.controller.login_management.service.CustomerService;
 import com.example.backend.controller.order_management.model.EmailService;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Address;
+import com.example.backend.entity.Customer;
 import com.example.backend.entity.User;
 import com.example.backend.repository.AccountRepository;
 import com.example.backend.repository.AddressRepository;
+import com.example.backend.repository.CustomerRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.untils.Message;
 import com.example.backend.untils.RestAPIRunTime;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl  implements CustomerService {
@@ -37,6 +40,9 @@ public class CustomerServiceImpl  implements CustomerService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Override
     public List<EmployeeResponse> findAll(FindEmployeeRequest req) {
@@ -149,6 +155,11 @@ public class CustomerServiceImpl  implements CustomerService {
 //        emailService.sendEmailPasword(account1.getEmail(), subject, new String(Base64.getDecoder().decode(account1.getPassword())));
 
         return user;
+    }
+
+    @Override
+    public Optional<Customer> getOneUser(Integer id) {
+        return customerRepository.findById(id);
     }
 
     private String randomMaNhanVien() {

@@ -74,7 +74,7 @@ const Checkout = () => {
     itemDiscount: 0,
     itemDiscountFreeShip: 0,
     totalMoney: 0,
-    paymentMethod: "OFFLINE",
+    paymentMethod: "TIEN_MAT",
     billDetail: [],
     quantity: 0,
     afterPrice: 0,
@@ -101,6 +101,11 @@ const Checkout = () => {
   const [ponit, setPonit] = useState(0);
   const [isModalVisiblePoint, setIsModalVisiblePoint] = useState(false); // Trạng thái hiển thị Modal
   const [pointMoney, setPointMoney] = useState(0);
+  const [formData, setFormData] = useState({
+    name: "",
+    phoneNumber: "",
+    email: "",
+  });
 
   useEffect(() => {
     const checked1 = document.getElementById("htnn_4");
@@ -300,12 +305,18 @@ const Checkout = () => {
   }
 
   useEffect(() => {
+    const storedName = localStorage.getItem('name');
+    const storedPhoneNumber = localStorage.getItem('phoneNumber');
+    const storedEmail = localStorage.getItem('email');
     calculatePriceSucsses();
     setBill({
       ...bill,
       totalMoney: totalPrice,
       moneyShip: priceShip,
       afterPrice: soTienThanhToan,
+      userName: storedName !== null ? storedName : storedUser !== null ? storedUser.user.fullName : "",
+      phoneNumber: storedPhoneNumber !== null ? storedPhoneNumber : storedUser !== null ? storedUser.user.phoneNumber : "",
+      email: storedEmail !== null ? storedEmail : storedUser !== null ? storedUser.user.email : "",
     });
   }, [products, fee, soTienThanhToan, ponit]);
   //tính số tiền cẩn thanh toán
@@ -501,10 +512,18 @@ const Checkout = () => {
     const tienMat = document.getElementById("httt-1");
     if (tienMat.checked === true) {
       setIsChecked(true);
+      setBill({
+        ...bill,
+        paymentMethod: "TIEN_MAT"
+      })
     }
     const vnpay = document.getElementById("httt-2");
     if (vnpay.checked == true) {
       setIsChecked(false);
+      setBill({
+        ...bill,
+        paymentMethod: "VN_PAY"
+      })
     }
   }
 
@@ -602,6 +621,11 @@ const Checkout = () => {
       ...bill,
       userName: event.target.value,
     });
+    // setFormData({
+    //   ...formData,
+    //   name: event.target.value,
+    // });
+    localStorage.setItem('name', event.target.value); // Lưu trữ tên vào localStorage
   }
 
   function hanldPhone(event) {
@@ -609,6 +633,11 @@ const Checkout = () => {
       ...bill,
       phoneNumber: event.target.value,
     });
+    // setFormData({
+    //   ...formData,
+    //   phoneNumber: event.target.value,
+    // });
+    localStorage.setItem('phoneNumber', event.target.value); // Lưu trữ tên vào localStorage
   }
 
   function hanldeMail(event) {
@@ -616,6 +645,11 @@ const Checkout = () => {
       ...bill,
       email: event.target.value,
     });
+    // setFormData({
+    //   ...formData,
+    //   email: event.target.value,
+    // });
+    localStorage.setItem('email', event.target.value); // Lưu trữ tên vào localStorage
   }
 
   function handleAddress(event) {
@@ -649,6 +683,9 @@ const Checkout = () => {
           .catch((error) => {
             console.log(error);
           });
+          localStorage.removeItem('name');
+          localStorage.removeItem('phoneNumber');
+          localStorage.removeItem('email');
       } else {
         createBill(bill)
           .then((response) => {
@@ -1083,7 +1120,7 @@ const Checkout = () => {
                 </div>
                 <div
                   className="d-flex justify-content-between p-2 mb-2"
-                  style={{ backgroundColor: "#e1f5fe" }}
+                  style={{ backgroundColor: "#e1f5fe"}}
                 >
                   <h5 className="fw-bold mb-0">THANH TOÁN:</h5>
                   <h5 className="fw-bold mb-0" style={{ color: "red" }}>
@@ -1102,6 +1139,8 @@ const Checkout = () => {
                       type="text"
                       class="form-control"
                       placeholder="Tên"
+                      name="name"
+                      value={bill.userName}
                       onChange={hanldeName}
                     ></input>
                     <br />
@@ -1112,6 +1151,8 @@ const Checkout = () => {
                         type="text"
                         class="form-control"
                         placeholder="Số điện thoại"
+                        name="phoneNumber"
+                        value={bill.phoneNumber}
                         onChange={hanldPhone}
                       ></input>
                     </div>
@@ -1120,6 +1161,8 @@ const Checkout = () => {
                         type="email"
                         class="form-control"
                         placeholder="Email"
+                        name="email"
+                        value={bill.email}
                         onChange={hanldeMail}
                       ></input>
                     </div>

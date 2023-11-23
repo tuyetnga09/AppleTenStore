@@ -122,7 +122,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<Voucher> getAll(FindVoucherRequest request, Pageable pageable) {
+    public List<Voucher> getAll(FindVoucherRequest request) {
         Specification<Voucher> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (request.getCode() != null) {
@@ -131,7 +131,7 @@ public class VoucherServiceImpl implements VoucherService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        Page<Voucher> voucherPage = voucherRepository.findAllVoucher(pageable, request);
+        List<Voucher> voucherPage = voucherRepository.findAllVoucher(request);
          return voucherPage;
     }
 

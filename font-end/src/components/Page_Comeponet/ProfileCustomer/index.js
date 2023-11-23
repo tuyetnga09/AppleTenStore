@@ -313,6 +313,9 @@ const ProfileCustomer = () => {
                       type="button"
                       onClick={() => {
                         localStorage.removeItem("account");
+                        localStorage.removeItem('name');
+                        localStorage.removeItem('phoneNumber');
+                        localStorage.removeItem('email');
                         window.location.replace("http://localhost:3000/");
                       }}
                     >

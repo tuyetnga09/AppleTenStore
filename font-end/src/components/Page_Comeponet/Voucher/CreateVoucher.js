@@ -20,14 +20,25 @@ import {
   useHistory,
   // useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
-
-
+import moment from 'moment';
 
 const CreateVoucher = ({}) => {
   const t = useTranslate();
   const history = useHistory();
 
   const [voucher, setVoucher] = useState([]);
+  const [voucherCreate, setVoucherCreate] = useState([]);
+
+  useEffect(() => {
+    readAll()
+      .then((response) => {
+        console.log(response.data);
+        setVoucherCreate(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
 
 
   function handleChangeDatePicker(value, name) {
@@ -47,28 +58,70 @@ const CreateVoucher = ({}) => {
   }
 
 
-const handleSubmit = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     const items = { ...voucher };
-      add(items)
-        .then(() => {
-          // Thêm mới thành công, thực hiện các hành động cần thiết
-          window.location.reload();
-          notification.success({
-            message: "SAVE VOUCHER",
-            description: "Added Voucher successfully",
-          });
-          history.push("/voucher", items);
-          return {
-            success: true,
-          };
-        })
-        .catch((error) => {
-          console.error(`Error adding voucher: ${error}`);
+    const newCode = items.code;
+    const newName = items.name;
+    const { valueMinimum, valueMaximum } = items;
+    const voucherCodes = new Set();
+    const voucherNames = new Set();
+    // Kiểm tra trùng lặp khi thêm mới hoặc chỉnh sửa
+    for (let i = 0; i < voucherCreate.length; i++) {
+      const { code, name } = voucherCreate[i];
+      voucherCodes.add(code);
+      voucherNames.add(name);
+    }
+    if (voucherCodes.has(newCode) || voucherNames.has(newName)) {
+      notification.error({
+        message: "SAVE VOUCHER",
+        description: "Vui lòng kiểm tra lại dữ liệu nhập vào",
+      });
+      return;
+    }
+    if (valueMinimum > valueMaximum) {
+      notification.error({
+        message: "SAVE VOUCHER",
+        description: "Giá trị nhỏ nhất không được lớn hơn giá trị lớn nhất",
+      });
+      return;
+    }
+    // Tiếp tục với logic thêm mới hoặc chỉnh sửa
+    add(items)
+      .then(() => {
+        // Thực hiện các hành động khi thêm voucher thành công
+        window.location.reload();
+        notification.success({
+          message: "SAVE VOUCHER",
+          description: "Added Voucher successfully",
         });
+        history.push("/voucher", items);
+        return {
+          success: true,
+        };
+      })
+      .catch((error) => {
+        console.error(`Error adding voucher: ${error}`);
+      });
   };
-  
 
+  // Hàm kiểm tra ngày
+  function disabledDate(current, type) {
+    if (type === 'start') {
+      // Chặn ngày trước ngày hiện tại
+      const today = moment().startOf('day');
+      return current && current < today;
+    }
+    if (type === 'end') {
+      // Chặn ngày bé hơn ngày bắt đầu
+      const { dateStart } = voucher; 
+      const oneDayAfterStart = moment(dateStart).add(1, 'day');
+      const today = moment().startOf('day');
+      return current && (current < oneDayAfterStart || current < today);
+    }
+    return false;
+  }
+  
   return (
     <form onSubmit={handleSubmit}>
       {/* <Create title={title}> */}
@@ -135,6 +188,7 @@ const handleSubmit = (event) => {
             >
               <DatePicker
                 type="text"
+                disabledDate={current => disabledDate(current, 'start')}
                 required
                 value={voucher.dateStart || ""}
                 onChange={(date, dateString) =>
@@ -156,6 +210,7 @@ const handleSubmit = (event) => {
             >
               <DatePicker
                 type="text"
+                disabledDate={current => disabledDate(current, 'end')}
                 required
                 value={voucher.dateEnd || ""}
                 onChange={(date, dateString) =>
@@ -177,12 +232,19 @@ const handleSubmit = (event) => {
               ]}
             >
               <Input
+                id="quantity"
+                name="quantity"
                 type="number"
+                min={0}
                 required
                 value={voucher.quantity || ""}
                 onChange={handleChange}
-                id="quantity"
-                name="quantity"
+                onBlur={(event) => {
+                  if (event.target.value <= 0) {
+                    const quantity = document.getElementById(`quantity`);
+                    quantity.value = 0;
+                  }
+                }}
               />
             </Form.Item>
             <Form.Item
@@ -196,6 +258,7 @@ const handleSubmit = (event) => {
             >
               <Input
                 type="number"
+                min={0}
                 required
                 value={voucher.conditionsApply || ""}
                 onChange={handleChange}
@@ -214,6 +277,7 @@ const handleSubmit = (event) => {
             >
               <Input
                 type="number"
+                min={0}
                 required
                 value={voucher.valueVoucher || ""}
                 onChange={handleChange}
@@ -232,6 +296,7 @@ const handleSubmit = (event) => {
             >
               <Input
                 type="number"
+                min={0}
                 required
                 value={voucher.valueMinimum || ""}
                 onChange={handleChange}
@@ -252,6 +317,7 @@ const handleSubmit = (event) => {
             >
               <Input
                 type="number"
+                min={0}
                 required
                 value={voucher.valueMaximum || ""}
                 onChange={handleChange}
@@ -270,6 +336,7 @@ const handleSubmit = (event) => {
             >
               <Input
                 type="number"
+                min={0}
                 required
                 value={voucher.typeVoucher || ""}
                 onChange={handleChange}
