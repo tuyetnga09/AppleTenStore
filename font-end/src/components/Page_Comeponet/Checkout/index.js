@@ -30,6 +30,7 @@ import {
 import { DateField } from "@refinedev/antd";
 import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
 import { getOne } from "../../../service/Point/point.service";
+import { getOneSKU } from "../../../service/sku.service";
 
 const Checkout = () => {
   const history = useHistory();
@@ -482,7 +483,7 @@ const Checkout = () => {
 
   // Hàm để hiển thị Modal khi cần
   const handleEditClick = (record) => {
-    if (totalPrice <= 20000000) {
+    if (totalPrice < 20000000) {
       notification.error({
         message: "VOUCHER",
         description: "Đơn hàng chưa đủ điều kiện (Tối thiểu 20.000.000 đ)",
@@ -631,52 +632,118 @@ const Checkout = () => {
         bill.province,
     });
   }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    setLoading(true);
-    const tienMat = document.getElementById("httt-1");
-    if (tienMat.checked === true) {
-      localStorage.removeItem("bill");
-      if (idAccount !== "") {
-        createBillAccount(bill)
-          .then((response) => {
-            console.log(response.data);
-            setLoading(false);
-            localStorage.setItem("bill2", JSON.stringify(bill));
-            history.push(`/paydone`);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        createBill(bill)
-          .then((response) => {
-            console.log(response.data);
-            setLoading(false);
-            localStorage.setItem("bill2", JSON.stringify(bill));
-            history.push(`/paydone`);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        sessionStorage.removeItem("cartItems");
-        setProducts([]);
-        setTotalPrice(0);
-      }
-    }
-    const vnpay = document.getElementById("httt-2");
-    if (vnpay.checked == true) {
-      localStorage.setItem("bill", JSON.stringify(bill));
-      getPay(soTienThanhToan)
-        .then((res) => {
-          setLoading(false);
-          window.location.replace(res.data);
+  const [checked, setChecked] = useState(false);
+  function checkQuantitySubmit() {
+    bill.billDetail.map((bd) => {
+      getOneSKU(bd.sku)
+        .then((response) => {
+          if (response.data.quantity < bd.quantity) {
+            setChecked(false);
+          } else {
+            setChecked(true);
+          }
         })
         .catch((err) => {
           console.log(err);
         });
+    });
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    if (checked) {
+      setLoading(true);
+      const tienMat = document.getElementById("httt-1");
+      if (tienMat.checked === true) {
+        localStorage.removeItem("bill");
+        if (idAccount !== "") {
+          createBillAccount(bill)
+            .then((response) => {
+              console.log(response.data);
+              setLoading(false);
+              localStorage.setItem("bill2", JSON.stringify(bill));
+              history.push(`/paydone`);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        } else {
+          createBill(bill)
+            .then((response) => {
+              console.log(response.data);
+              setLoading(false);
+              localStorage.setItem("bill2", JSON.stringify(bill));
+              history.push(`/paydone`);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          sessionStorage.removeItem("cartItems");
+          setProducts([]);
+          setTotalPrice(0);
+        }
+      }
+      const vnpay = document.getElementById("httt-2");
+      if (vnpay.checked == true) {
+        localStorage.setItem("bill", JSON.stringify(bill));
+        getPay(soTienThanhToan)
+          .then((res) => {
+            setLoading(false);
+            window.location.replace(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    } else {
+      notification.error({
+        message: "Mặt hàng đã có người mua hết!",
+      });
     }
+
+    // setLoading(true);
+    // const tienMat = document.getElementById("httt-1");
+    // if (tienMat.checked === true) {
+    //   localStorage.removeItem("bill");
+    //   if (idAccount !== "") {
+    //     createBillAccount(bill)
+    //       .then((response) => {
+    //         console.log(response.data);
+    //         setLoading(false);
+    //         localStorage.setItem("bill2", JSON.stringify(bill));
+    //         history.push(`/paydone`);
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //   } else {
+    //     createBill(bill)
+    //       .then((response) => {
+    //         console.log(response.data);
+    //         setLoading(false);
+    //         localStorage.setItem("bill2", JSON.stringify(bill));
+    //         history.push(`/paydone`);
+    //       })
+    //       .catch((error) => {
+    //         console.log(error);
+    //       });
+    //     sessionStorage.removeItem("cartItems");
+    //     setProducts([]);
+    //     setTotalPrice(0);
+    //   }
+    // }
+    // const vnpay = document.getElementById("httt-2");
+    // if (vnpay.checked == true) {
+    //   localStorage.setItem("bill", JSON.stringify(bill));
+    //   getPay(soTienThanhToan)
+    //     .then((res) => {
+    //       setLoading(false);
+    //       window.location.replace(res.data);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // }
   }
 
   function handleDefaultAddress(event) {
@@ -1103,6 +1170,7 @@ const Checkout = () => {
                       class="form-control"
                       placeholder="Tên"
                       onChange={hanldeName}
+                      required
                     ></input>
                     <br />
                   </div>
@@ -1113,6 +1181,7 @@ const Checkout = () => {
                         class="form-control"
                         placeholder="Số điện thoại"
                         onChange={hanldPhone}
+                        required
                       ></input>
                     </div>
                     <div class="col-md-6">
@@ -1121,6 +1190,7 @@ const Checkout = () => {
                         class="form-control"
                         placeholder="Email"
                         onChange={hanldeMail}
+                        required
                       ></input>
                     </div>
                   </div>
@@ -1328,6 +1398,7 @@ const Checkout = () => {
                     // type="submit"
                     name="btnDatHang"
                     type="submit"
+                    onMouseOver={() => checkQuantitySubmit()}
                   >
                     Đặt hàng
                   </button>

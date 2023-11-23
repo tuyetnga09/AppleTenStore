@@ -50,6 +50,7 @@ import {
   updateAllCVC,
   getAllBillCXN,
   getCountBillChoXacNhan,
+  returnBillById,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -94,12 +95,18 @@ const OderDisplay = ({}) => {
   const [oder, setOder] = useState([]);
   const [user, setUser] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
+    useState(false); // Trạng thái hiển thị Modal
   const breakpoint = Grid.useBreakpoint();
   const [load, setLoad] = useState(true);
   const [billCXN, setBillCXN] = useState([]);
   const [pendingBills, setPendingBills] = useState(0);
   const [playSound, setPlaySound] = useState(true);
   const [show, setShow] = useState(true);
+  const [billReturn, setBillReturn] = useState({
+    id: null,
+    note: null,
+  });
 
   const orderSelectProps = {
     options: [
@@ -123,6 +130,24 @@ const OderDisplay = ({}) => {
   // Hàm để ẩn Modal
   const handleCancel = () => {
     setIsModalVisible(false);
+  };
+
+  const handleNoteReturnsClick = (record) => {
+    setBillReturn({
+      ...billReturn,
+      id: record.id,
+    });
+    setIsModalVisibleNoteReturns(true);
+  };
+
+  // Hàm để ẩn Modal
+  const handleNoteReturnsCancel = () => {
+    setIsModalVisibleNoteReturns(false);
+    console.log(billReturn);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
   };
 
   const [filtersNoDate, setFiltersNoDate] = useState({
@@ -459,6 +484,16 @@ const OderDisplay = ({}) => {
   function delete2(id) {
     deleteBillById(id).then((response) => console.log(response.data));
     setLoad(!load);
+    notification.error({
+      message: "Đã hủy đơn hàng",
+    });
+  }
+
+  function returnBill(id, noteReturn) {
+    returnBillById(id, idAccount, noteReturn).then((response) =>
+      console.log(response.data)
+    );
+    setLoad(!load);
   }
 
   function checkSoluongImei() {
@@ -520,6 +555,28 @@ const OderDisplay = ({}) => {
           console.log(`${error}`);
         });
     }
+  };
+
+  const handleNoteReturns = (event) => {
+    setBillReturn({
+      ...billReturn,
+      note: event.target.value,
+    });
+  };
+
+  const handleSubmitReturns = (event) => {
+    event.preventDefault();
+    returnBill(billReturn.id, billReturn.note);
+    setIsModalVisibleNoteReturns(false);
+    setLoad(!load);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+    notification.success({
+      message: "Trả hàng",
+      description: "Xác nhận trả hàng",
+    });
   };
 
   const expandedRowRender = (record) => {
@@ -945,6 +1002,58 @@ const OderDisplay = ({}) => {
                                   >
                                     Đã thanh toán
                                   </Menu.Item>
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "red",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      handleNoteReturnsClick(record)
+                                    }
+                                  >
+                                    Trả hàng
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
+                          ) : record.statusBill === "DA_THANH_TOAN" ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "red",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      handleNoteReturnsClick(record)
+                                    }
+                                  >
+                                    Trả hàng
+                                  </Menu.Item>
                                 </Menu>
                               }
                               trigger={["click"]}
@@ -965,6 +1074,31 @@ const OderDisplay = ({}) => {
                 </List>
               </Col>
             </Row>
+            <Modal
+              visible={isModalVisibleNoteReturns}
+              onCancel={handleNoteReturnsCancel}
+              width={550}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <form onSubmit={handleSubmitReturns}>
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea1" class="form-label">
+                    Lí do hủy đơn:
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="exampleFormControlTextarea1"
+                    rows="3"
+                    required
+                    onChange={handleNoteReturns}
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">
+                  Xác nhận
+                </button>
+              </form>
+            </Modal>
           </Content>
         </Layout>
       </Layout>

@@ -216,4 +216,9 @@ public class BillController {
         this.billService.deleteBill(id);
     }
 
+    @DeleteMapping(value = "/return/{id}")
+    public void returnBill(@PathVariable Integer id, @RequestParam("idAccount") Integer idAccount, @RequestParam("noteReturn") String noteReturn){
+        this.billService.returnBill(idAccount, id, noteReturn);
+    }
+
 }

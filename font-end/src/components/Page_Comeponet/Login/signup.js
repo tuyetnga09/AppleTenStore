@@ -60,6 +60,15 @@ const SignUp = () => {
     } else {
       setShowDistricts(false);
       setShowWards(false);
+      setData({
+        ...data,
+        address: {
+          ...data.address,
+          tinhThanhPho: "",
+          quanHuyen: "",
+          xaPhuong: "",
+        },
+      });
     }
   };
 
@@ -78,20 +87,37 @@ const SignUp = () => {
       setShowWards(true);
     } else {
       setShowWards(false);
+      setData({
+        ...data,
+        address: {
+          ...data.address,
+          quanHuyen: "",
+          xaPhuong: "",
+        },
+      });
     }
   };
 
   const handleWard = (event) => {
-    const target = event.target;
-    const value = target.value;
-    setData({
-      ...data, // Giữ nguyên các giá trị cũ của data
-      address: {
-        ...data.address, // Giữ nguyên các giá trị cũ của user
-        xaPhuong: document.getElementById(value).innerText, // Cập nhật theo giá trị từ ô input
-      },
-    });
-    // console.log(addAddress);
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setData({
+        ...data, // Giữ nguyên các giá trị cũ của data
+        address: {
+          ...data.address, // Giữ nguyên các giá trị cũ của user
+          xaPhuong: document.getElementById(value).innerText, // Cập nhật theo giá trị từ ô input
+        },
+      });
+    } else {
+      setData({
+        ...data,
+        address: {
+          ...data.address,
+          xaPhuong: "",
+        },
+      });
+    }
   };
 
   const handleUser = (event) => {
@@ -150,31 +176,41 @@ const SignUp = () => {
   };
 
   const handleSubmit = (event) => {
-    setLoading(true);
     event.preventDefault();
 
     const items = { ...data };
 
-    add(items)
-      .then((res) => {
-        if (res !== null) {
-          notification.success({
-            message: "ĐĂNG KÍ",
-            description: "Đăng kí thành công",
-          });
-          setLoading(false);
-          history.push("/login");
-        } else {
-          notification.error({
-            message: "ĐĂNG KÍ",
-            description: "Đăng kí thất bại",
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
+    if (
+      data.address.tinhThanhPho == "" ||
+      data.address.quanHuyen == "" ||
+      data.address.xaPhuong == ""
+    ) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Mời chọn địa chỉ",
       });
-
+    } else {
+      setLoading(true);
+      add(items)
+        .then((res) => {
+          if (res !== null) {
+            notification.success({
+              message: "ĐĂNG KÍ",
+              description: "Đăng kí thành công",
+            });
+            setLoading(false);
+            history.push("/login");
+          } else {
+            notification.error({
+              message: "ĐĂNG KÍ",
+              description: "Đăng kí thất bại",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
     console.log(items);
   };
 

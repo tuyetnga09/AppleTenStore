@@ -10,4 +10,6 @@ public interface PointConversionRepository extends JpaRepository<PointConversion
 
     @Query(value = "select * from point_conversion order by id desc limit 1", nativeQuery = true)
     PointConversion getOneLatest();
+
+    PointConversion findByStatus(Integer status);
 }

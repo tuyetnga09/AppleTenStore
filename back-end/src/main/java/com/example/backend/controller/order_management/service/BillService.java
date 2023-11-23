@@ -26,6 +26,8 @@ public interface BillService {
 
     void updateStatusBill(Integer idAccount,int id);
 
+    void returnBill(Integer idAccount, Integer id, String noteReturn);
+
     Bill findByCode(String code);
 
     List<Bill> listBillByIdAccount(Integer id);
