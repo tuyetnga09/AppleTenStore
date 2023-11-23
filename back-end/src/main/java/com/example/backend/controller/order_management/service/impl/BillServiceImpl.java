@@ -123,7 +123,7 @@ public class BillServiceImpl implements BillService {
                 .bill(bill)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .dateCreate(new Date(new java.util.Date().getTime()))
-                .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
+                .actionDescription(request.getPaymentMethod().equals("OFFLINE") ? "Chờ thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient x : request.getBillDetail()) {
@@ -146,7 +146,7 @@ public class BillServiceImpl implements BillService {
 
         // hình thức thanh toán của hoá đơn
         Payments payments = Payments.builder()
-                .method(request.getPaymentMethod().equals("paymentReceive") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
+                .method(request.getPaymentMethod().equals("OFFLINE") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                 .bill(bill)
                 .moneyPayment(request.getTotalMoney())
                 .dateCreate(new Date(new java.util.Date().getTime()))
