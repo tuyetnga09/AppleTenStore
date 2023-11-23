@@ -80,7 +80,6 @@ const VoucherDisplay = ({}) => {
   const handleEditClick = (record) => {
     setEditedVoucher(record);
     setIsModalVisible(true);
-    console.log(editedVoucher);
   };
 
   // Hàm để ẩn Modal

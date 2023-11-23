@@ -16,12 +16,14 @@ import {
   useHistory,
   // useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
+import moment from 'moment';
 
 const UpdateVoucher = ({editedVoucher}) => {
   const t = useTranslate();
   const history = useHistory();
 
   const [voucher, setVoucher] = useState([]);
+  const [voucherCreate, setVoucherCreate] = useState([]);
 
   useEffect(() => {
     detail(editedVoucher.id)
@@ -32,6 +34,14 @@ const UpdateVoucher = ({editedVoucher}) => {
     .catch((error) => {
       console.log(`${error}`);
     });
+    readAll()
+      .then((response) => {
+        console.log(response.data);
+        setVoucherCreate(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   }, []);
 
   function handleChangeDatePicker(value, name) {
@@ -53,6 +63,14 @@ const UpdateVoucher = ({editedVoucher}) => {
 const handleSubmit = (event) => {
     event.preventDefault();
     const items = { ...voucher };
+    const { valueMinimum, valueMaximum } = items;
+    if (valueMinimum > valueMaximum) {
+      notification.error({
+        message: "SAVE VOUCHER",
+        description: "Giá trị nhỏ nhất không được lớn hơn giá trị lớn nhất",
+      });
+      return;
+    }
       update(editedVoucher.id, items)
         .then(() => {
           // Cập nhật thành công, thực hiện các hành động cần thiết
@@ -73,6 +91,24 @@ const handleSubmit = (event) => {
 
   const dateStart = dayjs(voucher.dateStart);
   const dateEnd = dayjs(voucher.dateEnd);
+
+   // Hàm kiểm tra ngày
+  //  function disabledDate(current, type) {
+  //   if (type === 'start') {
+  //     // Chặn ngày trước ngày hiện tại
+  //     const today = moment().startOf('day');
+  //     return current && current < today;
+  //   }
+  //   if (type === 'end') {
+  //     // Chặn ngày bé hơn ngày bắt đầu
+  //     const { dateStart } = voucher; 
+  //     const oneDayAfterStart = moment(dateStart).add(1, 'day');
+  //     const today = moment().startOf('day');
+  //     return current && (current < oneDayAfterStart || current < today);
+  //   }
+  //   return false;
+  // }
+
   return (
     <form onSubmit={handleSubmit}>
                     <Form
@@ -125,6 +161,7 @@ const handleSubmit = (event) => {
                             
                             <DatePicker
                                 type="text"
+                                // disabledDate={current => disabledDate(current, 'start')}
                                 required
                                 defaultValue={dateStart.locale("vi-VN")}
                                 onChange={(date, dateString) =>
@@ -146,6 +183,7 @@ const handleSubmit = (event) => {
                             >
                             <DatePicker
                                 type="text"
+                                // disabledDate={current => disabledDate(current, 'end')}
                                 required
                                 defaultValue={dateEnd.locale("vi-VN")}
                                 onChange={(date, dateString) =>

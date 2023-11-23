@@ -23,7 +23,7 @@ public interface VoucherService {
 
     Boolean changeStatus(Integer id);
 
-    Page<Voucher> getAll(FindVoucherRequest request, Pageable pageable);
+    List<Voucher> getAll(FindVoucherRequest request);
 
     Voucher findByIdVoucher(Integer id);
 
