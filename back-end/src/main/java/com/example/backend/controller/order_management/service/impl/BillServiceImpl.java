@@ -247,6 +247,8 @@ public class BillServiceImpl implements BillService {
                     .statusBill(StatusBill.CHO_XAC_NHAN)
                     .dateCreate(LocalDate.now())
                     .account(account)
+                    .numberOfPointsUsed(request.getPoint())
+                    .pointConversionAmount(request.getPointConversionAmount())
                     .build();
             billRepository.save(bill);
 
@@ -488,6 +490,61 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public void returnBill(Integer idAccount, Integer id, String noteReturn) {
+        Bill bill = billRepository.findById(id).get();
+        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
+            if (bill.getNumberOfPointsUsed() != null){
+                if (bill.getNumberOfPointsUsed() != 0){
+                Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
+                User user = userRepository.findById(account1.getUser().getId()).get();
+                user.setPoints(user.getPoints() + bill.getNumberOfPointsUsed());
+                userRepository.save(user);
+                }
+            }
+        }else {
+            if (bill.getAccount() != null){
+                Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
+                User user = userRepository.findById(account1.getUser().getId()).get();
+                if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == 0){
+                    user.setPoints(user.getPoints() - 100);
+                } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == 0){
+                    user.setPoints(user.getPoints() - 200);
+                } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == 0){
+                    user.setPoints(user.getPoints() - 300);
+                } else {
+                    user.setPoints(user.getPoints() - 500);
+                }
+            }
+        }
+        bill.setStatusBill(StatusBill.TRA_HANG);
+        bill.setNoteReturn(noteReturn);
+        Account account = acountRepository.findById(idAccount).get();
+        bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
+        bill.setDateUpdate(LocalDate.now());
+        billRepository.save(bill);
+        if (voucherDetailRepository.listVoucherDetailByIdBill(id) != null){
+        for (VoucherDetail voucherDetail : voucherDetailRepository.listVoucherDetailByIdBill(id)
+             ) {
+            Voucher voucher = voucherRepository.findById(voucherDetail.getVoucher().getId()).get();
+            voucher.setQuantity(voucher.getQuantity() + 1);
+            voucherRepository.save(voucher);
+        }}
+        for (BillDetails billDetails : billDetailRepository.findByBillDetailOfIdBill(id)
+             ) {
+            SKU sku = skuRepositoty.findById(billDetails.getSku().getId()).get();
+            sku.setQuantity(sku.getQuantity() + billDetails.getQuantity());
+            skuRepositoty.save(sku);
+            for (ImeiDaBan imeiDaBan : imeiDaBanRepository.findImeiDaBanByBillDetail_Id(billDetails.getId())
+                 ) {
+                imeiDaBanRepository.deleteById(imeiDaBan.getId());
+                Imei imei = imeiRepository.findByCodeImei(imeiDaBan.getCodeImei());
+                imei.setStatus(0);
+                imeiRepository.save(imei);
+            }
+        }
+    }
+
+    @Override
     public Bill findByCode(String code) {
         return billRepository.findByCode(code).orElse(null);
     }
@@ -527,6 +584,28 @@ public class BillServiceImpl implements BillService {
         this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
         this.billRepository.deleteBill(id);
+        Bill bill = billRepository.findById(id).get();
+        if (bill.getNumberOfPointsUsed() != null){
+            if (bill.getNumberOfPointsUsed() != 0){
+                Account account = acountRepository.findById(bill.getAccount().getId()).get();
+                User user = userRepository.findById(account.getUser().getId()).get();
+                user.setPoints(user.getPoints() + bill.getNumberOfPointsUsed());
+                userRepository.save(user);
+            }
+        }
+        for (BillDetails billDetails : billDetailRepository.findByBillDetailOfIdBill(id)
+        ) {
+            SKU sku = skuRepositoty.findById(billDetails.getSku().getId()).get();
+            sku.setQuantity(sku.getQuantity() + billDetails.getQuantity());
+            skuRepositoty.save(sku);
+        }
+        if (voucherDetailRepository.listVoucherDetailByIdBill(id) != null){
+            for (VoucherDetail voucherDetail : voucherDetailRepository.listVoucherDetailByIdBill(id)
+            ) {
+                Voucher voucher = voucherRepository.findById(voucherDetail.getVoucher().getId()).get();
+                voucher.setQuantity(voucher.getQuantity() + 1);
+                voucherRepository.save(voucher);
+            }}
     }
 
     @Override
@@ -539,6 +618,11 @@ public class BillServiceImpl implements BillService {
     public List<BillDetailOffLineIon> getAllBillChoXacNhan() {
         List<BillDetailOffLineIon> billDetailsList = billRepository.getAllBillChoXacNhan();
         return billDetailsList;
+    }
+
+    @Override
+    public Integer getCountBillCXN() {
+        return billRepository.getCountBillCXN();
     }
 
 }

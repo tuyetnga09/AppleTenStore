@@ -27,6 +27,9 @@ const Login = () => {
             description: "Đăng nhập thành công",
           });
           localStorage.setItem("account", JSON.stringify(account));
+          localStorage.removeItem('name');
+          localStorage.removeItem('phoneNumber');
+          localStorage.removeItem('email');
           // history.replace("/");
           if (res.data.roles === "CUSTOMER") {
             window.location.replace("/");
@@ -101,6 +104,15 @@ const Login = () => {
                 <span></span>
                 <span></span>
                 Quên mật khẩu
+              </button>
+            </Link>
+            <Link to="/">
+              <button>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                Trở lại
               </button>
             </Link>
           </form>

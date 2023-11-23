@@ -34,10 +34,14 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import queryString from "query-string";
 import { DateField, List, NumberField } from "@refinedev/antd";
-import { readAllCartOff } from "../../../service/cart.service";
+import {
+  readAllCartOff,
+  getQuantityCartDetailBySku,
+} from "../../../service/cart.service";
 import {
   addCustomerOffline,
   getCustomer,
+  getOne,
 } from "../../../service/Customer/customer.service";
 
 import {
@@ -846,11 +850,19 @@ export default function SellSmart() {
       });
   }
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  };
+  const [user, setUser] = useState(true);
   async function createBillSusses(
     codeBill,
     codeAccount,
     productList,
-    customBilll
+    selectedValues,
+    selectedOptions
   ) {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 800]);
@@ -864,9 +876,12 @@ export default function SellSmart() {
     //dữ liệu
     const unaccentedCodeBill = unidecode(codeBill);
     const unaccentedCodeAccount = unidecode(codeAccount);
-    // const formattedDate = format(new Date(productList.dateCreate), 'dd/MM/yyyy');
-    // const khachHang = unidecode(customBilll.userName);
-    // const sdt = unidecode(customBilll.phoneNumber);
+    const formattedDate = new Date();
+    const dateCreateText = formattedDate.toLocaleDateString();
+    const totalPriceCode = unidecode(formatCurrency(totalPrice));
+    const totalSoTienThanhToan = unidecode(formatCurrency(soTienThanhToan));
+    const nameCustomer = unidecode(user.fullName);
+    const phoneNumber = user.phoneNumber;
 
     const drawText = (text, options) =>
       page.drawText(text, { font: customFont, ...options });
@@ -893,21 +908,25 @@ export default function SellSmart() {
       font: font,
       color: rgb(0, 0, 0),
     });
-    drawText(`Ngay mua: `, {
+    drawText(`Ngay mua: ${dateCreateText}`, {
       x: 50,
       y: height - 150,
       size: 15,
       font: font,
       color: rgb(0, 0, 0),
     });
-    drawText(`Khach hang: ` + "                               SDT: ", {
-      x: 50,
-      y: height - 180,
-      size: 15,
-      font: font,
-      color: rgb(0, 0, 0),
-    });
-    drawText(`Hinh thuc thanh toan: `, {
+    drawText(
+      `Khach hang: ${nameCustomer}` +
+        `                               SDT: ${phoneNumber}`,
+      {
+        x: 50,
+        y: height - 180,
+        size: 15,
+        font: font,
+        color: rgb(0, 0, 0),
+      }
+    );
+    drawText(`Hinh thuc thanh toan: ${selectedOptions}`, {
       x: 50,
       y: height - 210,
       size: 15,
@@ -992,14 +1011,14 @@ export default function SellSmart() {
       product.nameProduct,
       product.skuCapacity,
       product.skuColor,
-      product.price,
+      unidecode(formatCurrency(product.price)),
       product.quantity,
-      product.totalManyOneBillDetail,
+      unidecode(formatCurrency(product.totalManyOneBillDetail)),
     ]);
 
     drawTable(50, height - 260, 500, 150, columns, data);
 
-    drawText(`Tong tien hang: ${totalPrice}`, {
+    drawText(`Tong tien hang: ${totalPriceCode}`, {
       x: 50,
       y: height - 440,
       size: 15,
@@ -1007,7 +1026,7 @@ export default function SellSmart() {
       color: rgb(0, 0, 0),
     });
 
-    drawText(`Tong cong tien thanh toan: ${soTienThanhToan}`, {
+    drawText(`Tong cong tien thanh toan: ${totalSoTienThanhToan}`, {
       x: 50,
       y: height - 470,
       size: 15,
@@ -1073,7 +1092,8 @@ export default function SellSmart() {
         dataBillOffLine.codeBill,
         dataBillOffLine.codeAccount,
         dataBillDetailOffline,
-        customBill
+        selectedValues,
+        selectedOptions
       );
       if (checkSoluongImei() === true) {
         if (tienThua <= 0) {
@@ -1091,9 +1111,9 @@ export default function SellSmart() {
                 //     setProductList(response.data);
                 //   }
                 // );
-                getThongTinTT(dataBillOffLine.codeBill).then((response) => {
-                  setCustomBill(response.data);
-                });
+                // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
+                //   setCustomBill(response.data);
+                // });
                 const blob = new Blob([pdfBytes], { type: "application/pdf" });
                 const url = URL.createObjectURL(blob);
                 window.open(url);
@@ -1187,7 +1207,6 @@ export default function SellSmart() {
       quantity: 1,
       idAccount: idAccount,
     };
-
     addOrUpdateBillDetail(addToCartData)
       .then((response) => {
         getBillDetailOfBill(codeBill)
@@ -1991,6 +2010,13 @@ export default function SellSmart() {
       ...dataDoneBill,
       idCustomer: value,
     });
+    getOne(value)
+      .then((response) => {
+        setUser(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   };
 
   const handleClear = () => {
@@ -2302,6 +2328,14 @@ export default function SellSmart() {
                     <div className="app-title">
                       <ul className="app-breadcrumb breadcrumb">
                         <li className="breadcrumb-item">
+                          <a
+                            className="btn btn-secondary luu-va-in"
+                            href="/dashboard"
+                            style={{ marginBottom: "10px" }}
+                          >
+                            Quay về
+                          </a>
+                          <br />
                           <a href="#">
                             <b>POS bán hàng</b>
                           </a>
@@ -2457,11 +2491,18 @@ export default function SellSmart() {
                         dataIndex="quantitySKU"
                         title="Kho"
                         render={(value) => {
-                          return <NumberField value={value} />;
+                          return value == 0 ? (
+                            <Badge
+                              className="site-badge-count-109"
+                              count={"Hết hàng"}
+                              style={{ backgroundColor: "orangered" }}
+                            />
+                          ) : (
+                            <NumberField value={value} />
+                          );
                         }}
                         sorter={(a, b) => a.quantitySKU - b.quantitySKU}
                       />
-
                       {/* test nút mới add sp vào bill detai */}
                       <Table.Column
                         align="center"
@@ -2476,35 +2517,45 @@ export default function SellSmart() {
                                   record.idSKU +
                                     "  - " +
                                     record.price +
-                                    " ----record ----1"
+                                    " ----record ----" +
+                                    record.quantitySKU
                                 );
                                 if (dataBillOffLine?.codeBill != null) {
-                                  handleAddBillDetail(
-                                    record.idSKU,
-                                    record.price,
-                                    dataBillOffLine?.codeBill
-                                  );
-                                  if (!arrIdSku.includes(record.idSKU)) {
-                                    arrIdSku.push(record.idSKU);
-                                  }
-                                  setDataDoneBill({
-                                    ...dataDoneBill,
-                                    idSku: arrIdSku,
-                                  });
-                                  for (
-                                    let index = 0;
-                                    index < dataBillDetailOffline.length;
-                                    index++
-                                  ) {
-                                    if (
-                                      dataBillDetailOffline[index].idSKU ===
-                                      record.idSKU
+                                  if (record.quantitySKU <= 0) {
+                                    notification.error({
+                                      message: "ADD TO CART",
+                                      description:
+                                        "Sản phẩm tạm thời hết hàng!",
+                                    });
+                                  } else {
+                                    handleAddBillDetail(
+                                      record.idSKU,
+                                      record.price,
+                                      dataBillOffLine?.codeBill
+                                    );
+                                    if (!arrIdSku.includes(record.idSKU)) {
+                                      arrIdSku.push(record.idSKU);
+                                    }
+                                    setDataDoneBill({
+                                      ...dataDoneBill,
+                                      idSku: arrIdSku,
+                                    });
+                                    for (
+                                      let index = 0;
+                                      index < dataBillDetailOffline.length;
+                                      index++
                                     ) {
-                                      const quantity = document.getElementById(
-                                        `quantity-${index}`
-                                      );
-                                      quantity.value =
-                                        parseInt(quantity.value) + 1;
+                                      if (
+                                        dataBillDetailOffline[index].idSKU ===
+                                        record.idSKU
+                                      ) {
+                                        const quantity =
+                                          document.getElementById(
+                                            `quantity-${index}`
+                                          );
+                                        quantity.value =
+                                          parseInt(quantity.value) + 1;
+                                      }
                                     }
                                   }
                                 } else {
@@ -3316,7 +3367,7 @@ export default function SellSmart() {
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
-                          <button
+                          {/* <button
                             className="btn btn-danger luu-san-pham"
                             type="button"
                             style={{
@@ -3332,7 +3383,7 @@ export default function SellSmart() {
                           >
                             {" "}
                             Chờ thanh toán
-                          </button>
+                          </button> */}
                           <button
                             className="btn btn-danger luu-va-in"
                             type="button"
@@ -3344,30 +3395,29 @@ export default function SellSmart() {
                           >
                             Lưu hóa đơn
                           </button>
-                          <a
+                          {/* <a
                             className="btn btn-secondary luu-va-in"
                             href="/dashboard"
                             style={{ marginBottom: "10px" }}
                           >
                             Quay về
-                          </a>
+                          </a> */}
+                          <Space size="middle">
+                            <Badge count={slHoaDonCho} overflowCount={10}>
+                              <button
+                                className="btn btn-success luu-va-in"
+                                type="button"
+                                style={{
+                                  marginRight: "10px",
+                                  marginBottom: "10px",
+                                }}
+                                onClick={() => handleEditClickBill()}
+                              >
+                                Hóa đơn chờ
+                              </button>
+                            </Badge>
+                          </Space>
                         </div>
-
-                        <Space size="middle">
-                          <Badge count={slHoaDonCho} overflowCount={10}>
-                            <button
-                              className="btn btn-success luu-va-in"
-                              type="button"
-                              style={{
-                                marginRight: "10px",
-                                marginBottom: "10px",
-                              }}
-                              onClick={() => handleEditClickBill()}
-                            >
-                              Hóa đơn chờ
-                            </button>
-                          </Badge>
-                        </Space>
                       </div>
                     </div>
                   </div>

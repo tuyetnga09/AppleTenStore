@@ -51,6 +51,9 @@ public class DBContext implements CommandLineRunner {
     @Autowired
     private PaymentsRepository paymentsRepository;
 
+    @Autowired
+    private PointConversionRepository pointConversionRepository;
+
     @Override
     public void run(String... args) throws Exception {
         addColor("CL01", "Green");
@@ -71,6 +74,7 @@ public class DBContext implements CommandLineRunner {
         addCategory("CT2", "Samsung");
         addCategory("CT3", "Oppo");
         addCategory("CT4", "Xiaomi");
+        addCategory("CT5", "Huawei");
 
         // Thêm dữ liệu cho bảng Capacity
         addCapacity("C1", "32GB");
@@ -126,11 +130,11 @@ public class DBContext implements CommandLineRunner {
         addUser("Van Hieu", LocalDate.of(2003, 9, 8), "0355933499", "vanhieu673@gmail.com", true, 50000, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Account
-        addAccount("NV1","trunghieunguyen673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV2","congminh673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV3","hongphong673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV4","ngaptt1409@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV5","hoanghieu673@gmail.com", "123456", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV1","trunghieunguyen673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV2","congminh673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV3","hongphong673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV4","ngaptt1409@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+        addAccount("NV5","hoanghieu673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Product
         addProduct("PR1", "Iphone 11 Pro Max", "Khung viền thép", 0, new BigDecimal(11000000));
@@ -146,6 +150,8 @@ public class DBContext implements CommandLineRunner {
         addPayment("PAY4", 4, new BigDecimal("200.75"), "Payment for order 4", "Alice Brown", TypePayment.CHUYEN_KHOAN, null);
         addPayment("PAY5", 5, new BigDecimal("150.25"), "Payment for order 5", "Charlie Wilson", TypePayment.TIEN_MAT, StatusPayment.THANH_TOAN);
 
+        // Thêm dữ liệu cho bảng Point Conversion
+        addPointConversion();
 }
 
     private void addColor(String code, String name) {
@@ -264,6 +270,14 @@ public class DBContext implements CommandLineRunner {
                     .typePayment(typePayment)
                     .build();
             paymentsRepository.save(payment);
+        }
+    }
+
+    private void addPointConversion() {
+        if (pointConversionRepository.findByStatus(0) == null) {
+            PointConversion pointConversion = PointConversion.builder()
+                    .pointsConsumptionMoney(1000).build();
+            pointConversionRepository.save(pointConversion);
         }
     }
     public static void main(String[] args) {

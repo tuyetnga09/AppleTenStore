@@ -35,4 +35,5 @@ public class BillRequestOnlineAccount {
     private Integer idUser;
     private Integer point;
     private Integer pointHistory;
+    private BigDecimal pointConversionAmount;
 }

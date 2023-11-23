@@ -340,7 +340,7 @@ export default function CartDisplay() {
                                             notification.error({
                                               message: "ADD TO CART",
                                               description:
-                                                "Số lượng phải lớn hơn 0",
+                                                "Vui lòng kiểm tra lại số lượng",
                                             });
                                             const quantity =
                                               document.getElementById(
@@ -394,7 +394,7 @@ export default function CartDisplay() {
                                             notification.error({
                                               message: "ADD TO CART",
                                               description:
-                                                "Số lượng phải lớn hơn 0",
+                                                "Vui lòng kiểm tra lại số lượng",
                                             });
                                           } else {
                                             // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn

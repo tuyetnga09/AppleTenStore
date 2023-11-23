@@ -50,7 +50,7 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
             "    type_voucher, value_maximum, value_minimum, value_voucher,\n" +
             "    date_create, date_update, code, name, person_create, person_update\n" +
             "FROM voucher WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
-    Page<Voucher> findAllVoucher(Pageable pageable, FindVoucherRequest request);
+    List<Voucher> findAllVoucher(FindVoucherRequest request);
 
     @Query(value = "SELECT\n" +
             "    conditions_apply, date_end, date_start, id, quantity, status,\n" +

@@ -58,7 +58,7 @@ public class VoucherRestController {
 
     @GetMapping("/vouchers")
     public ResponseEntity hienThiVoucher(@ModelAttribute FindVoucherRequest request, Pageable pageable) {
-        return new ResponseEntity(voucherService.getAll(request, pageable ), HttpStatus.OK);
+        return new ResponseEntity(voucherService.getAll(request), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
