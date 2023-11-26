@@ -56,3 +56,11 @@ export const searchWithDate = (page) => {
 export const searchVoucher = (code) => {
   return httpClient.get(`/admin/voucher/search-voucher/${code}`);
 };
+
+export const updateStatusVoucher = (id) => {
+  return httpClient.put(`/voucher/updateStatusVoucher/${id}`);
+};
+
+export const returnStatusVoucher = (id) => {
+  return httpClient.put(`/voucher/returnStatusVoucher/${id}`);
+};

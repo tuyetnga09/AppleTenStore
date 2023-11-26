@@ -50,4 +50,6 @@ public interface BillService {
 
     Integer getCountBillCXN();
 
+    List<Bill> getBillOfflineCXN();
+
 }

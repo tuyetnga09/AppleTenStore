@@ -49,6 +49,12 @@ public class BillServerController {
     public Integer getCountBillCXN() {
         return billService.getCountBillCXN();
     }
+
+    @GetMapping("/getAll-billOffline-detail-CXN")
+    public ResponseEntity<List<Bill>> getAllBillOfflineChoXacNhan() {
+        List<Bill> billDetailsList = billService.getBillOfflineCXN();
+        return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
+    }
 //    @RestController
 //    @CrossOrigin("*")
 //    @RequestMapping("/admin/billDetail")

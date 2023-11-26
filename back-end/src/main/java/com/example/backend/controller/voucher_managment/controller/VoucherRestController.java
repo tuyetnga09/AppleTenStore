@@ -4,6 +4,7 @@ import com.example.backend.controller.voucher_managment.model.request.FindVouche
 import com.example.backend.controller.voucher_managment.model.request.UpdateVoucherRequest;
 import com.example.backend.controller.voucher_managment.service.VoucherService;
 import com.example.backend.entity.Voucher;
+import com.example.backend.repository.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,9 @@ import java.time.LocalDate;
 public class VoucherRestController {
     @Autowired
     private VoucherService voucherService;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
 
     @GetMapping("/get-by-id/{id}")
     public ResponseEntity getOneVoucher(@PathVariable("id") Integer id) {
@@ -88,4 +92,13 @@ public class VoucherRestController {
         return voucherService.searchWithDate(key, status, dateStart, dateEnd);
     }
 
+    @PutMapping("/updateStatusVoucher/{id}")
+    public ResponseEntity updateStatusVoucher(@PathVariable("id") Integer id) {
+        return new ResponseEntity(voucherService.updateStatusVoucher(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/returnStatusVoucher/{id}")
+    public ResponseEntity returnStatusVoucher(@PathVariable("id") Integer id) {
+        return new ResponseEntity(voucherService.returnStatusVoucher(id), HttpStatus.OK);
+    }
 }

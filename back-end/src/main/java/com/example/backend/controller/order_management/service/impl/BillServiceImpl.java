@@ -625,4 +625,9 @@ public class BillServiceImpl implements BillService {
         return billRepository.getCountBillCXN();
     }
 
+    @Override
+    public List<Bill> getBillOfflineCXN() {
+        return billRepository.getBillOfflineCXN();
+    }
+
 }

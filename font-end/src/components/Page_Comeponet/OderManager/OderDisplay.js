@@ -51,6 +51,7 @@ import {
   getAllBillCXN,
   getCountBillChoXacNhan,
   returnBillById,
+  getAllBillOFFLINECXN
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -107,6 +108,8 @@ const OderDisplay = ({}) => {
     id: null,
     note: null,
   });
+  const [billOFFCXN, setBillOFFCXN] = useState([]);
+
 
   const orderSelectProps = {
     options: [
@@ -220,6 +223,16 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
+      //lấy toàn bộ billOFF chờ xác nhận để check
+      getAllBillOFFLINECXN()
+      .then((response) => {
+        setBillOFFCXN(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+      console.log(billCXN);
+      console.log(billOFFCXN);
       //thông báo khi có hóa đơn mới
       let lastPendingBills = null;
       let timeout = null;
@@ -463,21 +476,27 @@ const OderDisplay = ({}) => {
   };
 
   function confirm2(id) {
-    if (checkImeiSelectInBillDetail(id) === true) {
-      updateStatusBill(idAccount, id)
-        .then((response) => {
-          setLoad(!load);
-        })
-        .catch((error) => {
-          console.error("Error updating status:", error);
-        });
-      notification.success({
-        message: "Xác nhận thành công!",
-      });
-    } else {
+    if (checkProductSelectBillDetail(id) === false) {
       notification.error({
-        message: "Kiểm tra lại số lượng imei!",
+        message: "Hóa đơn chưa thể xác nhận! - Hóa Đơn Bán Offline",
       });
+    }else{
+      if (checkImeiSelectInBillDetail(id) === true) {
+        updateStatusBill(idAccount, id)
+          .then((response) => {
+            setLoad(!load);
+          })
+          .catch((error) => {
+            console.error("Error updating status:", error);
+          });
+        notification.success({
+          message: "Xác nhận thành công!",
+        });
+      } else {
+        notification.error({
+          message: "Kiểm tra lại số lượng imei!",
+        });
+      }
     }
   }
 
@@ -508,13 +527,26 @@ const OderDisplay = ({}) => {
   function checkImeiSelectInBillDetail(id) {
     let tempObj = {};
     for (let index = 0; index < billCXN.length; index++) {
-      if (billCXN[index]?.id === id) {
+      if (billCXN[index]?.bill === id) {
         tempObj = billCXN[index];
         break;
       }
     }
     return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
   }
+
+  function checkProductSelectBillDetail(id) {
+    for (let index = 0; index < billOFFCXN.length; index++) {
+      if (billOFFCXN[index]?.id === id) {
+        if (billOFFCXN[index]?.typeBill === "OFFLINE") {
+          if (billOFFCXN[index]?.totalMoney === null || billOFFCXN[index]?.totalMoney === 0) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+}
 
   function handUpdateTrangThai() {
     if (checkSoluongImei() === true) {
@@ -2154,3 +2186,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 };
 
 export default OderDisplay;
+
+
+

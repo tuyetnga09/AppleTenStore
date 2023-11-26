@@ -58,7 +58,7 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
             "    date_create, date_update, code, name, person_create, person_update\n" +
             "FROM voucher\n" +
             "WHERE value_voucher > 100000\n" +
-            "  AND CURRENT_DATE BETWEEN date_start AND date_end;", nativeQuery = true)
+            "  AND CURRENT_DATE BETWEEN date_start AND date_end AND status = 0;", nativeQuery = true)
     List<Voucher> getVoucherGiamGia(Voucher voucher);
 
     @Query(value = "SELECT\n" +
@@ -67,7 +67,7 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
             "    date_create, date_update, code, name, person_create, person_update\n" +
             "FROM voucher\n" +
             "WHERE value_voucher < 100000\n" +
-            "  AND CURRENT_DATE BETWEEN date_start AND date_end;", nativeQuery = true)
+            "  AND CURRENT_DATE BETWEEN date_start AND date_end AND status = 0;", nativeQuery = true)
     List<Voucher> getVoucherFreeShip(Voucher voucher);
 
     @Query(value = "select * from voucher where (code like %?1% or name like %?1%) and status like %?2%", nativeQuery = true)

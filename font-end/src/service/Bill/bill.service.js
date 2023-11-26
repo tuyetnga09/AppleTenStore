@@ -43,6 +43,10 @@ export const getAllBillCXN = () => {
   return httpClient.get("/manager/bill/getAll-bill-detail-CXN");
 };
 
+export const getAllBillOFFLINECXN = () => {
+  return httpClient.get("/manager/bill/getAll-billOffline-detail-CXN");
+};
+
 export const getCountBillChoXacNhan = () => {
   return httpClient.get("/manager/bill/getAccountBillCXN");
 };

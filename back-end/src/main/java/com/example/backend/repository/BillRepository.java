@@ -168,7 +168,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     @Modifying
     @Query(value = "update bill\n" +
             "set status_bill = 'CHO_VAN_CHUYEN', date_update = CURRENT_DATE(), person_update = ?1\n" +
-            "where status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
+            "where type = 'ONLINE' and status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
     void updateAllChoVanChuyen(String personUpdate);
 
     @Query(value = "select b.id as 'id', b.quantity as 'quantity', b.price as 'price', b.status_bill as 'statusBillDetail',\n" +
@@ -186,4 +186,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
     @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN'\n", nativeQuery = true)
     Integer getCountBillCXN();
+
+    @Query(value = "select * from bill where type = 'OFFLINE' and status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
+    List<Bill> getBillOfflineCXN();
 }
