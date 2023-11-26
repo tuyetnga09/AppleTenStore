@@ -25,8 +25,10 @@ export const findBillByCode = (code) => {
   return httpClient.get(`/customer/bill/search/${code}`);
 };
 
-export const deleteBillById = (id) => {
-  return httpClient.delete(`/customer/bill/delete/${id}`);
+export const deleteBillById = (id, noteReturn) => {
+  return httpClient.delete(
+    `/customer/bill/delete/${id}?noteReturn=${noteReturn}`
+  );
 };
 
 export const returnBillById = (id, idAccount, noteReturn) => {

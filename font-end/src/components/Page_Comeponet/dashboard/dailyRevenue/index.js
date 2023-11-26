@@ -1,146 +1,3 @@
-// import { useMemo, useState } from "react";
-// import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
-// import { NumberField } from "@refinedev/antd";
-// import { Typography } from "antd";
-// import { Line } from "@ant-design/charts";
-// import { LineConfig } from "@ant-design/plots/lib/components/line";
-// import dayjs, { Dayjs } from "dayjs";
-// import { IncreaseIcon } from "../../icon/increase";
-// import { DecreaseIcon } from "../../icon/decrease";
-
-// // import { ISalesChart } from "../../../interfaces";
-// import {
-//   DailyRevenueWrapper,
-//   TitleAreNumber,
-//   TitleArea,
-//   TitleAreaAmount,
-//   RangePicker,
-// } from "./styled";
-
-// const DailyRevenue = () => {
-//   const t = useTranslate();
-//   const API_URL = useApiUrl();
-
-//   // const [dateRange, setDateRange] =
-//   //   useState <
-//   //   [Dayjs, Dayjs] >
-//   //   [dayjs().subtract(7, "days").startOf("day"), dayjs().startOf("day")];
-//   // const [start, end] = dateRange;
-
-//   //   const query = {
-//   //     start,
-//   //     end,
-//   //   };
-
-//   const url = `${API_URL}/dailyRevenue`;
-//   const { data, isLoading } =
-//     useCustom <
-//     {
-//       // data: ISalesChart[];
-//       data: null,
-//       total: 0,
-//       trend: 0,
-//     } >
-//     {
-//       url,
-//       method: "get",
-//       config: {
-//         // query,
-//       },
-//     };
-
-//   const config = useMemo(() => {
-//     const config = (LineConfig = {
-//       data: data?.data.data || [],
-//       loading: isLoading,
-//       padding: "auto",
-//       xField: "date",
-//       yField: "value",
-//       color: "rgba(255, 255, 255, 0.5)",
-//       tooltip: {
-//         customContent: (title, data) => {
-//           return `<div style="padding: 8px 4px; font-size:16px; font-weight:600">${data[0]?.value} $</div>`;
-//         },
-//       },
-
-//       xAxis: {
-//         label: null,
-//         line: null,
-//       },
-//       yAxis: {
-//         label: null,
-//         grid: null,
-//       },
-//       smooth: true,
-//       lineStyle: {
-//         lineWidth: 4,
-//       },
-//     });
-
-//     return config;
-//   }, [data]);
-
-//   const disabledDate = (date = Dayjs) => date > dayjs();
-
-//   return (
-//     <DailyRevenueWrapper>
-//       <TitleArea>
-//         <TitleAreaAmount>
-//           <Typography.Title level={3}>Daily Revenue</Typography.Title>
-//           <TitleAreNumber>
-//             <NumberField
-//               style={{ fontSize: 36 }}
-//               strong
-//               options={{
-//                 currency: "VND",
-//                 style: "currency",
-//                 notation: "compact",
-//               }}
-//               value={data?.data.total ?? 0}
-//             />
-//             {/* {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />} */}
-//             <IncreaseIcon />
-//           </TitleAreNumber>
-//         </TitleAreaAmount>
-
-//         <RangePicker
-//           size="small"
-//           //   value={dateRange}
-//           //   onChange={(values) => {
-//           //     if (values && values[0] && values[1]) {
-//           //       setDateRange([values[0], values[1]]);
-//           //     }
-//           //   }}
-//           disabledDate={disabledDate}
-//           style={{
-//             float: "right",
-//             color: "#fffff !important",
-//             background: "rgba(255, 255, 255, 0.3)",
-//           }}
-//           ranges={{
-//             "This Week": [dayjs().startOf("week"), dayjs().endOf("week")],
-//             "Last Month": [
-//               dayjs().startOf("month").subtract(1, "month"),
-//               dayjs().endOf("month").subtract(1, "month"),
-//             ],
-//             "This Month": [dayjs().startOf("month"), dayjs().endOf("month")],
-//             "This Year": [dayjs().startOf("year"), dayjs().endOf("year")],
-//           }}
-//           // format="YYYY/MM/DD"
-//           format="DD/MM/YYYY"
-//         />
-//       </TitleArea>
-//       <Line
-//         padding={0}
-//         appendPadding={10}
-//         height={135}
-//         style={{ maxHeight: "135px" }}
-//         {...config}
-//       />
-//     </DailyRevenueWrapper>
-//   );
-// };
-// export default DailyRevenue;
 import { useMemo, useState, useEffect } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { NumberField } from "@refinedev/antd";
@@ -162,12 +19,13 @@ import {
 } from "../../../../service/dashboard/admin_bill.service";
 
 // import { ISalesChart } from "../../../interfaces";
+import "./style.css";
 import {
   DailyRevenueWrapper,
   TitleAreNumber,
   TitleArea,
   TitleAreaAmount,
-  RangePicker,
+  // RangePicker,
 } from "./styled";
 import {
   LineChart,
@@ -179,9 +37,10 @@ import {
   CartesianGrid,
 } from "recharts";
 import numeral from "numeral";
+import { style } from "@mui/system";
 
 const DailyRevenue = () => {
-  const [data, setData] = useState([]);
+  const [dataDailyRevenue, setDataDailyRevenue] = useState([]);
   const [dataSumMoneyBill, setDataSumMoneyBill] = useState();
   const [dataSumMoneyBillNotStatusDaHuy, setDataSumMoneyBillNotStatusDaHuy] =
     useState();
@@ -200,135 +59,165 @@ const DailyRevenue = () => {
   const [dataSumMoneyBillCancelOrder, setDataSumMoneyBillCancelOrder] =
     useState();
 
-  // Simulate data from the backend
-  const fetchDataFromBackend = (a, b, c, d, e, f, g) => {
-    // Replace this with actual API call to your backend
-    // const number = a;
-    // const formattedNumber = numeral(number).format("0,0");
+  const [billSeachKhoangNgay, setBillSeachKhoangNgay] = useState();
 
+  // Simulate data from the backend
+  const fetchDataFromBackendDailyRevenue = (a, b, c, d, e, f, g) => {
     const dataFromBackend = [
-      { name: "1MU", revenue: a },
-      { name: "2MC", revenue: b },
-      { name: "3MAD", revenue: c },
-      { name: "4MAP", revenue: d },
-      { name: "5MNR", revenue: e },
-      { name: "6MR", revenue: f },
-      { name: "7MCO", revenue: g },
+      { name: "1MU", Tien: a },
+      { name: "2MC", Tien: b },
+      { name: "3MAD", Tien: c },
+      { name: "4MAP", Tien: d },
+      // { name: "5MNR", revenue: e },
+      { name: "5MR", Tien: f },
+      { name: "6MCO", Tien: g },
     ];
-    setData(dataFromBackend);
+    setDataDailyRevenue(dataFromBackend);
   };
 
   useEffect(() => {
-    let unconfirmedData = null;
-    let confirmedData = null;
-    let alreadyPaidData = null;
-    let areDeliveringData = null;
-    let noReturnData = null;
-    let returnsData = null;
-    let cancelOrderData = null;
-    //1
-    sumMoneyBill()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBill(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-
-    //2
-    sumMoneyBillNotStatusDaHuy()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBillNotStatusDaHuy(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-
-    //3----
-    sumToTalMoneyBillUnconfimred()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumToTalMoneyBillUnconfimred(response.data);
-        unconfirmedData = response.data;
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //4
-    sumToTalMoneyBillConfirmed()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBillConfirmed(response.data);
-        confirmedData = response.data;
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //5
-    sumToTalMoneyBillAreDelivering()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBillAreDelivering(response.data);
-        areDeliveringData = response.data;
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //6
-    sumToTalMoneyBillAlreadyPaid()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBillAlreadyPaid(response.data);
-        alreadyPaidData = response.data;
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //7
-    sumToTalMoneyBillNoReturn()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBillNoReturn(response.data);
-        noReturnData = response.data;
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-
-    //8
-    sumToTalMoneyBillReturns()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBillReturns(response.data);
-        returnsData = response.data;
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    //9
-    sumToTalMoneyBillCancelOrder()
-      .then((response) => {
-        console.log(response.data);
-        setDataSumMoneyBillCancelOrder(response.data);
-
-        cancelOrderData = response.data;
-
-        fetchDataFromBackend(
-          unconfirmedData,
-          confirmedData,
-          areDeliveringData,
-          alreadyPaidData,
-          noReturnData,
-          returnsData,
-          cancelOrderData
+    let unconfirmedDataDailyRevenue = 0;
+    let confirmedDataDailyRevenue = 0;
+    let alreadyPaidDataDailyRevenue = 0;
+    let areDeliveringDataDailyRevenue = 0;
+    let noReturnDataDailyRevenue = 0;
+    let returnsDataDailyRevenue = 0;
+    let cancelOrderDataDailyRevenue = 0;
+    if (billSeachKhoangNgay !== null) {
+      if (billSeachKhoangNgay.check === true) {
+        unconfirmedDataDailyRevenue = billSeachKhoangNgay.tongTienDonChoXacNhan;
+        confirmedDataDailyRevenue = billSeachKhoangNgay.tongTienDonChoVanChuyen;
+        areDeliveringDataDailyRevenue =
+          billSeachKhoangNgay.tongTienDonDangVanChuyen;
+        alreadyPaidDataDailyRevenue = billSeachKhoangNgay.tongTienDnDaThanhToan;
+        noReturnDataDailyRevenue = 0;
+        returnsDataDailyRevenue = billSeachKhoangNgay.tongTienDonHoanTra;
+        cancelOrderDataDailyRevenue = billSeachKhoangNgay.tongTienDonHangHuy;
+        fetchDataFromBackendDailyRevenue(
+          unconfirmedDataDailyRevenue,
+          confirmedDataDailyRevenue,
+          areDeliveringDataDailyRevenue,
+          alreadyPaidDataDailyRevenue,
+          noReturnDataDailyRevenue,
+          returnsDataDailyRevenue,
+          cancelOrderDataDailyRevenue
         );
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+
+        setDataSumMoneyBill(0);
+        setDataSumMoneyBillNotStatusDaHuy(billSeachKhoangNgay.tongTienThucThu);
+        setDataSumToTalMoneyBillUnconfimred(
+          billSeachKhoangNgay.tongTienDonChoXacNhan
+        );
+        setDataSumMoneyBillConfirmed(
+          billSeachKhoangNgay.tongTienDonChoVanChuyen
+        );
+        setDataSumMoneyBillAreDelivering(
+          billSeachKhoangNgay.tongTienDonDangVanChuyen
+        );
+        setDataSumMoneyBillAlreadyPaid(
+          billSeachKhoangNgay.tongTienDnDaThanhToan
+        );
+        setDataSumMoneyBillNoReturn(0); // k dung nua
+        setDataSumMoneyBillReturns(billSeachKhoangNgay.tongTienDonHoanTra);
+        setDataSumMoneyBillCancelOrder(billSeachKhoangNgay.tongTienDonHangHuy);
+      }
+    } else {
+      //1 - hien tai khong dung nua
+      sumMoneyBill()
+        .then((response) => {
+          setDataSumMoneyBill(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+
+      //2
+      sumMoneyBillNotStatusDaHuy()
+        .then((response) => {
+          setDataSumMoneyBillNotStatusDaHuy(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+
+      //3----
+      sumToTalMoneyBillUnconfimred()
+        .then((response) => {
+          setDataSumToTalMoneyBillUnconfimred(response.data);
+          unconfirmedDataDailyRevenue = response.data;
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      //4
+      sumToTalMoneyBillConfirmed()
+        .then((response) => {
+          setDataSumMoneyBillConfirmed(response.data);
+          confirmedDataDailyRevenue = response.data;
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      //5
+      sumToTalMoneyBillAreDelivering()
+        .then((response) => {
+          setDataSumMoneyBillAreDelivering(response.data);
+          areDeliveringDataDailyRevenue = response.data;
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      //6
+      sumToTalMoneyBillAlreadyPaid()
+        .then((response) => {
+          setDataSumMoneyBillAlreadyPaid(response.data);
+          alreadyPaidDataDailyRevenue = response.data;
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      //7
+      sumToTalMoneyBillNoReturn()
+        .then((response) => {
+          setDataSumMoneyBillNoReturn(response.data);
+          noReturnDataDailyRevenue = response.data;
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+
+      //8
+      sumToTalMoneyBillReturns()
+        .then((response) => {
+          setDataSumMoneyBillReturns(response.data);
+          returnsDataDailyRevenue = response.data;
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      //9
+      sumToTalMoneyBillCancelOrder()
+        .then((response) => {
+          setDataSumMoneyBillCancelOrder(response.data);
+
+          cancelOrderDataDailyRevenue = response.data;
+
+          fetchDataFromBackendDailyRevenue(
+            unconfirmedDataDailyRevenue,
+            confirmedDataDailyRevenue,
+            areDeliveringDataDailyRevenue,
+            alreadyPaidDataDailyRevenue,
+            noReturnDataDailyRevenue,
+            returnsDataDailyRevenue,
+            cancelOrderDataDailyRevenue
+          );
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, []);
+
   const { Text, Title } = Typography;
   return (
     <DailyRevenueWrapper>
@@ -356,16 +245,22 @@ const DailyRevenue = () => {
       </Row>
       {/* </TitleArea> */}
 
-      <LineChart width={450} height={150} data={data}>
+      <LineChart
+        width={450}
+        height={150}
+        data={dataDailyRevenue}
+        id="id-linechart"
+      >
         <XAxis dataKey="name" />
         <YAxis />
         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
         <Tooltip />
         <Legend />
-        <Line type="monotone" dataKey="revenue" stroke="rgb(75, 192, 192)" />
+        <Line type="monotone" dataKey="Tien" stroke="rgb(75, 192, 192)" />
       </LineChart>
+
       {/* 1 */}
-      <TitleArea>
+      {/* <TitleArea>
         <Title level={4} style={{ color: "red" }}>
           * Doanh Thu Dự Tính Hôm Nay
         </Title>
@@ -380,7 +275,7 @@ const DailyRevenue = () => {
           }}
           value={dataSumMoneyBill}
         />
-      </TitleArea>
+      </TitleArea> */}
       {/* 2 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
@@ -402,7 +297,7 @@ const DailyRevenue = () => {
       {/* 3 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          2MC - Tổng tiền đơn hàng đã xác nhận
+          2MC - Tổng tiền đơn hàng chờ vận chuyển
         </Title>
 
         <NumberField
@@ -451,7 +346,7 @@ const DailyRevenue = () => {
         />
       </TitleArea>
       {/* 6 */}
-      <TitleArea>
+      {/* <TitleArea>
         <Title level={5} style={{ color: "white" }}>
           5MNR - Tổng tiền đơn hàng không hoàn trả
         </Title>
@@ -466,11 +361,11 @@ const DailyRevenue = () => {
           }}
           value={dataSumMoneyBillNoReturn}
         />
-      </TitleArea>
+      </TitleArea> */}
       {/* 7 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          6MR - Tổng tiền đơn hàng hoàn trả
+          5MR - Tổng tiền đơn hàng hoàn trả
         </Title>
 
         <NumberField
@@ -487,7 +382,7 @@ const DailyRevenue = () => {
       {/* 8 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          7MCO - Tổng tiền đơn hàng huỷ đơn
+          6MCO - Tổng tiền đơn hàng huỷ đơn
         </Title>
 
         <NumberField

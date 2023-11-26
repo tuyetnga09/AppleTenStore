@@ -1,12 +1,19 @@
 import { useTranslate, useNavigation } from "@refinedev/core";
 import { useSimpleList } from "@refinedev/antd";
+import { useEffect, useState } from "react";
+import { seachKhoangNgay } from "../../../../service/dashboard/admin_bill.service";
+import DailyOrders from "../dailyOrders/index";
+import Customer from "../newCustomers/index";
 import {
   Typography,
   List as AntdList,
   Tooltip,
   ConfigProvider,
   theme,
+  Row,
+  notification,
 } from "antd";
+// import { Row, Col, Card, Typography, Layout, theme } from "antd";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -25,154 +32,165 @@ const OrderTimeline = () => {
   const t = useTranslate();
   const { show } = useNavigation();
 
-  //   const { listProps } =
-  //     useSimpleList <
-  //     IOrder >
-  //     {
-  //       resource: "orders",
-  //       initialSorter: [
-  //         {
-  //           field: "createdAt",
-  //           order: "desc",
-  //         },
-  //       ],
-  //       pagination: {
-  //         pageSize: 6,
-  //       },
-  //       syncWithLocation: false,
-  //     };
-
-  //   const { dataSource } = listProps;
-
   const { Text } = Typography;
+  const [dataDateTruoc, setDataDateTruoc] = useState();
+  const [dataDateSau, setDataDateSau] = useState();
 
-  //   const orderStatusColor = (
-  //     id: string
-  //   ):
-  //     | { indicatorColor: string, backgroundColor: string, text: string }
-  //     | undefined => {
-  //     switch (id) {
-  //       case "1":
-  //         return {
-  //           indicatorColor: "orange",
-  //           backgroundColor: "#fff7e6",
-  //           text: "pending",
-  //         };
-  //       case "2":
-  //         return {
-  //           indicatorColor: "cyan",
-  //           backgroundColor: "#e6fffb",
-  //           text: "ready",
-  //         };
-  //       case "3":
-  //         return {
-  //           indicatorColor: "green",
-  //           backgroundColor: "#e6f7ff",
-  //           text: "on the way",
-  //         };
-  //       case "4":
-  //         return {
-  //           indicatorColor: "blue",
-  //           backgroundColor: "#e6fffb",
-  //           text: "delivered",
-  //         };
-  //       case "5":
-  //         return {
-  //           indicatorColor: "red",
-  //           backgroundColor: "#fff1f0",
-  //           text: "cancelled",
-  //         };
-  //       default:
-  //         break;
-  //     }
-  //   };
+  const handleDateBillTruoc = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    setDataDateTruoc(value);
+  };
 
-  const orderStatusColor = (id) => {
-    if (undefined) {
-      switch (id) {
-        case "1":
-          return {
-            indicatorColor: "orange",
-            backgroundColor: "#fff7e6",
-            text: "pending",
-          };
-        case "2":
-          return {
-            indicatorColor: "cyan",
-            backgroundColor: "#e6fffb",
-            text: "ready",
-          };
-        case "3":
-          return {
-            indicatorColor: "green",
-            backgroundColor: "#e6f7ff",
-            text: "on the way",
-          };
-        case "4":
-          return {
-            indicatorColor: "blue",
-            backgroundColor: "#e6fffb",
-            text: "delivered",
-          };
-        case "5":
-          return {
-            indicatorColor: "red",
-            backgroundColor: "#fff1f0",
-            text: "cancelled",
-          };
-        default:
-          break;
-      }
+  const [searchData, setSearchData] = useState(null);
+  // truyền thông tin ra bnagr bên ngoài
+  const handleClick = (dataCustomer) => {
+    setSearchData(dataCustomer);
+    console.log(dataCustomer);
+  };
+
+  const xoaLoc = () => {
+    const data = {
+      check: false,
+      choVanChuyen: 0,
+      choXacNhan: 0,
+      daThanhToan: 0,
+      dangVanChuyen: 0,
+      donHuy: 0,
+      hoanTra: 0,
+      sumBill: 0,
+      tongTaiKhoan: 0,
+      tongTaiKhoanDaThanhToan: 0,
+      tongTaiKhoanDangSuDung: 0,
+      tongTaiKhoanDatHang: 0,
+      tongTaiKhoanHuyDon: 0,
+      tongTaiKhoanMoi: 0,
+      tongTaiKhoanTrongThang: 0,
+      tongTienDnDaThanhToan: 0,
+      tongTienDonChoVanChuyen: 0,
+      tongTienDonChoXacNhan: 0,
+      tongTienDonDangVanChuyen: 0,
+      tongTienDonHangHuy: 0,
+      tongTienDonHoanTra: 0,
+      tongTienThucThu: 0,
+    };
+  };
+
+  const handleDateBillSau = (event) => {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    setDataDateSau(value);
+  };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (dataDateTruoc > dataDateSau) {
+      notification.warning({
+        message: "Khoảng ngày sau phải lớn hơn hoặc bằng ngày trước!",
+      });
     } else {
-      return { indicatorColor: id, backgroundColor: id, text: id };
+      seachKhoangNgay(dataDateTruoc, dataDateSau)
+        .then((res) => {
+          handleClick(res.data);
+          // localStorage.setItem("oop", true);
+          // window.location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+          alert(err);
+        });
     }
   };
 
+  // useEffect(() => {}, [billSeachKhoangNgay]);
+
   return (
-    <AntdList
-      //   {...listProps}
-      pagination={{
-        // ...listProps.pagination,
-        simple: true,
-      }}
-    >
-      <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
-        <Timeline>
-          {/* {dataSource?.map(({ createdAt, orderNumber, status, id }) => (
-            <TimelineItem
-              key={orderNumber}
-              color={orderStatusColor(status.id.toString())?.indicatorColor}
-            >
-              <TimelineContent
-                backgroundColor={
-                  orderStatusColor(status.id.toString())?.backgroundColor ||
-                  "transparent"
-                }
-              >
-                <Tooltip
-                  overlayInnerStyle={{ color: "#626262" }}
-                  color="rgba(255, 255, 255, 0.3)"
-                  placement="topLeft"
-                  title={dayjs(createdAt).format("lll")}
+    // <AntdList
+    //   //   {...listProps}
+    //   pagination={{
+    //     // ...listProps.pagination,
+    //     simple: true,
+    //   }}
+    // >
+    <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
+      <Timeline>
+        <div>
+          <button
+            // type="submit"
+            class="btn btn-outline-danger"
+            style={{ marginTop: "15px" }}
+            onClick={() => xoaLoc()}
+          >
+            Xoá Lọc
+          </button>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <div class="user-box">
+                <label
+                  style={{
+                    color: "black",
+                    fontSize: "12px",
+                    marginRight: "17px",
+                  }}
                 >
-                  <CreatedAt italic>{dayjs(createdAt).fromNow()}</CreatedAt>
-                </Tooltip>
-                <Text>
-                  {t(
-                    `dashboard.timeline.orderStatuses.${
-                      orderStatusColor(status.id.toString())?.text
-                    }`
-                  )}
-                </Text>
-                <Number onClick={() => show("orders", id)} strong>
-                  #{orderNumber}
-                </Number>
-              </TimelineContent>
-            </TimelineItem>
-          ))} */}
-        </Timeline>
-      </ConfigProvider>
-    </AntdList>
+                  Từ ngày:
+                </label>
+                <input
+                  type="date"
+                  name="dateBillTruoc"
+                  required
+                  style={{
+                    borderTop: "none",
+                    borderRight: "none",
+                    borderLeft: "none",
+                    borderBottom: "1px solid black",
+                    outline: "none",
+                  }}
+                  onChange={handleDateBillTruoc}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="user-box">
+                <label
+                  style={{
+                    color: "black",
+                    fontSize: "12px",
+                    marginRight: "10px",
+                  }}
+                >
+                  Đến ngày:
+                </label>
+                <input
+                  type="date"
+                  name="dateBillSau"
+                  required
+                  style={{
+                    borderTop: "none",
+                    borderRight: "none",
+                    borderLeft: "none",
+                    borderBottom: "1px solid black",
+                    outline: "none",
+                  }}
+                  onChange={handleDateBillSau}
+                />
+              </div>
+            </div>
+            <button
+              // type="submit"
+              class="btn btn-outline-success"
+              style={{ marginTop: "15px" }}
+            >
+              Thống kê
+            </button>
+          </form>
+          {/* <Customer searchData={searchData} /> */}
+        </div>
+      </Timeline>
+    </ConfigProvider>
+    // </AntdList>
   );
 };
 

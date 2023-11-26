@@ -1092,17 +1092,21 @@ export default function TrangChu() {
               <div className="listSpTrongKhung flexContain">
                 {outstandingProducts}
               </div>
-              <Link
-                className="xemTatCa"
-                to="/"
-                onClick={() => noiBatNhat()}
-                style={{
-                  borderLeft: "2px solid #ff9c00",
-                  borderRight: "2px solid #ff9c00",
-                }}
-              >
-                Xem tất cả {quantityNoiBat} sản phẩm
-              </Link>
+              {quantityNoiBat > 10 ? (
+                <Link
+                  className="xemTatCa"
+                  to="/"
+                  onClick={() => noiBatNhat()}
+                  style={{
+                    borderLeft: "2px solid #ff9c00",
+                    borderRight: "2px solid #ff9c00",
+                  }}
+                >
+                  Xem tất cả {quantityNoiBat} sản phẩm
+                </Link>
+              ) : (
+                ""
+              )}
             </div>{" "}
             <hr />
             <div className="khungSanPham" style={{ borderColor: "#42bcf4" }}>
@@ -1118,17 +1122,21 @@ export default function TrangChu() {
               <div className="listSpTrongKhung flexContain">
                 {listProductNew}
               </div>
-              <Link
-                className="xemTatCa"
-                to="/"
-                onClick={() => moi()}
-                style={{
-                  borderLeft: "2px solid #42bcf4",
-                  borderRight: "2px solid #42bcf4",
-                }}
-              >
-                Xem tất cả {quantityMoi} sản phẩm
-              </Link>
+              {quantityMoi > 10 ? (
+                <Link
+                  className="xemTatCa"
+                  to="/"
+                  onClick={() => moi()}
+                  style={{
+                    borderLeft: "2px solid #42bcf4",
+                    borderRight: "2px solid #42bcf4",
+                  }}
+                >
+                  Xem tất cả {quantityMoi} sản phẩm
+                </Link>
+              ) : (
+                ""
+              )}
             </div>{" "}
             <hr />
             <div className="khungSanPham" style={{ borderColor: "#5de272" }}>
@@ -1144,17 +1152,21 @@ export default function TrangChu() {
               <div className="listSpTrongKhung flexContain">
                 {listProductCheap}
               </div>
-              <Link
-                className="xemTatCa"
-                to="/"
-                onClick={() => giaRe()}
-                style={{
-                  borderLeft: "2px solid #5de272",
-                  borderRight: "2px solid #5de272",
-                }}
-              >
-                Xem tất cả {quantityGiaRe} sản phẩm
-              </Link>
+              {quantityGiaRe > 10 ? (
+                <Link
+                  className="xemTatCa"
+                  to="/"
+                  onClick={() => giaRe()}
+                  style={{
+                    borderLeft: "2px solid #5de272",
+                    borderRight: "2px solid #5de272",
+                  }}
+                >
+                  Xem tất cả {quantityGiaRe} sản phẩm
+                </Link>
+              ) : (
+                ""
+              )}
             </div>{" "}
             <hr />
           </div>

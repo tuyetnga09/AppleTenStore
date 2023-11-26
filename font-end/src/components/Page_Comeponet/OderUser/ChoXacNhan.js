@@ -1,54 +1,56 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
-import {Link} from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
-import {readAll} from "../../../service/BillDetail/billDetailCustomer.service";
-import {readAllByIdAndCXN} from "../../../service/Bill/billCustomer.service";
-import {account} from "../Login/login";
+import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
+import { readAllByIdAndCXN } from "../../../service/Bill/billCustomer.service";
+import { account } from "../Login/login";
+import { deleteBillById } from "../../../service/Bill/bill.service";
+import { Modal, notification } from "antd";
 
 const OderUserChoThanhToan = () => {
-    const [billDetails, setBillDetails] = useState([]);
-    const [bills, setBills] = useState([]);
-    const storedUser = JSON.parse(localStorage.getItem("account"));
-    useEffect(() => {
-        readAllByIdAndCXN(storedUser?.id)
-            .then((res) => {
-                setBills(res.data);
-                console.log(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
+  const [billDetails, setBillDetails] = useState([]);
+  const [bills, setBills] = useState([]);
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  useEffect(() => {
+    readAllByIdAndCXN(storedUser?.id)
+      .then((res) => {
+        setBills(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const promises = bills.map((b) => readAll(b.id));
-                const results = await Promise.all(promises);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const promises = bills.map((b) => readAll(b.id));
+        const results = await Promise.all(promises);
 
-                // Lấy dữ liệu từ các kết quả và cập nhật trạng thái
-                const data = results.map((res) => res.data);
-                setBillDetails(data);
-                console.log(data);
-            } catch (err) {
-                console.log(err);
-            }
-        };
+        // Lấy dữ liệu từ các kết quả và cập nhật trạng thái
+        const data = results.map((res) => res.data);
+        setBillDetails(data);
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-        fetchData();
-    }, [bills]);
+    fetchData();
+  }, [bills]);
 
-    const result = bills.map((b, index) => {
-        return (
-            <>
-                <div className="row">
-                    <div className="col-10" style={{paddingTop: "20px"}}>
-                        <strong>AppleTenStore</strong>{" "}
-                    </div>
-                    <div className="col-2">
-            <span style={{paddingTop: "20px", float: "right", color: "red"}}>
+  const result = bills.map((b, index) => {
+    return (
+      <>
+        <div className="row">
+          <div className="col-10" style={{ paddingTop: "20px" }}>
+            <strong>AppleTenStore</strong>{" "}
+          </div>
+          <div className="col-2">
+            <span style={{ paddingTop: "20px", float: "right", color: "red" }}>
               {b.statusBill === "CHO_XAC_NHAN"
                 ? "Chờ xác nhận"
                 : b.statusBill === "CHO_VAN_CHUYEN"
@@ -113,7 +115,11 @@ const OderUserChoThanhToan = () => {
                 Liên hệ người bán
               </button>{" "}
               {b.statusBill === "CHO_XAC_NHAN" ? (
-                <button type="button" class="btn btn-light">
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  onClick={() => handleCannelOrderClick(b)}
+                >
                   Hủy đơn
                 </button>
               ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
@@ -136,6 +142,53 @@ const OderUserChoThanhToan = () => {
       </>
     );
   });
+
+  const [isModalVisibleCannelOrder, setIsModalVisibleCannelOrder] =
+    useState(false);
+
+  const [billReturn, setBillReturn] = useState({
+    id: null,
+    note: null,
+  });
+
+  const handleCannelOrderClick = (record) => {
+    setBillReturn({
+      ...billReturn,
+      id: record.id,
+    });
+    setIsModalVisibleCannelOrder(true);
+  };
+
+  const handleCannelOrderCancel = () => {
+    setIsModalVisibleCannelOrder(false);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+  };
+
+  const handleCannelOrder = (event) => {
+    setBillReturn({
+      ...billReturn,
+      note: event.target.value,
+    });
+  };
+
+  const handleSubmitReturns = (event) => {
+    event.preventDefault();
+    deleteBillById(billReturn.id, billReturn.note).then((response) =>
+      console.log(response.data)
+    );
+    setIsModalVisibleCannelOrder(false);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+    notification.error({
+      message: "Hủy đơn",
+      description: "Hủy đơn thành công",
+    });
+  };
 
   return (
     <>
@@ -177,7 +230,41 @@ const OderUserChoThanhToan = () => {
       </section>
       <section>{result}</section>
       <br />
-      <Footer />
+      <Modal
+        visible={isModalVisibleCannelOrder}
+        onCancel={handleCannelOrderCancel}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <form onSubmit={handleSubmitReturns}>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Lí do hủy đơn:
+            </label>
+            <textarea
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="3"
+              required
+              onChange={handleCannelOrder}
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">
+            Xác nhận
+          </button>
+        </form>
+      </Modal>
+      <footer
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          height: "60px",
+        }}
+      >
+        <Footer />
+      </footer>
     </>
   );
 };
