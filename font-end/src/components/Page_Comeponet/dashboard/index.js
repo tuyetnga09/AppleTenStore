@@ -996,6 +996,7 @@ const DashboardPage = () => {
       notification.error({
         message: "Bạn không có quyền!",
       });
+
       history.replace("/");
     }
   });
