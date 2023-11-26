@@ -34,11 +34,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
 
     //    @Query(value = "select * from bill where DATE(date_create) = CURDATE()", nativeQuery = true)
-    @Query(value = "SELECT * FROM bill WHERE CASE " +
-            " WHEN date_update IS NULL AND DATE(date_create) = CURDATE() THEN 1\n" +
-            " WHEN date_update IS NOT NULL AND DATE(date_update) = CURDATE() THEN 1\n" +
-            " ELSE 0\n" +
-            " END = 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM bill WHERE DATE(date_create) = CURDATE()", nativeQuery = true)
     List<Bill> listOfBillsForTheDay();
 
     //tổng tiền chưa trừ  đơn huỷ
@@ -78,49 +74,60 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
 
     // lấy ra list imei máy bán ra trong 30 ngày gần đây
-    @Query(value = "select codeImei from Imei_DaBan join bill_detail on bill_detail.id = Imei_DaBan.IdBillDetail " +
-            "    where (" +
-            "      (bill_detail.date_update IS NULL AND DATEDIFF(CURDATE(), bill_detail.date_create) < 30)" +
-            "    OR (bill_detail.date_update IS NOT NULL AND DATEDIFF(CURDATE(), bill_detail.date_update) < 30) " +
-            "        )", nativeQuery = true)
+    @Query(value = "select code_imei from imei_da_ban join bill_detail on bill_detail.id = imei_da_ban.id_bill_detail \n" +
+            "                where (\n" +
+            "                  (bill_detail.date_update IS NULL AND DATEDIFF(CURDATE(), bill_detail.date_create) < 30)\n" +
+            "               OR (bill_detail.date_update IS NOT NULL AND DATEDIFF(CURDATE(), bill_detail.date_update) < 30) \n" +
+            "                   )", nativeQuery = true)
     List<String> listImeiDaBanTrong30NgayGanDay();
 
 
     // lấy ra list imei máy bán ra trong 30 ngày gần đây
 //    @Transactional
 //    @Modifying
-    @Query(value = "SELECT \n" +
-            "          MONTH(date_create) AS  month , \n" +
-            "              SUM(total_money) AS totalMoney, \n" +
-            "              count(code) as quantity\n" +
-            "              FROM bill \n" +
-            "                WHERE YEAR(date_create) = 2023 and status_bill = 'DA_THANH_TOAN' \n" +
-            "              GROUP BY month\n" +
-            "               ORDER BY month", nativeQuery = true)
+    @Query(value = "SELECT\n" +
+            "  MONTH(date_create) AS month,\n" +
+            "  SUM(total_money) AS totalMoney,\n" +
+            "  COUNT(code) AS quantity\n" +
+            "FROM bill\n" +
+            "WHERE YEAR(date_create) = 2023 AND status_bill = 'DA_THANH_TOAN'\n" +
+            "GROUP BY month\n" +
+            "UNION\n" +
+            "SELECT\n" +
+            "  Months.MonthNumber AS month,\n" +
+            "  0 AS totalMoney,\n" +
+            "  0 AS quantity\n" +
+            "FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            "      UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) = 2023 AND bill.status_bill = 'DA_THANH_TOAN'\n" +
+            "WHERE bill.code IS NULL\n" +
+            "ORDER BY month", nativeQuery = true)
     List<AnnualRevenueIon> annualRevenueYear();
 
     //Customers
 
     // lấy râ số khách hàng đã đặt hàng hôm nay,
     @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
-            " where date(bill.date_create) = CURDATE() and bill.status_bill='CHO_XAC_NHAN'", nativeQuery = true)
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='CHO_XAC_NHAN' group by  account.id", nativeQuery = true)
     List<Integer> countCustomersOrderToday();
 
     //số khác hàng đã huỷ đơn hôm nay
     @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
-            " where date(bill.date_create) = CURDATE() and bill.status_bill='DA_HUY'", nativeQuery = true)
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='DA_HUY' group by  account.id", nativeQuery = true)
     List<Integer> countCustomersCanceledToday();
+
     //số khách hàng đã thanh toán hôm nay
 
     @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
-            " where date(bill.date_create) = CURDATE() and bill.status_bill='DA_HUY'", nativeQuery = true)
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='DA_THANH_TOAN' group by  account.id", nativeQuery = true)
     List<Integer> countCustomersPaidToday();
 
     // số khách hàng trả đơn trong hôm nay
 
     @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
-            " where date(bill.date_create) = CURDATE() and bill.status_bill='TRA_HANG'", nativeQuery = true)
+            " where date(bill.date_create) = CURDATE() and bill.status_bill='TRA_HANG' group by  account.id", nativeQuery = true)
     List<Integer> countCustomersReturnedToday();
+
     @Query(value = "select * from bill where id_account = ?1 and type = 'ONLINE'", nativeQuery = true)
     List<Bill> listBillByIdAccount(Integer id);
 
@@ -163,4 +170,56 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
     @Query(value = "SELECT * FROM bill WHERE code like ?1", nativeQuery = true)
     List<Bill> getThongTinThanhToan(String codeBill);
+
+    @Query(value = "SELECT * FROM bill\n" +
+            "    WHERE DATE(date_create) = CURDATE() AND status_bill = 'CHO_VAN_CHUYEN'\n" +
+            "    ORDER BY   date_create DESC, Id DESC", nativeQuery = true)
+    List<Bill> listHoaDonChoVanChuyenTrongNgay();
+
+    //lấy ra tổng số bill của các bill có tài khoản trong ngày hôm nay
+    @Query(value = "select * from bill join account on bill.id_account = account.id\n" +
+            "    where date(bill.date_create) = CURDATE()", nativeQuery = true)
+    List<Bill> getAllBillOfAccountToDay();
+
+    // lấy ra list bill trong khoảng ngày a- ngày b
+    @Query(value = "select * from bill where date_create BETWEEN ?1 and ?2", nativeQuery = true)
+    List<Bill> getBillSeach(LocalDate dateBefore, LocalDate dateAfter);
+
+    // lấy râ số khách hàng đã đặt hàng khoang ngay
+    @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
+            " where bill.date_create  BETWEEN ?1 and ?2  and bill.status_bill='CHO_XAC_NHAN' group by  account.id", nativeQuery = true)
+    List<Integer> getListKhachHangDatHangHomNay(LocalDate dateBefore, LocalDate dateAfter);
+
+    // lấy râ số khách hàng đã thanh toan trong khoang ngay
+    @Query(value = "select account.id from bill join account on bill.id_account = account.id \n" +
+            " where bill.date_create  BETWEEN ?1 and ?2 and bill.status_bill='DA_THANH_TOAN' group by  account.id", nativeQuery = true)
+    List<Integer> getListKhachHangDaThanhToanTrongKhoangNgay(LocalDate dateBefore, LocalDate dateAfter);
+
+    // số khách hàng huy đơn trong khoang ngay
+    @Query(value = "select account.id from bill join account on bill.id_account = account.id " +
+            "   where bill.date_create  BETWEEN ?1 and ?2 and bill.status_bill='DA_HUY' group by  account.id", nativeQuery = true)
+    List<Integer> getListKhachHangDaHuyDonTrongKhoangNgay(LocalDate dateBefore, LocalDate dateAfter);
+
+    // list năm
+    @Query(value = "select year(date_create) from bill where status_bill='DA_THANH_TOAN' group by year(date_create)", nativeQuery = true)
+    List<Integer> getListYearOfBill();
+
+    @Query(value = "SELECT\n" +
+            "  MONTH(date_create) AS month,\n" +
+            "  SUM(total_money) AS totalMoney,\n" +
+            "  COUNT(code) AS quantity\n" +
+            "FROM bill\n" +
+            "WHERE YEAR(date_create) =?1 AND status_bill = 'DA_THANH_TOAN'\n" +
+            "GROUP BY month\n" +
+            "UNION\n" +
+            "SELECT\n" +
+            "  Months.MonthNumber AS month,\n" +
+            "  0 AS totalMoney,\n" +
+            "  0 AS quantity\n" +
+            "FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            "      UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) = 2023 AND bill.status_bill = 'DA_THANH_TOAN'\n" +
+            "WHERE bill.code IS NULL\n" +
+            "ORDER BY month", nativeQuery = true)
+    List<AnnualRevenueIon> seachDoanhSoTheoNam(Integer year);
 }
