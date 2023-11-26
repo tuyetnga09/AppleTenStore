@@ -13,6 +13,8 @@ import Pagination from "./Paging.js";
 import queryString from "query-string";
 import * as XLSX from "xlsx";
 import * as FileSaver from "file-saver";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min.js";
+import { notification } from "antd";
 
 const ReturnDeleteBattery = () => {
   const [battery, setBattery] = useState([]);
@@ -31,20 +33,28 @@ const ReturnDeleteBattery = () => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
   //hien thi danh sach
   useEffect(() => {
-    const paramsString = queryString.stringify(filters);
-    returnDeleteAll(paramsString)
-      .then((response) => {
-        console.log(response.data);
-
-        setBattery(response.data.content);
-        setPagination(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      const paramsString = queryString.stringify(filters);
+      returnDeleteAll(paramsString)
+        .then((response) => {
+          console.log(response.data);
+
+          setBattery(response.data.content);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, [filters]);
 
   //xoa
@@ -81,128 +91,128 @@ const ReturnDeleteBattery = () => {
 
   return (
     <div className="bodyform">
-    <section class="ftco-section">  
-   <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-6 text-center mb-4">
-            <h2 class="heading-section">BATTERY DELETE</h2>
+      <section class="ftco-section">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-4">
+              <h2 class="heading-section">BATTERY DELETE</h2>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="row"></div>
-          <div class="col-md-12">
-            <form class="d-flex" role="search">
-              <Link to="/battery/getAll">
+          <div class="row">
+            <div class="row"></div>
+            <div class="col-md-12">
+              <form class="d-flex" role="search">
+                <Link to="/battery/getAll">
+                  <button
+                    class="btn btn-outline-success"
+                    type="submit"
+                    style={{ marginRight: "15px" }}
+                  >
+                    <FontAwesomeIcon icon={faBackward} />
+                  </button>
+                </Link>
+
+                <input
+                  class="form-control me-2"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                  name="key"
+                  onChange={handleChange}
+                />
                 <button
                   class="btn btn-outline-success"
                   type="submit"
-                  style={{ marginRight: "15px" }}
+                  style={{ marginLeft: "15px" }}
                 >
-                  <FontAwesomeIcon icon={faBackward} />
+                  <FaSearch className="search-icon" />
                 </button>
-              </Link>
 
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-                name="key"
-                onChange={handleChange}
-              />
-              <button
-                class="btn btn-outline-success"
-                type="submit"
-                style={{ marginLeft: "15px" }}
-              >
-                <FaSearch className="search-icon" />
-              </button>
+                <Link to="/battery/new">
+                  <button
+                    type="button"
+                    class="btn btn-outline-success"
+                    style={{ marginRight: "15px", marginLeft: "15px" }}
+                  >
+                    <FaPlus className="add-icon" />
+                  </button>
+                </Link>
 
-              <Link to="/battery/new">
                 <button
                   type="button"
                   class="btn btn-outline-success"
-                  style={{ marginRight: "15px", marginLeft: "15px" }}
+                  style={{ marginRight: "15px" }}
                 >
-                  <FaPlus className="add-icon" />
+                  <FaFileExcel className="excel-icon" />
                 </button>
-              </Link>
 
-              <button
-                type="button"
-                class="btn btn-outline-success"
-                style={{ marginRight: "15px" }}
-              >
-                <FaFileExcel className="excel-icon" />
-              </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  onClick={() => handleDownload(battery, "battery")}
+                >
+                  <IoMdDownload className="download-icon" />
+                </button>
+              </form>
+              <br />
 
-              <button
-                type="button"
-                class="btn btn-outline-success"
-                onClick={() => handleDownload(battery, "battery")}
-              >
-                <IoMdDownload className="download-icon" />
-              </button>
-            </form>
-            <br />
-
-            <div class="table-wrap">
-              <table class="table">
-                <thead class="thead-primary">
-                  <tr>
-                    <th>ID</th>
-                    <th>CODE</th>
-                    <th>NAME</th>
-                    <th>DATE-CREATE</th>
-                    <th>DATE-UPDATE</th>
-                    <th>PERSON-CREATE</th>
-                    <th>PERSON-UPDATE</th>
-                    <th>STATUS</th>
-                    <th>ACTION</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {battery.map((s) => {
-                    const dateCreate = new Date(s.dateCreate);
-                    const dateUpdate = new Date(s.dateUpdate);
-                    const dateCreateText = dateCreate.toLocaleDateString();
-                    const dateUpdateText = dateUpdate.toLocaleDateString();
-                    return (
-                      <tr class="alert" role="alert" key={s.id}>
-                        <td>{s.id}</td>
-                        <td>{s.code}</td>
-                        <td>{s.name}</td>
-                        <td>{dateCreateText}</td>
-                        <td>{dateUpdateText}</td>
-                        <td>{s.personCreate}</td>
-                        <td>{s.personUpdate}</td>
-                        <td>
-                          {s.status === 0 ? "Hoạt động" : "Không hoạt động"}
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            class="close"
-                            data-dismiss="alert"
-                            aria-label="Close"
-                            onClick={() => handleDelete(s.id)}
-                          >
-                            <span aria-hidden="true">
-                              <FontAwesomeIcon icon={faUndo} />
-                            </span>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div class="table-wrap">
+                <table class="table">
+                  <thead class="thead-primary">
+                    <tr>
+                      <th>ID</th>
+                      <th>CODE</th>
+                      <th>NAME</th>
+                      <th>DATE-CREATE</th>
+                      <th>DATE-UPDATE</th>
+                      <th>PERSON-CREATE</th>
+                      <th>PERSON-UPDATE</th>
+                      <th>STATUS</th>
+                      <th>ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {battery.map((s) => {
+                      const dateCreate = new Date(s.dateCreate);
+                      const dateUpdate = new Date(s.dateUpdate);
+                      const dateCreateText = dateCreate.toLocaleDateString();
+                      const dateUpdateText = dateUpdate.toLocaleDateString();
+                      return (
+                        <tr class="alert" role="alert" key={s.id}>
+                          <td>{s.id}</td>
+                          <td>{s.code}</td>
+                          <td>{s.name}</td>
+                          <td>{dateCreateText}</td>
+                          <td>{dateUpdateText}</td>
+                          <td>{s.personCreate}</td>
+                          <td>{s.personUpdate}</td>
+                          <td>
+                            {s.status === 0 ? "Hoạt động" : "Không hoạt động"}
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="alert"
+                              aria-label="Close"
+                              onClick={() => handleDelete(s.id)}
+                            >
+                              <span aria-hidden="true">
+                                <FontAwesomeIcon icon={faUndo} />
+                              </span>
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
+          <Pagination pagination={pagination} onPageChange={handlePageChange} />
         </div>
-        <Pagination pagination={pagination} onPageChange={handlePageChange} />
-      </div>
-    </section>
+      </section>
     </div>
   );
 };

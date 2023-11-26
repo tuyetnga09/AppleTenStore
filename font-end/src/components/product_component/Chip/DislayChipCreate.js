@@ -9,6 +9,7 @@ import {
 } from "react-router-dom/cjs/react-router-dom.min";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { notification } from "antd";
 
 const FormAddOrUpdate = () => {
   const [chipItem, setChipItem] = useState({});
@@ -20,17 +21,25 @@ const FormAddOrUpdate = () => {
   );
 
   const history = useHistory();
+  const storedUser = JSON.parse(localStorage.getItem("account"));
 
   useEffect(() => {
-    if (id !== "new") {
-      detail(id)
-        .then((response) => {
-          setChipItem(response.data);
-          console.log(chipItem);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
+    } else {
+      if (id !== "new") {
+        detail(id)
+          .then((response) => {
+            setChipItem(response.data);
+            console.log(chipItem);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
     }
   }, []);
 
@@ -61,53 +70,53 @@ const FormAddOrUpdate = () => {
 
   return (
     <div className="bodyform">
-    <div className="containerForm">
-      {title}
-      <form onSubmit={handleSubmit}>
-        <div className="form-row">
-          <div className="input-data">
-            <Input
-              type="text"
-              required
-              value={chipItem.code || ""}
-              onChange={handleChange}
-              id="code"
-              name="code"
-            ></Input>
-            <div className="underline"></div>
-            <label htmlFor="">Code</label>
-          </div>
-          <br />
-          <div className="input-data">
-            <Input
-              type="text"
-              required
-              value={chipItem.name || ""}
-              onChange={handleChange}
-              id="name"
-              name="name"
-            ></Input>
-            <div className="underline"></div>
-            <label htmlFor="">Name</label>
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="input-data textarea">
-            <div className="form-row submit-btn">
-              <div className="input-data">
-                <div className="inner"></div>
-                <Input type="submit" value={"SUBMIT"}></Input>
-              </div>
-              <button class="btn btn-light" type="button">
-                <Link to="/chip/getAll">
-                  <FontAwesomeIcon icon={faTimesCircle} />
-                </Link>
-              </button>
+      <div className="containerForm">
+        {title}
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={chipItem.code || ""}
+                onChange={handleChange}
+                id="code"
+                name="code"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Code</label>
+            </div>
+            <br />
+            <div className="input-data">
+              <Input
+                type="text"
+                required
+                value={chipItem.name || ""}
+                onChange={handleChange}
+                id="name"
+                name="name"
+              ></Input>
+              <div className="underline"></div>
+              <label htmlFor="">Name</label>
             </div>
           </div>
-        </div>
-      </form>
-    </div>
+          <div className="form-row">
+            <div className="input-data textarea">
+              <div className="form-row submit-btn">
+                <div className="input-data">
+                  <div className="inner"></div>
+                  <Input type="submit" value={"SUBMIT"}></Input>
+                </div>
+                <button class="btn btn-light" type="button">
+                  <Link to="/chip/getAll">
+                    <FontAwesomeIcon icon={faTimesCircle} />
+                  </Link>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

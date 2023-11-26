@@ -65,7 +65,7 @@ public class Config implements WebMvcConfigurer {
                 .requestMatchers("/**").permitAll()
 //                .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/customer/**").hasRole(String.valueOf(Roles.CUSTOMER))
-                .requestMatchers("/employee/**").hasRole(String.valueOf(Roles.NHAN_VIEN))
+//                .requestMatchers("/employee/**").hasRole(String.valueOf(Roles.NHAN_VIEN))
                 .requestMatchers("/admin/**").hasRole(String.valueOf(Roles.ADMIN))
                 .anyRequest().authenticated()
                 .and()
@@ -82,7 +82,8 @@ public class Config implements WebMvcConfigurer {
     /*Quản lý người dữ liệu người sử dụng*/
     public List<UserDetails> test(PasswordEncoder encoder) {
         List<UserDetails> userDetails = new ArrayList<>();
-        for (Account account : accountService.findAll()) {
+        List<Account> accounts = new ArrayList<>(accountService.findAll()); // Tạo bản sao
+        for (Account account : accounts) {
             UserDetails details = User.withUsername(account.getEmail())
                     .password(encoder.encode(account.getPassword()))
                     .roles(String.valueOf(account.getRoles()))
@@ -91,6 +92,7 @@ public class Config implements WebMvcConfigurer {
         }
         return userDetails;
     }
+
 
     @Bean
     // authentication

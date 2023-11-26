@@ -31,4 +31,9 @@ public class BillRequestOnlineAccount {
     private Integer idVoucherFreeShip;
     private Integer account;
     private String wards;
+
+    private Integer idUser;
+    private Integer point;
+    private Integer pointHistory;
+    private BigDecimal pointConversionAmount;
 }

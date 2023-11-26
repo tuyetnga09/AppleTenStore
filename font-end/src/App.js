@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import RamDisplay from "./components/product_component/Ram/DisplayRam";
@@ -78,35 +78,65 @@ import OderUserDaHuy from "./components/Page_Comeponet/OderUser/DaHuy";
 import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
 import Product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/sku/index";
 import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
+import Policy from "./components/Page_Comeponet/Policy";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
-import { notification } from "antd";
 
+const storedUser = JSON.parse(localStorage.getItem("account"));
+const fetchData = async () => {
+  const pass = atob(storedUser.password);
+  try {
+    const response = await fetch(
+      `http://localhost:8080/admin/account/login?email=${storedUser?.email}&password=${pass}`
+    );
+    const result = await response.json();
+    console.log(result);
+    if (result !== null) {
+      localStorage.removeItem("account");
+      localStorage.setItem("account", JSON.stringify(result));
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 function App() {
-  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    // Gọi hàm gọi API khi component được mount
+
+    if (storedUser !== null) {
+      fetchData();
+    }
+    console.count("Số lần Callback trong useEffect chạy");
+  }, []);
+  console.count("Render");
+
   return (
     <div>
       <Router>
         {/* <Suspense fallback={<div>Loading...</div>}> */}
         <Switch>
           <Route path="/blog" exact component={blog} />
+          <Route path="/policy" exact component={Policy} />
           <Route path="/" exact component={Home} />
           <Route path="/chat" exact component={chat} />
-          {/* <Route path="/product" exact component={product} /> */}
-          <Route path="/product">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+          <Route path="/product" exact component={Product} />
+          {/* <Route path="/product">
+            {storedUser?.roles === "CUSTOMER" ||
+            storedUser === null ||
+            storedUser?.roles === "NHAN_VIEN_BAN_HANG" ? (
               <Redirect to="/" />
             ) : (
               <Product />
             )}
-          </Route>
-          {/* <Route path="/ram/display" exact component={RamDisplay} /> */}
-          <Route path="/ram/display">
+          </Route> */}
+          <Route path="/ram/display" exact component={RamDisplay} />
+          {/* <Route path="/ram/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <RamDisplay />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/ram/im" exact component={ImportRam} /> */}
           <Route path="/ram/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -123,42 +153,42 @@ function App() {
               <ScanRam />
             )}
           </Route>
-          {/* <Route path="/ram/displayDelete" exact component={ReturnDeleteRam} /> */}
-          <Route path="/ram/displayDelete">
+          <Route path="/ram/displayDelete" exact component={ReturnDeleteRam} />
+          {/* <Route path="/ram/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ReturnDeleteRam />
             )}
-          </Route>
-          {/* <Route path="/ram/:id" exact component={RamCreateOrUpdate} /> */}
-          <Route path="/ram/:id">
+          </Route> */}
+          <Route path="/ram/:id" exact component={RamCreateOrUpdate} />
+          {/* <Route path="/ram/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <RamCreateOrUpdate />
             )}
-          </Route>
-          {/* <Route path="/category/display" exact component={DisplayCategory} /> */}
-          <Route path="/category/display">
+          </Route> */}
+          <Route path="/category/display" exact component={DisplayCategory} />
+          {/* <Route path="/category/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplayCategory />
             )}
-          </Route>
-          {/* <Route
+          </Route> */}
+          <Route
             path="/category/displayDelete"
             exact
             component={CategoryDisplayReturn}
-          /> */}
-          <Route path="/category/displayDelete">
+          />
+          {/* <Route path="/category/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <CategoryDisplayReturn />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/category/im" exact component={ImportCategory} /> */}
           <Route path="/category/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -167,34 +197,34 @@ function App() {
               <ImportCategory />
             )}
           </Route>
-          {/* <Route path="/category/:id" exact component={AddCategory} /> */}
-          <Route path="/category/:id">
+          <Route path="/category/:id" exact component={AddCategory} />
+          {/* <Route path="/category/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <AddCategory />
             )}
-          </Route>
-          {/* <Route path="/capacity/display" exact component={DisplayCapacity} /> */}
-          <Route path="/category/display">
+          </Route> */}
+          <Route path="/capacity/display" exact component={DisplayCapacity} />
+          {/* <Route path="/category/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplayCapacity />
             )}
-          </Route>
-          {/* <Route
+          </Route> */}
+          <Route
             path="/capacity/displayDelete"
             exact
             component={CapacityReturn}
-          /> */}
-          <Route path="/category/displayDelete">
+          />
+          {/* <Route path="/category/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <CapacityReturn />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/capacity/im" exact component={DisplayImportCapacity} /> */}
           <Route path="/capacity/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -203,38 +233,38 @@ function App() {
               <DisplayImportCapacity />
             )}
           </Route>
-          {/* <Route path="/capacity/:id" exact component={SaveOrUpdateCapacity} /> */}
-          <Route path="/capacity/:id">
+          <Route path="/capacity/:id" exact component={SaveOrUpdateCapacity} />
+          {/* <Route path="/capacity/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <SaveOrUpdateCapacity />
             )}
-          </Route>
-          {/* <Route
+          </Route> */}
+          <Route
             path="/manufacture/display"
             exact
             component={DisplayManufacture}
-          /> */}
-          <Route path="/manufacture/display">
+          />
+          {/* <Route path="/manufacture/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplayManufacture />
             )}
-          </Route>
-          {/* <Route
+          </Route> */}
+          <Route
             path="/manufacture/displayDelete"
             exact
             component={ReturnManufacture}
-          /> */}
-          <Route path="/manufacture/displayDelete">
+          />
+          {/* <Route path="/manufacture/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ReturnManufacture />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/manufacture/im" exact component={ImportManufacture} /> */}
           <Route path="/manufacture/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -243,26 +273,26 @@ function App() {
               <ImportManufacture />
             )}
           </Route>
-          {/* <Route
+          <Route
             path="/manufacture/:id"
             exact
             component={SaveOrUpdateManufacture}
-          /> */}
-          <Route path="/manufacture/:id">
+          />
+          {/* <Route path="/manufacture/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <SaveOrUpdateManufacture />
             )}
-          </Route>
-          {/* <Route path="/size/getAll" exact component={DisplaySize} /> */}
-          <Route path="/size/getAll">
+          </Route> */}
+          <Route path="/size/getAll" exact component={DisplaySize} />
+          {/* <Route path="/size/getAll">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplaySize />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/size/im" exact component={ImportSize} /> */}
           <Route path="/size/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -279,34 +309,34 @@ function App() {
               <ScanSize />
             )}
           </Route>
-          {/* <Route
+          <Route
             path="/size/displayDelete"
             exact
             component={ReturnDeleteSize}
-          /> */}
-          <Route path="/size/displayDelete">
+          />
+          {/* <Route path="/size/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ReturnDeleteSize />
             )}
-          </Route>
-          {/* <Route path="/size/:id" exact component={FormAddOrUpdateSize} /> */}
-          <Route path="/size/:id">
+          </Route> */}
+          <Route path="/size/:id" exact component={FormAddOrUpdateSize} />
+          {/* <Route path="/size/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <FormAddOrUpdateSize />
             )}
-          </Route>
-          {/* <Route path="/battery/getAll" exact component={DisplayBattery} /> */}
-          <Route path="/battery/getAll">
+          </Route> */}
+          <Route path="/battery/getAll" exact component={DisplayBattery} />
+          {/* <Route path="/battery/getAll">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplayBattery />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/battery/im" exact component={ImportBattery} /> */}
           <Route path="/battery/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -323,34 +353,34 @@ function App() {
               <ScanBattery />
             )}
           </Route>
-          {/* <Route
+          <Route
             path="/battery/displayDelete"
             exact
             component={ReturnDeleteBattery}
-          /> */}
-          <Route path="/battery/displayDelete">
+          />
+          {/* <Route path="/battery/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ReturnDeleteBattery />
             )}
-          </Route>
-          {/* <Route path="/battery/:id" exact component={FormAddOrUpdateBattery} /> */}
-          <Route path="/battery/:id">
+          </Route> */}
+          <Route path="/battery/:id" exact component={FormAddOrUpdateBattery} />
+          {/* <Route path="/battery/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <FormAddOrUpdateBattery />
             )}
-          </Route>
-          {/* <Route path="/screen/display" exact component={ScreenDisplay} /> */}
-          <Route path="/screen/display">
+          </Route> */}
+          <Route path="/screen/display" exact component={ScreenDisplay} />
+          {/* <Route path="/screen/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ScreenDisplay />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/screen/im" exact component={ImportScreen} /> */}
           <Route path="/screen/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -359,46 +389,46 @@ function App() {
               <ImportScreen />
             )}
           </Route>
-          {/* <Route
+          <Route
             path="/screen/displayDelete"
             exact
             component={ScreenDeleteScreen}
-          /> */}
-          <Route path="/screen/displayDelete">
+          />
+          {/* <Route path="/screen/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ScreenDeleteScreen />
             )}
-          </Route>
-          {/* <Route path="/screen/:id" exact component={ScreenCreateOrUpdate} /> */}
-          <Route path="/screen/:id">
+          </Route> */}
+          <Route path="/screen/:id" exact component={ScreenCreateOrUpdate} />
+          {/* <Route path="/screen/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ScreenCreateOrUpdate />
             )}
-          </Route>
-          {/* <Route path="/chip/getAll" exact component={DisplayChip} /> */}
-          <Route path="/chip/getAll">
+          </Route> */}
+          <Route path="/chip/getAll" exact component={DisplayChip} />
+          {/* <Route path="/chip/getAll">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplayChip />
             )}
-          </Route>
-          {/* <Route
+          </Route> */}
+          <Route
             path="/chip/displayDelete"
             exact
             component={ChipDisplayReturn}
-          /> */}
-          <Route path="/chip/displayDelete">
+          />
+          {/* <Route path="/chip/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ChipDisplayReturn />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/chip/im" exact component={ImportChip} /> */}
           <Route path="/chip/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -407,14 +437,14 @@ function App() {
               <ImportChip />
             )}
           </Route>
-          {/* <Route path="/chip/:id" exact component={AddChip} /> */}
-          <Route path="/chip/:id">
+          <Route path="/chip/:id" exact component={AddChip} />
+          {/* <Route path="/chip/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <AddChip />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/chip/scan" exact component={ScanChip} /> */}
           <Route path="/chip/scan">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -423,14 +453,14 @@ function App() {
               <ScanChip />
             )}
           </Route>
-          {/* <Route path="/image/display" exact component={Display} /> */}
-          <Route path="/image/display">
+          <Route path="/image/display" exact component={Display} />
+          {/* <Route path="/image/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <Display />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/image/:id" exact component={ImageFormAddOrUpdate} /> */}
           <Route path="/image/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -439,26 +469,26 @@ function App() {
               <ImageFormAddOrUpdate />
             )}
           </Route>
-          {/* <Route path="/color/getAll" exact component={DisplayColor} /> */}
-          <Route path="/color/getAll">
+          <Route path="/color/getAll" exact component={DisplayColor} />
+          {/* <Route path="/color/getAll">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplayColor />
             )}
-          </Route>
-          {/* <Route
+          </Route> */}
+          <Route
             path="/color/displayDelete"
             exact
             component={ColorDisplayReturn}
-          /> */}
-          <Route path="/color/displayDelete">
+          />
+          {/* <Route path="/color/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ColorDisplayReturn />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/color/im" exact component={ImportColor} /> */}
           <Route path="/color/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -467,14 +497,14 @@ function App() {
               <ImportColor />
             )}
           </Route>
-          {/* <Route path="/color/:id" exact component={AddColor} /> */}
-          <Route path="/color/:id">
+          <Route path="/color/:id" exact component={AddColor} />
+          {/* <Route path="/color/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <AddColor />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/color/scan" exact component={ScanColor} /> */}
           <Route path="/color/scan">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -483,14 +513,14 @@ function App() {
               <ScanColor />
             )}
           </Route>
-          {/* <Route path="/imei/getAll" exact component={DisplayImei} /> */}
-          <Route path="/imei/getAll">
+          <Route path="/imei/getAll" exact component={DisplayImei} />
+          {/* <Route path="/imei/getAll">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <DisplayImei />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/imei/im" exact component={ImportImei} /> */}
           <Route path="/imei/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -499,18 +529,18 @@ function App() {
               <ImportImei />
             )}
           </Route>
-          {/* <Route
+          <Route
             path="/imei/displayDelete"
             exact
             component={ReturnDeleteImei}
-          /> */}
-          <Route path="/imei/displayDelete">
+          />
+          {/* <Route path="/imei/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ReturnDeleteImei />
             )}
-          </Route>
+          </Route> */}
           {/* <Route path="/image/:id" exact component={ImageFormAddOrUpdate} /> */}
           <Route path="/image/:id">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
@@ -519,47 +549,43 @@ function App() {
               <ImageFormAddOrUpdate />
             )}
           </Route>
-          {/* <Route path="/cproduct/display" exact component={Cproduct} /> */}
-          <Route path="/cproduct/display">
+          <Route path="/cproduct/display" exact component={Cproduct} />
+          {/* <Route path="/cproduct/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <Cproduct />
             )}
-          </Route>
-          {/* <Route
+          </Route> */}
+          <Route
             path="/product/displayDelete"
             exact
             component={ReturnDeleteProduct}
-          /> */}
-          <Route path="/product/displayDelete">
+          />
+          {/* <Route path="/product/displayDelete">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <ReturnDeleteProduct />
             )}
-          </Route>
-          {/* <Route path="/dashboard" exact component={Dashboard} /> */}
-          <Route path="/dashboard">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+          </Route> */}
+          <Route path="/dashboard" exact component={Dashboard} />
+          {/* <Route path="/dashboard">
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
-              // notification.error({
-              //   message: "Thêm Imei Thất Bại!",
-              //   description: "imei đã có trong giỏ hàng hoặc đã bán!",
-              // })
               <Dashboard />
             )}
-          </Route>
+          </Route> */}
           <Route path="/productDetail/:id" exact component={SingleProduct} />
-          {/* <Route path="/voucher" exact component={Voucher} /> */}
-          <Route path="/voucher">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+          <Route path="/voucher" exact component={Voucher} />
+          {/* <Route path="/voucher">
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <Voucher />
             )}
-          </Route>
+          </Route> */}
           <Route path="/cart" exact component={Cart} />
           <Route path="/checkout" exact component={Checkout} />
           <Route path="/login">
@@ -568,55 +594,55 @@ function App() {
           <Route path="/signup">
             {storedUser !== null ? <Redirect to="/" /> : <SignUp />}
           </Route>
-          <Route path="/signup/admin">
+          <Route path="/signupAdmin">
             {storedUser !== null ? <Redirect to="/" /> : <SignUpAdmin />}
           </Route>
           <Route path="/forgotpassword">
             {storedUser !== null ? <Redirect to="/" /> : <ForgotPassword />}
           </Route>
-          {/* <Route path="/orders" exact component={OderDisplay} /> */}
-          <Route path="/orders">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+          <Route path="/orders" exact component={OderDisplay} />
+          {/* <Route path="/orders">
+            {storedUser?.roles === "CUSTOMER" ||
+            storedUser === null ||
+            storedUser?.roles === "NHAN_VIEN_BAN_HANG" ? (
               <Redirect to="/" />
             ) : (
               <OderDisplay />
             )}
-          </Route>
+          </Route> */}
           <Route path="/chats" exact component={ChatManager} />
-          {/* <Route path="/sku/display" exact component={SkuDisplay} /> */}
-          <Route path="/sku/display">
+          <Route path="/sku/display" exact component={SkuDisplay} />
+          {/* <Route path="/sku/display">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <SkuDisplay />
             )}
-          </Route>
-          {/* <Route path="/categories" exact component={CategoryDisplay} /> */}
-          <Route path="/categories">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+          </Route> */}
+          <Route path="/categories" exact component={CategoryDisplay} />
+          {/* <Route path="/categories">
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <CategoryDisplay />
             )}
-          </Route>
-          {/* <Route path="/users" exact component={AccountList} /> */}
-          <Route path="/users">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+          </Route> */}
+          <Route path="/users" exact component={AccountList} />
+          {/* <Route path="/users">
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <AccountList />
             )}
-          </Route>
-          {/* <Route path="/sell" exact component={SellOffline} /> */}
-          <Route path="/sell">
-            {storedUser?.roles === "CUSTOMER" ||
-            storedUser === null ||
-            storedUser === null ? (
+          </Route> */}
+          <Route path="/sell" exact component={SellOffline} />
+          {/* <Route path="/sell">
+            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <SellOffline />
             )}
-          </Route>
+          </Route> */}
           <Route path="/paydone" exact component={Paydone} />
           <Route path="/oderUserAll" exact component={OderUserAll} />
           <Route path="/oderUserCTT" exact component={OderUserChoThanhToan} />
@@ -625,18 +651,21 @@ function App() {
           <Route path="/oderUserHT" exact component={OderUserHoanThanh} />
           <Route path="/oderUserDH" exact component={OderUserDaHuy} />
           <Route path="/profile" exact component={ProfileCustomer} />
-          {/* <Route
+          {/* <Route path="/profile">
+            {storedUser === null ? <Redirect to="/" /> : <ProfileCustomer />}
+          </Route> */}
+          <Route
             path="/admin/product-detail"
             exact
-            component={product_detail_dashbroad}
-          /> */}
-          <Route path="/admin/product-detail">
-            {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
+            component={Product_detail_dashbroad}
+          />
+          {/* <Route path="/admin/product-detail">
+            {storedUser?.roles !== "ADMIN" || storedUser === null ? (
               <Redirect to="/" />
             ) : (
               <Product_detail_dashbroad />
             )}
-          </Route>
+          </Route> */}
           <Route path="/oderCustomerAll" exact component={OderCustomerAll} />
         </Switch>
         {/* </Suspense> */}

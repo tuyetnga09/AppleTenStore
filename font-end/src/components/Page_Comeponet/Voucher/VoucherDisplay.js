@@ -42,6 +42,8 @@ import {
   notification,
   Modal,
   Dropdown,
+  InputNumber,
+  Space,
 } from "antd";
 import { List, Array } from "@refinedev/antd";
 import {
@@ -56,6 +58,7 @@ import UpdateVoucher from "../Voucher/UpdateVoucher";
 import queryString from "query-string";
 import { Option } from "antd/es/mentions";
 import { DateField } from "@refinedev/antd";
+import { getOne, updateMoney } from "../../../service/Point/point.service";
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -70,19 +73,30 @@ const VoucherDisplay = ({}) => {
 
   const [voucher, setVoucher] = useState([]);
   const [editedVoucher, setEditedVoucher] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisiblePoint, setIsModalVisiblePoint] = useState(false); // Trạng thái hiển thị Modal
 
   // Hàm để hiển thị Modal khi cần
   const handleEditClick = (record) => {
     setEditedVoucher(record);
     setIsModalVisible(true);
-    console.log(editedVoucher);
   };
 
   // Hàm để ẩn Modal
   const handleCancel = () => {
     setEditedVoucher([]);
     setIsModalVisible(false);
+  };
+
+  const handlePointClick = (record) => {
+    // setEditedVoucher(record);
+    setIsModalVisiblePoint(true);
+  };
+
+  // Hàm để ẩn Modal
+  const handleCancelPoint = () => {
+    // setEditedVoucher([]);
+    setIsModalVisiblePoint(false);
   };
 
   const [filtersNoDate, setFiltersNoDate] = useState({
@@ -104,7 +118,24 @@ const VoucherDisplay = ({}) => {
       // Thêm các giá trị khác nếu cần
     ],
   };
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const [pointMoney, setPointMoney] = useState(0);
+  const [money, setMoney] = useState(0);
+  function handleChangeMoneyPoint(value) {
+    setMoney(parseInt(value));
+  }
+  const updateMoneyPoint = () => {
+    updateMoney(money)
+      .then((res) => {
+        notification.success({
+          message: "Cập nhật thành công!",
+        });
+        setIsModalVisiblePoint(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   useEffect(() => {
     // readAll()
     //   .then((response) => {
@@ -115,28 +146,46 @@ const VoucherDisplay = ({}) => {
     //   .catch((error) => {
     //     console.log(`${error}`);
     //   });
-    const paramsString = queryString.stringify(filtersNoDate);
-    const paramsString2 = queryString.stringify(filtersWithDate);
-    const dateFilter = document.getElementById("dateFilter");
-    if (dateFilter.value == "") {
-      searchNoDate(paramsString)
-        .then((response) => {
-          // console.log(response.data);
-          setVoucher(response.data);
-          // setEditedVoucher(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
     } else {
-      searchWithDate(paramsString2)
+      const paramsString = queryString.stringify(filtersNoDate);
+      const paramsString2 = queryString.stringify(filtersWithDate);
+      const dateFilter = document.getElementById("dateFilter");
+      if (dateFilter.value == "") {
+        searchNoDate(paramsString)
+          .then((response) => {
+            // console.log(response.data);
+            setVoucher(response.data);
+            // setEditedVoucher(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      } else {
+        searchWithDate(paramsString2)
+          .then((response) => {
+            // console.log(response.data);
+            setVoucher(response.data);
+            // setEditedVoucher(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
+      getOne()
         .then((response) => {
-          // console.log(response.data);
-          setVoucher(response.data);
-          // setEditedVoucher(response.data);
+          if (response.data.data !== null) {
+            setPointMoney(response.data.data.pointsConsumptionMoney);
+          } else {
+            setPointMoney(0);
+          }
         })
         .catch((error) => {
-          console.log(`${error}`);
+          console.log(error);
         });
     }
   }, [filtersNoDate, filtersWithDate]);
@@ -314,6 +363,7 @@ const VoucherDisplay = ({}) => {
             <Text style={{ fontSize: "24px", color: "blue" }} strong>
               VOUCHER
             </Text>
+
             {/* <Row gutter={[16, 16]}>
         <Col
                 xl={6}
@@ -410,7 +460,9 @@ const VoucherDisplay = ({}) => {
                     </Row>
                   </Form>
                 </Card>
+                <Button onClick={handlePointClick}>Point</Button>
               </Col>
+
               <Col xl={18} xs={24}>
                 {/* <Link to="/voucher/new">
                     <Button style={{ marginLeft: "1000px" }}> 
@@ -419,7 +471,6 @@ const VoucherDisplay = ({}) => {
                 </Link> */}
 
                 <CreateVoucher />
-
                 <List>
                   <Table
                     rowKey="id"
@@ -663,6 +714,67 @@ const VoucherDisplay = ({}) => {
                 bodyStyle={{ minHeight: "450px" }}
               >
                 <UpdateVoucher editedVoucher={editedVoucher} />
+              </Modal>
+            </section>
+            <section>
+              <Modal
+                visible={isModalVisiblePoint}
+                onCancel={handleCancelPoint}
+                width={550}
+                footer={null}
+                bodyStyle={{ minHeight: "100px" }}
+              >
+                <Form
+                  name="basic"
+                  labelCol={{
+                    span: 8,
+                  }}
+                  wrapperCol={{
+                    span: 16,
+                  }}
+                  style={{
+                    maxWidth: 600,
+                  }}
+                  initialValues={{
+                    remember: true,
+                  }}
+                  onFinish={() => updateMoneyPoint()}
+                  // onFinishFailed={() => console.log("not ok")}
+                  autoComplete="off"
+                >
+                  <Form.Item
+                    label="Số tiền quy đổi"
+                    name="pointsConsumptionMoney"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input your money!",
+                      },
+                    ]}
+                  >
+                    <Space direction="vertical">
+                      <InputNumber
+                        addonBefore="1 điểm ="
+                        addonAfter="₫"
+                        defaultValue={pointMoney}
+                        min={0}
+                        required
+                        onChange={handleChangeMoneyPoint}
+                      />
+                    </Space>
+                  </Form.Item>
+
+                  <Form.Item
+                    wrapperCol={{
+                      offset: 8,
+                      span: 16,
+                    }}
+                  >
+                    <Button type="primary" htmlType="submit">
+                      Submit
+                    </Button>
+                  </Form.Item>
+                </Form>
               </Modal>
             </section>
           </Content>

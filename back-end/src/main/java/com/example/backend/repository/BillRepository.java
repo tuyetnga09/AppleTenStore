@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import jakarta.transaction.Transactional;
@@ -20,11 +21,11 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     Optional<Bill> findByCode(String code);
 
 //    @Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill join account on bill.id_account = account.id join user on account.id_user = user.id where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and user.id like %?3% ORDER BY date_create DESC, Id DESC", nativeQuery = true)
-@Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+@Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     List<Bill> searchNoDate(String key, String status);
 
 //    @Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill join account on bill.id_account = account.id join user on account.id_user = user.id where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and user.id like %?3% and (bill.date_create >= ?4 and bill.date_create <= ?5) ORDER BY date_create DESC, Id DESC", nativeQuery = true)
-@Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and (bill.date_create >= ?3 and bill.date_create <= ?4) ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+@Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and (bill.date_create >= ?3 and bill.date_create <= ?4) ORDER BY date_create DESC, Id DESC", nativeQuery = true)
 List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
     @Modifying
@@ -162,7 +163,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     List<Bill> searchBillChoThanhToan(Integer id, String codeBill);
 
     @Query(value = "SELECT * FROM bill\n" +
-            "WHERE status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURRENT_DATE or date_update = CURRENT_DATE ORDER BY id DESC", nativeQuery = true)
+            "WHERE status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURRENT_DATE ORDER BY id DESC", nativeQuery = true)
     List<Bill> billInDate();
 
     @Query(value = "select * from bill where status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURDATE() and id_account = ?1 and code like %?2%  ORDER BY id DESC", nativeQuery = true)
@@ -170,6 +171,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
     @Query(value = "SELECT * FROM bill WHERE code like ?1", nativeQuery = true)
     List<Bill> getThongTinThanhToan(String codeBill);
+
 
     @Query(value = "SELECT * FROM bill\n" +
             "    WHERE DATE(date_create) = CURDATE() AND status_bill = 'CHO_VAN_CHUYEN'\n" +
@@ -222,4 +224,26 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             "WHERE bill.code IS NULL\n" +
             "ORDER BY month", nativeQuery = true)
     List<AnnualRevenueIon> seachDoanhSoTheoNam(Integer year);
+
+    @Modifying
+    @Query(value = "update bill\n" +
+            "set status_bill = 'CHO_VAN_CHUYEN', date_update = CURRENT_DATE(), person_update = ?1\n" +
+            "where status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
+    void updateAllChoVanChuyen(String personUpdate);
+
+    @Query(value = "select b.id as 'id', b.quantity as 'quantity', b.price as 'price', b.status_bill as 'statusBillDetail',\n" +
+            "             b.id_bill as 'bill', b2.code as 'CodeBill',\n" +
+            "             b.person_create as  'personCreate', b.person_update as 'personUpdate', b.date_create as 'dateCreate',\n" +
+            "             b.date_update as 'dateUpdate',\n" +
+            "             s.id as 'idSKU', s.capacity as 'skuCapacity', s.color as 'skuColor' , s.price as 'skuPrice' ,\n" +
+            "             p.id as 'idProduct', p.name as 'nameProduct', b.price * b.quantity  as 'totalManyOneBillDetail',\n" +
+            "             count(i.code_imei) as 'soLuongImeiDaChon'\n" +
+            "             from bill_detail b LEFT JOIN imei_da_ban i on b.id = i.id_bill_detail join sku s on b.id_sku = s.id\n" +
+            "             join product p on s.product_id = p.id join bill b2 on b2.id = b.id_bill where b2.type = 'ONLINE' and b2.status_bill = 'CHO_XAC_NHAN'\n" +
+            "             group by id, quantity, price, statusBillDetail, bill, CodeBill, personCreate, personUpdate, dateCreate,\n" +
+            "             dateUpdate, idSKU, skuCapacity, skuColor, skuPrice, idProduct, nameProduct, totalManyOneBillDetail", nativeQuery = true)
+    List<BillDetailOffLineIon> getAllBillChoXacNhan();
+
+    @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN'\n", nativeQuery = true)
+    Integer getCountBillCXN();
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Header from "../Page_Comeponet/layout/Header";
 import Footer from "../Page_Comeponet/layout/Footer";
 import {
@@ -10,19 +10,19 @@ import {
   ListItemAvatar,
   Avatar,
   Typography,
-} from '@material-ui/core';
-import Stomp from 'stompjs';
-import SockJS from 'sockjs-client';
-import Cookies from 'js-cookie';
+} from "@material-ui/core";
+import Stomp from "stompjs";
+import SockJS from "sockjs-client";
+import Cookies from "js-cookie";
 
 const ChatRoom = () => {
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
-  const [nickname, setNickname] = useState('');
+  const [message, setMessage] = useState("");
+  const [nickname, setNickname] = useState("");
   const [stompClient, setStompClient] = useState(null);
 
   useEffect(() => {
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS("http://localhost:8080/ws");
     const client = Stomp.over(socket);
 
     client.connect({}, () => {
@@ -39,19 +39,19 @@ const ChatRoom = () => {
   useEffect(() => {
     if (!stompClient) return;
 
-    const subscription = stompClient.subscribe('/topic/messages', (message) => {
+    const subscription = stompClient.subscribe("/topic/messages", (message) => {
       const receivedMessage = JSON.parse(message.body);
 
       if (receivedMessage.content !== message) {
         setMessages((prevMessages) => [...prevMessages, receivedMessage]);
 
         // Lưu tin nhắn vào cookie
-        const storedMessages = Cookies.get('chatMessages');
+        const storedMessages = Cookies.get("chatMessages");
         const updatedMessages = storedMessages
           ? JSON.parse(storedMessages)
           : [];
         updatedMessages.push(receivedMessage);
-        Cookies.set('chatMessages', JSON.stringify(updatedMessages));
+        Cookies.set("chatMessages", JSON.stringify(updatedMessages));
       }
     });
 
@@ -62,7 +62,7 @@ const ChatRoom = () => {
 
   useEffect(() => {
     // Khôi phục tin nhắn từ cookie khi tải lại trang
-    const storedMessages = Cookies.get('chatMessages');
+    const storedMessages = Cookies.get("chatMessages");
     if (storedMessages) {
       setMessages(JSON.parse(storedMessages));
     }
@@ -83,8 +83,8 @@ const ChatRoom = () => {
         content: message,
       };
 
-      stompClient.send('/app/chat', {}, JSON.stringify(chatMessage));
-      setMessage('');
+      stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+      setMessage("");
     }
   };
 
@@ -107,10 +107,10 @@ const ChatRoom = () => {
         ))}
       </List>
 
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
         <TextField
-        // bat buuoc phai viet, sau co admin se lay theo tai khoan admin 
-         placeholder="Name customer: "
+          // bat buuoc phai viet, sau co admin se lay theo tai khoan admin
+          placeholder="Name customer: "
           value={nickname}
           onChange={handleNicknameChange}
           autoFocus
@@ -125,7 +125,16 @@ const ChatRoom = () => {
           send
         </IconButton>
       </div>
-      <Footer />
+      <footer
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          height: "60px",
+        }}
+      >
+        <Footer />
+      </footer>
     </div>
   );
 };

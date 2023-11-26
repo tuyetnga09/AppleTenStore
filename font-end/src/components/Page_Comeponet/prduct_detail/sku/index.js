@@ -68,7 +68,7 @@ import {
   WarningFilled,
   Warning,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../header/index";
 import moment from "moment";
 import "../css/index.css";
@@ -107,14 +107,23 @@ export const AccountList = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const [dataProducts, setDataProducts] = useState([]);
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
   useEffect(() => {
-    readAllProduct()
-      .then((res) => {
-        setDataProducts(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      readAllProduct()
+        .then((res) => {
+          setDataProducts(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, []);
 
   //delete product

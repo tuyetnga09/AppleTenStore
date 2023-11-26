@@ -30,7 +30,7 @@ const Paydone = () => {
 
   // Chuỗi URL
   console.log(vnpResponseCode); // Kết quả: "00"
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (parseInt(vnpResponseCode) === 24) {
       setTest(true);
@@ -44,6 +44,16 @@ const Paydone = () => {
         });
         history.push("/");
       } else {
+        setLoading(true);
+        // Lấy URL hiện tại
+        var currentURL = window.location.href;
+
+        // Xóa tất cả các tham số
+        var newURL = currentURL.split("?")[0];
+
+        // Cập nhật URL
+        window.history.replaceState({}, document.title, newURL);
+
         if (idAccount !== "") {
           createBillAccount(storedBill)
             .then((response) => {
@@ -52,6 +62,7 @@ const Paydone = () => {
                 .then((response) => {
                   setBill(response.data);
                   localStorage.removeItem("bill");
+                  setLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -68,6 +79,7 @@ const Paydone = () => {
                 .then((response) => {
                   setBill(response.data);
                   localStorage.removeItem("bill");
+                  setLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -84,6 +96,7 @@ const Paydone = () => {
         .then((response) => {
           setBill(response.data);
           localStorage.removeItem("bill2");
+          setLoading(false);
         })
         .catch((error) => {
           console.log(error);
@@ -95,6 +108,22 @@ const Paydone = () => {
   return (
     <>
       <Header />
+      {loading && (
+        <div
+          style={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            padding: "10px",
+            zIndex: "9999", // Đặt z-index lớn hơn phần nền
+          }}
+        >
+          <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
       <div class="ctn2">
         <h1>Thanh toán thành công!</h1>
         <img

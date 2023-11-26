@@ -65,4 +65,5 @@ public class BillDetailServiceImpl implements BillDetailService {
     public List<BillDetailOffLineIon> findBillDetails(Integer id) {
         return this.billDetailRepository.findByBillDetailOffLineIdBill(id);
     }
+
 }

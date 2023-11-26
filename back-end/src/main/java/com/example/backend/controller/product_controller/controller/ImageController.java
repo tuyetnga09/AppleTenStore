@@ -2,6 +2,7 @@ package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.service.impl.ImageService;
 import com.example.backend.entity.Image;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -31,6 +33,12 @@ public class ImageController {
         this.service.insert(images, name);
     }
 
+    @PostMapping(value = "/save/imgAccount")
+    public @ResponseBody void save(@RequestParam("file") MultipartFile images) throws IOException {
+        this.service.insert(images);
+    }
+
+
     @PutMapping("/update/{id}")
     public void update(@RequestBody Image image, @PathVariable("id") Integer id) {
         image.setId(id);
@@ -45,6 +53,11 @@ public class ImageController {
     @GetMapping(value = "/search/{id}")
     public Image searchImage(@PathVariable int id){
         return this.service.searchImageByIdProduct(id);
+    }
+
+    @GetMapping(value = "/getAll/{id}")
+    public List<Image> getAllImagesByIdProduct(@PathVariable int id){
+        return this.service.getAllImagesByIdProduct(id);
     }
 
 }

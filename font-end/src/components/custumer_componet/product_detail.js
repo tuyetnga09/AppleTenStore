@@ -3,6 +3,7 @@ import Header from "../Page_Comeponet/layout/Header";
 import Footer from "../Page_Comeponet/layout/Footer";
 import { Button, Tag, notification } from "antd";
 import { RightOutlined } from "@ant-design/icons";
+import { Slide } from "react-slideshow-image";
 import {
   Link,
   useParams,
@@ -36,8 +37,9 @@ import "../../css/gioHang.css";
 import "../../css/footer.css";
 import "../../css/trangchu.css";
 import "../../css/style2.css";
-// import "../../css/owl.carousel.min.css";
+import "../../css/slide.css";
 import "../../css/owl.theme.default.min.css";
+import { getAllImage } from "../../service/image.service";
 
 export default function ProductDetail() {
   const storedUser = JSON.parse(localStorage.getItem("account"));
@@ -48,6 +50,12 @@ export default function ProductDetail() {
   const [item, setItem] = useState({});
 
   const [item2, setItem2] = useState({});
+
+  const [listImages, setListImages] = useState([]);
+
+  const [index, setIndex] = useState(0);
+
+  const [imageTemp, setImageTemp] = useState("");
 
   const [filtersSKU, setFiltersSKU] = useState({
     capacity: "",
@@ -67,6 +75,7 @@ export default function ProductDetail() {
   const [productFilter, setProductFilter] = useState([]);
 
   const [quantityNoiBat, setQuantityNoiBat] = useState([]);
+
   function goToTop() {
     window.scrollTo({
       top: 0, // Cuộn lên vị trí đầu trang
@@ -101,6 +110,14 @@ export default function ProductDetail() {
         console.log(`${error}`);
       });
 
+    getAllImage(id)
+      .then((response) => {
+        setListImages(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     const paramsStringProduct = queryString.stringify(filters);
     readAll(paramsStringProduct)
       .then((response) => {
@@ -109,7 +126,7 @@ export default function ProductDetail() {
           response.data.content.map((dl) => {
             return (
               <li className="sanPham" onClick={() => goToTop()}>
-                <Link to={`/product/${dl.id}`}>
+                <Link to={`/productDetail/${dl.id}`}>
                   <ImageProduct product={dl.id}></ImageProduct>
                   <h3>{dl.name}</h3>
                   <div className="price">
@@ -266,7 +283,7 @@ export default function ProductDetail() {
         ) {
           notification.error({
             message: "ADD TO CART",
-            description: "Số lượng trong kho không đủ" ,
+            description: "Số lượng trong kho không đủ",
           });
         } else {
           sessionStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -289,7 +306,7 @@ export default function ProductDetail() {
   const outstandingProducts = display.map((dl) => {
     return (
       <li className="sanPham" onClick={() => goToTop()}>
-        <Link to={`/product/${dl.id}`}>
+        <Link to={`/productDetail/${dl.id}`}>
           <ImageProduct product={dl.id}></ImageProduct>
           <h3>{dl.name}</h3>
           <div className="price">
@@ -327,6 +344,26 @@ export default function ProductDetail() {
     );
   });
 
+  function previousValue() {
+    if (index > 0) {
+      setIndex(index - 1);
+    } else {
+      setIndex(listImages.length - 1);
+    }
+  }
+
+  function nextValue() {
+    if (index < listImages.length - 1) {
+      setIndex(index + 1);
+    } else {
+      setIndex(0);
+    }
+  }
+
+  function setValueForImageTemp(name) {
+    setImageTemp(name);
+  }
+
   return (
     <React.Fragment>
       <Header />
@@ -336,7 +373,7 @@ export default function ProductDetail() {
             <div id="detailPromo">
               <Link to={"/"}>Home</Link>
               <RightOutlined />
-              <Link to={`/product/${item.id}`}>Singer Product</Link>
+              <Link to={`/productDetail/${item.id}`}>Singer Product</Link>
             </div>
           </div>
         </div>
@@ -354,7 +391,55 @@ export default function ProductDetail() {
             <span> 372 đánh giá</span>
           </div>
           <div className="rowdetail group">
-            <AvtProduct product={id}></AvtProduct>
+            {imageTemp === "" ? (
+              <AvtProduct product={id}></AvtProduct>
+            ) : (
+              <div className="picture">
+                <img src={`/imageUpload/` + imageTemp} alt="" />
+              </div>
+            )}
+            <div className="slide-container">
+              <div className="previous">
+                <button onClick={previousValue}>
+                  <i className="bi bi-caret-left-fill"></i>
+                </button>
+              </div>
+              <div
+                className="small-picture"
+                onClick={() => setValueForImageTemp(listImages.at(index)?.name)}
+              >
+                <img
+                  src={`/imageUpload/` + listImages.at(index)?.name}
+                  alt=""
+                />
+              </div>
+              {index < listImages.length - 1 ? (
+                <div
+                  className="small-picture"
+                  onClick={() =>
+                    setValueForImageTemp(listImages.at(index + 1)?.name)
+                  }
+                >
+                  <img
+                    src={`/imageUpload/${listImages.at(index + 1)?.name}`}
+                    alt=""
+                  />
+                </div>
+              ) : (
+                <div
+                  className="small-picture"
+                  onClick={() => setValueForImageTemp(listImages.at(0)?.name)}
+                >
+                  <img src={`/imageUpload/${listImages.at(0)?.name}`} alt="" />
+                </div>
+              )}
+
+              <div className="next">
+                <button onClick={nextValue}>
+                  <i className="bi bi-caret-right-fill"></i>
+                </button>
+              </div>
+            </div>
             <div className="price_sale">
               <div className="area_price">
                 <strong>

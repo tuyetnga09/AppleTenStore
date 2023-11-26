@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class ImageService implements Iservice<Image> {
@@ -48,6 +49,12 @@ public class ImageService implements Iservice<Image> {
         }
     }
 
+    public void insert(MultipartFile image) throws IOException {
+        Path path = Paths.get(UPLOAD_DIRECTORY, image.getOriginalFilename());
+        File fileImage = new File(path.toString());
+        Files.write(path, image.getBytes());
+    }
+
     @Override
     public void update(Image image, Integer id) {
         this.imageRepository.save(image);
@@ -72,6 +79,10 @@ public class ImageService implements Iservice<Image> {
 
     public Image searchImageByIdProduct(int id){
         return this.imageRepository.searchImageByIdProduct(id);
+    }
+
+    public List<Image> getAllImagesByIdProduct(int id){
+        return this.imageRepository.getAllImagesByIdProduct(id);
     }
 
 }

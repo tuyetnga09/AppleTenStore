@@ -97,9 +97,9 @@ export default function Header() {
                 </a>
               </li>
               <li>
-                <a href="lienhe.html">
-                  <i class="fa fa-phone"></i> Liên hệ
-                </a>
+                <Link to="/policy">
+                  <i className="fa fa-newspaper-o"></i>Chính sách
+                </Link>
               </li>
             </ul>
             {/* <!-- End Quick link --> */}

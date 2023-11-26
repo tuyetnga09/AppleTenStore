@@ -16,6 +16,8 @@ import queryString from "query-string";
 import Pagination from "../Size/Paging.js";
 import * as XLSX from "xlsx";
 import * as FileSaver from "file-saver";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min.js";
+import { notification } from "antd";
 
 const Display = () => {
   const [display, setDisplay] = useState([]);
@@ -34,18 +36,26 @@ const Display = () => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
   useEffect(() => {
-    const paramsString = queryString.stringify(filters);
-    readAll(paramsString)
-      .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      const paramsString = queryString.stringify(filters);
+      readAll(paramsString)
+        .then((response) => {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, [filters]);
 
   function handlePageChange(newPage) {

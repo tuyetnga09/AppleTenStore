@@ -55,7 +55,7 @@ import ExportImei from "./crud/ExportImei";
 // import Container from "react-bootstrap/Container";
 // import Navbar from "react-bootstrap/Navbar";
 // import { Link } from "react-router-dom";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -186,39 +186,52 @@ const StoreProducts = ({}) => {
   const fileType =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
   const fileExtension = ".xlsx";
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
   useEffect(() => {
-    const paramsString = queryString.stringify(filters);
-    const paramsStringAcendingPrice =
-      queryString.stringify(filtersAcendingPrice);
-    const paramsStringDecreasePrice =
-      queryString.stringify(filtersDecreasePrice);
-    readAll(paramsString)
-      .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
+    if (
+      storedUser?.roles === "CUSTOMER" ||
+      storedUser === null ||
+      storedUser?.roles === "NHAN_VIEN_BAN_HANG"
+    ) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
-    readFilterProductByAscendingPrice(paramsStringAcendingPrice)
-      .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    readFilterProductByDecreasePrice(paramsStringDecreasePrice)
-      .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+      history.replace("/");
+    } else {
+      const paramsString = queryString.stringify(filters);
+      const paramsStringAcendingPrice =
+        queryString.stringify(filtersAcendingPrice);
+      const paramsStringDecreasePrice =
+        queryString.stringify(filtersDecreasePrice);
+      readAll(paramsString)
+        .then((response) => {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      readFilterProductByAscendingPrice(paramsStringAcendingPrice)
+        .then((response) => {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      readFilterProductByDecreasePrice(paramsStringDecreasePrice)
+        .then((response) => {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }, [filters, filtersAcendingPrice, filtersDecreasePrice]);
 
   function handleChange(event) {

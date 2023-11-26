@@ -3,6 +3,7 @@ package com.example.backend.controller.order_management.service;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
+import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.entity.Bill;
 
 import java.time.LocalDate;
@@ -25,6 +26,8 @@ public interface BillService {
 
     void updateStatusBill(Integer idAccount,int id);
 
+    void returnBill(Integer idAccount, Integer id, String noteReturn);
+
     Bill findByCode(String code);
 
     List<Bill> listBillByIdAccount(Integer id);
@@ -40,5 +43,11 @@ public interface BillService {
     List<Bill> listBillByIdAccountDH(Integer id);
 
     void deleteBill(Integer id);
+
+    void updateAllChoThanhToan(String personUpdate);
+
+    List<BillDetailOffLineIon> getAllBillChoXacNhan();
+
+    Integer getCountBillCXN();
 
 }

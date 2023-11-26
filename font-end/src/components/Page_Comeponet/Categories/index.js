@@ -24,6 +24,7 @@ import {
   Avatar,
   Grid,
   Modal,
+  notification,
 } from "antd";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { Row, Col, Card, Typography, Layout, theme } from "antd";
@@ -53,15 +54,22 @@ export const CategoryList = () => {
   } = theme.useToken();
   const [categories, setCategories] = useState([]);
   const history = useHistory();
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
-    readAllDashboard()
-      .then((res) => {
-        setCategories(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      readAllDashboard()
+        .then((res) => {
+          setCategories(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, []);
 
   const moreMenu = (categories) => (

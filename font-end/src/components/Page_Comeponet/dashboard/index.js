@@ -14,6 +14,8 @@ import {
   Select,
 } from "antd";
 import { Option } from "antd/es/mentions";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
+
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import DailyRevenue from "../dashboard/dailyRevenue/index";
@@ -40,7 +42,7 @@ import {
   UnorderedListOutlined,
   FileDoneOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
+// import { Link } from "react-router-dom/cjs/react-router-dom.min";
 //DailyRevenue
 import { NumberField } from "@refinedev/antd";
 import {
@@ -132,6 +134,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
+// import { useEffect } from "react";
 const { SubMenu } = Menu;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -956,7 +959,7 @@ const DashboardPage = () => {
     setSearchDataMap(dataMap);
     document.getElementById("id-ngay-truoc").value = "";
     document.getElementById("id-ngay-sau").value = "";
-    document.getElementById("id-seach-nam").value = [0];
+    document.getElementById("id-seach-nam").value = "";
   };
 
   // daily order
@@ -985,6 +988,17 @@ const DashboardPage = () => {
     setDataDailyOrder(dataFromBackend);
   };
   // useEffect(() => {}, [searchData]);
+
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  const history = useHistory();
+  useEffect(() => {
+    if (storedUser?.roles !== "ADMIN" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
+      });
+      history.replace("/");
+    }
+  });
 
   return (
     <>

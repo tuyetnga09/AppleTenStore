@@ -1,6 +1,6 @@
-import {useEffect, useState} from "react";
-import {useApiUrl, useTranslate} from "@refinedev/core";
-import {Create, getValueFromEvent} from "@refinedev/antd";
+import { useEffect, useState } from "react";
+import { useApiUrl, useTranslate } from "@refinedev/core";
+import { Create, getValueFromEvent } from "@refinedev/antd";
 import {
   add,
   readAllBattery,
@@ -11,18 +11,29 @@ import {
   readAllManufacture,
   readAllRam,
   readAllScreen,
-  readAllSize
+  readAllSize,
 } from "../../../../service/product.service";
-import {addImage} from "../../../../service/image.service";
-import {ImportImeiExcel,} from "../../../../service/imei.service";
+import { addImage } from "../../../../service/image.service";
+import { ImportImeiExcel } from "../../../../service/imei.service";
 import QRScanner from "./QRScanner";
-import {Option} from "antd/es/mentions";
-import {readAllProductNew} from "../../../../service/sku.service";
+import { Option } from "antd/es/mentions";
+import { readAllProductNew } from "../../../../service/sku.service";
 import * as XLSX from "xlsx";
-import {Avatar, Form, Input, InputNumber, Modal, notification, Select, Space, Typography, Upload,} from "antd";
-import {useHistory} from "react-router-dom";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faFileExcel,} from "@fortawesome/free-solid-svg-icons";
+import {
+  Avatar,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  notification,
+  Select,
+  Space,
+  Typography,
+  Upload,
+} from "antd";
+import { useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 
 const Test = (setDisplay, setPagination) => {
   const { Text } = Typography;
@@ -164,78 +175,85 @@ const Test = (setDisplay, setPagination) => {
   const [displayScreen, setDisplayScreen] = useState([]);
   const [displaySize, setDisplaySize] = useState([]);
   const [displayCapacity, setDisplayCapacity] = useState([]);
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
-    // handleSubmit();
-    readAllColor()
-      .then((response) => {
-        setDisplayColor(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
+    if (storedUser?.roles === "CUSTOMER" || storedUser === null) {
+      notification.error({
+        message: "Bạn không có quyền!",
       });
+      history.replace("/");
+    } else {
+      // handleSubmit();
+      readAllColor()
+        .then((response) => {
+          setDisplayColor(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    readAllBattery()
-      .then((response) => {
-        setDisplayBattery(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      readAllBattery()
+        .then((response) => {
+          setDisplayBattery(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    readAllCategory()
-      .then((response) => {
-        setDisplayCategory(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      readAllCategory()
+        .then((response) => {
+          setDisplayCategory(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    readAllChip()
-      .then((response) => {
-        setDisplayChip(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      readAllChip()
+        .then((response) => {
+          setDisplayChip(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    readAllManufacture()
-      .then((response) => {
-        setDisplayManufacture(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      readAllManufacture()
+        .then((response) => {
+          setDisplayManufacture(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    readAllRam()
-      .then((response) => {
-        setDisplayRam(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      readAllRam()
+        .then((response) => {
+          setDisplayRam(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    readAllScreen()
-      .then((response) => {
-        setDisplayScreen(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    readAllCapacity()
-      .then((response) => {
-        setDisplayCapacity(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    readAllSize()
-      .then((response) => {
-        setDisplaySize(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      readAllScreen()
+        .then((response) => {
+          setDisplayScreen(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      readAllCapacity()
+        .then((response) => {
+          setDisplayCapacity(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      readAllSize()
+        .then((response) => {
+          setDisplaySize(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }, []);
 
   const handleFileChange = (event) => {
