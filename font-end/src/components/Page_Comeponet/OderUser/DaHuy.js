@@ -1,54 +1,54 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
-import {Link} from "react-router-dom/cjs/react-router-dom.min";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
-import {readAll} from "../../../service/BillDetail/billDetailCustomer.service";
-import {readAllByIdAndDH} from "../../../service/Bill/billCustomer.service";
-import {account} from "../Login/login";
+import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
+import { readAllByIdAndDH } from "../../../service/Bill/billCustomer.service";
+import { account } from "../Login/login";
 
 const OderUserDaHuy = () => {
-    const [billDetails, setBillDetails] = useState([]);
-    const [bills, setBills] = useState([]);
-    const storedUser = JSON.parse(localStorage.getItem("account"));
-    useEffect(() => {
-        readAllByIdAndDH(storedUser?.id)
-            .then((res) => {
-                setBills(res.data);
-                console.log(res.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
+  const [billDetails, setBillDetails] = useState([]);
+  const [bills, setBills] = useState([]);
+  const storedUser = JSON.parse(localStorage.getItem("account"));
+  useEffect(() => {
+    readAllByIdAndDH(storedUser?.id)
+      .then((res) => {
+        setBills(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const promises = bills.map((b) => readAll(b.id));
-                const results = await Promise.all(promises);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const promises = bills.map((b) => readAll(b.id));
+        const results = await Promise.all(promises);
 
-                // Lấy dữ liệu từ các kết quả và cập nhật trạng thái
-                const data = results.map((res) => res.data);
-                setBillDetails(data);
-                console.log(data);
-            } catch (err) {
-                console.log(err);
-            }
-        };
+        // Lấy dữ liệu từ các kết quả và cập nhật trạng thái
+        const data = results.map((res) => res.data);
+        setBillDetails(data);
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-        fetchData();
-    }, [bills]);
+    fetchData();
+  }, [bills]);
 
-    const result = bills.map((b, index) => {
-        return (
-            <>
-                <div className="row">
-                    <div className="col-10" style={{paddingTop: "20px"}}>
-                        <strong>AppleTenStore</strong>{" "}
-                    </div>
-                    <div className="col-2">
-            <span style={{paddingTop: "20px", float: "right", color: "red"}}>
+  const result = bills.map((b, index) => {
+    return (
+      <>
+        <div className="row">
+          <div className="col-10" style={{ paddingTop: "20px" }}>
+            <strong>AppleTenStore</strong>{" "}
+          </div>
+          <div className="col-2">
+            <span style={{ paddingTop: "20px", float: "right", color: "red" }}>
               {b.statusBill === "CHO_XAC_NHAN"
                 ? "Chờ xác nhận"
                 : b.statusBill === "CHO_VAN_CHUYEN"
@@ -177,7 +177,16 @@ const OderUserDaHuy = () => {
       </section>
       <section>{result}</section>
       <br />
-      <Footer />
+      <footer
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          height: "60px",
+        }}
+      >
+        <Footer />
+      </footer>
     </>
   );
 };

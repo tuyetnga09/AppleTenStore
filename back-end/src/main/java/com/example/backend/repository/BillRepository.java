@@ -141,8 +141,8 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     List<Bill> listBillByIdAccountDH(Integer id);
 
     @Modifying
-    @Query(value = "update bill set status_bill = 'DA_HUY' where id = ?1", nativeQuery = true)
-    void deleteBill(Integer id);
+    @Query(value = "update bill set status_bill = 'DA_HUY', note_return = ?1 where id = ?2", nativeQuery = true)
+    void deleteBill(String noteReturn, Integer id);
 
     //lấy ra bill mới nhất trong ngày
     @Query(value = "select * from bill where date_create = CURDATE() and type = 'OFFLINE' ORDER BY date_create DESC, Id DESC limit 1", nativeQuery = true)

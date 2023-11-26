@@ -176,7 +176,16 @@ const OderUserChoVanChuyen = () => {
       </section>
       <section>{result}</section>
       <br />
-      <Footer />
+      <footer
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          height: "60px",
+        }}
+      >
+        <Footer />
+      </footer>
     </>
   );
 };

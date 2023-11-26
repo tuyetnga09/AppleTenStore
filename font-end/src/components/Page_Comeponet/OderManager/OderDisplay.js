@@ -97,6 +97,8 @@ const OderDisplay = ({}) => {
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
   const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
     useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleCannelOrder, setIsModalVisibleCannelOrder] =
+    useState(false); // Trạng thái hiển thị Modal
   const breakpoint = Grid.useBreakpoint();
   const [load, setLoad] = useState(true);
   const [billCXN, setBillCXN] = useState([]);
@@ -146,6 +148,24 @@ const OderDisplay = ({}) => {
     console.log(billReturn);
     const textNoteReturn = document.getElementById(
       "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+  };
+
+  const handleCannelOrderClick = (record) => {
+    setBillReturn({
+      ...billReturn,
+      id: record.id,
+    });
+    setIsModalVisibleCannelOrder(true);
+  };
+
+  // Hàm để ẩn Modal
+  const handleCannelOrderCancel = () => {
+    setIsModalVisibleCannelOrder(false);
+    console.log(billReturn);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea2"
     );
     textNoteReturn.value = "";
   };
@@ -564,6 +584,13 @@ const OderDisplay = ({}) => {
     });
   };
 
+  const handleCannelOrder = (event) => {
+    setBillReturn({
+      ...billReturn,
+      note: event.target.value,
+    });
+  };
+
   const handleSubmitReturns = (event) => {
     event.preventDefault();
     returnBill(billReturn.id, billReturn.note);
@@ -576,6 +603,23 @@ const OderDisplay = ({}) => {
     notification.success({
       message: "Trả hàng",
       description: "Xác nhận trả hàng",
+    });
+  };
+
+  const handleSubmitCannelOrder = (event) => {
+    event.preventDefault();
+    deleteBillById(billReturn.id, billReturn.note).then((response) =>
+      console.log(response.data)
+    );
+    setIsModalVisibleCannelOrder(false);
+    setLoad(!load);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea2"
+    );
+    textNoteReturn.value = "";
+    notification.error({
+      message: "Hủy đơn",
+      description: "Hủy đơn thành công",
     });
   };
 
@@ -894,12 +938,6 @@ const OderDisplay = ({}) => {
                       align="center"
                       render={(text, record) => (
                         <span>
-                          {/* <Button type="danger" >
-                                                                    <FontAwesomeIcon icon={faTimes} />
-                                                                </Button>
-                                                                <Button type="danger" >
-                                                                    <FontAwesomeIcon icon={faPencilAlt} />
-                                                                </Button> */}
                           {record.statusBill === "CHO_XAC_NHAN" ? (
                             <Dropdown
                               overlay={
@@ -936,7 +974,9 @@ const OderDisplay = ({}) => {
                                         }}
                                       />
                                     }
-                                    onClick={() => delete2(record.id)}
+                                    onClick={() =>
+                                      handleCannelOrderClick(record)
+                                    }
                                   >
                                     Hủy đơn
                                   </Menu.Item>
@@ -1002,25 +1042,6 @@ const OderDisplay = ({}) => {
                                   >
                                     Đã thanh toán
                                   </Menu.Item>
-                                  <Menu.Item
-                                    key="1"
-                                    disabled={record.stock <= 0}
-                                    style={{
-                                      fontWeight: 500,
-                                    }}
-                                    icon={
-                                      <CloseCircleOutlined
-                                        style={{
-                                          color: "red",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() =>
-                                      handleNoteReturnsClick(record)
-                                    }
-                                  >
-                                    Trả hàng
-                                  </Menu.Item>
                                 </Menu>
                               }
                               trigger={["click"]}
@@ -1031,7 +1052,48 @@ const OderDisplay = ({}) => {
                                 }}
                               />
                             </Dropdown>
-                          ) : record.statusBill === "DA_THANH_TOAN" ? (
+                          ) : record.statusBill === "DA_THANH_TOAN" &&
+                            Math.floor(
+                              (new Date(
+                                new Date().getFullYear() +
+                                  "-" +
+                                  (new Date().getMonth() + 1)
+                                    .toString()
+                                    .padStart(2, "0") +
+                                  "-" +
+                                  new Date()
+                                    .getDate()
+                                    .toString()
+                                    .padStart(2, "0")
+                              ) -
+                                new Date(
+                                  new Date(
+                                    record.completionDate[0],
+                                    record.completionDate[1] - 1,
+                                    record.completionDate[2]
+                                  ).getFullYear() +
+                                    "-" +
+                                    (
+                                      new Date(
+                                        record.completionDate[0],
+                                        record.completionDate[1] - 1,
+                                        record.completionDate[2]
+                                      ).getMonth() + 1
+                                    )
+                                      .toString()
+                                      .padStart(2, "0") +
+                                    "-" +
+                                    new Date(
+                                      record.completionDate[0],
+                                      record.completionDate[1] - 1,
+                                      record.completionDate[2]
+                                    )
+                                      .getDate()
+                                      .toString()
+                                      .padStart(2, "0")
+                                )) /
+                                (1000 * 60 * 60 * 24)
+                            ) <= 3 ? (
                             <Dropdown
                               overlay={
                                 <Menu mode="vertical">
@@ -1084,7 +1146,7 @@ const OderDisplay = ({}) => {
               <form onSubmit={handleSubmitReturns}>
                 <div class="mb-3">
                   <label for="exampleFormControlTextarea1" class="form-label">
-                    Lí do hủy đơn:
+                    Lí do trả hàng:
                   </label>
                   <textarea
                     class="form-control"
@@ -1092,6 +1154,31 @@ const OderDisplay = ({}) => {
                     rows="3"
                     required
                     onChange={handleNoteReturns}
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">
+                  Xác nhận
+                </button>
+              </form>
+            </Modal>
+            <Modal
+              visible={isModalVisibleCannelOrder}
+              onCancel={handleCannelOrderCancel}
+              width={550}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <form onSubmit={handleSubmitCannelOrder}>
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea2" class="form-label">
+                    Lí do hủy đơn:
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="exampleFormControlTextarea2"
+                    rows="3"
+                    required
+                    onChange={handleCannelOrder}
                   ></textarea>
                 </div>
                 <button type="submit" class="btn btn-success">
