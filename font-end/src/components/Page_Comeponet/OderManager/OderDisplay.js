@@ -492,7 +492,7 @@ const OderDisplay = ({}) => {
           console.error("Error updating status:", error);
         });
       notification.success({
-        messege: "Xác nhận thành công!",
+        message: "Xác nhận thành công!",
       });
     } else {
       notification.error({

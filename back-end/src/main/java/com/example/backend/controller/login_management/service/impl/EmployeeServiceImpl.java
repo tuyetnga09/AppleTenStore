@@ -53,6 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //  thông tin user
         User user1 = User.builder()
+                .avatar(user.getAvatar())
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())

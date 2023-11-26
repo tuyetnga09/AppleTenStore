@@ -114,6 +114,7 @@ public class CustomerServiceImpl  implements CustomerService {
 
         //  thông tin user
         User user1 = User.builder()
+                .avatar(user.getAvatar())
                 .fullName(user.getFullName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())

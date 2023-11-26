@@ -1,6 +1,9 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.model.request.Top8ProductMonthlyTrending;
+import com.example.backend.controller.product_controller.model.respon.BillSeachKhoangNgay;
+import com.example.backend.controller.product_controller.model.respon.SeachDoanhSoTheoNam;
+import com.example.backend.controller.product_controller.model.respon.YearOfBill;
 import com.example.backend.controller.product_controller.service.impl.AdminBillServiceImpl;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -83,14 +88,14 @@ public class AdminBillController {
     }
 
     // money
-    //lấy ra số tổng tiền trong ngày
+    //lấy ra số tổng tiền trong ngày - không hiên thij nữa
     @GetMapping("/total-money")
     public ResponseEntity<Long> sumAllToTalMoneyOfBillsForTheDay() {
         Long sum = adminBillService.sumToTalMoneyOfBillsForTheDay();
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
-    //lấy ra số tổng tiền trong ngày đã trừ đơn huỷ
+    //lấy ra số tổng tiền trong ngày đã thanh toan - thực thu
     @GetMapping("/total-money/not-da-huy")
     public ResponseEntity<Long> sumAllToTalMoneyOfBillsForTheDayAndNotStatusBillDaHuy() {
         Long sum = adminBillService.sumToTalMoneyOfBillsForTheDayAndNotStatusBillDaHuy();
@@ -146,7 +151,7 @@ public class AdminBillController {
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
-    //page bill status "CHO_VAN_CHUYEN"
+    //page bill status "CHO_VAN_CHUYEN" - khoong dungf nuawx
     @GetMapping("/display")
     public Page<Bill> viewAllBillsForTheDayWhereStatus(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 8);
@@ -169,6 +174,27 @@ public class AdminBillController {
     }
 
     //Customer
+    //tong tai khoan den ngay hien taij
+    @GetMapping("/customer/tong-tai-khoan/trong-thang")
+    public ResponseEntity<Long> tongTaiKhoanTrongThangHienTai(){
+        return new ResponseEntity<>(adminBillService.tongTaiKhoanTrongThangHienTai(), HttpStatus.OK);
+    }
+    //tong tai khoan hoat dong den ngay hien taij
+    @GetMapping("/customer/tong-tai-khoan/hoat-dong")
+    public ResponseEntity<Long> tongTaiKhoanHoatDongHienTai(){
+        return new ResponseEntity<>(adminBillService.tongTaiKhoanHoatDongHienTai(), HttpStatus.OK);
+    }
+    //tong tai khoan  hien taij
+    @GetMapping("/customer/tong-tai-khoan")
+    public ResponseEntity<Long> tongTaiKhoanHienTai(){
+        return new ResponseEntity<>(adminBillService.tongTaiKhoanHienTai(), HttpStatus.OK);
+    }
+
+    //tong tai khoan hom nay
+    @GetMapping("/customer/tong-tai-khoan/hom-nay")
+    public ResponseEntity<Long> tongTaiKhoanHomNay(){
+        return new ResponseEntity<>(adminBillService.tongTaiKhoanHomNay(), HttpStatus.OK);
+    }
 
     // lấy râ số khách hàng đã đặt hàng hôm nay,
     @GetMapping("/customer/unconfimred")
@@ -196,5 +222,33 @@ public class AdminBillController {
     public ResponseEntity<Integer> countCustomersReturnedToday() {
         Integer count = adminBillService.countCustomersReturnedToday();
         return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
+    // lấy ra list Hoa Don Cho Van Chuyen Trong Ngay
+    @GetMapping("/bill-to-day")
+    public ResponseEntity<List<Bill>> getHoaDonsChoVanChuyenTrongNgay() {
+        List<Bill> list = adminBillService.getHoaDonsChoVanChuyenTrongNgay();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    // seach khoang ngayf - đơn hàng
+    @GetMapping("/bill-seach/khoang-ngay")
+    public ResponseEntity<BillSeachKhoangNgay> seachKhoangNgay(String dateBefore, String  dateAfter) throws Exception {
+        BillSeachKhoangNgay billSeachKhoangNgay = adminBillService.sumBillFindSeach(dateBefore, dateAfter);
+        return new ResponseEntity<>(billSeachKhoangNgay, HttpStatus.OK);
+    }
+
+    //danh sach nawm cos trong bill
+    @GetMapping("/list-year")
+    public ResponseEntity<List<YearOfBill>> getListYearOfBill() {
+        List<YearOfBill> list = adminBillService.getListYearOfBillService();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    //báo cáo daonh thu hiện tại - "DA_THANH_TOAN" - seach
+    @GetMapping("/seach/revenue-year")
+    public ResponseEntity<List<SeachDoanhSoTheoNam>> seachDoanhThuTeaoNam(@RequestParam("year") Integer year) {
+        List<SeachDoanhSoTheoNam> list = adminBillService.seachDoanhSoTheoNam(year);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }

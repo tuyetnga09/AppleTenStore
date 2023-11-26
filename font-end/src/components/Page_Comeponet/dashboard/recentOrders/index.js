@@ -1,5 +1,5 @@
 import { useNavigation, useTranslate } from "@refinedev/core";
-import { Typography, Table, Avatar, Space, Tag, Button } from "antd";
+import { Typography, Table, Avatar, Space, Tag, Button, Form, Row } from "antd";
 import {
   RecentOrdersColumn,
   Price,
@@ -7,9 +7,13 @@ import {
   Title,
   TitleWrapper,
 } from "./styled";
+import { List } from "@refinedev/antd";
 
 import { readAll } from "../../../../service/product.service";
-import { viewAllBillsForTheDayWhereStatusChoVanChuyen } from "../../../../service/dashboard/admin_bill.service";
+import {
+  viewAllBillsForTheDayWhereStatusChoVanChuyen,
+  getHoaDonsChoVanChuyenTrongNgay,
+} from "../../../../service/dashboard/admin_bill.service";
 import React, { useEffect, useState } from "react";
 // import { Button } from "bootstrap";
 
@@ -19,10 +23,10 @@ const RecentOrders = () => {
   const [display, setDisplay] = useState([]);
 
   useEffect(() => {
-    viewAllBillsForTheDayWhereStatusChoVanChuyen("key=&page=0")
+    getHoaDonsChoVanChuyenTrongNgay()
       .then((response) => {
         console.log(response.data);
-        setDisplay(response.data.content);
+        setDisplay(response.data);
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -52,85 +56,108 @@ const RecentOrders = () => {
   const { show } = useNavigation();
 
   return (
-    <Table showHeader={false} rowKey="id" dataSource={display}>
-      <Table.Column
-        key="avatar"
-        render={(_, display) => (
-          <Avatar
-            size={{
-              xs: 60,
-              lg: 108,
-              xl: 132,
-              xxl: 144,
-            }}
-            src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-          />
-        )}
-      />
-      <RecentOrdersColumn
-        key="summary"
-        render={(_, display) => (
-          <TitleWrapper>
-            <Title strong>{display.code}</Title>
-            {/* <Paragraph
-              ellipsis={{
-                rows: 2,
-                tooltip: display.description,
-                symbol: <span>...</span>,
-              }}
-            >
-              {display.description}
-            </Paragraph> */}
-          </TitleWrapper>
-        )}
-      />
-      <RecentOrdersColumn
-        key="summary"
-        render={(_, display) => (
-          <Space direction="vertical">
-            <Title strong>{`${display.userName}`}</Title>
-            <Text>{display.phoneNumber}</Text>
-          </Space>
-        )}
-      />
-      <Table.Column
-        dataIndex="amount"
-        render={(_, display) => (
-          <Space
-            size="large"
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
+    <>
+      <List>
+        <Form>
+          <Table
+            showHeader={false}
+            rowKey="id"
+            dataSource={display}
+            pagination={{
+              pageSize: 5,
+              showSizeChanger: false,
+              showTotal: (total) => `Tổng số ${total} đơn hàng`,
+              showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
             }}
           >
-            <Price
-              strong
-              options={{
-                currency: "VND",
-                style: "currency",
-                notation: "standard",
-              }}
-              value={display.totalMoney}
+            <Table.Column
+              className="col-2"
+              key="avatar"
+              render={(_, display) => (
+                <Avatar
+                  size={{
+                    xs: 60,
+                    lg: 108,
+                    xl: 132,
+                    xxl: 144,
+                  }}
+                  src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                />
+              )}
             />
-            <OrderId
-              strong
-              onClick={() => {
-                show("orders", display.id);
-              }}
-            >
-              {/* <Button>Xem Chi Tiết</Button> */}
-              <Tag color="orange">Xem Chi Tiết</Tag>
-            </OrderId>
-          </Space>
-        )}
-      />
-      <Table.Column
-        fixed="right"
-        key="actions"
-        align="center"
-        // render={(_, record) => <OrderActions record={record} />}
-      />
-    </Table>
+            <RecentOrdersColumn
+              className="col-4"
+              key="summary"
+              render={(_, display) => (
+                <TitleWrapper>
+                  <Title strong style={{ "text-align": "center" }}>
+                    {display.code}
+                  </Title>
+                </TitleWrapper>
+              )}
+            />
+            <RecentOrdersColumn
+              className="col-3"
+              // key="summary"
+              style={{ textAlign: "center", margin: "outo" }}
+              render={(_, display) => (
+                <Space
+                  direction="vertical"
+                  style={{ textAlign: "center", margin: "outo" }}
+                >
+                  <Title
+                    strong
+                    style={{ textAlign: "center", margin: "outo" }}
+                  >{`${display.userName}`}</Title>
+                  <Text>{display.phoneNumber}</Text>
+                </Space>
+              )}
+            />
+            <Table.Column
+              className="col-3"
+              dataIndex="amount"
+              render={(_, display) => (
+                // <Space
+                //   size="large"
+                //   style={{
+                //     display: "flex",
+                //     // justifyContent: "space-between",
+                //   }}
+                // >
+                <Space direction="vertical">
+                  <Price
+                    style={{ "text-align": "center" }}
+                    strong
+                    options={{
+                      currency: "VND",
+                      style: "currency",
+                      notation: "standard",
+                    }}
+                    value={display.totalMoney}
+                  />
+                  <OrderId
+                    // strong
+                    style={{ "text-align": "center" }}
+                    onClick={() => {
+                      show("orders", display.id);
+                    }}
+                  >
+                    <Tag color="orange">Chi Tiết</Tag>
+                  </OrderId>
+                </Space>
+                // </Space>
+              )}
+            />
+            {/* <Table.Column
+              fixed="right"
+              key="actions"
+              align="center"
+              // render={(_, record) => <OrderActions record={record} />}
+            /> */}
+          </Table>
+        </Form>
+      </List>
+    </>
   );
 };
 

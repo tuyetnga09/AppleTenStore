@@ -7,6 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
@@ -28,4 +33,42 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     @Query(value = "SELECT * FROM account ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Account latestAccount();
+
+    @Query(value = "select * from account where date_create BETWEEN ?1 and ?2", nativeQuery = true)
+    List<Account> getSeachKhoangNgay(String dateBefore, String dateAfter);
+
+    @Query(value = "SELECT COUNT(*)\n" +
+            "FROM account\n" +
+            "WHERE YEAR(date_create) = year(?1) AND YEAR(date_create) = year(?2) AND MONTH(date_create) BETWEEN month(?1) " +
+            "AND month(?2) and roles = 'CUSTOMER'", nativeQuery = true)
+    Long seachKhoangNgayTaiKhoanTrongThang(Date dateBefore, Date dateAfter);
+
+
+    //tong tai khoang trong tháng hiẹn tại
+    @Query(value = "SELECT COUNT(*)\n" +
+            "FROM account\n" +
+            "WHERE YEAR(date_create) = year(CURDATE()) AND MONTH(CURDATE()) BETWEEN month(CURDATE()) " +
+            " AND month(CURRENT_DATE) and roles = 'CUSTOMER'", nativeQuery = true)
+    Long tongTaiKhoanTrongThangHienTai();
+
+    // tong tai khoan dang su dung toi hienj tai
+    @Query(value = "SELECT COUNT(*)\n" +
+            " FROM account\n" +
+            " WHERE status='DANG_SU_DUNG' and roles = 'CUSTOMER'", nativeQuery = true)
+    Long tongTaiKhoanHoatDongHienTai();
+
+
+    // tong tai khoan  toi hienj tai
+    @Query(value = "SELECT COUNT(*)\n" +
+            "    FROM account\n" +
+            "    WHERE    roles = 'CUSTOMER'", nativeQuery = true)
+    Long tongTaiKhoanHienTai();
+
+
+
+    // tong tai khoan  moi hom nay
+    @Query(value = "SELECT COUNT(*)\n" +
+            "    FROM account\n" +
+            "    WHERE date(date_create)= curdate() and  roles = 'CUSTOMER'", nativeQuery = true)
+    Long tongTaiKhoanMoiHomNay();
 }

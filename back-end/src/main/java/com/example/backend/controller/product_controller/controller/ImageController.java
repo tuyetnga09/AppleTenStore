@@ -33,6 +33,12 @@ public class ImageController {
         this.service.insert(images, name);
     }
 
+    @PostMapping(value = "/save/imgAccount")
+    public @ResponseBody void save(@RequestParam("file") MultipartFile images) throws IOException {
+        this.service.insert(images);
+    }
+
+
     @PutMapping("/update/{id}")
     public void update(@RequestBody Image image, @PathVariable("id") Integer id) {
         image.setId(id);
