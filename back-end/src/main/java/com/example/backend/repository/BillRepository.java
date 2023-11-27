@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import jakarta.transaction.Transactional;
@@ -75,11 +76,11 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
 
     // lấy ra list imei máy bán ra trong 30 ngày gần đây
-    @Query(value = "select code_imei from imei_da_ban join bill_detail on bill_detail.id = imei_da_ban.id_bill_detail \n" +
-            "                where (\n" +
-            "                  (bill_detail.date_update IS NULL AND DATEDIFF(CURDATE(), bill_detail.date_create) < 30)\n" +
-            "               OR (bill_detail.date_update IS NOT NULL AND DATEDIFF(CURDATE(), bill_detail.date_update) < 30) \n" +
-            "                   )", nativeQuery = true)
+    @Query(value = " select code_imei from imei_da_ban join bill_detail on bill_detail.id = imei_da_ban.id_bill_detail join bill on bill_detail.id_bill = bill.id\n" +
+            "where bill.status_bill='DA_THANH_TOAN' and   (\n" +
+            " (bill.date_create IS NULL AND DATEDIFF(CURDATE(), bill.date_create) < 30)\n" +
+            " OR (bill.date_create IS NOT NULL AND DATEDIFF(CURDATE(), bill.date_update) < 30) \n" +
+            " )", nativeQuery = true)
     List<String> listImeiDaBanTrong30NgayGanDay();
 
 
@@ -246,4 +247,10 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
     @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN'\n", nativeQuery = true)
     Integer getCountBillCXN();
+
+    // lấy ra bill detail trong dashboard
+    @Query(value = "select product.id as 'idProduct', image.name as 'nameImage', product.name as 'nameProduct', sku.capacity as 'capacity', sku.color as 'color', sku.price  as 'price', imei_da_ban.code_imei  as 'imei'  from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail \n" +
+            "join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id join image on product.id = image.id_product\n" +
+            " where bill_detail.id_bill =?1", nativeQuery = true)
+    List<BillDetailDashboardIon> getListBillDetail(Integer idBill);
 }

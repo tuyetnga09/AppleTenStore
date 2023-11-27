@@ -1,10 +1,12 @@
 package com.example.backend.controller.product_controller.controller;
 
 import com.example.backend.controller.product_controller.model.request.Top8ProductMonthlyTrending;
+import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
 import com.example.backend.controller.product_controller.model.respon.BillSeachKhoangNgay;
 import com.example.backend.controller.product_controller.model.respon.SeachDoanhSoTheoNam;
 import com.example.backend.controller.product_controller.model.respon.YearOfBill;
 import com.example.backend.controller.product_controller.service.impl.AdminBillServiceImpl;
+import com.example.backend.entity.Account;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import com.example.backend.untils.StatusBill;
@@ -250,5 +252,19 @@ public class AdminBillController {
     public ResponseEntity<List<SeachDoanhSoTheoNam>> seachDoanhThuTeaoNam(@RequestParam("year") Integer year) {
         List<SeachDoanhSoTheoNam> list = adminBillService.seachDoanhSoTheoNam(year);
         return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+//    // lấy ra account - theo id
+//    @GetMapping("/get-one-account")
+//    public ResponseEntity<Account> getAccount(@RequestParam("id") Integer id){
+//        Account account = adminBillService.getOneAccount(id);
+//        return new ResponseEntity<>(account, HttpStatus.OK);
+//    }
+
+    // lấy ra bill detail trong dashboard
+    @GetMapping("/get-bill-detail")
+    public  ResponseEntity<List<BillDetailDashboardIon>> getListBillDetailDashboard(@RequestParam("idBill") Integer idBill){
+        List<BillDetailDashboardIon> billDetailDashboardIons = adminBillService.getListBillDetailDashboard(idBill);
+        return  new ResponseEntity<>(billDetailDashboardIons, HttpStatus.OK);
     }
 }
