@@ -163,3 +163,13 @@ export const getListYearOfBill = () => {
 export const seachDoanhThuTeaoNam = (year) => {
   return httpClient.get(`/admin/bill/seach/revenue-year?year=${year}`);
 };
+
+// lấy ra account - theo id
+// export const getAccount = (id) => {
+//   return httpClient.get(`/admin/bill/get-one-account?id=${id}`);
+// };
+
+// lấy ra bill detail trong dashboard
+export const getListBillDetailDashboard = (idBill) => {
+  return httpClient.get(`/admin/bill/get-bill-detail?idBill=${idBill}`);
+};

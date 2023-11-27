@@ -1,6 +1,7 @@
 package com.example.backend.controller.product_controller.service.impl;
 
 import com.example.backend.controller.product_controller.model.request.Top8ProductMonthlyTrending;
+import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
 import com.example.backend.controller.product_controller.model.respon.BillSeachKhoangNgay;
 import com.example.backend.controller.product_controller.model.respon.SeachDoanhSoTheoNam;
 import com.example.backend.controller.product_controller.model.respon.YearOfBill;
@@ -44,6 +45,8 @@ public class AdminBillServiceImpl {
     private ImeiRepository imeiRepository;
     @Autowired
     private AccountRepository accountRepository;
+
+
 
 
     // danh sách bills trong ngày hiện tại
@@ -99,7 +102,7 @@ public class AdminBillServiceImpl {
     }
 
 
-    // lấy ra danh sách imei - sku  theo list imei da bán trong bill detail 30 ngày gần đây - (listCodeImeiDaBan30days)
+    // lấy ra danh sách imei - sku  theo list imei da bán trong bill detail 30 ngày gần đây - ( listCodeImeiDaBan30days)
     public List<Top8ProductMonthlyTrending> mostSoldSkuIn30days() {
         //list imei da bán trong bill detail 30 ngày gần đây
         List<String> listCodeImeiDaBan30days = billRepository.listImeiDaBanTrong30NgayGanDay();
@@ -401,7 +404,6 @@ public class AdminBillServiceImpl {
             Integer now = LocalDate.now().getYear();
             YearOfBill yearOfBill = new YearOfBill();
             yearOfBill.setYear(now);
-            System.out.println(now + " +=+=+++++++++++++================<1");
             yearOfBills.add(yearOfBill);
             return yearOfBills;
         } else {
@@ -409,7 +411,6 @@ public class AdminBillServiceImpl {
             for (Integer year : list) {
                 YearOfBill yearOfBill = new YearOfBill();
                 yearOfBill.setYear(year);
-                System.out.println(yearOfBill + " +=+=+++++++++++++================<2");
                 yearOfBills.add(yearOfBill);
             }
 
@@ -431,6 +432,28 @@ public class AdminBillServiceImpl {
             seachDoanhSoTheoNams.add(seachDoanhSoTheoNam);
         }
         return seachDoanhSoTheoNams;
+    }
+
+    // lấy ra account - theo id
+    public  Account getOneAccount(Integer id){
+        if (id == null || id.equals("")){
+            return null;
+        }
+        Boolean check = accountRepository.existsById(id);
+        if (check){
+            return accountRepository.findById(id).get();
+        }
+        return null;
+    }
+
+    // lấy ra bill detail trong dashboard
+    public List<BillDetailDashboardIon> getListBillDetailDashboard(Integer idBill){
+        Boolean check = billRepository.existsById(idBill);
+        if (check){
+            List<BillDetailDashboardIon> list = billRepository.getListBillDetail(idBill);
+            return list;
+        }
+        return  null;
     }
 
 }
