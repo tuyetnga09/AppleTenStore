@@ -102,7 +102,7 @@ public class AdminBillServiceImpl {
     }
 
 
-    // lấy ra danh sách imei - sku  theo list imei da bán trong bill detail 30 ngày gần đây - (listCodeImeiDaBan30days)
+    // lấy ra danh sách imei - sku  theo list imei da bán trong bill detail 30 ngày gần đây - ( listCodeImeiDaBan30days)
     public List<Top8ProductMonthlyTrending> mostSoldSkuIn30days() {
         //list imei da bán trong bill detail 30 ngày gần đây
         List<String> listCodeImeiDaBan30days = billRepository.listImeiDaBanTrong30NgayGanDay();
