@@ -1,23 +1,25 @@
-import React, {useEffect, useState} from 'react';
-import {searchImage} from "../../../service/image.service";
+import React, { useEffect, useState } from "react";
+import { searchImage } from "../../../service/image.service";
 
 const ImageProduct = (props) => {
-    const [image, setImage] = useState({});
+  const [image, setImage] = useState({});
 
-    useEffect(() => {
-        searchImage(props.product).then((response) => {
-            const dataImage = response.data;
-            setImage(dataImage.name);
-        }).catch((error) => {
-            console.log(error)
-        })
-    }, []);
+  useEffect(() => {
+    searchImage(props.product)
+      .then((response) => {
+        const dataImage = response.data;
+        setImage(dataImage.name);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [props]);
 
-    return (
-        <>
-            <img src={`/imageUpload/` + image} alt=""/>
-        </>
-    );
+  return (
+    <>
+      <img src={`/imageUpload/` + image} alt="" />
+    </>
+  );
 };
 
 export default ImageProduct;

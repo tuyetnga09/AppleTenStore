@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import queryString from "query-string";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import ImageProduct from "./ImageProduct";
+import PriceProduct from "./PriceProducts";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import {
@@ -16,6 +17,7 @@ import {
   readProductNew,
   readAll,
 } from "../../../service/product.service";
+import { priceMinAndMaxBySKU } from "../../../service/sku.service";
 import Pagination from "../../product_component/Size/Paging";
 import "bootstrap/dist/js/bootstrap";
 import "bootstrap/dist/js/bootstrap.bundle";
@@ -101,20 +103,7 @@ export default function TrangChu() {
                   <ImageProduct product={dl.id}></ImageProduct>
                   <h3>{dl.name}</h3>
                   <div className="price">
-                    <strong>
-                      {dl.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>9999 đánh giá</span>
+                    <PriceProduct product={dl.id}></PriceProduct>
                   </div>
                   <label className="giamgia">
                     <i className="fa fa-bolt" /> Giảm 1.000₫
@@ -152,20 +141,7 @@ export default function TrangChu() {
                   <ImageProduct product={prn.id}></ImageProduct>
                   <h3>{prn.name}</h3>
                   <div className="price">
-                    <strong>
-                      {prn.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star-o" />
-                    <span>372 đánh giá</span>
+                    <PriceProduct product={prn.id}></PriceProduct>
                   </div>
                   <label className="moiramat">Mới ra mắt</label>
                   <div className="tooltip">
@@ -201,20 +177,7 @@ export default function TrangChu() {
                   <ImageProduct product={prc.id}></ImageProduct>
                   <h3>{prc.name}</h3>
                   <div className="price">
-                    <strong>
-                      {prc.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>302 đánh giá</span>
+                    <PriceProduct price={prc.id}></PriceProduct>
                   </div>
                   <label className="giareonline">Giá rẻ online</label>
                   <div className="tooltip">
@@ -249,20 +212,7 @@ export default function TrangChu() {
                   <ImageProduct product={prp.id}></ImageProduct>
                   <h3>{prp.name}</h3>
                   <div className="price">
-                    <strong>
-                      {prp.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>302 đánh giá</span>
+                    <PriceProduct product={prp.id}></PriceProduct>
                   </div>
                   <div className="tooltip">
                     <button
@@ -295,20 +245,7 @@ export default function TrangChu() {
                   <ImageProduct product={prcg.id}></ImageProduct>
                   <h3>{prcg.name}</h3>
                   <div className="price">
-                    <strong>
-                      {prcg.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>302 đánh giá</span>
+                    <PriceProduct product={prcg.id}></PriceProduct>
                   </div>
                   <div className="tooltip">
                     <button
@@ -341,20 +278,7 @@ export default function TrangChu() {
                   <ImageProduct product={prap.id}></ImageProduct>
                   <h3>{prap.name}</h3>
                   <div className="price">
-                    <strong>
-                      {prap.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>302 đánh giá</span>
+                    <PriceProduct product={prap.id}></PriceProduct>
                   </div>
                   <div className="tooltip">
                     <button
@@ -387,20 +311,7 @@ export default function TrangChu() {
                   <ImageProduct product={prdp.id}></ImageProduct>
                   <h3>{prdp.name}</h3>
                   <div className="price">
-                    <strong>
-                      {prdp.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>302 đánh giá</span>
+                    <PriceProduct product={prdp.id}></PriceProduct>
                   </div>
                   <div className="tooltip">
                     <button
@@ -547,20 +458,7 @@ export default function TrangChu() {
           <ImageProduct product={dl.id}></ImageProduct>
           <h3>{dl.name}</h3>
           <div className="price">
-            <strong>
-              {dl.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <span>9999 đánh giá</span>
+            <PriceProduct product={dl.id}></PriceProduct>
           </div>
           <label className="giamgia">
             <i className="fa fa-bolt" /> Giảm 1.000₫
@@ -588,20 +486,7 @@ export default function TrangChu() {
           <ImageProduct product={prn.id}></ImageProduct>
           <h3>{prn.name}</h3>
           <div className="price">
-            <strong>
-              {prn.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star-o" />
-            <span>372 đánh giá</span>
+            <PriceProduct product={prn.id}></PriceProduct>
           </div>
           <label className="moiramat">Mới ra mắt</label>
           <div className="tooltip">
@@ -627,20 +512,7 @@ export default function TrangChu() {
           <ImageProduct product={prc.id}></ImageProduct>
           <h3>{prc.name}</h3>
           <div className="price">
-            <strong>
-              {prc.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <span>302 đánh giá</span>
+            <PriceProduct product={prc.id}></PriceProduct>
           </div>
           <label className="giareonline">Giá rẻ online</label>
           <div className="tooltip">
@@ -1030,7 +902,7 @@ export default function TrangChu() {
                 id="key"
                 type="text"
                 // placeholder="Lọc trong trang theo tên..."
-                placeholder="Lọc theo tên hoặc giá"
+                placeholder="Lọc theo tên"
                 name="key"
                 onChange={handleChange}
               />
