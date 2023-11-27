@@ -122,7 +122,7 @@ const RecentOrders = () => {
                     xl: 132,
                     xxl: 144,
                   }}
-                  src={`/imageUpload/` + display.account.user.avatar}
+                  src={`/imageUpload/` + display?.account?.user?.avatar}
                 />
               )}
             />
