@@ -204,7 +204,7 @@ export default function CartDisplay() {
           </div>
           <section
             className="h-100 h-custom"
-            style={{ backgroundColor: "#eee" }}
+            style={{ backgroundColor: "#eee", marginBottom: "20px" }}
           >
             <div className="container h-100 py-5">
               <div className="row d-flex justify-content-center align-items-center h-100">

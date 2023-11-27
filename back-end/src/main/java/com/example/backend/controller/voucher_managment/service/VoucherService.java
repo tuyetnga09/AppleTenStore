@@ -36,5 +36,8 @@ public interface VoucherService {
 
     List<Voucher> searchVoucher(String codeVoucher);
 
+    Voucher updateStatusVoucher(Integer id);
+
+    Voucher returnStatusVoucher(Integer id);
 
 }

@@ -40,6 +40,29 @@ const OderUserHoanThanh = () => {
   }, [bills]);
 
   const result = bills.map((b, index) => {
+    const completionDate = new Date(b.completionDate);
+    const yearStart = completionDate.getFullYear();
+    const monthStart = completionDate.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+    const dayStart = completionDate.getDate();
+    const formattedDateStart = `${yearStart}-${monthStart
+      .toString()
+      .padStart(2, "0")}-${dayStart.toString().padStart(2, "0")}`;
+    // Ngày hoàn thành đơn hàng
+    const ngayHoanThanh = new Date(formattedDateStart);
+
+    // Ngày hiện tại
+    const dateNow = new Date();
+    const yearStart1 = dateNow.getFullYear();
+    const monthStart1 = dateNow.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+    const dayStart1 = dateNow.getDate();
+    const formattedDateStart1 = `${yearStart1}-${monthStart1
+      .toString()
+      .padStart(2, "0")}-${dayStart1.toString().padStart(2, "0")}`;
+    const ngayHienTai = new Date(formattedDateStart1);
+    // Tính khoảng cách giữa hai ngày
+    const khoangCachNgay = Math.floor(
+      (ngayHienTai - ngayHoanThanh) / (1000 * 60 * 60 * 24)
+    );
     return (
       <>
         <div className="row">
@@ -77,10 +100,12 @@ const OderUserHoanThanh = () => {
                 <strong>x{bd.quantity}</strong>
               </div>
               <div className="col-2">
-                <p style={{ float: "right" }}>{bd.price.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}</p>
+                <p style={{ float: "right" }}>
+                  {bd.price.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </p>
               </div>
             </div>
           );
@@ -101,16 +126,21 @@ const OderUserHoanThanh = () => {
                 Dự kiến giao hàng ngày <u>23-07-2003</u>
               </p>
             ) : b.statusBill === "DA_THANH_TOAN" ? (
-              ""
+              <p>
+                Ngày hoàn thành đơn hàng <u>{formattedDateStart}</u>
+              </p>
             ) : (
               ""
             )}
           </div>
           <div className="col-6">
-            <span style={{ float: "right" }}>Thành tiền: {b.totalMoney.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}</span>
+            <span style={{ float: "right" }}>
+              Thành tiền:{" "}
+              {b.totalMoney.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </span>
             <br />
             <br />
             <div style={{ float: "right" }}>
@@ -125,9 +155,9 @@ const OderUserHoanThanh = () => {
                 ""
               ) : b.statusBill === "VAN_CHUYEN" ? (
                 ""
-              ) : b.statusBill === "DA_THANH_TOAN" ? (
+              ) : b.statusBill === "DA_THANH_TOAN" && khoangCachNgay <= 3 ? (
                 <button type="button" class="btn btn-light">
-                  Mua lại
+                  Trả hàng
                 </button>
               ) : (
                 <button type="button" class="btn btn-light">
@@ -182,7 +212,16 @@ const OderUserHoanThanh = () => {
       </section>
       <section>{result}</section>
       <br />
-      <Footer />
+      <footer
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          height: "60px",
+        }}
+      >
+        <Footer />
+      </footer>
     </>
   );
 };

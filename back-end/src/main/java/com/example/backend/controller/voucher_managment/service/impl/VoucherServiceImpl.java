@@ -156,6 +156,28 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public Voucher updateStatusVoucher(Integer id) {
+        Voucher voucher = voucherRepository.findById(id).orElse(null);
+        if (voucher != null) {
+            voucher.setStatus(1);
+            voucherRepository.save(voucher);
+            return voucher;
+        }
+        return null;
+    }
+
+    @Override
+    public Voucher returnStatusVoucher(Integer id) {
+        Voucher voucher = voucherRepository.findById(id).orElse(null);
+        if (voucher != null) {
+            voucher.setStatus(0);
+            voucherRepository.save(voucher);
+            return voucher;
+        }
+        return null;
+    }
+
+    @Override
     public List<Voucher> searchNoDate(String key, String status) {
         return voucherRepository.searchNoDate(key, status);
     }

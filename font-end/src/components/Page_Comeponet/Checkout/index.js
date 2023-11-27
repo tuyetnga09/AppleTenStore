@@ -932,11 +932,11 @@ const Checkout = () => {
                                                 </small>
                                             </div>
                                             <span class="text-muted">
-                        {parseFloat(product.total).toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                        })}
-                      </span>
+                                                {parseFloat(product.total).toLocaleString("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND",
+                                                })}
+                                            </span>
                                         </li>
                                     ))}
                                     <li class="list-group-item d-flex justify-content-between">

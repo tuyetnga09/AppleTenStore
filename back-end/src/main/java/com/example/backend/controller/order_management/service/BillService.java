@@ -42,12 +42,14 @@ public interface BillService {
 
     List<Bill> listBillByIdAccountDH(Integer id);
 
-    void deleteBill(Integer id);
+    void deleteBill(String noteReturn, Integer id);
 
     void updateAllChoThanhToan(String personUpdate);
 
     List<BillDetailOffLineIon> getAllBillChoXacNhan();
 
     Integer getCountBillCXN();
+
+    List<Bill> getBillOfflineCXN();
 
 }
