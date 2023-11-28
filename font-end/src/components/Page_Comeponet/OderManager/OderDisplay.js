@@ -701,17 +701,13 @@ const OderDisplay = ({}) => {
             <Menu.Item key="1" icon={<DashboardOutlined />}>
               <Link to="/dashboard">Dashboard</Link>
             </Menu.Item>
-            <SubMenu
-              key="2"
-              title="Orders"
-              icon={<ShopOutlined />}
-            >
-                <Menu.Item key="2" icon={<ShopOutlined />}>
-                    <Link to="/orders">Orders</Link>
-                </Menu.Item>
-                <Menu.Item key="11" icon={<ShopOutlined />}>
-                    <Link to="/orderBackProduct">OrderBackProducts</Link>
-                </Menu.Item>
+            <SubMenu key="2" title="Orders" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Orders</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">OrderBackProducts</Link>
+              </Menu.Item>
             </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
               <Link to="/users">Users</Link>
@@ -1883,7 +1879,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 title={"Imei"}
                 render={(text, record) => (
                   <Form.Item name="title" style={{ margin: 0 }}>
-                    {record.statusBill}
                     {record.statusBill === "CHO_XAC_NHAN" ? (
                       <p>
                         <button
