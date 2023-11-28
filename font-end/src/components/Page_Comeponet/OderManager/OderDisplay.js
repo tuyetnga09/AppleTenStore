@@ -1131,7 +1131,7 @@ const OderDisplay = ({}) => {
                                 <Menu mode="vertical">
                                   <Menu.Item
                                     key="1"
-                                    disabled={record.stock <= 0}
+                                    disabled={record?.stock <= 0}
                                     style={{
                                       fontWeight: 500,
                                     }}
