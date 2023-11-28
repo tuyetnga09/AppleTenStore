@@ -5,13 +5,18 @@ import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllById } from "../../../service/Bill/billCustomer.service";
-import { deleteBillById } from "../../../service/Bill/bill.service";
-import { Modal, notification } from "antd";
+import {
+  deleteBillById,
+  returnBillById,
+} from "../../../service/Bill/bill.service";
+import { Avatar, Modal, Select, notification } from "antd";
+const { Option } = Select;
 
 const OderUserAll = () => {
   const [billDetails, setBillDetails] = useState([]);
   const [bills, setBills] = useState([]);
   const storedUser = JSON.parse(localStorage.getItem("account"));
+  const [banks, setBanks] = useState([]);
   useEffect(() => {
     readAllById(storedUser?.id)
       .then((res) => {
@@ -39,6 +44,20 @@ const OderUserAll = () => {
     };
 
     fetchData();
+
+    const loadBankList = async () => {
+      const apiUrl = "https://api.vietqr.io/v2/banks";
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = response.json();
+        data.then((res) => setBanks(res.data));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    loadBankList();
   }, [bills]);
 
   const result = bills.map((b, index) => {
@@ -164,7 +183,11 @@ const OderUserAll = () => {
               ) : b.statusBill === "VAN_CHUYEN" ? (
                 ""
               ) : b.statusBill === "DA_THANH_TOAN" && khoangCachNgay <= 3 ? (
-                <button type="button" class="btn btn-light">
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  onClick={() => handleNoteReturnsClick(b)}
+                >
                   Trả hàng
                 </button>
               ) : (
@@ -227,6 +250,81 @@ const OderUserAll = () => {
     });
   };
 
+  const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
+    useState(false); // Trạng thái hiển thị Modal
+
+  const handleNoteReturnsClick = (record) => {
+    setBillReturn({
+      ...billReturn,
+      id: record.id,
+    });
+    setIsModalVisibleNoteReturns(true);
+  };
+
+  // Hàm để ẩn Modal
+  const handleNoteReturnsCancel = () => {
+    setIsModalVisibleNoteReturns(false);
+    console.log(billReturn);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+    const stk = document.getElementById("stk");
+    stk.value = "";
+  };
+  const [idNganHang, setIdNganHang] = useState();
+  const handleNoteReturns = (event) => {
+    const stk = document.getElementById("stk").value;
+    const updatedNote = `${event.target.value}, Ngân hàng: ${idNganHang}, STK: ${stk}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+  };
+
+  function returnBill(id, noteReturn) {
+    returnBillById(id, null, noteReturn).then((response) =>
+      console.log(response.data)
+    );
+  }
+
+  function handleSelectBank(value) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const stk = document.getElementById("stk").value;
+    setIdNganHang(value);
+    const updatedNote = `${note}, Ngân hàng: ${value}, STK: ${stk}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+    console.log(billReturn);
+    console.log(updatedNote);
+  }
+
+  function handleSoTaiKhoan(event) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const updatedNote = `${note}, Ngân hàng: ${idNganHang}, STK: ${event.target.value}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+    console.log(billReturn);
+  }
+
+  const handleSubmitReturns2 = (event) => {
+    event.preventDefault();
+    returnBill(billReturn.id, billReturn.note);
+    setIsModalVisibleNoteReturns(false);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+    notification.success({
+      message: "Trả hàng",
+      description: "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
+    });
+  };
+
   return (
     <>
       <Header />
@@ -286,6 +384,63 @@ const OderUserAll = () => {
               required
               onChange={handleCannelOrder}
             ></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">
+            Xác nhận
+          </button>
+        </form>
+      </Modal>
+      <Modal
+        visible={isModalVisibleNoteReturns}
+        onCancel={handleNoteReturnsCancel}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <form onSubmit={handleSubmitReturns2}>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Lí do trả hàng:
+            </label>
+            <textarea
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="3"
+              required
+              onChange={handleNoteReturns}
+            ></textarea>
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Ngân hàng:
+            </label>
+            <Select
+              style={{ width: "100%", height: "100%" }}
+              onChange={handleSelectBank}
+            >
+              {banks.map((option) => (
+                <Option key={option.id} value={option.shortName} id={option.id}>
+                  <Avatar
+                    size="small"
+                    src={option.logo}
+                    style={{ width: "50%", height: "100%" }}
+                  />
+                  {option.shortName}
+                </Option>
+              ))}
+            </Select>
+            <br />
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Nhập số tài khoản:
+            </label>
+            <div class="input-group mb-3">
+              <input
+                type="number"
+                class="form-control"
+                aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default"
+                id="stk"
+                onChange={handleSoTaiKhoan}
+              />
+            </div>
           </div>
           <button type="submit" class="btn btn-success">
             Xác nhận
