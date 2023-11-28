@@ -17,6 +17,8 @@ import {
   WarningFilled,
   BellOutlined,
   SettingOutlined,
+  UnorderedListOutlined,
+  FileDoneOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -79,6 +81,7 @@ import { findBillDetails } from "../../../service/BillDetail/billDetail.service"
 import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
 
 const { RangePicker } = DatePicker;
+const { SubMenu } = Menu;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -682,12 +685,32 @@ const OderDisplay = ({}) => {
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
           <Menu theme="dark" mode="inline" defaultSelectedKeys={["2"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
+            </Menu.Item>
+            <Menu.Item key="0" icon={<FileDoneOutlined />}>
+              <Link to="/sell">SELL OFFLINE</Link>
+            </Menu.Item>
             <Menu.Item key="1" icon={<DashboardOutlined />}>
               <Link to="/dashboard">Dashboard</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
-            </Menu.Item>
+            <SubMenu
+              key="2"
+              title="Orders"
+              icon={<ShopOutlined />}
+            >
+                <Menu.Item key="2" icon={<ShopOutlined />}>
+                    <Link to="/orders">Orders</Link>
+                </Menu.Item>
+                <Menu.Item key="11" icon={<ShopOutlined />}>
+                    <Link to="/orderBackProduct">OrderBackProducts</Link>
+                </Menu.Item>
+            </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
               <Link to="/users">Users</Link>
             </Menu.Item>
@@ -697,7 +720,31 @@ const OderDisplay = ({}) => {
             <Menu.Item key="5" icon={<GiftOutlined />}>
               <Link to="/voucher">Voucher</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined />}>
+            <Menu.Item key="6" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Categories</Link>
+            </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Product-Detail"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item key="7" icon={<LogoutOutlined />}>
               <Link to="/logout">Logout</Link>
             </Menu.Item>
           </Menu>
