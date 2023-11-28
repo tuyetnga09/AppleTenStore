@@ -121,3 +121,55 @@ export const countCustomersPaidToday = () => {
 export const countCustomersReturnedToday = () => {
   return httpClient.get(`/admin/bill/customer/returns`);
 };
+
+// lấy ra list Hoa Don Cho Van Chuyen Trong Ngay
+export const getHoaDonsChoVanChuyenTrongNgay = () => {
+  return httpClient.get(`/admin/bill/bill-to-day`);
+};
+
+// seach khoang ngayf - đơn hàng
+export const seachKhoangNgay = (dateBefore, dateAfter) => {
+  return httpClient.get(
+    `/admin/bill/bill-seach/khoang-ngay?dateBefore=${dateBefore}&dateAfter=${dateAfter}`
+  );
+};
+
+//tong tai khoan den ngay hien taij
+export const tongTaiKhoanTrongThangHienTai = () => {
+  return httpClient.get(`/admin/bill/customer/tong-tai-khoan/trong-thang`);
+};
+
+//tong tai khoan hoat dong den ngay hien taij
+export const tongTaiKhoanHoatDongHienTai = () => {
+  return httpClient.get(`/admin/bill/customer/tong-tai-khoan/hoat-dong`);
+};
+
+//tong tai khoan  hien taij
+export const tongTaiKhoanHienTai = () => {
+  return httpClient.get(`/admin/bill/customer/tong-tai-khoan`);
+};
+
+//tong tai khoan hom nay
+export const tongTaiKhoanHomNay = () => {
+  return httpClient.get(`/admin/bill/customer/tong-tai-khoan/hom-nay`);
+};
+
+//danh sach nawm cos trong bill
+export const getListYearOfBill = () => {
+  return httpClient.get(`/admin/bill/list-year`);
+};
+
+//báo cáo daonh thu hiện tại - "DA_THANH_TOAN" - seach
+export const seachDoanhThuTeaoNam = (year) => {
+  return httpClient.get(`/admin/bill/seach/revenue-year?year=${year}`);
+};
+
+// lấy ra account - theo id
+// export const getAccount = (id) => {
+//   return httpClient.get(`/admin/bill/get-one-account?id=${id}`);
+// };
+
+// lấy ra bill detail trong dashboard
+export const getListBillDetailDashboard = (idBill) => {
+  return httpClient.get(`/admin/bill/get-bill-detail?idBill=${idBill}`);
+};

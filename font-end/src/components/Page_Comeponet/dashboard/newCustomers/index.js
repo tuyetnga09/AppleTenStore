@@ -1,15 +1,20 @@
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { ConfigProvider, theme, Typography } from "antd";
 import { Column } from "@ant-design/charts";
 import { ColumnConfig } from "@ant-design/plots/lib/components/column";
 import { IncreaseIcon } from "../../icon/increase";
 import { DecreaseIcon } from "../../icon/decrease";
+import Timelin from "../orderTimeline/index";
 import {
   countCustomersOrderToday,
   countCustomersCanceledToday,
   countCustomersPaidToday,
   countCustomersReturnedToday,
+  tongTaiKhoanTrongThangHienTai,
+  tongTaiKhoanHoatDongHienTai,
+  tongTaiKhoanHienTai,
+  tongTaiKhoanHomNay,
 } from "../../../../service/dashboard/admin_bill.service";
 import { NumberField } from "@refinedev/antd";
 
@@ -35,7 +40,8 @@ import {
   TitleAreNumber,
 } from "./styled";
 
-const NewCustomers = () => {
+const NewCustomers = (props) => {
+  const { dataCustomer } = props;
   const [data, setData] = useState([]);
   const [dataLastMonth, setDataLastMonth] = useState([]);
   const [dataThisMonth, setDataThisMonth] = useState([]);
@@ -53,35 +59,146 @@ const NewCustomers = () => {
   const [dataCountCustomersReturnedToday, setDataCountCustomersReturnedToday] =
     useState();
 
+  const [dataTongTaiKhoan, setDataTongTaiKhoan] = useState();
+
+  const [dataTongTaiKhoanMoi, setDataTongTaiKhoanMoi] = useState();
+
+  const [dataTongTaiKhoanDangSuDung, setDataTongTaiKhoanDangSuDung] =
+    useState();
+
+  const [dataTongTaiKhoanTrongThang, setDataTongTaiKhoanTrongThang] =
+    useState();
+
+  // const billSeachKhoangNgay = JSON.parse(
+  //   localStorage.getItem("billSeachKhoangNgay")
+  // );
+
+  const fetchData = (a, b) => {
+    const dataFromBackend = [
+      { name: "Last Month", customers: a },
+      { name: "This Month", customers: b },
+    ];
+    setData(dataFromBackend);
+  };
+
+  const [dataCheck, setDataCheck] = useState({
+    check: false,
+    choXacNhan: 0,
+    choVanChuyen: 0,
+    dangVanChuyen: 0,
+    daThanhToan: 0,
+    hoanTra: 0,
+    donHuy: 0,
+  });
+
+  const [billSeachKhoangNgay, setLocalStorageData] = useState(
+    localStorage.getItem("billSeachKhoangNgay11")
+  );
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const lastMonthRes = await numberOfCustomersLastMonth();
-        const thisMonthRes = await numberOfCustomersThisMonth();
-        const countUncomfim = await countCustomersOrderToday();
-        const countCanceledOder = await countCustomersCanceledToday();
-        const countPaid = await countCustomersPaidToday();
-        const countReturn = await countCustomersReturnedToday();
+    // setLocalStorageData(
+    //   JSON.parse(localStorage.getItem("billSeachKhoangNgay"))
+    // );
+    let last = 0;
+    let first = 0;
+    // console.log(billSeachKhoangNgay.check);
 
-        const dataFromBackend = [
-          { name: "Last Month", customers: lastMonthRes.data },
-          { name: "This Month", customers: thisMonthRes.data },
-        ];
+    // if (billSeachKhoangNgay?.check === true) {
+    //   setDataCheck(billSeachKhoangNgay);
+    //   // setDataCheck(true);
+    //   console.log(billSeachKhoangNgay.check);
+    //   alert(billSeachKhoangNgay.check);
 
-        setData(dataFromBackend);
-        setDataLastMonth(lastMonthRes.data);
-        setDataThisMonth(thisMonthRes.data);
-        setDataCountCustomersOrderToday(countUncomfim.data);
-        setDataCountCustomersCanceledToday(countCanceledOder.data);
-        setDataCountCustomersPaidToday(countPaid.data);
-        setDataCountCustomersReturnedToday(countReturn.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    //   setDataTongTaiKhoan(billSeachKhoangNgay.tongTaiKhoan);
+    //   setDataTongTaiKhoanMoi(billSeachKhoangNgay.tongTaiKhoanMoi);
+    //   setDataTongTaiKhoanDangSuDung(billSeachKhoangNgay.tongTaiKhoanDangSuDung);
+    //   setDataTongTaiKhoanTrongThang(billSeachKhoangNgay.tongTaiKhoanTrongThang);
+    //   setDataCountCustomersOrderToday(billSeachKhoangNgay.tongTaiKhoanDatHang);
+    //   setDataCountCustomersPaidToday(
+    //     billSeachKhoangNgay.tongTaiKhoanDaThanhToan
+    //   );
+    //   setDataCountCustomersCanceledToday(
+    //     billSeachKhoangNgay.tongTaiKhoanHuyDon
+    //   );
+    // } else {
+    //   console.log(billSeachKhoangNgay.check);
+    // console.log(data.check + " data");
+    // console.log(searchData + " searchData");
 
-    fetchData();
-  }, []);
+    numberOfCustomersLastMonth()
+      .then((response) => {
+        setDataLastMonth(response.data);
+        last = response.data;
+        fetchData(last, first);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+    numberOfCustomersThisMonth()
+      .then((response) => {
+        setDataThisMonth(response.data);
+        first = response.data;
+        fetchData(last, first);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+    countCustomersOrderToday()
+      .then((response) => {
+        setDataCountCustomersOrderToday(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    countCustomersCanceledToday()
+      .then((response) => {
+        setDataCountCustomersCanceledToday(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    countCustomersPaidToday()
+      .then((response) => {
+        setDataCountCustomersPaidToday(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
+    tongTaiKhoanTrongThangHienTai()
+      .then((response) => {
+        setDataTongTaiKhoanTrongThang(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    tongTaiKhoanHoatDongHienTai()
+      .then((response) => {
+        setDataTongTaiKhoanDangSuDung(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    tongTaiKhoanHienTai()
+      .then((response) => {
+        setDataTongTaiKhoan(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    tongTaiKhoanHomNay()
+      .then((response) => {
+        setDataTongTaiKhoanMoi(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    // setDataCheck(dataCheck);
+    // }
+    // console.log(searchData + " heplme");
+    console.log(dataCustomer + " heplme2");
+  }, [dataCustomer]);
 
   const { Text, Title } = Typography;
 
@@ -115,7 +232,7 @@ const NewCustomers = () => {
         <TitleArea>
           <Title level={3}>Tài Khoản Mới Hôm Nay</Title>
           <TitleAreNumber>
-            <Text strong>{dataThisMonth}</Text>
+            <Text strong>{dataTongTaiKhoanMoi}</Text>
 
             {/* {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />} */}
             <IncreaseIcon />
@@ -147,10 +264,53 @@ const NewCustomers = () => {
             stroke="rgb(75, 192, 192)"
           />
         </LineChart>
+        <TitleArea>
+          <Title level={5} style={{ color: "white" }}>
+            1 - test
+          </Title>
+          <TitleAreNumber>
+            <Title level={5} style={{ color: "white" }}>
+              - {dataCustomer}
+            </Title>
+          </TitleAreNumber>
+        </TitleArea>
         {/* 1 */}
         <TitleArea>
           <Title level={5} style={{ color: "white" }}>
-            1 - Sum Bill Unconfimred
+            1 - Tổng Tài khoản
+          </Title>
+          <TitleAreNumber>
+            <Title level={5} style={{ color: "white" }}>
+              {dataTongTaiKhoan}
+            </Title>
+          </TitleAreNumber>
+        </TitleArea>
+        {/* 1 */}
+        <TitleArea>
+          <Title level={5} style={{ color: "white" }}>
+            2 - Tài khoản Đang Sử Dụng
+          </Title>
+          <TitleAreNumber>
+            <Title level={5} style={{ color: "white" }}>
+              {dataTongTaiKhoanDangSuDung}
+            </Title>
+          </TitleAreNumber>
+        </TitleArea>
+        {/* 1 */}
+        <TitleArea>
+          <Title level={5} style={{ color: "white" }}>
+            3 - Tài khoản Mới Trong Tháng
+          </Title>
+          <TitleAreNumber>
+            <Title level={5} style={{ color: "white" }}>
+              {dataTongTaiKhoanTrongThang}
+            </Title>
+          </TitleAreNumber>
+        </TitleArea>
+        {/* 1 */}
+        <TitleArea>
+          <Title level={5} style={{ color: "white" }}>
+            4 - Tài khoản đã đặt hàng
           </Title>
           <TitleAreNumber>
             <Title level={5} style={{ color: "white" }}>
@@ -161,7 +321,7 @@ const NewCustomers = () => {
         {/* 2 */}
         <TitleArea>
           <Title level={5} style={{ color: "white" }}>
-            2 - Sum Bill Already Paid
+            5 - Tài khoản đã thanh toán
           </Title>
           <TitleAreNumber>
             <Title level={5} style={{ color: "white" }}>
@@ -170,20 +330,20 @@ const NewCustomers = () => {
           </TitleAreNumber>
         </TitleArea>
         {/* 3 */}
-        <TitleArea>
+        {/* <TitleArea>
           <Title level={5} style={{ color: "white" }}>
-            3 - Sum Bill Returns
+            6 - Tài khoản đã trả hàng
           </Title>
           <TitleAreNumber>
             <Title level={5} style={{ color: "white" }}>
               {dataCountCustomersReturnedToday}
             </Title>
           </TitleAreNumber>
-        </TitleArea>
+        </TitleArea> */}
         {/* 4 */}
         <TitleArea>
           <Title level={5} style={{ color: "white" }}>
-            4 - Sum Bill Cancel Order
+            6 - Tài khoản đã huỷ đơn
           </Title>
           <TitleAreNumber>
             <Title level={5} style={{ color: "white" }}>
@@ -192,7 +352,7 @@ const NewCustomers = () => {
           </TitleAreNumber>
         </TitleArea>
         {/* 5 */}
-        <TitleArea>
+        {/* <TitleArea>
           <Title level={5} style={{ color: "white" }}>
             -
           </Title>
@@ -201,9 +361,9 @@ const NewCustomers = () => {
               -
             </Title>
           </TitleAreNumber>
-        </TitleArea>
+        </TitleArea> */}
         {/* 6 */}
-        <TitleArea>
+        {/* <TitleArea>
           <Title level={5} style={{ color: "white" }}>
             -
           </Title>
@@ -212,9 +372,9 @@ const NewCustomers = () => {
               -
             </Title>
           </TitleAreNumber>
-        </TitleArea>
+        </TitleArea> */}
         {/* 7 */}
-        <TitleArea>
+        {/* <TitleArea>
           <Title level={5} style={{ color: "white" }}>
             -
           </Title>
@@ -223,7 +383,7 @@ const NewCustomers = () => {
               -
             </Title>
           </TitleAreNumber>
-        </TitleArea>
+        </TitleArea> */}
       </NewCustomersWrapper>
     </ConfigProvider>
   );

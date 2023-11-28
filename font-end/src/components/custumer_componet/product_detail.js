@@ -21,6 +21,7 @@ import AvtProduct from "./avtProduct";
 import { readAll } from "../../service/product.service";
 import Pagination from "../../components/product_component/Size/Paging";
 import ImageProduct from "../../components/Page_Comeponet/page/ImageProduct";
+import PriceProduct from "../../components/Page_Comeponet/page/PriceProducts";
 import "bootstrap/dist/js/bootstrap";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -130,20 +131,7 @@ export default function ProductDetail() {
                   <ImageProduct product={dl.id}></ImageProduct>
                   <h3>{dl.name}</h3>
                   <div className="price">
-                    <strong>
-                      {dl.price.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </strong>
-                  </div>
-                  <div className="ratingresult">
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <i className="fa fa-star" />
-                    <span>9999 đánh giá</span>
+                    <PriceProduct product={dl.id}></PriceProduct>
                   </div>
                   <label className="giamgia">
                     <i className="fa fa-bolt" /> Giảm 1.000₫
@@ -310,20 +298,7 @@ export default function ProductDetail() {
           <ImageProduct product={dl.id}></ImageProduct>
           <h3>{dl.name}</h3>
           <div className="price">
-            <strong>
-              {dl.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </strong>
-          </div>
-          <div className="ratingresult">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <span>9999 đánh giá</span>
+            <PriceProduct product={dl.id}></PriceProduct>
           </div>
           <label className="giamgia">
             <i className="fa fa-bolt" /> Giảm 1.000₫
@@ -382,14 +357,6 @@ export default function ProductDetail() {
           <h1>
             {item.name && item.name} {item2.capacity} {item2.color}
           </h1>
-          <div className="rating">
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star" />
-            <i className="fa fa-star-o" />
-            <span> 372 đánh giá</span>
-          </div>
           <div className="rowdetail group">
             {imageTemp === "" ? (
               <AvtProduct product={id}></AvtProduct>
@@ -442,20 +409,16 @@ export default function ProductDetail() {
             </div>
             <div className="price_sale">
               <div className="area_price">
-                <strong>
-                  {item2 && item2.price
-                    ? item2.price?.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : item && item.price
-                    ? item?.price?.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })
-                    : null}
-                </strong>
-                <label className="moiramat">Mới ra mắt</label>
+                {item2 && item2.price ? (
+                  <strong>
+                    {item2.price?.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </strong>
+                ) : item && item.price ? (
+                  <PriceProduct product={id}></PriceProduct>
+                ) : null}
                 <label className="giamgia">
                   Số lượng:{" "}
                   {item2 && item2.quantity

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -75,4 +77,12 @@ public class SKUServiceImpl implements Iservice<SKU> {
         return skuRepositoty.getSkuProductFormSellOfflineByCategory(id, key);
     }
 
+    public List<BigDecimal> priceMinAndMaxBySKU(Integer idProduct){
+        SKU sku = skuRepositoty.findSKUPriceMin(idProduct);
+        SKU sku1 = skuRepositoty.findSKUPriceMax(idProduct);
+        List<BigDecimal> bigDecimals = new ArrayList<>();
+        bigDecimals.add(sku.getPrice());
+        bigDecimals.add(sku1.getPrice());
+        return bigDecimals;
+    }
 }

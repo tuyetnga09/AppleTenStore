@@ -137,11 +137,11 @@ public class DBContext implements CommandLineRunner {
         addAccount("NV5","hoanghieu673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Product
-        addProduct("PR1", "Iphone 11 Pro Max", "Khung viền thép", 0, new BigDecimal(11000000));
-        addProduct("PR2", "Iphone 12 Pro Max", "Kính  cường lực", 0, new BigDecimal(15500000));
-        addProduct("PR3", "Iphone 13 Pro Max", "Khung viền thép", 0, new BigDecimal(16600000));
-        addProduct("PR4", "Iphone 14 Pro", "Sạc nhanh 20W", 0, new BigDecimal(11077000));
-        addProduct("PR5", "Samsung S22 Utral", "Màn hình tràn viền", 0, new BigDecimal(25000000));
+//        addProduct("PR1", "Iphone 11 Pro Max", "Khung viền thép", 0, new BigDecimal(11000000));
+//        addProduct("PR2", "Iphone 12 Pro Max", "Kính  cường lực", 0, new BigDecimal(15500000));
+//        addProduct("PR3", "Iphone 13 Pro Max", "Khung viền thép", 0, new BigDecimal(16600000));
+//        addProduct("PR4", "Iphone 14 Pro", "Sạc nhanh 20W", 0, new BigDecimal(11077000));
+//        addProduct("PR5", "Samsung S22 Utral", "Màn hình tràn viền", 0, new BigDecimal(25000000));
 
         // Thêm dữ liệu cho bảng Payments
         addPayment("PAY1", 1, new BigDecimal("100.50"), "Payment for order 1", "John Doe", TypePayment.TIEN_MAT, StatusPayment.THANH_TOAN);

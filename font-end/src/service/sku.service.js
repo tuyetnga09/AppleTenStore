@@ -30,3 +30,6 @@ export const getSKUProductFormSell = (page) => {
 export const getSKUProductFormSellByCateogory = (page) => {
   return httpClient.get(`/admin/sku/getSkuProductByCategory?${page}`);
 };
+export const priceMinAndMaxBySKU = (idProduct) => {
+  return httpClient.get(`/admin/sku/getPriceMinAndMax?idProduct=${idProduct}`);
+};

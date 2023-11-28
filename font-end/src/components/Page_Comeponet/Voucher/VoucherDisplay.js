@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef} from "react";
 import {
   readAll,
   deleteVoucher,
@@ -7,6 +7,8 @@ import {
   update,
   searchNoDate,
   searchWithDate,
+  updateStatusVoucher,
+  returnStatusVoucher
 } from "../../../service/Voucher/voucher.service";
 import { useTranslate } from "@refinedev/core";
 import {
@@ -59,6 +61,9 @@ import queryString from "query-string";
 import { Option } from "antd/es/mentions";
 import { DateField } from "@refinedev/antd";
 import { getOne, updateMoney } from "../../../service/Point/point.service";
+import { Toast } from "primereact/toast";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -75,6 +80,8 @@ const VoucherDisplay = ({}) => {
   const [editedVoucher, setEditedVoucher] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisiblePoint, setIsModalVisiblePoint] = useState(false); // Trạng thái hiển thị Modal
+  const [load, setLoad] = useState(true);
+  const toast = useRef(null);
 
   // Hàm để hiển thị Modal khi cần
   const handleEditClick = (record) => {
@@ -188,7 +195,7 @@ const VoucherDisplay = ({}) => {
           console.log(error);
         });
     }
-  }, [filtersNoDate, filtersWithDate]);
+  }, [filtersNoDate, filtersWithDate, load]);
 
   async function remove(id) {
     deleteVoucher(id).then(() => {
@@ -313,8 +320,58 @@ const VoucherDisplay = ({}) => {
     }
   }
 
+  const reject = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Xin mời tiếp tục.",
+      life: 3000,
+    });
+  };
+
+  const callUpdateStatusVoucher = (id) => {
+    updateStatusVoucher(id)
+      .then((response) => {
+        notification.success({
+          message: "Voucher đã ngừng hoạt động!",
+        });
+        // setVoucher(response.data);
+        setLoad(!load);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const confirmCallUpdateStatusVoucher = (id) => {
+    confirmDialog({
+      message: "Bạn chắc chắn muốn ngừng voucher?",
+      header: "VOUCHER",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => callUpdateStatusVoucher(id),
+      reject,
+    });
+  };
+
+  const callReturnStatusVoucher = (id) => {
+    returnStatusVoucher(id)
+      .then((response) => {
+        notification.success({
+          message: "Voucher đã hoạt động trở lại!",
+        });
+        // setVoucher(response.data);
+        setLoad(!load);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <>
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
@@ -639,19 +696,7 @@ const VoucherDisplay = ({}) => {
                       align="center"
                       render={(text, record) => (
                         <span>
-                          {/* <Button type="danger" onClick={() => remove(record.id)}>
-                                            <FontAwesomeIcon icon={faTimes} />
-                                        </Button>
-                                        {/* <Link to={"/voucher/" + record.id}> */}
-                          {/* <Button type="danger" onClick={() => handleEditClick(record)}>
-                                            <FontAwesomeIcon icon={faPencilAlt} />
-                                        </Button> */}
-                          {/* </Link> */}
-                          {/* <Link to={"/voucher/update/" + record.id}>
-                                            <Button type="danger">
-                                                <FontAwesomeIcon icon={faPencilAlt} />
-                                            </Button>
-                                        </Link> */}
+                        {record.status === 0 ? (
                           <Dropdown
                             overlay={
                               <Menu mode="vertical">
@@ -668,7 +713,7 @@ const VoucherDisplay = ({}) => {
                                       }}
                                     />
                                   }
-                                  onClick={() => remove(record.id)}
+                                  onClick={() => confirmCallUpdateStatusVoucher(record.id)}
                                 >
                                   Delete
                                 </Menu.Item>
@@ -698,6 +743,42 @@ const VoucherDisplay = ({}) => {
                               }}
                             />
                           </Dropdown>
+                          ) : record.status === 1 ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "red",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      callReturnStatusVoucher(record.id)
+                                    }
+                                  >
+                                    Hoàn tác
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
+                          ) : (
+                            ""
+                          )}
                         </span>
                       )}
                     />

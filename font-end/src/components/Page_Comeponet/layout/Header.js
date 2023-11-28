@@ -8,7 +8,6 @@ export default function Header() {
   const [quantity, setQuantity] = useState([]);
   const storedBill = JSON.parse(localStorage.getItem("bill"));
   const cartItems = JSON.parse(sessionStorage.getItem("cartItems")) || [];
-
   useEffect(() => {
     if (idAccount !== null && idAccount !== "") {
       readQuantityInCart(idAccount)
@@ -123,7 +122,7 @@ export default function Header() {
               className="search-header"
               style={{ position: "relative", left: 162, top: 1 }}
             >
-              <form className="input-search" method="get" action="index.html">
+              {/* <form className="input-search" method="get" action="index.html">
                 <div className="autocomplete">
                   <input
                     id="search-box"
@@ -137,14 +136,14 @@ export default function Header() {
                     Tìm kiếm
                   </button>
                 </div>
-              </form>{" "}
+              </form>{" "} */}
               {/* End Form search */}
-              <div className="tags">
+              {/* <div className="tags">
                 <strong>Từ khóa: </strong>
                 <a href="index.html?search=Samsung">Iphone 11</a>
                 <a href="index.html?search=Samsung">Iphone 12</a>
                 <a href="index.html?search=Samsung">Iphone 13</a>
-              </div>
+              </div> */}
             </div>{" "}
             {/* End Search header */}
             <div className="tools-member">

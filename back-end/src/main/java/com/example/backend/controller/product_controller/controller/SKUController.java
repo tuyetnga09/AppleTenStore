@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -71,5 +72,10 @@ public class SKUController {
     @GetMapping("getSkuProductByCategory")
     public List<ListSkuProduct> getSKUProductByCategory(@RequestParam("id") Integer id, @RequestParam("key") String key){
         return skuService.getSKUProductFormSellOffByCategory(id, key);
+    }
+
+    @GetMapping("getPriceMinAndMax")
+    public List<BigDecimal> priceMinAndMaxBySKU(@RequestParam("idProduct") Integer idProduct){
+        return skuService.priceMinAndMaxBySKU(idProduct);
     }
 }

@@ -458,6 +458,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepository.findById(id).get();
         if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
             bill.setStatusBill(StatusBill.DA_THANH_TOAN);
+            bill.setCompletionDate(LocalDate.now());
         }
         if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)){
             bill.setStatusBill(StatusBill.VAN_CHUYEN);
@@ -579,11 +580,11 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public void deleteBill(Integer id) {
+    public void deleteBill(String noteReturn, Integer id) {
         this.billDetailRepository.deleteBillDetailsByBill(id);
         this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
-        this.billRepository.deleteBill(id);
+        this.billRepository.deleteBill(noteReturn, id);
         Bill bill = billRepository.findById(id).get();
         if (bill.getNumberOfPointsUsed() != null){
             if (bill.getNumberOfPointsUsed() != 0){
@@ -623,6 +624,11 @@ public class BillServiceImpl implements BillService {
     @Override
     public Integer getCountBillCXN() {
         return billRepository.getCountBillCXN();
+    }
+
+    @Override
+    public List<Bill> getBillOfflineCXN() {
+        return billRepository.getBillOfflineCXN();
     }
 
 }

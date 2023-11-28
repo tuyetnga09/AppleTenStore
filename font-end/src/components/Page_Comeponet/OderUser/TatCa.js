@@ -5,6 +5,8 @@ import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllById } from "../../../service/Bill/billCustomer.service";
+import { deleteBillById } from "../../../service/Bill/bill.service";
+import { Modal, notification } from "antd";
 
 const OderUserAll = () => {
   const [billDetails, setBillDetails] = useState([]);
@@ -40,6 +42,29 @@ const OderUserAll = () => {
   }, [bills]);
 
   const result = bills.map((b, index) => {
+    const completionDate = new Date(b.completionDate);
+    const yearStart = completionDate.getFullYear();
+    const monthStart = completionDate.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+    const dayStart = completionDate.getDate();
+    const formattedDateStart = `${yearStart}-${monthStart
+      .toString()
+      .padStart(2, "0")}-${dayStart.toString().padStart(2, "0")}`;
+    // Ngày hoàn thành đơn hàng
+    const ngayHoanThanh = new Date(formattedDateStart);
+
+    // Ngày hiện tại
+    const dateNow = new Date();
+    const yearStart1 = dateNow.getFullYear();
+    const monthStart1 = dateNow.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+    const dayStart1 = dateNow.getDate();
+    const formattedDateStart1 = `${yearStart1}-${monthStart1
+      .toString()
+      .padStart(2, "0")}-${dayStart1.toString().padStart(2, "0")}`;
+    const ngayHienTai = new Date(formattedDateStart1);
+    // Tính khoảng cách giữa hai ngày
+    const khoangCachNgay = Math.floor(
+      (ngayHienTai - ngayHoanThanh) / (1000 * 60 * 60 * 24)
+    );
     return (
       <>
         <div className="row">
@@ -56,6 +81,8 @@ const OderUserAll = () => {
                 ? "Vận chuyển"
                 : b.statusBill === "DA_THANH_TOAN"
                 ? "Hoàn thành"
+                : b.statusBill === "TRA_HANG"
+                ? "Trả hàng"
                 : "Đã hủy"}
             </span>
           </div>
@@ -77,10 +104,12 @@ const OderUserAll = () => {
                 <strong>x{bd.quantity}</strong>
               </div>
               <div className="col-2">
-                <p style={{ float: "right" }}>{bd.price.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}</p>
+                <p style={{ float: "right" }}>
+                  {bd.price.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </p>
               </div>
             </div>
           );
@@ -101,16 +130,21 @@ const OderUserAll = () => {
                 Dự kiến giao hàng ngày <u>23-07-2003</u>
               </p>
             ) : b.statusBill === "DA_THANH_TOAN" ? (
-              ""
+              <p>
+                Ngày hoàn thành đơn hàng <u>{formattedDateStart}</u>
+              </p>
             ) : (
               ""
             )}
           </div>
           <div className="col-6">
-            <span style={{ float: "right" }}>Thành tiền: {b.totalMoney.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}</span>
+            <span style={{ float: "right" }}>
+              Thành tiền:{" "}
+              {b.totalMoney.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </span>
             <br />
             <br />
             <div style={{ float: "right" }}>
@@ -118,16 +152,20 @@ const OderUserAll = () => {
                 Liên hệ người bán
               </button>{" "}
               {b.statusBill === "CHO_XAC_NHAN" ? (
-                <button type="button" class="btn btn-light">
+                <button
+                  type="button"
+                  class="btn btn-light"
+                  onClick={() => handleCannelOrderClick(b)}
+                >
                   Hủy đơn
                 </button>
               ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
                 ""
               ) : b.statusBill === "VAN_CHUYEN" ? (
                 ""
-              ) : b.statusBill === "DA_THANH_TOAN" ? (
+              ) : b.statusBill === "DA_THANH_TOAN" && khoangCachNgay <= 3 ? (
                 <button type="button" class="btn btn-light">
-                  Mua lại
+                  Trả hàng
                 </button>
               ) : (
                 <button type="button" class="btn btn-light">
@@ -141,6 +179,53 @@ const OderUserAll = () => {
       </>
     );
   });
+
+  const [isModalVisibleCannelOrder, setIsModalVisibleCannelOrder] =
+    useState(false);
+
+  const [billReturn, setBillReturn] = useState({
+    id: null,
+    note: null,
+  });
+
+  const handleCannelOrderClick = (record) => {
+    setBillReturn({
+      ...billReturn,
+      id: record.id,
+    });
+    setIsModalVisibleCannelOrder(true);
+  };
+
+  const handleCannelOrderCancel = () => {
+    setIsModalVisibleCannelOrder(false);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+  };
+
+  const handleCannelOrder = (event) => {
+    setBillReturn({
+      ...billReturn,
+      note: event.target.value,
+    });
+  };
+
+  const handleSubmitReturns = (event) => {
+    event.preventDefault();
+    deleteBillById(billReturn.id, billReturn.note).then((response) =>
+      console.log(response.data)
+    );
+    setIsModalVisibleCannelOrder(false);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+    notification.error({
+      message: "Hủy đơn",
+      description: "Hủy đơn thành công",
+    });
+  };
 
   return (
     <>
@@ -182,7 +267,41 @@ const OderUserAll = () => {
       </section>
       <section>{result}</section>
       <br />
-      <Footer />
+      <Modal
+        visible={isModalVisibleCannelOrder}
+        onCancel={handleCannelOrderCancel}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <form onSubmit={handleSubmitReturns}>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Lí do hủy đơn:
+            </label>
+            <textarea
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="3"
+              required
+              onChange={handleCannelOrder}
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">
+            Xác nhận
+          </button>
+        </form>
+      </Modal>
+      <footer
+        style={{
+          position: "absolute",
+          bottom: 0,
+          width: "100%",
+          height: "60px",
+        }}
+      >
+        <Footer />
+      </footer>
     </>
   );
 };
