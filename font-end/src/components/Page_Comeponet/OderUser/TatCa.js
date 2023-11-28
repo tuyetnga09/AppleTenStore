@@ -363,7 +363,7 @@ const OderUserAll = () => {
           </li>
         </ul>
       </section>
-      <section>{result}</section>
+      <section style={{ position: "relative", maxHeight: 445, width: "1200px", overflowY: "auto" }}>{result}</section>
       <br />
       <Modal
         visible={isModalVisibleCannelOrder}

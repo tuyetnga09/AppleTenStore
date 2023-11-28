@@ -80,6 +80,8 @@ import Product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/
 import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
 import Policy from "./components/Page_Comeponet/Policy";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
+import OderPayBackProduct from "./components/Page_Comeponet/OderManager/OderBackProduct";
+
 
 const storedUser = JSON.parse(localStorage.getItem("account"));
 const fetchData = async () => {
@@ -667,6 +669,16 @@ function App() {
             )}
           </Route> */}
           <Route path="/oderCustomerAll" exact component={OderCustomerAll} />
+          <Route path="/orderBackProduct" exact component={OderPayBackProduct} />
+          {/* <Route path="/orders">
+            {storedUser?.roles === "CUSTOMER" ||
+            storedUser === null ||
+            storedUser?.roles === "NHAN_VIEN_BAN_HANG" ? (
+              <Redirect to="/" />
+            ) : (
+              <OderDisplay />
+            )}
+          </Route> */}
         </Switch>
         {/* </Suspense> */}
       </Router>
