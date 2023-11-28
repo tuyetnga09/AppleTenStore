@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerIon;
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerResponse;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
@@ -82,4 +83,14 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
     @Query(value = "update bill_detail set status_bill = 'XAC_NHAN' where id_bill = ?1", nativeQuery = true)
     void updateStatusBillDetailWhereIdBill(int id);
 
+    @Query(value = "select product.id as 'idProduct', category.name as 'category',  product.name as 'nameProduct'," +
+            " sku.capacity as 'capacity', sku.color as 'color', \n" +
+            " sku.price  as 'price', sku.id  as 'idSku', imei_da_ban.code_imei  as 'imei' , imei_da_ban.id  as 'idImei' ," +
+            " bill_detail.id_bill as 'idBill', bill_detail.id as 'idBillDetail'\n" +
+            " from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail \n" +
+            " join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id" +
+            " join category on product.id_category = category.id \n" +
+            " where bill_detail.id_bill =?1\n" +
+            " order by sku.id desc", nativeQuery = true)
+    List<BillDetailCustomerIon> getAllBillDetaillOfIdBill(Integer idBill);
 }

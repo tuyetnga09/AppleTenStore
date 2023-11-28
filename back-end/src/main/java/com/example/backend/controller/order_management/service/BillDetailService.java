@@ -1,6 +1,7 @@
 package com.example.backend.controller.order_management.service;
 
 import com.example.backend.controller.order_management.model.billDetail.request.FindBillDetailRequest;
+import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerIon;
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerResponse;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.entity.BillDetails;
@@ -20,5 +21,7 @@ public interface BillDetailService {
     void updateQuantity(Integer id, Integer newQuantity);
 
     List<BillDetailOffLineIon> findBillDetails(Integer id);
+
+    List<BillDetailCustomerIon> getBillDetailOfIdBill(Integer id);
 
 }

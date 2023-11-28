@@ -51,7 +51,7 @@ import {
   getAllBillCXN,
   getCountBillChoXacNhan,
   returnBillById,
-  getAllBillOFFLINECXN
+  getAllBillOFFLINECXN,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -111,7 +111,6 @@ const OderDisplay = ({}) => {
     note: null,
   });
   const [billOFFCXN, setBillOFFCXN] = useState([]);
-
 
   const orderSelectProps = {
     options: [
@@ -245,12 +244,12 @@ const OderDisplay = ({}) => {
         });
       //lấy toàn bộ billOFF chờ xác nhận để check
       getAllBillOFFLINECXN()
-      .then((response) => {
-        setBillOFFCXN(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+        .then((response) => {
+          setBillOFFCXN(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       console.log(billCXN);
       console.log(billOFFCXN);
       //thông báo khi có hóa đơn mới
@@ -500,7 +499,7 @@ const OderDisplay = ({}) => {
       notification.error({
         message: "Hóa đơn chưa thể xác nhận! - Hóa Đơn Bán Offline",
       });
-    }else{
+    } else {
       if (checkImeiSelectInBillDetail(id) === true) {
         updateStatusBill(idAccount, id)
           .then((response) => {
@@ -559,14 +558,17 @@ const OderDisplay = ({}) => {
     for (let index = 0; index < billOFFCXN.length; index++) {
       if (billOFFCXN[index]?.id === id) {
         if (billOFFCXN[index]?.typeBill === "OFFLINE") {
-          if (billOFFCXN[index]?.totalMoney === null || billOFFCXN[index]?.totalMoney === 0) {
+          if (
+            billOFFCXN[index]?.totalMoney === null ||
+            billOFFCXN[index]?.totalMoney === 0
+          ) {
             return false;
           }
         }
       }
     }
     return true;
-}
+  }
 
   function handUpdateTrangThai() {
     if (checkSoluongImei() === true) {
@@ -1834,6 +1836,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 title={"Imei"}
                 render={(text, record) => (
                   <Form.Item name="title" style={{ margin: 0 }}>
+                    {record.statusBill}
                     {record.statusBill === "CHO_XAC_NHAN" ? (
                       <p>
                         <button
@@ -2273,6 +2276,3 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 };
 
 export default OderDisplay;
-
-
-

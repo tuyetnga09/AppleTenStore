@@ -3,13 +3,26 @@ import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
-import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
+import {
+  readAll,
+  getAllBillDetail,
+} from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllById } from "../../../service/Bill/billCustomer.service";
 import {
   deleteBillById,
   returnBillById,
 } from "../../../service/Bill/bill.service";
-import { Avatar, Modal, Select, notification } from "antd";
+import {
+  Avatar,
+  Modal,
+  Select,
+  notification,
+  Table,
+  Form,
+  Checkbox,
+  Input,
+} from "antd";
+import { WarningFilled } from "@ant-design/icons";
 const { Option } = Select;
 
 const OderUserAll = () => {
@@ -249,21 +262,65 @@ const OderUserAll = () => {
       description: "Hủy đơn thành công",
     });
   };
-
-  const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
+  // phongnh
+  const [isModalVisibleXemHoaDonChiTiet, setIsModalVisibleXemHoaDonChiTiet] =
     useState(false); // Trạng thái hiển thị Modal
 
+  // Hàm để mở Modal
+  const handleOpenXemHoaDonChiTiet = () => {
+    setIsModalVisibleXemHoaDonChiTiet(true);
+  };
+  // Hàm để ẩn Modal
+  const handleCancelXemHoaDonChiTiet = () => {
+    setDataBillDetails([]);
+    setSelectedCheckboxes([]);
+    setIsModalVisibleXemHoaDonChiTiet(false);
+  };
+
+  const [dataBillDetails, setDataBillDetails] = useState([]);
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
+
+  function handleCheckboxChange(e) {
+    const checkboxValue = e.target.value;
+    setSelectedCheckboxes((prevSelectedCheckboxes) => {
+      if (e.target.checked) {
+        // Nếu được chọn, thêm giá trị vào danh sách
+        return [...prevSelectedCheckboxes, checkboxValue];
+      } else {
+        // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
+        return prevSelectedCheckboxes.filter((item) => item !== checkboxValue);
+      }
+    });
+  }
+  // Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxes và in giá trị mới
+  useEffect(() => {
+    console.log(selectedCheckboxes + " :imei da ban ++--");
+  }, [selectedCheckboxes]);
+
+  //nút trả hàng - phongnh *
   const handleNoteReturnsClick = (record) => {
     setBillReturn({
       ...billReturn,
       id: record.id,
     });
+    getAllBillDetail(record.id)
+      .then((res) => {
+        setDataBillDetails(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     setIsModalVisibleNoteReturns(true);
+    handleOpenXemHoaDonChiTiet();
   };
+
+  const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
+    useState(false); // Trạng thái hiển thị Modal
 
   // Hàm để ẩn Modal
   const handleNoteReturnsCancel = () => {
-    setIsModalVisibleNoteReturns(false);
+    setSelectNganHang(null);
     console.log(billReturn);
     const textNoteReturn = document.getElementById(
       "exampleFormControlTextarea1"
@@ -271,28 +328,41 @@ const OderUserAll = () => {
     textNoteReturn.value = "";
     const stk = document.getElementById("stk");
     stk.value = "";
+
+    const chuTaiKhoan = document.getElementById("id-chu-tai-khoan");
+    chuTaiKhoan.value = "";
+
+    setIsModalVisibleNoteReturns(false);
   };
+
   const [idNganHang, setIdNganHang] = useState();
-  const handleNoteReturns = (event) => {
-    const stk = document.getElementById("stk").value;
-    const updatedNote = `${event.target.value}, Ngân hàng: ${idNganHang}, STK: ${stk}`;
-    setBillReturn({
-      ...billReturn,
-      note: updatedNote,
-    });
-  };
 
   function returnBill(id, noteReturn) {
     returnBillById(id, null, noteReturn).then((response) =>
       console.log(response.data)
     );
   }
+  // phongnh 1
+  const handleNoteReturns = (event) => {
+    const stk = document.getElementById("stk").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const updatedNote = `${event.target.value}, Ngân hàng: ${idNganHang},
+     STK: ${stk}, Chủ tài khoản: ${tenTaiKhoan}}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+  };
+  const [selectNganHang, setSelectNganHang] = useState(null);
 
+  // phongnh 2
   function handleSelectBank(value) {
     const note = document.getElementById("exampleFormControlTextarea1").value;
     const stk = document.getElementById("stk").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
     setIdNganHang(value);
-    const updatedNote = `${note}, Ngân hàng: ${value}, STK: ${stk}`;
+    setSelectNganHang(value);
+    const updatedNote = `${note}, Ngân hàng: ${value}, STK: ${stk}, Chủ tài khoản: ${tenTaiKhoan}`;
     setBillReturn({
       ...billReturn,
       note: updatedNote,
@@ -301,9 +371,22 @@ const OderUserAll = () => {
     console.log(updatedNote);
   }
 
+  // phongnh 3
   function handleSoTaiKhoan(event) {
     const note = document.getElementById("exampleFormControlTextarea1").value;
-    const updatedNote = `${note}, Ngân hàng: ${idNganHang}, STK: ${event.target.value}`;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const updatedNote = `${note}, Ngân hàng: ${idNganHang}, STK: ${event.target.value}, Chủ tài khoản: ${tenTaiKhoan}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+    console.log(billReturn);
+  }
+
+  // phongnh 4
+  function handleNoteReturnsChuTaiKhoan(event) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const updatedNote = `${note}, Ngân hàng: ${idNganHang}, STK: ${note}, Chủ tài khoản: ${event.target.value}`;
     setBillReturn({
       ...billReturn,
       note: updatedNote,
@@ -313,16 +396,20 @@ const OderUserAll = () => {
 
   const handleSubmitReturns2 = (event) => {
     event.preventDefault();
-    returnBill(billReturn.id, billReturn.note);
-    setIsModalVisibleNoteReturns(false);
-    const textNoteReturn = document.getElementById(
-      "exampleFormControlTextarea1"
-    );
-    textNoteReturn.value = "";
-    notification.success({
-      message: "Trả hàng",
-      description: "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
-    });
+    if (selectNganHang === null || selectNganHang === undefined) {
+      notification.warning({
+        message: "Thông báo",
+        description: "Vui lòng nhập đủ thông tin!",
+      });
+    } else {
+      // returnBill(billReturn.id, billReturn.note); -- viết lại phần này
+
+      notification.success({
+        message: "Trả hàng",
+        description: "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
+      });
+      handleNoteReturnsCancel();
+    }
   };
 
   return (
@@ -414,6 +501,7 @@ const OderUserAll = () => {
             </label>
             <Select
               style={{ width: "100%", height: "100%" }}
+              value={selectNganHang}
               onChange={handleSelectBank}
             >
               {banks.map((option) => (
@@ -438,14 +526,150 @@ const OderUserAll = () => {
                 aria-label="Sizing example input"
                 aria-describedby="inputGroup-sizing-default"
                 id="stk"
+                required
                 onChange={handleSoTaiKhoan}
               />
             </div>
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Chủ tài khoản:
+            </label>
+            <input
+              class="form-control"
+              id="id-chu-tai-khoan"
+              aria-label="Sizing example input"
+              aria-describedby="inputGroup-sizing-default"
+              rows="3"
+              required
+              onChange={handleNoteReturnsChuTaiKhoan}
+            />
           </div>
           <button type="submit" class="btn btn-success">
             Xác nhận
           </button>
         </form>
+      </Modal>
+      <Modal
+        visible={isModalVisibleXemHoaDonChiTiet}
+        onCancel={handleCancelXemHoaDonChiTiet}
+        width={900}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <Table
+          rowKey="oop"
+          dataSource={dataBillDetails}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showTotal: (total) => `Tổng số ${total} sản phẩm`,
+            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+          }}
+        >
+          {/* tên sp */}
+          <Table.Column
+            align="center"
+            key="checked"
+            dataIndex="checked"
+            title="Chọn"
+            render={(text, record) => {
+              return (
+                <Checkbox
+                  value={record.idImei}
+                  checked={selectedCheckboxes.includes(record.idImei)}
+                  onChange={handleCheckboxChange}
+                />
+              );
+            }}
+          />
+          <Table.Column
+            align="center"
+            dataIndex="images"
+            title="Ảnh"
+            render={(text, record) => (
+              // <div style={{ width: "100px" }}>
+              <AvtProduct product={record.idProduct} />
+              // </div>
+            )}
+            width={150}
+          />
+
+          {/* tên sp */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Tên Sản Phẩm"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>{record.nameProduct}</p>
+                </Form.Item>
+              );
+            }}
+          />
+          {/* sumSKU */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Phiên Bản"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>
+                    {record.capacity} - {record.color}
+                  </p>
+                </Form.Item>
+              );
+            }}
+          />
+          {/* priceSKU  */}
+          <Table.Column
+            align="center"
+            key="price"
+            dataIndex="price"
+            title="Giá Bán"
+            sorter={(a, b) => a.price - b.price}
+            render={(text, record) => {
+              return record.price === null ? (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <WarningFilled
+                    value={false}
+                    style={{
+                      color: "#FFCC00",
+                    }}
+                  />
+                  {parseFloat(0).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Form.Item>
+              ) : (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  {parseFloat(record.price).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Form.Item>
+              );
+            }}
+          />
+
+          {/* sumImeiTrongKho */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Mã Imei"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>{record.imei}</p>
+                </Form.Item>
+              );
+            }}
+          />
+        </Table>
       </Modal>
       <footer
         style={{
