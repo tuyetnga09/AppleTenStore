@@ -254,13 +254,13 @@ public class BillServiceImpl implements BillService {
 
             BillHistory billHistory = BillHistory.builder()
                     .bill(bill)
-                    .statusBill(request.getPaymentMethod().equals("OFFLINE") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                    .statusBill(StatusBill.CHO_XAC_NHAN)
                     .actionDescription("Đã thanh toán").build();
             billHistoryRepository.save(billHistory);
 
             for (BillAskClient d : request.getBillDetail()) {
                 BillDetails billDetail = BillDetails.builder()
-                        .statusBill(request.getPaymentMethod().equals("OFFLINE") ? StatusBill.CHO_XAC_NHAN : StatusBill.DA_THANH_TOAN)
+                        .statusBill(StatusBill.CHO_XAC_NHAN)
                         .sku(skuRepositoty.findById(d.getSku()).orElse(null))
                         .price(d.getPrice())
                         .quantity(d.getQuantity())
@@ -361,7 +361,7 @@ public class BillServiceImpl implements BillService {
         BillHistory billHistory = BillHistory.builder()
                 .bill(bill)
                 .statusBill(StatusBill.CHO_XAC_NHAN)
-                .actionDescription(request.getPaymentMethod().equals("paymentReceive") ? "Chưa thanh toán" : "Đã thanh toán").build();
+                .actionDescription(request.getPaymentMethod().equals("OFFLINE") ? "Chưa thanh toán" : "Đã thanh toán").build();
         billHistoryRepository.save(billHistory);
 
         for (BillAskClient cart : request.getBillDetail()) {

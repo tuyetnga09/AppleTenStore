@@ -3466,7 +3466,7 @@ export default function SellSmart() {
               <label className="control-label">Số điện thoại</label>
               <input
                 className="form-control"
-                type="number"
+                type="text"
                 name="phoneNumber"
                 value={customer.phoneNumber}
                 onChange={handleChange}

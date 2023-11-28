@@ -6,10 +6,12 @@ import AvtProduct from "../../custumer_componet/avtProduct";
 import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllByIdAndDTT } from "../../../service/Bill/billCustomer.service";
 import { account } from "../Login/login";
+
 const OderUserHoanThanh = () => {
   const [billDetails, setBillDetails] = useState([]);
   const [bills, setBills] = useState([]);
   const storedUser = JSON.parse(localStorage.getItem("account"));
+
   useEffect(() => {
     readAllByIdAndDTT(storedUser?.id)
       .then((res) => {
@@ -63,6 +65,7 @@ const OderUserHoanThanh = () => {
     const khoangCachNgay = Math.floor(
       (ngayHienTai - ngayHoanThanh) / (1000 * 60 * 60 * 24)
     );
+
     return (
       <>
         <div className="row">
@@ -210,7 +213,7 @@ const OderUserHoanThanh = () => {
           </li>
         </ul>
       </section>
-      <section>{result}</section>
+      <section style={{ position: "relative", maxHeight: 445, width: "1200px", overflowY: "auto" }}>{result}</section>
       <br />
       <footer
         style={{
@@ -222,7 +225,9 @@ const OderUserHoanThanh = () => {
       >
         <Footer />
       </footer>
-    </>
+    </> 
   );
 };
+
+
 export default OderUserHoanThanh;

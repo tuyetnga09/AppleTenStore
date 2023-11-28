@@ -53,7 +53,7 @@ import {
   getAllBillCXN,
   getCountBillChoXacNhan,
   returnBillById,
-  getAllBillOFFLINECXN,
+  getAllBillOFFLINECXN
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -114,6 +114,7 @@ const OderDisplay = ({}) => {
     note: null,
   });
   const [billOFFCXN, setBillOFFCXN] = useState([]);
+
 
   const orderSelectProps = {
     options: [
@@ -204,30 +205,30 @@ const OderDisplay = ({}) => {
       });
       history.replace("/");
     } else {
-      const paramsString = queryString.stringify(filtersNoDate);
-      const paramsString2 = queryString.stringify(filtersWithDate);
-      const dateFilter = document.getElementById("dateFilter");
-      if (dateFilter.value == "") {
-        searchNoDate(paramsString)
-          .then((response) => {
-            // console.log(response.data);
-            setOder(response.data);
-            // setEditedVoucher(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-      } else {
-        searchWithDate(paramsString2)
-          .then((response) => {
-            // console.log(response.data);
-            setOder(response.data);
-            // setEditedVoucher(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-      }
+    //   const paramsString = queryString.stringify(filtersNoDate);
+    //   const paramsString2 = queryString.stringify(filtersWithDate);
+    //   const dateFilter = document.getElementById("dateFilter");
+    //   if (dateFilter.value == "") {
+    //     searchNoDate(paramsString)
+    //       .then((response) => {
+    //         // console.log(response.data);
+    //         setOder(response.data);
+    //         // setEditedVoucher(response.data);
+    //       })
+    //       .catch((error) => {
+    //         console.log(`${error}`);
+    //       });
+    //   } else {
+    //     searchWithDate(paramsString2)
+    //       .then((response) => {
+    //         // console.log(response.data);
+    //         setOder(response.data);
+    //         // setEditedVoucher(response.data);
+    //       })
+    //       .catch((error) => {
+    //         console.log(`${error}`);
+    //       });
+    //   }
       readAllUser()
         .then((response) => {
           // console.log(response.data);
@@ -247,12 +248,12 @@ const OderDisplay = ({}) => {
         });
       //lấy toàn bộ billOFF chờ xác nhận để check
       getAllBillOFFLINECXN()
-        .then((response) => {
-          setBillOFFCXN(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      .then((response) => {
+        setBillOFFCXN(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
       console.log(billCXN);
       console.log(billOFFCXN);
       //thông báo khi có hóa đơn mới
@@ -502,7 +503,7 @@ const OderDisplay = ({}) => {
       notification.error({
         message: "Hóa đơn chưa thể xác nhận! - Hóa Đơn Bán Offline",
       });
-    } else {
+    }else{
       if (checkImeiSelectInBillDetail(id) === true) {
         updateStatusBill(idAccount, id)
           .then((response) => {
@@ -561,17 +562,14 @@ const OderDisplay = ({}) => {
     for (let index = 0; index < billOFFCXN.length; index++) {
       if (billOFFCXN[index]?.id === id) {
         if (billOFFCXN[index]?.typeBill === "OFFLINE") {
-          if (
-            billOFFCXN[index]?.totalMoney === null ||
-            billOFFCXN[index]?.totalMoney === 0
-          ) {
+          if (billOFFCXN[index]?.totalMoney === null || billOFFCXN[index]?.totalMoney === 0) {
             return false;
           }
         }
       }
     }
     return true;
-  }
+}
 
   function handUpdateTrangThai() {
     if (checkSoluongImei() === true) {
@@ -686,7 +684,7 @@ const OderDisplay = ({}) => {
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={["2"]}>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["11"]}>
             <Menu.Item key="0">
               <img
                 src="/img/logo.jpg"
@@ -804,101 +802,20 @@ const OderDisplay = ({}) => {
               class="d-grid gap-2 d-md-flex justify-content-md-end"
               style={{ marginTop: "10px" }}
             >
-              <button
+                <Input
+                            name="key"
+                            placeholder={t("Code, Person Create")}
+                            prefix={<SearchOutlined />}
+                            // onChange={handleChangeSearch}
+                          />
+              {/* <button
                 class="btn btn-success"
                 type="button"
                 onClick={() => handUpdateTrangThai()}
               >
                 ACCEPT ALL
-              </button>
+              </button> */}
             </div>
-            <Row gutter={[16, 16]}>
-              <Col
-                xl={6}
-                lg={24}
-                xs={24}
-                style={{
-                  marginTop: "52px",
-                }}
-              >
-                <Card title={t("Filter")}>
-                  <Form>
-                    <Row gutter={[10, 0]} align="bottom">
-                      <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Search")}>
-                          <Input
-                            name="key"
-                            placeholder={t("Code, Person Create")}
-                            prefix={<SearchOutlined />}
-                            onChange={handleChangeSearch}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Status")}>
-                          <Select
-                            name="status"
-                            onChange={handleChangeStatus}
-                            allowClear
-                            placeholder={"Status"}
-                          >
-                            {orderSelectProps.options.map((st) => {
-                              return (
-                                <Option value={st.value}>{st.label}</Option>
-                              );
-                            })}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      {/* <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Store")} name="store">
-                          <Select allowClear />
-                        </Form.Item>
-                      </Col> */}
-
-                      {/* <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("User")} name="user">
-                          <Select
-                            name="user"
-                            onChange={handleChangeUser}
-                            allowClear
-                            placeholder={"Users"}
-                          >
-                            {user.map((us) => {
-                              return (
-                                <Option value={us.id}>{us.fullName}</Option>
-                              );
-                            })}
-                          </Select>
-                        </Form.Item>
-                      </Col> */}
-                      <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Date")} name="createdAt">
-                          <RangePicker
-                            id="dateFilter"
-                            style={{ width: "100%" }}
-                            onChange={handleChangeDate}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item>
-                          <Button
-                            htmlType="submit"
-                            type="primary"
-                            size="large"
-                            block
-                            onClick={() => search()}
-                          >
-                            {t("FILLTER")}
-                          </Button>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Card>
-              </Col>
-              <Col xl={18} xs={24}>
                 <List>
                   <Table
                     rowKey="id"
@@ -1180,7 +1097,7 @@ const OderDisplay = ({}) => {
                                 <Menu mode="vertical">
                                   <Menu.Item
                                     key="1"
-                                    disabled={record?.stock <= 0}
+                                    disabled={record.stock <= 0}
                                     style={{
                                       fontWeight: 500,
                                     }}
@@ -1215,8 +1132,6 @@ const OderDisplay = ({}) => {
                     />
                   </Table>
                 </List>
-              </Col>
-            </Row>
             <Modal
               visible={isModalVisibleNoteReturns}
               onCancel={handleNoteReturnsCancel}
@@ -1883,7 +1798,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 title={"Imei"}
                 render={(text, record) => (
                   <Form.Item name="title" style={{ margin: 0 }}>
-                    {record.statusBill}
                     {record.statusBill === "CHO_XAC_NHAN" ? (
                       <p>
                         <button
@@ -2261,8 +2175,8 @@ const UserAccountTable = ({ record, onSomeAction }) => {
           </div>
         </Modal>
         {/*
-                    Hiển thị list imei đã chọn ở bill detail
-                */}
+        Hiển thị list imei đã chọn ở bill detail
+        */}
         <Modal
           visible={isModelShowImei}
           onCancel={hideModelShowImei}
@@ -2323,3 +2237,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 };
 
 export default OderDisplay;
+
+
+
