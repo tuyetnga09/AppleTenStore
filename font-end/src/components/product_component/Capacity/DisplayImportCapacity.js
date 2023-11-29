@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { importCapacity } from "../../../service/capacity.service";
 import "../../../css/form.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

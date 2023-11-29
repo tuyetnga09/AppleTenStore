@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { importChip } from "../../../service/chip.service";
 import "../../../css/form.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

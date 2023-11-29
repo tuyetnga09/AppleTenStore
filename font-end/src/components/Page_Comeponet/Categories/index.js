@@ -1,6 +1,6 @@
 import { readAllDashboard } from "../../../service/category.service";
 import { listProductByCategories } from "../../../service/product.service";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   List,
   useTable,

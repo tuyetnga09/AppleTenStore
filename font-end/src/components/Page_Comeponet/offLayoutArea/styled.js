@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import React from "react";
 
 export const ToggleContainer = styled.div`
    position: fixed;

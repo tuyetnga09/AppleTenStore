@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { add, update, detail } from "../../../service/color.service";
 import { Input } from "reactstrap";
 import "../../../css/form.css";

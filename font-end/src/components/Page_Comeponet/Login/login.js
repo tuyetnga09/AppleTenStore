@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import "../Login/login.css";
 import { login } from "../../../service/Account/account.service";
-import { useState } from "react";
+import React, { useState } from "react";
 import { notification } from "antd";
 import { useHistory } from "react-router-dom";
 
@@ -27,9 +27,9 @@ const Login = () => {
             description: "Đăng nhập thành công",
           });
           localStorage.setItem("account", JSON.stringify(account));
-          localStorage.removeItem('name');
-          localStorage.removeItem('phoneNumber');
-          localStorage.removeItem('email');
+          localStorage.removeItem("name");
+          localStorage.removeItem("phoneNumber");
+          localStorage.removeItem("email");
           // history.replace("/");
           if (res.data.roles === "CUSTOMER") {
             window.location.replace("/");

@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
-import { useEffect, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useParams } from "react-router-dom";
 import {
   createBill,
   createBillAccount,
