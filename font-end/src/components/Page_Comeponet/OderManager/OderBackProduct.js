@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@refinedev/core";
 import {
   AppstoreAddOutlined,
@@ -53,7 +53,7 @@ import {
   getAllBillCXN,
   getCountBillChoXacNhan,
   returnBillById,
-  getAllBillOFFLINECXN
+  getAllBillOFFLINECXN,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -114,7 +114,6 @@ const OderDisplay = ({}) => {
     note: null,
   });
   const [billOFFCXN, setBillOFFCXN] = useState([]);
-
 
   const orderSelectProps = {
     options: [
@@ -205,30 +204,30 @@ const OderDisplay = ({}) => {
       });
       history.replace("/");
     } else {
-    //   const paramsString = queryString.stringify(filtersNoDate);
-    //   const paramsString2 = queryString.stringify(filtersWithDate);
-    //   const dateFilter = document.getElementById("dateFilter");
-    //   if (dateFilter.value == "") {
-    //     searchNoDate(paramsString)
-    //       .then((response) => {
-    //         // console.log(response.data);
-    //         setOder(response.data);
-    //         // setEditedVoucher(response.data);
-    //       })
-    //       .catch((error) => {
-    //         console.log(`${error}`);
-    //       });
-    //   } else {
-    //     searchWithDate(paramsString2)
-    //       .then((response) => {
-    //         // console.log(response.data);
-    //         setOder(response.data);
-    //         // setEditedVoucher(response.data);
-    //       })
-    //       .catch((error) => {
-    //         console.log(`${error}`);
-    //       });
-    //   }
+      //   const paramsString = queryString.stringify(filtersNoDate);
+      //   const paramsString2 = queryString.stringify(filtersWithDate);
+      //   const dateFilter = document.getElementById("dateFilter");
+      //   if (dateFilter.value == "") {
+      //     searchNoDate(paramsString)
+      //       .then((response) => {
+      //         // console.log(response.data);
+      //         setOder(response.data);
+      //         // setEditedVoucher(response.data);
+      //       })
+      //       .catch((error) => {
+      //         console.log(`${error}`);
+      //       });
+      //   } else {
+      //     searchWithDate(paramsString2)
+      //       .then((response) => {
+      //         // console.log(response.data);
+      //         setOder(response.data);
+      //         // setEditedVoucher(response.data);
+      //       })
+      //       .catch((error) => {
+      //         console.log(`${error}`);
+      //       });
+      //   }
       readAllUser()
         .then((response) => {
           // console.log(response.data);
@@ -248,12 +247,12 @@ const OderDisplay = ({}) => {
         });
       //lấy toàn bộ billOFF chờ xác nhận để check
       getAllBillOFFLINECXN()
-      .then((response) => {
-        setBillOFFCXN(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+        .then((response) => {
+          setBillOFFCXN(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       console.log(billCXN);
       console.log(billOFFCXN);
       //thông báo khi có hóa đơn mới
@@ -503,7 +502,7 @@ const OderDisplay = ({}) => {
       notification.error({
         message: "Hóa đơn chưa thể xác nhận! - Hóa Đơn Bán Offline",
       });
-    }else{
+    } else {
       if (checkImeiSelectInBillDetail(id) === true) {
         updateStatusBill(idAccount, id)
           .then((response) => {
@@ -562,14 +561,17 @@ const OderDisplay = ({}) => {
     for (let index = 0; index < billOFFCXN.length; index++) {
       if (billOFFCXN[index]?.id === id) {
         if (billOFFCXN[index]?.typeBill === "OFFLINE") {
-          if (billOFFCXN[index]?.totalMoney === null || billOFFCXN[index]?.totalMoney === 0) {
+          if (
+            billOFFCXN[index]?.totalMoney === null ||
+            billOFFCXN[index]?.totalMoney === 0
+          ) {
             return false;
           }
         }
       }
     }
     return true;
-}
+  }
 
   function handUpdateTrangThai() {
     if (checkSoluongImei() === true) {
@@ -699,17 +701,13 @@ const OderDisplay = ({}) => {
             <Menu.Item key="1" icon={<DashboardOutlined />}>
               <Link to="/dashboard">Dashboard</Link>
             </Menu.Item>
-            <SubMenu
-              key="2"
-              title="Orders"
-              icon={<ShopOutlined />}
-            >
-                <Menu.Item key="2" icon={<ShopOutlined />}>
-                    <Link to="/orders">Orders</Link>
-                </Menu.Item>
-                <Menu.Item key="11" icon={<ShopOutlined />}>
-                    <Link to="/orderBackProduct">OrderBackProducts</Link>
-                </Menu.Item>
+            <SubMenu key="2" title="Orders" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Orders</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">OrderBackProducts</Link>
+              </Menu.Item>
             </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
               <Link to="/users">Users</Link>
@@ -802,12 +800,12 @@ const OderDisplay = ({}) => {
               class="d-grid gap-2 d-md-flex justify-content-md-end"
               style={{ marginTop: "10px" }}
             >
-                <Input
-                            name="key"
-                            placeholder={t("Code, Person Create")}
-                            prefix={<SearchOutlined />}
-                            // onChange={handleChangeSearch}
-                          />
+              <Input
+                name="key"
+                placeholder={t("Code, Person Create")}
+                prefix={<SearchOutlined />}
+                // onChange={handleChangeSearch}
+              />
               {/* <button
                 class="btn btn-success"
                 type="button"
@@ -816,322 +814,305 @@ const OderDisplay = ({}) => {
                 ACCEPT ALL
               </button> */}
             </div>
-                <List>
-                  <Table
-                    rowKey="id"
-                    dataSource={oder}
-                    scroll={{ x: "max-content" }}
-                    pagination={{
-                      pageSize: 5,
-                      showSizeChanger: false,
-                      showTotal: (total) => `Tổng số ${total} mục`,
-                      showLessItems: true,
-                    }}
-                    expandable={{
-                      expandedRowRender: !breakpoint.xs
-                        ? expandedRowRender
-                        : undefined,
-                    }}
-                  >
-                    <Table.Column
-                      key="code"
-                      dataIndex="code"
-                      title={t("Code")}
-                      render={(text, record) => <span>{record.code}</span>}
-                    />
-                    <Table.Column
-                      key="status"
-                      dataIndex="status"
-                      title={t("Status")}
-                      render={(text, record) => (
-                        <span>{statusBadgeMapping[record.statusBill]}</span>
-                      )}
-                    />
-                    <Table.Column
-                      key="total"
-                      dataIndex="total"
-                      title={t("Total")}
-                      render={(text, record) => {
-                        return (
-                          <NumberField
-                            options={{
-                              currency: "VND",
-                              style: "currency",
-                            }}
-                            value={record.totalMoney}
-                          />
-                        );
-                      }}
-                      sorter={(a, b) => a.totalMoney - b.totalMoney}
-                    />
-                    <Table.Column
-                      key="user"
-                      dataIndex="user"
-                      title={t("User")}
-                      render={(text, record) => (
-                        <span>{record?.customer?.fullName}</span>
-                      )}
-                    />
+            <List>
+              <Table
+                rowKey="id"
+                dataSource={oder}
+                scroll={{ x: "max-content" }}
+                pagination={{
+                  pageSize: 5,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} mục`,
+                  showLessItems: true,
+                }}
+                expandable={{
+                  expandedRowRender: !breakpoint.xs
+                    ? expandedRowRender
+                    : undefined,
+                }}
+              >
+                <Table.Column
+                  key="code"
+                  dataIndex="code"
+                  title={t("Code")}
+                  render={(text, record) => <span>{record.code}</span>}
+                />
+                <Table.Column
+                  key="status"
+                  dataIndex="status"
+                  title={t("Status")}
+                  render={(text, record) => (
+                    <span>{statusBadgeMapping[record.statusBill]}</span>
+                  )}
+                />
+                <Table.Column
+                  key="total"
+                  dataIndex="total"
+                  title={t("Total")}
+                  render={(text, record) => {
+                    return (
+                      <NumberField
+                        options={{
+                          currency: "VND",
+                          style: "currency",
+                        }}
+                        value={record.totalMoney}
+                      />
+                    );
+                  }}
+                  sorter={(a, b) => a.totalMoney - b.totalMoney}
+                />
+                <Table.Column
+                  key="user"
+                  dataIndex="user"
+                  title={t("User")}
+                  render={(text, record) => (
+                    <span>{record?.customer?.fullName}</span>
+                  )}
+                />
 
-                    {/* <Table.Column
+                {/* <Table.Column
                       key="product"
                       dataIndex="product"
                       title={t("Products")}
                       render={(text, record) => <span>{record.price}</span>}
                     /> */}
-                    <Table.Column
-                      key="address"
-                      dataIndex="address"
-                      title={t("Address")}
-                      render={(text, record) => <span>{record.address}</span>}
-                    />
-                    <Table.Column
-                      key="personCreate"
-                      dataIndex="personCreate"
-                      title={t("PersonCreate")}
-                      render={(text, record) => (
-                        <span>{record.personCreate}</span>
-                      )}
-                    />
-                    <Table.Column
-                      key="personUpdate"
-                      dataIndex="personUpdate"
-                      title={t("PersonUpdate")}
-                      render={(text, record) => (
-                        <span>{record.personUpdate}</span>
-                      )}
-                    />
-                    <Table.Column
-                      key="dateCreate"
-                      dataIndex="dateCreate"
-                      title={t("DateCreate")}
-                      render={(text, record) => (
-                        // <span>{record.dateCreate}</span>
-                        <DateField
-                          value={record.dateCreate}
-                          format="DD/MM/YYYY"
-                        />
-                      )}
-                      sorter={(a, b) => a.dateCreate > b.dateCreate}
-                    />
-                    <Table.Column
-                      key="dateUpdate"
-                      dataIndex="dateUpdate"
-                      title={t("DateUpdate")}
-                      render={(text, record) => (
-                        // <span>{record.dateUpdate}</span>
-                        <DateField
-                          value={record.dateUpdate}
-                          format="DD/MM/YYYY"
-                        />
-                      )}
-                      sorter={(a, b) => a.dateUpdate > b.dateUpdate}
-                    />
+                <Table.Column
+                  key="address"
+                  dataIndex="address"
+                  title={t("Address")}
+                  render={(text, record) => <span>{record.address}</span>}
+                />
+                <Table.Column
+                  key="personCreate"
+                  dataIndex="personCreate"
+                  title={t("PersonCreate")}
+                  render={(text, record) => <span>{record.personCreate}</span>}
+                />
+                <Table.Column
+                  key="personUpdate"
+                  dataIndex="personUpdate"
+                  title={t("PersonUpdate")}
+                  render={(text, record) => <span>{record.personUpdate}</span>}
+                />
+                <Table.Column
+                  key="dateCreate"
+                  dataIndex="dateCreate"
+                  title={t("DateCreate")}
+                  render={(text, record) => (
+                    // <span>{record.dateCreate}</span>
+                    <DateField value={record.dateCreate} format="DD/MM/YYYY" />
+                  )}
+                  sorter={(a, b) => a.dateCreate > b.dateCreate}
+                />
+                <Table.Column
+                  key="dateUpdate"
+                  dataIndex="dateUpdate"
+                  title={t("DateUpdate")}
+                  render={(text, record) => (
+                    // <span>{record.dateUpdate}</span>
+                    <DateField value={record.dateUpdate} format="DD/MM/YYYY" />
+                  )}
+                  sorter={(a, b) => a.dateUpdate > b.dateUpdate}
+                />
 
-                    <Table.Column
-                      key="actions"
-                      dataIndex="actions"
-                      title={t("Action")}
-                      fixed="right"
-                      align="center"
-                      render={(text, record) => (
-                        <span>
-                          {record.statusBill === "CHO_XAC_NHAN" ? (
-                            <Dropdown
-                              overlay={
-                                <Menu mode="vertical">
-                                  <Menu.Item
-                                    key="1"
-                                    disabled={record.stock <= 0}
-                                    style={{
-                                      fontWeight: 500,
-                                    }}
-                                    icon={
-                                      <FormOutlined
-                                        style={{
-                                          color: "green",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() => {
-                                      //   console.log(record);
-                                      confirm2(record.id);
-                                    }}
-                                  >
-                                    Xác nhận
-                                  </Menu.Item>
-                                  <Menu.Item
-                                    key="2"
-                                    style={{
-                                      fontWeight: 500,
-                                    }}
-                                    icon={
-                                      <CloseCircleOutlined
-                                        style={{
-                                          color: "red",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() =>
-                                      handleCannelOrderClick(record)
-                                    }
-                                  >
-                                    Hủy đơn
-                                  </Menu.Item>
-                                </Menu>
-                              }
-                              trigger={["click"]}
-                            >
-                              <MoreOutlined
+                <Table.Column
+                  key="actions"
+                  dataIndex="actions"
+                  title={t("Action")}
+                  fixed="right"
+                  align="center"
+                  render={(text, record) => (
+                    <span>
+                      {record.statusBill === "CHO_XAC_NHAN" ? (
+                        <Dropdown
+                          overlay={
+                            <Menu mode="vertical">
+                              <Menu.Item
+                                key="1"
+                                disabled={record.stock <= 0}
                                 style={{
-                                  fontSize: 24,
+                                  fontWeight: 500,
                                 }}
-                              />
-                            </Dropdown>
-                          ) : record.statusBill === "CHO_VAN_CHUYEN" ? (
-                            <Dropdown
-                              overlay={
-                                <Menu mode="vertical">
-                                  <Menu.Item
-                                    key="1"
-                                    disabled={record.stock <= 0}
+                                icon={
+                                  <FormOutlined
                                     style={{
-                                      fontWeight: 500,
+                                      color: "green",
                                     }}
-                                    icon={
-                                      <CloseCircleOutlined
-                                        style={{
-                                          color: "green",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() => confirm2(record.id)}
-                                  >
-                                    Đã lấy hàng
-                                  </Menu.Item>
-                                </Menu>
-                              }
-                              trigger={["click"]}
-                            >
-                              <MoreOutlined
-                                style={{
-                                  fontSize: 24,
+                                  />
+                                }
+                                onClick={() => {
+                                  //   console.log(record);
+                                  confirm2(record.id);
                                 }}
-                              />
-                            </Dropdown>
-                          ) : record.statusBill === "VAN_CHUYEN" ? (
-                            <Dropdown
-                              overlay={
-                                <Menu mode="vertical">
-                                  <Menu.Item
-                                    key="1"
-                                    disabled={record.stock <= 0}
+                              >
+                                Xác nhận
+                              </Menu.Item>
+                              <Menu.Item
+                                key="2"
+                                style={{
+                                  fontWeight: 500,
+                                }}
+                                icon={
+                                  <CloseCircleOutlined
                                     style={{
-                                      fontWeight: 500,
+                                      color: "red",
                                     }}
-                                    icon={
-                                      <CloseCircleOutlined
-                                        style={{
-                                          color: "green",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() => confirm2(record.id)}
-                                  >
-                                    Đã thanh toán
-                                  </Menu.Item>
-                                </Menu>
-                              }
-                              trigger={["click"]}
-                            >
-                              <MoreOutlined
+                                  />
+                                }
+                                onClick={() => handleCannelOrderClick(record)}
+                              >
+                                Hủy đơn
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={["click"]}
+                        >
+                          <MoreOutlined
+                            style={{
+                              fontSize: 24,
+                            }}
+                          />
+                        </Dropdown>
+                      ) : record.statusBill === "CHO_VAN_CHUYEN" ? (
+                        <Dropdown
+                          overlay={
+                            <Menu mode="vertical">
+                              <Menu.Item
+                                key="1"
+                                disabled={record.stock <= 0}
                                 style={{
-                                  fontSize: 24,
+                                  fontWeight: 500,
                                 }}
-                              />
-                            </Dropdown>
-                          ) : record.statusBill === "DA_THANH_TOAN" &&
-                            Math.floor(
-                              (new Date(
-                                new Date().getFullYear() +
-                                  "-" +
-                                  (new Date().getMonth() + 1)
-                                    .toString()
-                                    .padStart(2, "0") +
-                                  "-" +
-                                  new Date()
-                                    .getDate()
-                                    .toString()
-                                    .padStart(2, "0")
-                              ) -
-                                new Date(
+                                icon={
+                                  <CloseCircleOutlined
+                                    style={{
+                                      color: "green",
+                                    }}
+                                  />
+                                }
+                                onClick={() => confirm2(record.id)}
+                              >
+                                Đã lấy hàng
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={["click"]}
+                        >
+                          <MoreOutlined
+                            style={{
+                              fontSize: 24,
+                            }}
+                          />
+                        </Dropdown>
+                      ) : record.statusBill === "VAN_CHUYEN" ? (
+                        <Dropdown
+                          overlay={
+                            <Menu mode="vertical">
+                              <Menu.Item
+                                key="1"
+                                disabled={record.stock <= 0}
+                                style={{
+                                  fontWeight: 500,
+                                }}
+                                icon={
+                                  <CloseCircleOutlined
+                                    style={{
+                                      color: "green",
+                                    }}
+                                  />
+                                }
+                                onClick={() => confirm2(record.id)}
+                              >
+                                Đã thanh toán
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={["click"]}
+                        >
+                          <MoreOutlined
+                            style={{
+                              fontSize: 24,
+                            }}
+                          />
+                        </Dropdown>
+                      ) : record.statusBill === "DA_THANH_TOAN" &&
+                        Math.floor(
+                          (new Date(
+                            new Date().getFullYear() +
+                              "-" +
+                              (new Date().getMonth() + 1)
+                                .toString()
+                                .padStart(2, "0") +
+                              "-" +
+                              new Date().getDate().toString().padStart(2, "0")
+                          ) -
+                            new Date(
+                              new Date(
+                                record.completionDate[0],
+                                record.completionDate[1] - 1,
+                                record.completionDate[2]
+                              ).getFullYear() +
+                                "-" +
+                                (
                                   new Date(
                                     record.completionDate[0],
                                     record.completionDate[1] - 1,
                                     record.completionDate[2]
-                                  ).getFullYear() +
-                                    "-" +
-                                    (
-                                      new Date(
-                                        record.completionDate[0],
-                                        record.completionDate[1] - 1,
-                                        record.completionDate[2]
-                                      ).getMonth() + 1
-                                    )
-                                      .toString()
-                                      .padStart(2, "0") +
-                                    "-" +
-                                    new Date(
-                                      record.completionDate[0],
-                                      record.completionDate[1] - 1,
-                                      record.completionDate[2]
-                                    )
-                                      .getDate()
-                                      .toString()
-                                      .padStart(2, "0")
-                                )) /
-                                (1000 * 60 * 60 * 24)
-                            ) <= 3 ? (
-                            <Dropdown
-                              overlay={
-                                <Menu mode="vertical">
-                                  <Menu.Item
-                                    key="1"
-                                    disabled={record.stock <= 0}
-                                    style={{
-                                      fontWeight: 500,
-                                    }}
-                                    icon={
-                                      <CloseCircleOutlined
-                                        style={{
-                                          color: "red",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() =>
-                                      handleNoteReturnsClick(record)
-                                    }
-                                  >
-                                    Trả hàng
-                                  </Menu.Item>
-                                </Menu>
-                              }
-                              trigger={["click"]}
-                            >
-                              <MoreOutlined
+                                  ).getMonth() + 1
+                                )
+                                  .toString()
+                                  .padStart(2, "0") +
+                                "-" +
+                                new Date(
+                                  record.completionDate[0],
+                                  record.completionDate[1] - 1,
+                                  record.completionDate[2]
+                                )
+                                  .getDate()
+                                  .toString()
+                                  .padStart(2, "0")
+                            )) /
+                            (1000 * 60 * 60 * 24)
+                        ) <= 3 ? (
+                        <Dropdown
+                          overlay={
+                            <Menu mode="vertical">
+                              <Menu.Item
+                                key="1"
+                                disabled={record.stock <= 0}
                                 style={{
-                                  fontSize: 24,
+                                  fontWeight: 500,
                                 }}
-                              />
-                            </Dropdown>
-                          ) : (
-                            ""
-                          )}
-                        </span>
+                                icon={
+                                  <CloseCircleOutlined
+                                    style={{
+                                      color: "red",
+                                    }}
+                                  />
+                                }
+                                onClick={() => handleNoteReturnsClick(record)}
+                              >
+                                Trả hàng
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={["click"]}
+                        >
+                          <MoreOutlined
+                            style={{
+                              fontSize: 24,
+                            }}
+                          />
+                        </Dropdown>
+                      ) : (
+                        ""
                       )}
-                    />
-                  </Table>
-                </List>
+                    </span>
+                  )}
+                />
+              </Table>
+            </List>
             <Modal
               visible={isModalVisibleNoteReturns}
               onCancel={handleNoteReturnsCancel}
@@ -2237,6 +2218,3 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 };
 
 export default OderDisplay;
-
-
-

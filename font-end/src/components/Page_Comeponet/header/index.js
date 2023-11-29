@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   useGetLocale,
   useSetLocale,
@@ -195,7 +195,7 @@ const Header = () => {
     ),
     label: lang === "en" ? "English" : "German",
   }));
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
   return (
     // <QueryClientProvider client={queryClient}>
     <AntdHeader
@@ -214,7 +214,7 @@ const Header = () => {
         }}
       >
         <Col xs={0} sm={12}>
-          <AutoComplete
+          {/* <AutoComplete
             style={{
               width: "100%",
               maxWidth: "550px",
@@ -228,11 +228,11 @@ const Header = () => {
               placeholder={"Search by Keyword"}
               suffix={<SearchOutlined />}
             />
-          </AutoComplete>
+          </AutoComplete> */}
         </Col>
         <Col>
           <Space size="middle" align="center">
-            <Button
+            {/* <Button
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -243,8 +243,8 @@ const Header = () => {
               onClick={() => {
                 // setMode(mode === "light" ? "dark" : "light");
               }}
-            />
-            <Dropdown
+            /> */}
+            {/* <Dropdown
               menu={{
                 items: menuItems,
                 selectedKeys: currentLocale ? [currentLocale] : [],
@@ -274,7 +274,7 @@ const Header = () => {
                   </div>
                 </Space>
               </a>
-            </Dropdown>
+            </Dropdown> */}
 
             <Text
               ellipsis
@@ -283,13 +283,12 @@ const Header = () => {
                 display: "flex",
               }}
             >
-              {/* {user?.name} */}
+              {storedUser?.user?.fullName}
             </Text>
             <Avatar
               size="large"
-              src={
-                "https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-1/362902247_953032899257221_1009685178607494555_n.jpg?stp=dst-jpg_p320x320&_nc_cat=104&ccb=1-7&_nc_sid=fe8171&_nc_ohc=kkXSLwM8WgoAX_cPNMH&_nc_oc=AQmCyESRvgENnBuqoFytPcye-g3AgnUkmCGa_879Bl0qmTO-WGXztYQoQIxhkffzyto&_nc_ht=scontent.fhan3-4.fna&oh=00_AfC_92H_0YZ3Yync7GPlHIuL6IiayozJYlpujJ3z8iRN-g&oe=651949F7"
-              }
+              src={`/imageUpload/` + storedUser?.user?.avatar}
+              shape="square"
             />
           </Space>
         </Col>

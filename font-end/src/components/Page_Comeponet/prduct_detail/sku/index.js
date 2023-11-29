@@ -24,7 +24,7 @@ import {
   ImportImeiExcel,
 } from "../../../../service/imei.service";
 // import { readAllUserByRole } from "../../../service/User/user.service";
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   List,
   useTable,
@@ -35,7 +35,12 @@ import {
   DateField,
   useDrawerForm,
 } from "@refinedev/antd";
-import { FormOutlined, MoreOutlined, TeamOutlined } from "@ant-design/icons";
+import {
+  FileDoneOutlined,
+  FormOutlined,
+  MoreOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -339,34 +344,44 @@ export const AccountList = () => {
       <ConfirmDialog />
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
-          <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={["8"]}
-            openKeys={openKeys}
-            onOpenChange={handleOpenChange}
-          >
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["8"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
+            </Menu.Item>
+            <Menu.Item key="0" icon={<FileDoneOutlined />}>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
+            </Menu.Item>
             <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
-            </Menu.Item>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Orders</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">OrderBackProducts</Link>
+              </Menu.Item>
+            </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
-              <Link to="/categories">Categories</Link>
+              <Link to="/categories">Thể loại</Link>
             </Menu.Item>
             <SubMenu
               key="8"
-              title="Product-Detail"
+              title="Chi tiết sản phẩm"
               icon={<AppstoreAddOutlined />}
             >
               <Menu.Item key="8">
@@ -385,8 +400,15 @@ export const AccountList = () => {
                 <Link to="/product-detail/chip">Chip</Link>
               </Menu.Item>
             </SubMenu>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/login">Logout</Link>
+            <Menu.Item
+              key="9"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -413,7 +435,7 @@ export const AccountList = () => {
             style={{
               margin: "24px 16px",
               padding: 24,
-              minHeight: 280,
+              minHeight: 600,
               background: colorBgContainer,
             }}
           >

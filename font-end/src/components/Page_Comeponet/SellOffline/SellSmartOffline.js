@@ -2341,20 +2341,16 @@ export default function SellSmart() {
                     <div className="app-title">
                       <ul className="app-breadcrumb breadcrumb">
                         <li className="breadcrumb-item">
-                        <Link to="/dashboard">
-                            <button
-                              className="btn btn-secondary luu-va-in"
-                              style={{ marginBottom: "10px" }}
-                            >
+                          <Link to="/dashboard">
+                            <button className="btn btn-secondary luu-va-in">
                               Quay về
                             </button>
-                        </Link>
+                          </Link>
                           <br />
-                          <a href="#">
-                            <b>POS bán hàng</b>
-                          </a>
+                          <b>POS bán hàng</b>
                         </li>
                       </ul>
+
                       <div id="clock" />
                     </div>
                   </div>

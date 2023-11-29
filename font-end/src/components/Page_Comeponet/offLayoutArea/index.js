@@ -1,5 +1,6 @@
 import { LeftOutlined } from "@ant-design/icons";
 import { RefineKbar } from "@refinedev/kbar";
+import React from "react";
 
 import { ToggleContainer } from "./styled";
 

@@ -6,6 +6,7 @@ import AvtProduct from "../../custumer_componet/avtProduct";
 import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllByIdAndDH } from "../../../service/Bill/billCustomer.service";
 import { account } from "../Login/login";
+import { Row } from "antd";
 
 const OderUserDaHuy = () => {
   const [billDetails, setBillDetails] = useState([]);
@@ -43,94 +44,102 @@ const OderUserDaHuy = () => {
   const result = bills.map((b, index) => {
     return (
       <>
-        <div className="row">
-          <div className="col-10" style={{ paddingTop: "20px" }}>
-            <strong>AppleTenStore</strong>{" "}
-          </div>
-          <div className="col-2">
-            <span style={{ paddingTop: "20px", float: "right", color: "red" }}>
-              {b.statusBill === "CHO_XAC_NHAN"
-                ? "Chờ xác nhận"
-                : b.statusBill === "CHO_VAN_CHUYEN"
-                ? "Chờ vận chuyển"
-                : b.statusBill === "VAN_CHUYEN"
-                ? "Vận chuyển"
-                : b.statusBill === "DA_THANH_TOAN"
-                ? "Hoàn thành"
-                : "Đã hủy"}
-            </span>
-          </div>
+        <div>
+          <Row>
+            <div className="col-10" style={{ paddingTop: "20px" }}>
+              <strong>AppleTenStore</strong>{" "}
+            </div>
+            <div className="col-2">
+              <span
+                style={{ paddingTop: "20px", float: "right", color: "red" }}
+              >
+                {b.statusBill === "CHO_XAC_NHAN"
+                  ? "Chờ xác nhận"
+                  : b.statusBill === "CHO_VAN_CHUYEN"
+                  ? "Chờ vận chuyển"
+                  : b.statusBill === "VAN_CHUYEN"
+                  ? "Vận chuyển"
+                  : b.statusBill === "DA_THANH_TOAN"
+                  ? "Hoàn thành"
+                  : "Đã hủy"}
+              </span>
+            </div>
+          </Row>
         </div>
         <hr />
         {billDetails[index]?.map((bd) => {
           return (
-            <div className="row">
-              <div className="col-10">
-                <p style={{ width: "300px" }}>
-                  <AvtProduct product={6} />
-                </p>
-                <strong>
-                  {bd.nameProduct} {bd.capacity} {bd.color}
-                </strong>
-                <p style={{ fontSize: "13px", color: "gray" }}>
-                  Phân loại hàng: {bd.category}
-                </p>
-                <strong>x{bd.quantity}</strong>
-              </div>
-              <div className="col-2">
-                <p style={{ float: "right" }}>{bd.price}</p>
-              </div>
+            <div>
+              <Row>
+                <div className="col-10">
+                  <p style={{ width: "300px" }}>
+                    <AvtProduct product={6} />
+                  </p>
+                  <strong>
+                    {bd.nameProduct} {bd.capacity} {bd.color}
+                  </strong>
+                  <p style={{ fontSize: "13px", color: "gray" }}>
+                    Phân loại hàng: {bd.category}
+                  </p>
+                  <strong>x{bd.quantity}</strong>
+                </div>
+                <div className="col-2">
+                  <p style={{ float: "right" }}>{bd.price}</p>
+                </div>
+              </Row>
             </div>
           );
         })}
         <hr />
-        <div className="row">
-          <div className="col-6">
-            {b.statusBill === "CHO_XAC_NHAN" ? (
-              <p>
-                Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
-              </p>
-            ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-              <p>
-                Dự kiến giao hàng ngày <u>23-07-2003</u>
-              </p>
-            ) : b.statusBill === "VAN_CHUYEN" ? (
-              <p>
-                Dự kiến giao hàng ngày <u>23-07-2003</u>
-              </p>
-            ) : b.statusBill === "DA_THANH_TOAN" ? (
-              ""
-            ) : (
-              ""
-            )}
-          </div>
-          <div className="col-6">
-            <span style={{ float: "right" }}>Thành tiền: {b.totalMoney}</span>
-            <br />
-            <br />
-            <div style={{ float: "right" }}>
-              <button type="button" class="btn btn-danger">
-                Liên hệ người bán
-              </button>{" "}
+        <div>
+          <Row>
+            <div className="col-6">
               {b.statusBill === "CHO_XAC_NHAN" ? (
-                <button type="button" class="btn btn-light">
-                  Hủy đơn
-                </button>
+                <p>
+                  Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
+                </p>
               ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-                ""
+                <p>
+                  Dự kiến giao hàng ngày <u>23-07-2003</u>
+                </p>
               ) : b.statusBill === "VAN_CHUYEN" ? (
-                ""
+                <p>
+                  Dự kiến giao hàng ngày <u>23-07-2003</u>
+                </p>
               ) : b.statusBill === "DA_THANH_TOAN" ? (
-                <button type="button" class="btn btn-light">
-                  Mua lại
-                </button>
+                ""
               ) : (
-                <button type="button" class="btn btn-light">
-                  Mua lại
-                </button>
+                ""
               )}
             </div>
-          </div>
+            <div className="col-6">
+              <span style={{ float: "right" }}>Thành tiền: {b.totalMoney}</span>
+              <br />
+              <br />
+              <div style={{ float: "right" }}>
+                <button type="button" class="btn btn-danger">
+                  Liên hệ người bán
+                </button>{" "}
+                {b.statusBill === "CHO_XAC_NHAN" ? (
+                  <button type="button" class="btn btn-light">
+                    Hủy đơn
+                  </button>
+                ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
+                  ""
+                ) : b.statusBill === "VAN_CHUYEN" ? (
+                  ""
+                ) : b.statusBill === "DA_THANH_TOAN" ? (
+                  <button type="button" class="btn btn-light">
+                    Mua lại
+                  </button>
+                ) : (
+                  <button type="button" class="btn btn-light">
+                    Mua lại
+                  </button>
+                )}
+              </div>
+            </div>
+          </Row>
         </div>
         <hr />
       </>
@@ -175,7 +184,16 @@ const OderUserDaHuy = () => {
           </li>
         </ul>
       </section>
-      <section style={{ position: "relative", maxHeight: 445,width: "1200px", overflowY: "auto" }}>{result}</section>
+      <section
+        style={{
+          position: "relative",
+          maxHeight: 550,
+          width: "1200px",
+          overflowY: "auto",
+        }}
+      >
+        {result}
+      </section>
       <br />
       <footer
         style={{

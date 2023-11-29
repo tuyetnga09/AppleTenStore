@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Typography } from "antd";
-
+import { useRef } from "react";
 import { IncreaseIcon } from "../../icon/increase";
 import {
   sumAllBill,
@@ -12,7 +12,7 @@ import {
   sumBillReturns,
   sumBillUnconfimred,
 } from "../../../../service/dashboard/admin_bill.service";
-import React, { useRef } from "react";
+
 import isEqual from "lodash/isEqual";
 // import { ISalesChart } from "../../../interfaces";
 import { DailyOrderWrapper, TitleArea, TitleAreNumber } from "./styled";

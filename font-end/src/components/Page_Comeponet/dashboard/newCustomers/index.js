@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { ConfigProvider, theme, Typography } from "antd";
 import { Column } from "@ant-design/charts";

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { readAllDelete, returnScreen } from "../../../service/screen.service";
 import { Link } from "react-router-dom";
 import "../../../css/style.css";
