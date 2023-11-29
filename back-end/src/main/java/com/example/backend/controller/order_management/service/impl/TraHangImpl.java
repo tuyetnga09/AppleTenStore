@@ -57,9 +57,9 @@ public class TraHangImpl implements TraHangService {
             StatusBill yeuCau = StatusBill.YEU_CAU_TRA_HANG;
 
             Bill bill = billRepository.findById(idBillReturn).get();
-            if (bill.getNoteReturn().toCharArray().length == 255){
-
-            }
+//            if (bill.getNoteReturn().toCharArray().length == 255){
+//
+//            }
             bill.setNoteReturn(bill.getNoteReturn() + "\n" + formattedDate + "\n" + noteBillReturn);
             bill.setStatusBill(yeuCau);
             billRepository.save(bill);

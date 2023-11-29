@@ -33,6 +33,10 @@ const Login = () => {
           // history.replace("/");
           if (res.data.roles === "CUSTOMER") {
             window.location.replace("/");
+          }else if(res.data.roles === "NHAN_VIEN_BAN_HANG"){
+            window.location.replace("/sell");
+          }else if(res.data.roles === "NHAN_VIEN_QUAN_LY"){
+            window.location.replace("/orders");
           } else {
             window.location.replace("/dashboard");
           }
