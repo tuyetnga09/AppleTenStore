@@ -17,7 +17,7 @@ import { Option } from "antd/es/mentions";
 import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DailyRevenue from "../dashboard/dailyRevenue/index";
 import DailyOrders from "../dashboard/dailyOrders/index";
 import NewCustomers from "../dashboard/newCustomers/index";

@@ -1,6 +1,6 @@
 import { useTranslate, useNavigation } from "@refinedev/core";
 import { useSimpleList } from "@refinedev/antd";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { seachKhoangNgay } from "../../../../service/dashboard/admin_bill.service";
 import DailyOrders from "../dailyOrders/index";
 import Customer from "../newCustomers/index";

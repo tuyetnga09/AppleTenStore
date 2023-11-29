@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   readAll,
   deleteVoucher,
@@ -8,7 +8,7 @@ import {
   searchNoDate,
   searchWithDate,
   updateStatusVoucher,
-  returnStatusVoucher
+  returnStatusVoucher,
 } from "../../../service/Voucher/voucher.service";
 import { useTranslate } from "@refinedev/core";
 import {
@@ -696,53 +696,55 @@ const VoucherDisplay = ({}) => {
                       align="center"
                       render={(text, record) => (
                         <span>
-                        {record.status === 0 ? (
-                          <Dropdown
-                            overlay={
-                              <Menu mode="vertical">
-                                <Menu.Item
-                                  key="1"
-                                  disabled={record.stock <= 0}
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <CloseCircleOutlined
-                                      style={{
-                                        color: "red",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => confirmCallUpdateStatusVoucher(record.id)}
-                                >
-                                  Delete
-                                </Menu.Item>
-                                <Menu.Item
-                                  key="2"
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <FormOutlined
-                                      style={{
-                                        color: "green",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => handleEditClick(record)}
-                                >
-                                  Edit
-                                </Menu.Item>
-                              </Menu>
-                            }
-                            trigger={["click"]}
-                          >
-                            <MoreOutlined
-                              style={{
-                                fontSize: 24,
-                              }}
-                            />
-                          </Dropdown>
+                          {record.status === 0 ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "red",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      confirmCallUpdateStatusVoucher(record.id)
+                                    }
+                                  >
+                                    Delete
+                                  </Menu.Item>
+                                  <Menu.Item
+                                    key="2"
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <FormOutlined
+                                        style={{
+                                          color: "green",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() => handleEditClick(record)}
+                                  >
+                                    Edit
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
                           ) : record.status === 1 ? (
                             <Dropdown
                               overlay={

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import "../Login/login.css";
 import { Form, Space, Avatar, Typography, Upload, notification } from "antd";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { add } from "../../../service/Employee/employee.service";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { readAllWard } from "../../../service/AddressAPI/ward.service";

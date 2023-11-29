@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
@@ -6,6 +6,7 @@ import AvtProduct from "../../custumer_componet/avtProduct";
 import {
   readAll,
   getAllBillDetail,
+  yeuCauTraHang,
 } from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllById } from "../../../service/Bill/billCustomer.service";
 import {
@@ -21,8 +22,15 @@ import {
   Form,
   Checkbox,
   Input,
+  Row,
 } from "antd";
-import { WarningFilled } from "@ant-design/icons";
+import {
+  WarningFilled,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
 const { Option } = Select;
 
 const OderUserAll = () => {
@@ -99,117 +107,127 @@ const OderUserAll = () => {
     );
     return (
       <>
-        <div className="row">
-          <div className="col-10" style={{ paddingTop: "20px" }}>
-            <strong>AppleTenStore</strong>{" "}
-          </div>
-          <div className="col-2">
-            <span style={{ paddingTop: "20px", float: "right", color: "red" }}>
-              {b.statusBill === "CHO_XAC_NHAN"
-                ? "Chờ xác nhận"
-                : b.statusBill === "CHO_VAN_CHUYEN"
-                ? "Chờ vận chuyển"
-                : b.statusBill === "VAN_CHUYEN"
-                ? "Vận chuyển"
-                : b.statusBill === "DA_THANH_TOAN"
-                ? "Hoàn thành"
-                : b.statusBill === "TRA_HANG"
-                ? "Trả hàng"
-                : "Đã hủy"}
-            </span>
-          </div>
+        <div>
+          <Row>
+            <div className="col-10" style={{ paddingTop: "20px" }}>
+              <strong>AppleTenStore</strong>{" "}
+            </div>
+            <div className="col-2">
+              <span
+                style={{ paddingTop: "20px", float: "right", color: "red" }}
+              >
+                {b.statusBill === "CHO_XAC_NHAN"
+                  ? "Chờ xác nhận"
+                  : b.statusBill === "CHO_VAN_CHUYEN"
+                  ? "Chờ vận chuyển"
+                  : b.statusBill === "VAN_CHUYEN"
+                  ? "Vận chuyển"
+                  : b.statusBill === "DA_THANH_TOAN"
+                  ? "Hoàn thành"
+                  : b.statusBill === "TRA_HANG"
+                  ? "Trả hàng"
+                  : "Đã hủy"}
+              </span>
+            </div>
+          </Row>
         </div>
         <hr />
         {billDetails[index]?.map((bd) => {
           return (
-            <div className="row">
-              <div className="col-10">
-                <p style={{ width: "300px" }}>
-                  <AvtProduct product={6} />
-                </p>
-                <strong>
-                  {bd.nameProduct} {bd.capacity} {bd.color}
-                </strong>
-                <p style={{ fontSize: "13px", color: "gray" }}>
-                  Phân loại hàng: {bd.category}
-                </p>
-                <strong>x{bd.quantity}</strong>
-              </div>
-              <div className="col-2">
-                <p style={{ float: "right" }}>
-                  {bd.price.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-                </p>
-              </div>
+            <div>
+              <Row>
+                <div className="col-10">
+                  <p style={{ width: "300px" }}>
+                    <AvtProduct product={6} />
+                  </p>
+                  <strong>
+                    {bd.nameProduct} {bd.capacity} {bd.color}
+                  </strong>
+                  <p style={{ fontSize: "13px", color: "gray" }}>
+                    Phân loại hàng: {bd.category}
+                  </p>
+                  <strong>x{bd.quantity}</strong>
+                </div>
+                <div className="col-2">
+                  <p style={{ float: "right" }}>
+                    {bd.price.toLocaleString("vi-VN", {
+                      // style: "currency",
+                      currency: "VND",
+                    })}
+                  </p>
+                </div>
+              </Row>
             </div>
           );
         })}
         <hr />
-        <div className="row">
-          <div className="col-6">
-            {b.statusBill === "CHO_XAC_NHAN" ? (
-              <p>
-                Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
-              </p>
-            ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-              <p>
-                Dự kiến giao hàng ngày <u>23-07-2003</u>
-              </p>
-            ) : b.statusBill === "VAN_CHUYEN" ? (
-              <p>
-                Dự kiến giao hàng ngày <u>23-07-2003</u>
-              </p>
-            ) : b.statusBill === "DA_THANH_TOAN" ? (
-              <p>
-                Ngày hoàn thành đơn hàng <u>{formattedDateStart}</u>
-              </p>
-            ) : (
-              ""
-            )}
-          </div>
-          <div className="col-6">
-            <span style={{ float: "right" }}>
-              Thành tiền:{" "}
-              {b.totalMoney.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </span>
-            <br />
-            <br />
-            <div style={{ float: "right" }}>
-              <button type="button" class="btn btn-danger">
-                Liên hệ người bán
-              </button>{" "}
+        <div>
+          <Row>
+            <div className="col-6">
               {b.statusBill === "CHO_XAC_NHAN" ? (
-                <button
-                  type="button"
-                  class="btn btn-light"
-                  onClick={() => handleCannelOrderClick(b)}
-                >
-                  Hủy đơn
-                </button>
+                <p>
+                  Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
+                </p>
               ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-                ""
+                <p>
+                  Dự kiến giao hàng ngày <u>23-07-2003</u>
+                </p>
               ) : b.statusBill === "VAN_CHUYEN" ? (
-                ""
-              ) : b.statusBill === "DA_THANH_TOAN" && khoangCachNgay <= 3 ? (
-                <button
-                  type="button"
-                  class="btn btn-light"
-                  onClick={() => handleNoteReturnsClick(b)}
-                >
-                  Trả hàng
-                </button>
+                <p>
+                  Dự kiến giao hàng ngày <u>23-07-2003</u>
+                </p>
+              ) : b.statusBill === "DA_THANH_TOAN" ? (
+                <p>
+                  Ngày hoàn thành đơn hàng <u>{formattedDateStart}</u>
+                </p>
               ) : (
-                <button type="button" class="btn btn-light">
-                  Mua lại
-                </button>
+                ""
               )}
             </div>
-          </div>
+            <div className="col-6">
+              <span style={{ float: "right" }}>
+                Thành tiền:{" "}
+                {b.totalMoney.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </span>
+              <br />
+              <br />
+              <div style={{ float: "right" }}>
+                <button type="button" class="btn btn-danger">
+                  Liên hệ người bán
+                </button>{" "}
+                {b.statusBill === "CHO_XAC_NHAN" ? (
+                  <button
+                    type="button"
+                    class="btn btn-light"
+                    onClick={() => handleCannelOrderClick(b)}
+                  >
+                    Hủy đơn
+                  </button>
+                ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
+                  ""
+                ) : b.statusBill === "VAN_CHUYEN" ? (
+                  ""
+                ) : b.statusBill === "DA_THANH_TOAN" ||
+                  (b.statusBill === "YEU_CAU_TRA_HANG" &&
+                    khoangCachNgay <= 3) ? (
+                  <button
+                    type="button"
+                    class="btn btn-light"
+                    onClick={() => handleNoteReturnsClick(b)}
+                  >
+                    Trả hàng
+                  </button>
+                ) : (
+                  <button type="button" class="btn btn-light">
+                    Mua lại
+                  </button>
+                )}
+              </div>
+            </div>
+          </Row>
         </div>
         <hr />
       </>
@@ -277,8 +295,8 @@ const OderUserAll = () => {
     setIsModalVisibleXemHoaDonChiTiet(false);
   };
 
-  const [dataBillDetails, setDataBillDetails] = useState([]);
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
+  const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]); //list id imei da ban
 
   function handleCheckboxChange(e) {
     const checkboxValue = e.target.value;
@@ -293,11 +311,12 @@ const OderUserAll = () => {
     });
   }
   // Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxes và in giá trị mới
-  useEffect(() => {
-    console.log(selectedCheckboxes + " :imei da ban ++--");
-  }, [selectedCheckboxes]);
+  // useEffect(() => {
+  //   console.log(selectedCheckboxes + " :imei da ban ++--");
+  // }, [selectedCheckboxes]);
 
   //nút trả hàng - phongnh *
+  const toast = useRef(null);
   const handleNoteReturnsClick = (record) => {
     setBillReturn({
       ...billReturn,
@@ -311,13 +330,44 @@ const OderUserAll = () => {
       .catch((err) => {
         console.log(err);
       });
-    setIsModalVisibleNoteReturns(true);
+    // setIsModalVisibleNoteReturns(true);
     handleOpenXemHoaDonChiTiet();
+  };
+
+  //huy chon check box
+  const huyChonCheckBox = () => {
+    setSelectedCheckboxes([]);
+  };
+
+  //tra 1 phan
+  const traSanPhamDaChon = () => {
+    handleOpenNoteReturnsCancel(selectedCheckboxes);
+  };
+  const rejectTraHang = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục mua sắm.",
+      life: 3000,
+    });
+  };
+  const confirmTraSanPhamDaChon = (idBillDetail, codeBill) => {
+    confirmDialog({
+      message: "Bạn chắc chắc trả sản phẩm đã chọn?",
+      header: "XÁC NHẬN THÔNG BÁO",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => traSanPhamDaChon(),
+      reject: () => rejectTraHang(),
+    });
   };
 
   const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
     useState(false); // Trạng thái hiển thị Modal
 
+  const handleOpenNoteReturnsCancel = () => {
+    setIsModalVisibleNoteReturns(true);
+  };
   // Hàm để ẩn Modal
   const handleNoteReturnsCancel = () => {
     setSelectNganHang(null);
@@ -331,6 +381,9 @@ const OderUserAll = () => {
 
     const chuTaiKhoan = document.getElementById("id-chu-tai-khoan");
     chuTaiKhoan.value = "";
+
+    const sdt = document.getElementById("id-sdt");
+    sdt.value = "";
 
     setIsModalVisibleNoteReturns(false);
   };
@@ -346,8 +399,9 @@ const OderUserAll = () => {
   const handleNoteReturns = (event) => {
     const stk = document.getElementById("stk").value;
     const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
-    const updatedNote = `${event.target.value}, Ngân hàng: ${idNganHang},
-     STK: ${stk}, Chủ tài khoản: ${tenTaiKhoan}}`;
+    const sdt = document.getElementById("id-sdt").value;
+    const updatedNote = `Ghi chú:${event.target.value}, Ngân hàng: ${idNganHang},
+     STK: ${stk}, Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${sdt}`;
     setBillReturn({
       ...billReturn,
       note: updatedNote,
@@ -360,33 +414,52 @@ const OderUserAll = () => {
     const note = document.getElementById("exampleFormControlTextarea1").value;
     const stk = document.getElementById("stk").value;
     const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const sdt = document.getElementById("id-sdt").value;
+
     setIdNganHang(value);
     setSelectNganHang(value);
-    const updatedNote = `${note}, Ngân hàng: ${value}, STK: ${stk}, Chủ tài khoản: ${tenTaiKhoan}`;
+    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${value}, STK: ${stk},
+     Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${sdt}`;
     setBillReturn({
       ...billReturn,
       note: updatedNote,
     });
-    console.log(billReturn);
-    console.log(updatedNote);
   }
 
   // phongnh 3
   function handleSoTaiKhoan(event) {
     const note = document.getElementById("exampleFormControlTextarea1").value;
     const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
-    const updatedNote = `${note}, Ngân hàng: ${idNganHang}, STK: ${event.target.value}, Chủ tài khoản: ${tenTaiKhoan}`;
+    const sdt = document.getElementById("id-sdt").value;
+    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${idNganHang}, STK: ${event.target.value}, 
+    Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${sdt}`;
     setBillReturn({
       ...billReturn,
       note: updatedNote,
     });
-    console.log(billReturn);
   }
 
   // phongnh 4
   function handleNoteReturnsChuTaiKhoan(event) {
     const note = document.getElementById("exampleFormControlTextarea1").value;
-    const updatedNote = `${note}, Ngân hàng: ${idNganHang}, STK: ${note}, Chủ tài khoản: ${event.target.value}`;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const stk = document.getElementById("stk").value;
+    const sdt = document.getElementById("id-sdt").value;
+    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${idNganHang}, STK: ${stk},
+     Chủ tài khoản: ${event.target.value}, SĐT: ${sdt}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+  }
+
+  // phongnh 5
+  function handleNoteReturnsSdt(event) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const stk = document.getElementById("stk").value;
+    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${idNganHang}, STK: ${stk},
+     Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${event.target.value}`;
     setBillReturn({
       ...billReturn,
       note: updatedNote,
@@ -402,19 +475,35 @@ const OderUserAll = () => {
         description: "Vui lòng nhập đủ thông tin!",
       });
     } else {
-      // returnBill(billReturn.id, billReturn.note); -- viết lại phần này
-
-      notification.success({
-        message: "Trả hàng",
-        description: "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
-      });
-      handleNoteReturnsCancel();
+      yeuCauTraHang(billReturn.id, billReturn.note, selectedCheckboxes)
+        .then((res) => {
+          if (res.data !== "" && res.data !== undefined) {
+            setDataBillDetails(res.data);
+            notification.success({
+              message: "Trả hàng",
+              description: "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
+            });
+            handleNoteReturnsCancel();
+          } else {
+            notification.warn({
+              message: "Trả hàng thất bại!",
+              description:
+                "Yêu cầu trả hàng của quý khách thất bại! Vui lòng thử lại!",
+            });
+          }
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 
   return (
     <>
       <Header />
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <br />
       <section>
         <ul class="nav nav-tabs">
@@ -450,7 +539,16 @@ const OderUserAll = () => {
           </li>
         </ul>
       </section>
-      <section style={{ position: "relative", maxHeight: 445, width: "1200px", overflowY: "auto" }}>{result}</section>
+      <section
+        style={{
+          position: "relative",
+          maxHeight: 550,
+          width: "1200px",
+          overflowY: "auto",
+        }}
+      >
+        {result}
+      </section>
       <br />
       <Modal
         visible={isModalVisibleCannelOrder}
@@ -484,6 +582,15 @@ const OderUserAll = () => {
         footer={null}
         bodyStyle={{ minHeight: "150px" }}
       >
+        <h4
+          style={{
+            textAlign: "center",
+            marginTop: "15px",
+            marginBottom: "20px",
+          }}
+        >
+          THÔNG TIN NGƯỜI HOÀN TRẢ
+        </h4>
         <form onSubmit={handleSubmitReturns2}>
           <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">
@@ -511,7 +618,7 @@ const OderUserAll = () => {
                     src={option.logo}
                     style={{ width: "50%", height: "100%" }}
                   />
-                  {option.shortName}
+                  {/* {option.shortName} */}
                 </Option>
               ))}
             </Select>
@@ -542,6 +649,20 @@ const OderUserAll = () => {
               required
               onChange={handleNoteReturnsChuTaiKhoan}
             />
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Số diện thoại hiện tại:
+            </label>
+            <input
+              class="form-control"
+              id="id-sdt"
+              aria-label="Sizing example input"
+              aria-describedby="inputGroup-sizing-default"
+              rows="3"
+              type="number"
+              required
+              // placeholder="Nhập số"
+              onChange={handleNoteReturnsSdt}
+            />
           </div>
           <button type="submit" class="btn btn-success">
             Xác nhận
@@ -555,6 +676,45 @@ const OderUserAll = () => {
         footer={null}
         bodyStyle={{ minHeight: "150px" }}
       >
+        <Row style={{ marginTop: "28px", marginBottom: "10px" }}>
+          <input
+            // id="id-imeis"
+            className="form-control me-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+            name="key"
+            // onChange={handleChangeImeis}
+          />
+        </Row>
+        <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
+          <div className="col-6">
+            <button
+              type="button"
+              class="btn btn-danger"
+              onClick={() => huyChonCheckBox()}
+            >
+              Huỷ Chọn Tất Cả
+            </button>
+          </div>
+          <div className="col-6">
+            <button
+              type="button"
+              class="btn btn-warning"
+              style={{ color: "white" }}
+              onClick={() => confirmTraSanPhamDaChon()}
+            >
+              Trả Sản Phẩm Đã Chọn
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              style={{ marginLeft: "20px" }}
+            >
+              Trả Tất Cả Sản Phẩm
+            </button>
+          </div>
+        </Row>
         <Table
           rowKey="oop"
           dataSource={dataBillDetails}
@@ -573,11 +733,17 @@ const OderUserAll = () => {
             title="Chọn"
             render={(text, record) => {
               return (
-                <Checkbox
-                  value={record.idImei}
-                  checked={selectedCheckboxes.includes(record.idImei)}
-                  onChange={handleCheckboxChange}
-                />
+                <div>
+                  {record.statusImei == 3 ? (
+                    <Checkbox
+                      value={record.idImei}
+                      checked={selectedCheckboxes.includes(record.idImei)}
+                      onChange={handleCheckboxChange}
+                    />
+                  ) : (
+                    "-"
+                  )}
+                </div>
               );
             }}
           />
@@ -586,9 +752,9 @@ const OderUserAll = () => {
             dataIndex="images"
             title="Ảnh"
             render={(text, record) => (
-              // <div style={{ width: "100px" }}>
-              <AvtProduct product={record.idProduct} />
-              // </div>
+              <div style={{ textAlign: "center" }}>
+                <AvtProduct product={record.idProduct} />
+              </div>
             )}
             width={150}
           />
@@ -667,6 +833,65 @@ const OderUserAll = () => {
                   <p>{record.imei}</p>
                 </Form.Item>
               );
+            }}
+          />
+
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Trạng Thái"
+            render={(text, record) => {
+              return (
+                <div>
+                  {record.statusImei === "3" ? (
+                    <CheckCircleOutlined
+                      style={{
+                        color: "#52c41a",
+                      }}
+                    />
+                  ) : record.statusImei === "6" ? (
+                    <CloseCircleOutlined
+                      style={{
+                        color: "red",
+                      }}
+                    />
+                  ) : record.statusImei === "4" ? (
+                    <div
+                      style={{
+                        backgroundColor: "blue",
+                        color: "white",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      Đã gửi yêu cầu
+                    </div>
+                  ) : record.statusImei === "5" ? (
+                    <div
+                      style={{
+                        backgroundColor: "orange",
+                        color: "white",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      Chờ kiểm tra
+                    </div>
+                  ) : (
+                    <WarningFilled
+                      style={{
+                        color: "#FFCC00",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+              {
+                /* <Form.Item name="title" style={{ margin: 0 }}>
+                    <p>{record.idImei}</p>
+                  </Form.Item> */
+              }
+              //   </div>
+              // );
             }}
           />
         </Table>

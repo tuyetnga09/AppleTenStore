@@ -917,10 +917,18 @@ const Checkout = () => {
                 </h4>
                 <ul
                   class="list-group mb-3"
-                  style={{ position: "relative", maxHeight: 200, overflowY: "auto" }}
+                  style={{
+                    position: "relative",
+                    maxHeight: 200,
+                    overflowY: "auto",
+                  }}
                 >
                   {products.map((product) => (
-                    <li class="list-group-item d-flex justify-content-between lh-condensed" style={{ lineHeight: "1.5em" }} key={product.id}>
+                    <li
+                      class="list-group-item d-flex justify-content-between lh-condensed"
+                      style={{ lineHeight: "1.5em" }}
+                      key={product.id}
+                    >
                       <div>
                         <h6 class="text-primary">
                           {product.nameProduct} {product.capacity}{" "}
