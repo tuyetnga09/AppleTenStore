@@ -81,6 +81,7 @@ import { readAllWard } from "../../../service/AddressAPI/ward.service";
 import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { getFee } from "../../../service/AddressAPI/fee.service";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 
 const { Header, Sider, Content } = Layout;
 let arrCodeImeiDaBan = [];
@@ -2328,7 +2329,7 @@ export default function SellSmart() {
                     <div className="app-title">
                       <ul className="app-breadcrumb breadcrumb">
                         <li className="breadcrumb-item">
-                          <a
+                          {/* <a
                             className="btn btn-secondary luu-va-in"
                             href="/dashboard"
                             style={{ marginBottom: "10px" }}
@@ -2338,9 +2339,17 @@ export default function SellSmart() {
                           <br />
                           <a href="#">
                             <b>POS bán hàng</b>
-                          </a>
+                          </a> */}
+                          <Link to="/dashboard">
+                            <button className="btn btn-secondary luu-va-in">
+                              Quay về
+                            </button>
+                          </Link>
+                          <br />
+                          <b>POS bán hàng</b>
                         </li>
                       </ul>
+
                       <div id="clock" />
                     </div>
                   </div>

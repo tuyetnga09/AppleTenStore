@@ -15,7 +15,12 @@ import {
   DateField,
   useDrawerForm,
 } from "@refinedev/antd";
-import { FormOutlined, MoreOutlined, TeamOutlined } from "@ant-design/icons";
+import {
+  FileDoneOutlined,
+  FormOutlined,
+  MoreOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -48,6 +53,7 @@ import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../Page_Comeponet/header/index";
 import moment from "moment";
 import EditAccount from "./edit";
+import SubMenu from "antd/es/menu/SubMenu";
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -113,27 +119,71 @@ export const AccountList = () => {
     <>
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={["3"]}>
-            <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["4"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
+            <Menu.Item key="1" icon={<FileDoneOutlined />}>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+            <Menu.Item key="2" icon={<DashboardOutlined />}>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Orders</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">OrderBackProducts</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item key="4" icon={<UserOutlined />}>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+            <Menu.Item key="5" icon={<AppstoreAddOutlined />}>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<UnorderedListOutlined />}>
-              <Link to="/categories">Categories</Link>
+            <Menu.Item key="6" icon={<GiftOutlined />}>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/login">Logout</Link>
+            <Menu.Item key="7" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Thể loại</Link>
+            </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Chi tiết sản phẩm"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -160,7 +210,7 @@ export const AccountList = () => {
             style={{
               margin: "24px 16px",
               padding: 24,
-              minHeight: 280,
+              minHeight: 600,
               background: colorBgContainer,
             }}
           >
@@ -184,7 +234,7 @@ export const AccountList = () => {
                   <Table.Column
                     key="title"
                     dataIndex="title"
-                    title="Title"
+                    title="Vai trò"
                     render={(text, record) => {
                       return (
                         <Form.Item name="title" style={{ margin: 0 }}>
@@ -201,7 +251,7 @@ export const AccountList = () => {
                       );
                     }}
                   />
-                  <Table.Column
+                  {/* <Table.Column
                     key="isActive"
                     dataIndex="isActive"
                     title="Active"
@@ -237,10 +287,15 @@ export const AccountList = () => {
                         </Dropdown>
                       );
                     }}
-                  />
+                  /> */}
                 </Table>
               </Form>
             </List>
+            <Link to="/signupAdmin">
+              <button type="button" class="btn btn-outline-info">
+                Đăng kí nhân viên
+              </button>
+            </Link>
           </Content>
         </Layout>
       </Layout>
@@ -445,32 +500,6 @@ const UserAccountTable = ({ record }) => {
         ""
       )}
     </>
-    // <Menu
-    //   mode="vertical"
-    //   onClick={({ domEvent }) => domEvent.stopPropagation()}
-    // >
-    //   <Menu.Item
-    //     key="edit"
-    //     style={{
-    //       fontSize: 15,
-    //       display: "flex",
-    //       alignItems: "center",
-    //       fontWeight: 500,
-    //     }}
-    //     icon={
-    //       <FormOutlined
-    //         style={{
-    //           color: "#52c41a",
-    //           fontSize: 17,
-    //           fontWeight: 500,
-    //         }}
-    //       />
-    //     }
-    //     onClick={() => editShow(record)}
-    //   >
-    //     Edit
-    //   </Menu.Item>
-    // </Menu>
   );
 
   return (
@@ -488,7 +517,11 @@ const UserAccountTable = ({ record }) => {
         <Table.Column
           dataIndex="images"
           render={(text, record) => (
-            <AvtProduct size={74} product={record.id} />
+            <Avatar
+              size="large"
+              src={`/imageUpload/` + record?.avatar}
+              shape="square"
+            />
           )}
           width={105}
         />
@@ -503,7 +536,7 @@ const UserAccountTable = ({ record }) => {
         <Table.Column
           key="isActive"
           dataIndex="isActive"
-          title="Active"
+          title="Trạng thái"
           render={(value, record) => {
             return record.status === "DANG_SU_DUNG" ? (
               <BooleanField value={true} />

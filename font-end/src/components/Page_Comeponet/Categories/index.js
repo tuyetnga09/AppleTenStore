@@ -11,7 +11,11 @@ import {
   DateField,
   useDrawerForm,
 } from "@refinedev/antd";
-import { FormOutlined, MoreOutlined } from "@ant-design/icons";
+import {
+  FileDoneOutlined,
+  FormOutlined,
+  MoreOutlined,
+} from "@ant-design/icons";
 import {
   Table,
   Space,
@@ -44,6 +48,7 @@ import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import HeaderDashBoard from "../../Page_Comeponet/header/index";
 import moment from "moment";
 import EditProduct from "../../product_component/Product/crud/edit";
+import SubMenu from "antd/es/menu/SubMenu";
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -109,34 +114,71 @@ export const CategoryList = () => {
     <>
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={["6"]}>
-            <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["7"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
+            <Menu.Item key="1" icon={<FileDoneOutlined />}>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+            <Menu.Item key="2" icon={<DashboardOutlined />}>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Orders</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">OrderBackProducts</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item key="4" icon={<UserOutlined />}>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+            <Menu.Item key="5" icon={<AppstoreAddOutlined />}>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<UnorderedListOutlined />}>
-              <Link to="/categories">Categories</Link>
+            <Menu.Item key="6" icon={<GiftOutlined />}>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
+            <Menu.Item key="7" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Thể loại</Link>
+            </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Chi tiết sản phẩm"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
             <Menu.Item
-              key="7"
+              key="8"
               icon={<LogoutOutlined />}
               onClick={() => {
                 localStorage.removeItem("account");
-                history.push("/login");
+                window.location.replace("/login");
               }}
             >
-              <Link to="/logout">Logout</Link>
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -163,7 +205,7 @@ export const CategoryList = () => {
             style={{
               margin: "24px 16px",
               padding: 24,
-              minHeight: 280,
+              minHeight: 600,
               background: colorBgContainer,
             }}
           >
@@ -318,7 +360,7 @@ const CategoryProductsTable = ({ record }) => {
           render={(text, record) => (
             <AvtProduct size={74} product={record.id} />
           )}
-          width={105}
+          width={200}
         />
         <Table.Column key="name" dataIndex="name" title="Name" />
         <Table.Column
