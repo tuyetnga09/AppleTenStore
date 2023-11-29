@@ -75,7 +75,7 @@ import {
   searchBillDTT,
   updateQuantitySellOff,
 } from "../../../service/SellOffLine/sell_off_line.service";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
 import { readAllWard } from "../../../service/AddressAPI/ward.service";
 import { readAllDistrict } from "../../../service/AddressAPI/district.service";
@@ -722,26 +722,40 @@ export default function SellSmart() {
   };
   const history = useHistory();
   const handleSave = () => {
-    addCustomerOffline(customer)
-      .then((response) => {
-        alert("Thêm khách hàng thành công");
-        history.push("/sell");
-        setCustomer({
-          fullName: "",
-          email: "",
-          phoneNumber: "",
-        });
-        getCustomer()
-          .then((response) => {
-            setKhachHang(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-      })
-      .catch((error) => {
-        alert("Thêm khách hàng thất bại");
+    const fullname = document.getElementById('fullname').value;
+    const email = document.getElementById('email').value;
+    const phoneNumber = document.getElementById('phoneNumber').value;
+    if (
+      fullname !== null && fullname !== "" &&
+      email !== null && email !== "" &&
+      phoneNumber !== null && phoneNumber !== ""
+    ) {
+      addCustomerOffline(customer)
+            .then((response) => {
+              history.push("/sell");
+              setCustomer({
+                fullName: "",
+                email: "",
+                phoneNumber: "",
+              });
+              getCustomer()
+                .then((response) => {
+                  setKhachHang(response.data);
+                })
+                .catch((error) => {
+                  console.log(`${error}`);
+                });
+                setIsModalVisible(false);
+            })
+            .catch((error) => {
+              alert("Thêm khách hàng thất bại");
+            });
+    }else{
+      notification.error({
+        message: "Vui lòng nhập thông tin khách hàng!",
       });
+    }
+    
   };
 
   function giaoTanNoi() {
@@ -949,22 +963,51 @@ export default function SellSmart() {
       columns,
       data
     ) => {
-      drawLine(
-        { x: tableX, y: tableY },
-        { x: tableX + tableWidth, y: tableY },
-        2,
-        [0, 0, 0]
-      );
-
-      // Vẽ các đường ngang cho từng dòng
-      for (let i = 0; i < data.length; i++) {
-        const y = tableY - i * (tableHeight / data.length);
-        drawLine({ x: tableX, y }, { x: tableX + tableWidth, y }, 1, [0, 0, 0]);
-      }
-
-      // Vẽ các đường dọc cho từng cột
       const columnWidth = tableWidth / columns.length;
-
+      const rowHeight = tableHeight / (data.length + 1); // Số dòng bằng số dòng dữ liệu cộng thêm 1 dòng tiêu đề
+    
+      // Vẽ tiêu đề cho từng cột
+      columns.forEach((column, index) => {
+        const x = tableX + columnWidth * index;
+        const y = tableY - rowHeight; // Vẽ tiêu đề ở phía trên table
+        drawText(column, {
+          x: x + columnWidth / 2 - column.length * 2,
+          y: y + rowHeight / 2,
+          size: 12,
+          color: rgb(0, 0, 0),
+          font: customFontItalic,
+        });
+      });
+    
+      // Vẽ dữ liệu từ mảng
+      data.forEach((row, rowIndex) => {
+        const y = tableY - (rowIndex + 2) * rowHeight; // Bắt đầu từ hàng thứ 2 (hàng tiêu đề cộng thêm 1)
+        row.forEach((cell, columnIndex) => {
+          const x = tableX + columnWidth * columnIndex;
+          page.drawText(cell.toString(), {
+            x: x + 5,
+            y: y + rowHeight / 2,
+            width: columnWidth - 10,
+            size: 10,
+            color: rgb(0, 0, 0),
+            font: customFont,
+            lineHeight: 12,
+          });
+        });
+      });
+    
+      // Vẽ đường ngang
+      for (let i = 0; i <= data.length + 1; i++) {
+        const y = tableY - i * rowHeight;
+        drawLine(
+          { x: tableX, y },
+          { x: tableX + tableWidth, y },
+          1,
+          [0, 0, 0]
+        );
+      }
+    
+      // Vẽ đường dọc
       for (let i = 0; i <= columns.length; i++) {
         const x = tableX + i * columnWidth;
         drawLine(
@@ -973,40 +1016,10 @@ export default function SellSmart() {
           1,
           [0, 0, 0]
         );
-
-        if (i < columns.length) {
-          // Ghi tên cột
-          const textX = x + columnWidth / 2 - columns[i].length * 2;
-          const textY = tableY - tableHeight + 5;
-          drawText(columns[i], {
-            x: textX,
-            y: textY,
-            size: 10,
-            color: rgb(0, 0, 0),
-          });
-        }
       }
-
-      // Vẽ dữ liệu từ mảng
-      data.forEach((row, rowIndex) => {
-        const y = tableY - (rowIndex + 1) * (tableHeight / data.length) + 5;
-        row.forEach((cell, columnIndex) => {
-          const x = tableX + columnIndex * columnWidth + 5;
-          // Xuống dòng tự động dựa trên độ dài của chữ
-          page.drawText(cell.toString(), {
-            x,
-            y,
-            width: columnWidth - 10, // Giảm khoảng trắng bên cạnh để tránh lấp qua cột kế tiếp
-            size: 10,
-            color: rgb(0, 0, 0),
-            font: customFont,
-            lineHeight: 10, // Điều này giúp đảm bảo độ dài của dòng
-          });
-        });
-      });
     };
 
-    const columns = ["", "", "", "", "", ""];
+    const columns = ["Ten SP", "Dung luong", "Mau sac", "Gia SP", "So luong", "Thanh Tien"];
     const data = productList.map((product) => [
       product.nameProduct,
       product.skuCapacity,
@@ -2328,13 +2341,14 @@ export default function SellSmart() {
                     <div className="app-title">
                       <ul className="app-breadcrumb breadcrumb">
                         <li className="breadcrumb-item">
-                          <a
-                            className="btn btn-secondary luu-va-in"
-                            href="/dashboard"
-                            style={{ marginBottom: "10px" }}
-                          >
-                            Quay về
-                          </a>
+                        <Link to="/dashboard">
+                            <button
+                              className="btn btn-secondary luu-va-in"
+                              style={{ marginBottom: "10px" }}
+                            >
+                              Quay về
+                            </button>
+                        </Link>
                           <br />
                           <a href="#">
                             <b>POS bán hàng</b>
@@ -3385,27 +3399,23 @@ export default function SellSmart() {
                             Chờ thanh toán
                           </button> */}
                           <button
-                            className="btn btn-danger luu-va-in"
+                            className="btn btn-danger btn-block btn-lg"
                             type="button"
                             style={{
                               marginRight: "10px",
                               marginBottom: "10px",
+                              height: "90px",
+                              fontSize: "50px"
                             }}
                             onClick={() => confirm2()}
                           >
                             Lưu hóa đơn
                           </button>
-                          {/* <a
-                            className="btn btn-secondary luu-va-in"
-                            href="/dashboard"
-                            style={{ marginBottom: "10px" }}
-                          >
-                            Quay về
-                          </a> */}
+                        
                           <Space size="middle">
                             <Badge count={slHoaDonCho} overflowCount={10}>
                               <button
-                                className="btn btn-success luu-va-in"
+                                className="btn btn-success btn-block btn-lg"
                                 type="button"
                                 style={{
                                   marginRight: "10px",
@@ -3429,9 +3439,9 @@ export default function SellSmart() {
         <Modal
           visible={isModalVisible}
           onCancel={handleCancel}
-          width={1000}
+          width={600}
           footer={null}
-          bodyStyle={{ minHeight: "400px" }}
+          bodyStyle={{ minHeight: "300px" }}
         >
           {/* <div className="modal-body"> */}
           <div className="row">
@@ -3443,6 +3453,7 @@ export default function SellSmart() {
             <div className="form-group col-md-12">
               <label className="control-label">Họ và tên</label>
               <input
+                id="fullname"
                 className="form-control"
                 type="text"
                 name="fullName"
@@ -3454,6 +3465,7 @@ export default function SellSmart() {
             <div className="form-group col-md-6">
               <label className="control-label">Email</label>
               <input
+                id="email"
                 className="form-control"
                 type="text"
                 name="email"
@@ -3465,6 +3477,7 @@ export default function SellSmart() {
             <div className="form-group col-md-6">
               <label className="control-label">Số điện thoại</label>
               <input
+                id="phoneNumber"
                 className="form-control"
                 type="text"
                 name="phoneNumber"
@@ -3475,11 +3488,11 @@ export default function SellSmart() {
             </div>
           </div>
           <br />
-          <button className="btn btn-save" type="button" onClick={handleSave}>
+          <button className="btn btn-success" style={{marginRight: "10px"}} type="button" onClick={handleSave}>
             Lưu lại
           </button>
           <button
-            className="btn btn-cancel"
+            className="btn btn-danger"
             type="button"
             onClick={handleCancel}
           >

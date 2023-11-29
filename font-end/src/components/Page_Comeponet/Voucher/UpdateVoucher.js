@@ -133,7 +133,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
                 paddingTop: "5px",
               }}
             >
-              Code
+              Mã Voucher
             </label>
             <Input
               type="text"
@@ -149,7 +149,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
                 paddingTop: "20px",
               }}
             >
-              Name
+              Tên
             </label>
             <Input
               type="text"
@@ -161,7 +161,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
             />
 
             <Form.Item
-              label={t("Date Start")}
+              label={t("Ngày bắt đầu")}
               name="dateStart"
               style={{
                 paddingTop: "20px",
@@ -186,7 +186,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
             </Form.Item>
 
             <Form.Item
-              label={t("Date End")}
+              label={t("Ngày kết thúc")}
               name="dateEnd"
               rules={[
                 {
@@ -207,21 +207,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
               />
             </Form.Item>
 
-            <label
-              style={{
-                paddingTop: "5px",
-              }}
-            >
-              Value Maximum
-            </label>
-            <Input
-              type="number"
-              required
-              value={voucher.valueMaximum}
-              onChange={handleChange}
-              id="valueMaximum"
-              name="valueMaximum"
-            />
+            
           </Col>
           <Col xs={24} lg={8}>
             <label
@@ -229,7 +215,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
                 paddingTop: "20px",
               }}
             >
-              Quantity
+              Số lượng
             </label>
             <Input
               type="number"
@@ -240,7 +226,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
               name="quantity"
             />
 
-            <label
+            {/* <label
               style={{
                 paddingTop: "20px",
               }}
@@ -254,14 +240,14 @@ const UpdateVoucher = ({ editedVoucher }) => {
               onChange={handleChange}
               id="conditionsApply"
               name="conditionsApply"
-            />
+            /> */}
 
             <label
               style={{
                 paddingTop: "20px",
               }}
             >
-              Value Voucher
+              Giá trị Voucher
             </label>
             <Input
               type="number"
@@ -277,7 +263,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
                 paddingTop: "20px",
               }}
             >
-              Value Minimum
+              Giá trị đơn hàng tối hiểu
             </label>
             <Input
               type="number"
@@ -293,6 +279,22 @@ const UpdateVoucher = ({ editedVoucher }) => {
                 paddingTop: "20px",
               }}
             >
+              Giá trị đơn hàng tối đa
+            </label>
+            <Input
+              type="number"
+              required
+              value={voucher.valueMaximum}
+              onChange={handleChange}
+              id="valueMaximum"
+              name="valueMaximum"
+            />
+
+            {/* <label
+              style={{
+                paddingTop: "20px",
+              }}
+            >
               Type Voucher
             </label>
             <Input
@@ -302,7 +304,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
               onChange={handleChange}
               id="typeVoucher"
               name="typeVoucher"
-            />
+            /> */}
           </Col>
           <Col xs={24} lg={8}>
             <Image

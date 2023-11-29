@@ -191,6 +191,8 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         TypeBill typeBill = TypeBill.OFFLINE;
         bill.setTypeBill(typeBill);
 
+        bill.setCompletionDate(now);
+
         billRepository.save(bill);
 
 //        System.out.println(bill.getId() + " jhihihihi ------------");
@@ -414,6 +416,8 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         bill.setPersonUpdate(doneBill.getPersonUpdate());
         bill.setPhoneNumber(customer.getPhoneNumber());
         bill.setUserName(customer.getFullName());
+        LocalDate now = LocalDate.now();
+        bill.setCompletionDate(now);
         if (doneBill.getFormOfReceipt().equals("TAI_CUA_HANG")){
             bill.setStatusBill(StatusBill.DA_THANH_TOAN);
         }else {

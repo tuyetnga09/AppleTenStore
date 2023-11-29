@@ -242,7 +242,7 @@ public class BillController {
         message.append("<h3 class=\"formatted-money\">Tiền ship: ").append(formattedMoneyShip).append("</h5>");
         message.append("<h3 class=\"formatted-money\">Tiền giảm giá Voucher: ").append(formattedItemDiscount).append("</h3>");
         message.append("<h3 class=\"formatted-money\">Tiền giảm giá vận chuyển: ").append(formattedItemDiscountFreeShip).append("</h3>");
-        message.append("<h3 class=\"formatted-money\">Số điểm đã sử dụng: ").append(formattedPoint).append("</h3>");
+        message.append("<h3 class=\"formatted-money\">Số điểm đã sử dụng: ").append(request.getPoint() + " Point").append("</h3>");
         message.append("<h3 class=\"formatted-money\">Số tiền đã thanh toán: ").append(formattedAfterPrice).append("</h3>");
 
         message.append("</body></html>");

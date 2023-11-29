@@ -149,7 +149,23 @@ export default function Header() {
             <div className="tools-member">
               <div className="cart">
                 <Link to={storedUser !== null ? "/profile" : "/login"}>
-                  <i className="fa fa-user" />
+                {storedUser?.user?.avatar == null ? (
+                  <img
+                    style={{ width: 36, height: 36 }}
+                    class="img-account-profile rounded-circle mb-2"
+                    src={
+                      "https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg"
+                    }
+                    alt=""
+                  />
+                ) : (
+                  <img
+                    style={{ width: 36, height: 36 }}
+                    class="img-account-profile rounded-circle mb-2"
+                    src={`/imageUpload/` + storedUser?.user?.avatar}
+                    alt=""
+                  />
+                )}{" "}
                   {/* {account == null ? "Tài khoản" : account.user.fullName} */}
                   {localStorage.getItem("account") !== null
                     ? storedUser?.user?.fullName
@@ -165,7 +181,7 @@ export default function Header() {
               {/* End Member */}
               <div className="cart">
                 <Link to="/cart">
-                  <i className="fa fa-shopping-cart" />
+                  <i className="fa fa-shopping-cart" />{" "}
                   <span>Giỏ hàng</span>
                   <span className="cart-number">{quantity}</span>
                 </Link>
@@ -179,7 +195,7 @@ export default function Header() {
                 <Link
                   to={storedUser === null ? "/oderCustomerAll" : "/oderUserAll"}
                 >
-                  <i class="fa fa-truck"></i>
+                  <i class="fa fa-truck"></i>{" "}
                   <span>Đơn hàng</span>
                 </Link>
               </div>

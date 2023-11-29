@@ -696,34 +696,34 @@ const OderDisplay = ({}) => {
               />
             </Menu.Item>
             <Menu.Item key="0" icon={<FileDoneOutlined />}>
-              <Link to="/sell">SELL OFFLINE</Link>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
             </Menu.Item>
             <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <SubMenu key="2" title="Orders" icon={<ShopOutlined />}>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
               <Menu.Item key="2" icon={<ShopOutlined />}>
-                <Link to="/orders">Orders</Link>
+                <Link to="/orders">Quản lý đơn hàng</Link>
               </Menu.Item>
               <Menu.Item key="11" icon={<ShopOutlined />}>
-                <Link to="/orderBackProduct">OrderBackProducts</Link>
+                <Link to="/orderBackProduct">Quản lý trả hàng</Link>
               </Menu.Item>
             </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+              <Link to="/voucher">Quảng lý Voucher</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
-              <Link to="/categories">Categories</Link>
+              <Link to="/categories">Thể loại</Link>
             </Menu.Item>
             <SubMenu
               key="8"
-              title="Product-Detail"
+              title="Chi tiết sản phẩm"
               icon={<AppstoreAddOutlined />}
             >
               <Menu.Item key="8">
@@ -743,7 +743,7 @@ const OderDisplay = ({}) => {
               </Menu.Item>
             </SubMenu>
             <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/logout">Logout</Link>
+              <Link to="/logout">Đăng xuất</Link>
             </Menu.Item>
           </Menu>
         </Sider>
@@ -794,7 +794,7 @@ const OderDisplay = ({}) => {
             }}
           >
             <Text style={{ fontSize: "24px", color: "blue" }} strong>
-              ODERS
+              QUẢN LÝ ĐƠN HÀNG
             </Text>
             <div
               class="d-grid gap-2 d-md-flex justify-content-md-end"
@@ -805,7 +805,7 @@ const OderDisplay = ({}) => {
                 type="button"
                 onClick={() => handUpdateTrangThai()}
               >
-                ACCEPT ALL
+                Xác nhận tất cả
               </button>
             </div>
             <Row gutter={[16, 16]}>
@@ -817,26 +817,26 @@ const OderDisplay = ({}) => {
                   marginTop: "52px",
                 }}
               >
-                <Card title={t("Filter")}>
+                <Card title={t("Tìm kiếm")}>
                   <Form>
                     <Row gutter={[10, 0]} align="bottom">
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Search")}>
+                        <Form.Item label={t("Tìm kiếm")}>
                           <Input
                             name="key"
-                            placeholder={t("Code, Person Create")}
+                            placeholder={t("Code, Người tạo")}
                             prefix={<SearchOutlined />}
                             onChange={handleChangeSearch}
                           />
                         </Form.Item>
                       </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Status")}>
+                        <Form.Item label={t("Trạng thái")}>
                           <Select
                             name="status"
                             onChange={handleChangeStatus}
                             allowClear
-                            placeholder={"Status"}
+                            placeholder={"trạng thái"}
                           >
                             {orderSelectProps.options.map((st) => {
                               return (
@@ -869,7 +869,7 @@ const OderDisplay = ({}) => {
                         </Form.Item>
                       </Col> */}
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Date")} name="createdAt">
+                        <Form.Item label={t("Ngày")} name="createdAt">
                           <RangePicker
                             id="dateFilter"
                             style={{ width: "100%" }}
@@ -886,7 +886,7 @@ const OderDisplay = ({}) => {
                             block
                             onClick={() => search()}
                           >
-                            {t("FILLTER")}
+                            {t("TÌM KIẾM")}
                           </Button>
                         </Form.Item>
                       </Col>
@@ -915,13 +915,13 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="code"
                       dataIndex="code"
-                      title={t("Code")}
+                      title={t("Mã hóa đơn")}
                       render={(text, record) => <span>{record.code}</span>}
                     />
                     <Table.Column
                       key="status"
                       dataIndex="status"
-                      title={t("Status")}
+                      title={t("Trạng thái")}
                       render={(text, record) => (
                         <span>{statusBadgeMapping[record.statusBill]}</span>
                       )}
@@ -929,7 +929,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="total"
                       dataIndex="total"
-                      title={t("Total")}
+                      title={t("Tổng tiền")}
                       render={(text, record) => {
                         return (
                           <NumberField
@@ -946,9 +946,9 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="user"
                       dataIndex="user"
-                      title={t("User")}
+                      title={t("Tên khách hàng")}
                       render={(text, record) => (
-                        <span>{record?.customer?.fullName}</span>
+                        <span>{record?.userName}</span>
                       )}
                     />
 
@@ -961,13 +961,13 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="address"
                       dataIndex="address"
-                      title={t("Address")}
+                      title={t("Địa chỉ")}
                       render={(text, record) => <span>{record.address}</span>}
                     />
                     <Table.Column
                       key="personCreate"
                       dataIndex="personCreate"
-                      title={t("PersonCreate")}
+                      title={t("Người tạo HĐ")}
                       render={(text, record) => (
                         <span>{record.personCreate}</span>
                       )}
@@ -975,7 +975,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="personUpdate"
                       dataIndex="personUpdate"
-                      title={t("PersonUpdate")}
+                      title={t("Người cập nhật HĐ")}
                       render={(text, record) => (
                         <span>{record.personUpdate}</span>
                       )}
@@ -983,7 +983,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="dateCreate"
                       dataIndex="dateCreate"
-                      title={t("DateCreate")}
+                      title={t("Ngày tạo")}
                       render={(text, record) => (
                         // <span>{record.dateCreate}</span>
                         <DateField
@@ -996,7 +996,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="dateUpdate"
                       dataIndex="dateUpdate"
-                      title={t("DateUpdate")}
+                      title={t("Người cập nhật")}
                       render={(text, record) => (
                         // <span>{record.dateUpdate}</span>
                         <DateField
@@ -1010,7 +1010,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="actions"
                       dataIndex="actions"
-                      title={t("Action")}
+                      title={t("Sự kiện")}
                       fixed="right"
                       align="center"
                       render={(text, record) => (
@@ -1841,7 +1841,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Image"}
+                title={"Ảnh sản phẩm"}
                 render={(text, record) => (
                   <span>{<AvatarProduct product={record.idProduct} />}</span>
                 )}
@@ -1849,13 +1849,13 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Name"}
+                title={"Tên sản phẩm"}
                 render={(text, record) => <span>{record.nameProduct}</span>}
               />
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Version"}
+                title={"Phiên bản"}
                 render={(text, record) => (
                   <span>{record.skuColor + "-" + record.skuCapacity}</span>
                 )}
@@ -1863,14 +1863,24 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Quantity"}
+                title={"Số lượng"}
                 render={(text, record) => <span>{record.quantity}</span>}
               />
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Price"}
-                render={(text, record) => <span>{record.price}</span>}
+                title={"Giá"}
+                render={(text, record) => {
+                  return (
+                    <NumberField
+                      options={{
+                        currency: "VND",
+                        style: "currency",
+                      }}
+                      value={record.price}
+                    />
+                  );
+                }}
               />
 
               <Table.Column
@@ -1893,7 +1903,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                             openModalAddImei(record.idSKU);
                           }}
                         >
-                          Add imei
+                          Thêm Imei
                         </button>
                       </p>
                     ) : (
@@ -1909,7 +1919,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                             showImeiSold(record.id);
                           }}
                         >
-                          Xem imei
+                          Xem Imei
                         </button>
                       </p>
                     )}
@@ -1920,7 +1930,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <Table.Column
                 key="total"
                 dataIndex="total"
-                title={"Total"}
+                title={"Thành tiền"}
                 render={(text, record) => {
                   return (
                     <NumberField
@@ -1935,7 +1945,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 sorter={(a, b) => a.totalMoney - b.totalMoney}
               />
 
-              <Table.Column
+              {/* <Table.Column
                 key="actions"
                 dataIndex="actions"
                 title={"Action"}
@@ -1946,15 +1956,15 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 render={(_, record) => (
                   <Dropdown overlay={moreMenu2(record)} trigger={["click"]}>
                     {/* các nút delete accept ... nằm trong moreMenu2 */}
-                    <MoreOutlined
+                    {/* <MoreOutlined
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         fontSize: 24,
                       }}
                     />
-                  </Dropdown>
-                )}
-              />
+                  </Dropdown> */}
+                {/* )}
+              /> */} 
             </Table>
           </List>
         </Col>

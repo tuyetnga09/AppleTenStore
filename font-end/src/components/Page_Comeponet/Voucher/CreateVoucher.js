@@ -141,7 +141,7 @@ const CreateVoucher = ({}) => {
                                 src="https://help.turitop.com/hc/article_attachments/360007926459/voucher.png"
                             /> */}
             <Form.Item
-              label={t("Code")}
+              label={t("Mã Voucher")}
               name="code"
               rules={[
                 {
@@ -159,7 +159,7 @@ const CreateVoucher = ({}) => {
               />
             </Form.Item>
             <Form.Item
-              label={t("Name")}
+              label={t("Tên")}
               name="name"
               rules={[
                 {
@@ -178,7 +178,7 @@ const CreateVoucher = ({}) => {
             </Form.Item>
 
             <Form.Item
-              label={t("Date Start")}
+              label={t("Ngày bắt đầu	")}
               name="dateStart"
               rules={[
                 {
@@ -200,7 +200,7 @@ const CreateVoucher = ({}) => {
             </Form.Item>
 
             <Form.Item
-              label={t("Date End")}
+              label={t("Ngày kết thúc	")}
               name="dateEnd"
               rules={[
                 {
@@ -223,7 +223,7 @@ const CreateVoucher = ({}) => {
           </Col>
           <Col xs={24} lg={8}>
             <Form.Item
-              label={t("Quantity")}
+              label={t("Số lượng")}
               name="quantity"
               rules={[
                 {
@@ -247,7 +247,7 @@ const CreateVoucher = ({}) => {
                 }}
               />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               label={t("Conditions Apply")}
               name="conditionsApply"
               rules={[
@@ -265,9 +265,9 @@ const CreateVoucher = ({}) => {
                 id="conditionsApply"
                 name="conditionsApply"
               />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
-              label={t("Value Voucher")}
+              label={t("Giá trị Voucher	")}
               name="valueVoucher"
               rules={[
                 {
@@ -286,7 +286,7 @@ const CreateVoucher = ({}) => {
               />
             </Form.Item>
             <Form.Item
-              label={t("Value Minimum")}
+              label={t("Giá trị đơn hàng tối hiểu	")}
               name="valueMinimum"
               rules={[
                 {
@@ -304,10 +304,8 @@ const CreateVoucher = ({}) => {
                 name="valueMinimum"
               />
             </Form.Item>
-          </Col>
-          <Col xs={24} lg={8}>
             <Form.Item
-              label={t("Value Maximum")}
+              label={t("Giá trị đơn hàng tối đa")}
               name="valueMaximum"
               rules={[
                 {
@@ -325,7 +323,10 @@ const CreateVoucher = ({}) => {
                 name="valueMaximum"
               />
             </Form.Item>
-            <Form.Item
+          </Col>
+          <Col xs={24} lg={8}>
+            
+            {/* <Form.Item
               label={t("Type Voucher")}
               name="typeVoucher"
               rules={[
@@ -343,7 +344,7 @@ const CreateVoucher = ({}) => {
                 id="typeVoucher"
                 name="typeVoucher"
               />
-            </Form.Item>
+            </Form.Item> */}
 
             <Image
               style={{
