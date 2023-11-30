@@ -138,7 +138,7 @@ const OderUserAll = () => {
               <Row>
                 <div className="col-10">
                   <p style={{ width: "300px" }}>
-                    <AvtProduct product={6} />
+                    <AvtProduct product={bd.idProduct} />
                   </p>
                   <strong>
                     {bd.nameProduct} {bd.capacity} {bd.color}
@@ -151,7 +151,7 @@ const OderUserAll = () => {
                 <div className="col-2">
                   <p style={{ float: "right" }}>
                     {bd.price.toLocaleString("vi-VN", {
-                      // style: "currency",
+                      style: "currency",
                       currency: "VND",
                     })}
                   </p>

@@ -73,7 +73,7 @@ const OderUserDaHuy = () => {
               <Row>
                 <div className="col-10">
                   <p style={{ width: "300px" }}>
-                    <AvtProduct product={6} />
+                    <AvtProduct product={bd.idProduct} />
                   </p>
                   <strong>
                     {bd.nameProduct} {bd.capacity} {bd.color}
@@ -84,7 +84,10 @@ const OderUserDaHuy = () => {
                   <strong>x{bd.quantity}</strong>
                 </div>
                 <div className="col-2">
-                  <p style={{ float: "right" }}>{bd.price}</p>
+                  <p style={{ float: "right" }}>{bd.price.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}</p>
                 </div>
               </Row>
             </div>
@@ -113,7 +116,10 @@ const OderUserDaHuy = () => {
               )}
             </div>
             <div className="col-6">
-              <span style={{ float: "right" }}>Thành tiền: {b.totalMoney}</span>
+              <span style={{ float: "right" }}>Thành tiền: {b.totalMoney.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}</span>
               <br />
               <br />
               <div style={{ float: "right" }}>
