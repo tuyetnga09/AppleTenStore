@@ -136,7 +136,7 @@ const OderUserHoanThanh = () => {
               <Row>
                 <div className="col-10">
                   <p style={{ width: "300px" }}>
-                    <AvtProduct product={6} />
+                    <AvtProduct product={bd.idProduct} />
                   </p>
                   <strong>
                     {bd.nameProduct} {bd.capacity} {bd.color}

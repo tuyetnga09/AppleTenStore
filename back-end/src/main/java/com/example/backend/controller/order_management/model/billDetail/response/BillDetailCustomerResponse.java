@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
 
 public interface BillDetailCustomerResponse {
+    Integer getIdProduct();
 
     Integer getIdBill();
 

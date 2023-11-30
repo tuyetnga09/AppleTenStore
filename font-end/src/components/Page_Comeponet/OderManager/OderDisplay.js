@@ -54,6 +54,8 @@ import {
   getCountBillChoXacNhan,
   returnBillById,
   getAllBillOFFLINECXN,
+  acceptReturn,
+  noAcceptReturn,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -77,14 +79,18 @@ import {
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
 import { Toast } from "primereact/toast";
-import { findBillDetails } from "../../../service/BillDetail/billDetail.service";
+import {
+  findBillDetails,
+  getAllBillDetailReturn,
+} from "../../../service/BillDetail/billDetail.service";
 import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
+import AvtProduct from "../../custumer_componet/avtProduct";
 
 const { RangePicker } = DatePicker;
 const { SubMenu } = Menu;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
-
+let loadDisplay = false;
 const OderDisplay = ({}) => {
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
@@ -103,6 +109,10 @@ const OderDisplay = ({}) => {
     useState(false); // Trạng thái hiển thị Modal
   const [isModalVisibleCannelOrder, setIsModalVisibleCannelOrder] =
     useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleReturnDetails, setIsModalVisibleReturnDetails] =
+    useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleReturnedProducts, setIsModalVisibleReturnedProducts] =
+    useState(false); // Trạng thái hiển thị Modal
   const breakpoint = Grid.useBreakpoint();
   const [load, setLoad] = useState(true);
   const [billCXN, setBillCXN] = useState([]);
@@ -114,6 +124,7 @@ const OderDisplay = ({}) => {
     note: null,
   });
   const [billOFFCXN, setBillOFFCXN] = useState([]);
+  const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
 
   const orderSelectProps = {
     options: [
@@ -495,6 +506,13 @@ const OderDisplay = ({}) => {
         style={{ backgroundColor: "red" }}
       />
     ),
+    YEU_CAU_TRA_HANG: (
+      <Badge
+        className="site-badge-count-109"
+        count={"Yêu cầu trả hàng"}
+        style={{ backgroundColor: "pink" }}
+      />
+    ),
   };
 
   function confirm2(id) {
@@ -507,6 +525,7 @@ const OderDisplay = ({}) => {
         updateStatusBill(idAccount, id)
           .then((response) => {
             setLoad(!load);
+            loadDisplay = !loadDisplay;
           })
           .catch((error) => {
             console.error("Error updating status:", error);
@@ -574,24 +593,31 @@ const OderDisplay = ({}) => {
   }
 
   function handUpdateTrangThai() {
-    if (checkSoluongImei() === true) {
-      const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
-      updateAllCVC(personUpdate)
-        .then((response) => {
-          setLoad(!load);
-          notification.success({
-            message: "Accept",
-            description: "Xác nhận thành công",
-          });
-        })
-        .catch((error) => {
-          console.error("Error updating data:", error);
-        });
-    } else {
-      notification.error({
-        message: "KIỂM TRA IMEI",
-        description: "Vui lòng kiểm tra lại imei",
+    if (pendingBills === 0 || pendingBills === null || pendingBills === "") {
+      notification.success({
+        message: "Accept",
+        description: "Tất cả đơn hàng đã được xác nhận thanh công",
       });
+    } else {
+      if (checkSoluongImei() === true) {
+        const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
+        updateAllCVC(personUpdate)
+          .then((response) => {
+            setLoad(!load);
+            notification.success({
+              message: "Accept",
+              description: "Xác nhận thành công",
+            });
+          })
+          .catch((error) => {
+            console.error("Error updating data:", error);
+          });
+      } else {
+        notification.error({
+          message: "KIỂM TRA IMEI",
+          description: "Vui lòng kiểm tra lại imei của các đơn hàng ",
+        });
+      }
     }
   }
 
@@ -650,6 +676,7 @@ const OderDisplay = ({}) => {
     );
     setIsModalVisibleCannelOrder(false);
     setLoad(!load);
+    loadDisplay = !loadDisplay;
     const textNoteReturn = document.getElementById(
       "exampleFormControlTextarea2"
     );
@@ -658,6 +685,90 @@ const OderDisplay = ({}) => {
       message: "Hủy đơn",
       description: "Hủy đơn thành công",
     });
+  };
+  const [noteReturnDetail, setNoteReturnDetail] = useState(null);
+  const [acceptReturnBill, setAcceptReturnBill] = useState({
+    idBill: null,
+    codeImeiDaBan: [],
+  });
+  const handleClickReturnDetails = (record) => {
+    let arrCodeImeiDaBan = [];
+    setIsModalVisibleReturnDetails(true);
+    console.log(record);
+    setNoteReturnDetail(record.noteReturn);
+    getAllBillDetailReturn(4, record.id)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+        response.data.map((item) => {
+          if (!arrCodeImeiDaBan.includes(item.codeImei)) {
+            arrCodeImeiDaBan.push(item.codeImei);
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setAcceptReturnBill({
+      idBill: record.id,
+      codeImeiDaBan: arrCodeImeiDaBan,
+    });
+  };
+
+  // Hàm để ẩn Modal
+  const handleCannelReturnDetails = () => {
+    setIsModalVisibleReturnDetails(false);
+    setAcceptReturnBill({
+      idBill: null,
+      codeImeiDaBan: [],
+    });
+  };
+
+  function returnConfirmation() {
+    acceptReturn(acceptReturnBill)
+      .then((res) => {
+        notification.success({
+          message: "Trả hàng!",
+          description: "Trả hàng thành công",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsModalVisibleReturnDetails(false);
+    setLoad(!load);
+  }
+
+  function noReturnConfirmation() {
+    noAcceptReturn(acceptReturnBill)
+      .then((res) => {
+        notification.success({
+          message: "Trả hàng!",
+          description: "Đã hủy yêu cầu",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsModalVisibleReturnDetails(false);
+    setLoad(!load);
+  }
+
+  const handleClickReturnedProducts = (record) => {
+    setIsModalVisibleReturnedProducts(true);
+    getAllBillDetailReturn(6, record.id)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // Hàm để ẩn Modal
+  const handleCannelReturnedProducts = () => {
+    setIsModalVisibleReturnedProducts(false);
   };
 
   const expandedRowRender = (record) => {
@@ -742,8 +853,15 @@ const OderDisplay = ({}) => {
                 <Link to="/product-detail/chip">Chip</Link>
               </Menu.Item>
             </SubMenu>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/logout">Đăng xuất</Link>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -947,9 +1065,7 @@ const OderDisplay = ({}) => {
                       key="user"
                       dataIndex="user"
                       title={t("Tên khách hàng")}
-                      render={(text, record) => (
-                        <span>{record?.userName}</span>
-                      )}
+                      render={(text, record) => <span>{record?.userName}</span>}
                     />
 
                     {/* <Table.Column
@@ -1203,6 +1319,72 @@ const OderDisplay = ({}) => {
                                 }}
                               />
                             </Dropdown>
+                          ) : record.statusBill === "YEU_CAU_TRA_HANG" ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "green",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      handleClickReturnDetails(record)
+                                    }
+                                  >
+                                    Xem chi tiết
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
+                          ) : record.statusBill === "TRA_HANG" ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "green",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      handleClickReturnedProducts(record)
+                                    }
+                                  >
+                                    Xem chi tiết
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
                           ) : (
                             ""
                           )}
@@ -1263,6 +1445,254 @@ const OderDisplay = ({}) => {
                 </button>
               </form>
             </Modal>
+            <Modal
+              visible={isModalVisibleReturnDetails}
+              onCancel={handleCannelReturnDetails}
+              width={900}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <form>
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea2" class="form-label">
+                    Lí do trả hàng:
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="exampleFormControlTextarea3"
+                    rows="3"
+                    required
+                    disabled
+                    value={noteReturnDetail}
+                  ></textarea>
+                </div>
+              </form>
+              <Table
+                rowKey="oop"
+                dataSource={dataBillDetails}
+                pagination={{
+                  pageSize: 5,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                  showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                }}
+              >
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  dataIndex="images"
+                  title="Ảnh"
+                  render={(text, record) => (
+                    <div style={{ textAlign: "center" }}>
+                      <AvtProduct product={record.productId} />
+                    </div>
+                  )}
+                  width={150}
+                />
+
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Tên Sản Phẩm"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.nameProduct}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* sumSKU */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Phiên Bản"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>
+                          {record.capacity} - {record.color}
+                        </p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* priceSKU  */}
+                <Table.Column
+                  align="center"
+                  key="price"
+                  dataIndex="price"
+                  title="Giá Bán"
+                  sorter={(a, b) => a.price - b.price}
+                  render={(text, record) => {
+                    return record.price === null ? (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <WarningFilled
+                          value={false}
+                          style={{
+                            color: "#FFCC00",
+                          }}
+                        />
+                        {parseFloat(0).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    ) : (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    );
+                  }}
+                />
+
+                {/* sumImeiTrongKho */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Mã Imei"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.codeImei}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+              </Table>
+              <button
+                type="submit"
+                class="btn btn-success"
+                onClick={() => returnConfirmation()}
+              >
+                Xác nhận
+              </button>{" "}
+              <button
+                type="submit"
+                class="btn btn-warning"
+                onClick={() => noReturnConfirmation()}
+              >
+                Hủy yêu cầu
+              </button>
+            </Modal>
+            <Modal
+              visible={isModalVisibleReturnedProducts}
+              onCancel={handleCannelReturnedProducts}
+              width={900}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <label for="exampleFormControlTextarea2" class="form-label">
+                Sản phẩm đã trả:
+              </label>
+              <Table
+                rowKey="oop"
+                dataSource={dataBillDetails}
+                pagination={{
+                  pageSize: 5,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                  showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                }}
+              >
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  dataIndex="images"
+                  title="Ảnh"
+                  render={(text, record) => (
+                    <div style={{ textAlign: "center" }}>
+                      <AvtProduct product={record.productId} />
+                    </div>
+                  )}
+                  width={150}
+                />
+
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Tên Sản Phẩm"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.nameProduct}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* sumSKU */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Phiên Bản"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>
+                          {record.capacity} - {record.color}
+                        </p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* priceSKU  */}
+                <Table.Column
+                  align="center"
+                  key="price"
+                  dataIndex="price"
+                  title="Giá Bán"
+                  sorter={(a, b) => a.price - b.price}
+                  render={(text, record) => {
+                    return record.price === null ? (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <WarningFilled
+                          value={false}
+                          style={{
+                            color: "#FFCC00",
+                          }}
+                        />
+                        {parseFloat(0).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    ) : (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    );
+                  }}
+                />
+
+                {/* sumImeiTrongKho */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Mã Imei"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.codeImei}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+              </Table>
+            </Modal>
           </Content>
         </Layout>
       </Layout>
@@ -1298,7 +1728,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
     //   .catch((err) => {
     //     console.log(err);
     //   });
-  }, [isModalVisible, isUpdate]);
+  }, [isModalVisible, isUpdate, loadDisplay]);
 
   //tạo danh sach imei thất lạc
   const [dataImeiThatLac, setDataImeiThatLac] = useState([]);
@@ -1824,7 +2254,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       {" "}
       <Toast ref={toast} />
       <ConfirmDialog />
-      <List title="Bill Detail" createButtonProps={undefined}>
+      <List title="Sản phẩm" createButtonProps={undefined}>
         <Col>
           <List>
             <Table
@@ -1843,7 +2273,9 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 dataIndex="code"
                 title={"Ảnh sản phẩm"}
                 render={(text, record) => (
-                  <span>{<AvatarProduct product={record.idProduct} />}</span>
+                  <div style={{ width: "150px" }}>
+                    {<AvatarProduct product={record.idProduct} />}
+                  </div>
                 )}
               />
               <Table.Column
@@ -1956,15 +2388,15 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 render={(_, record) => (
                   <Dropdown overlay={moreMenu2(record)} trigger={["click"]}>
                     {/* các nút delete accept ... nằm trong moreMenu2 */}
-                    {/* <MoreOutlined
+              {/* <MoreOutlined
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         fontSize: 24,
                       }}
                     />
                   </Dropdown> */}
-                {/* )}
-              /> */} 
+              {/* )}
+              /> */}
             </Table>
           </List>
         </Col>

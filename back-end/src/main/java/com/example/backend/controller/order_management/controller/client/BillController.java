@@ -6,6 +6,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
+import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.BillDetails;
@@ -149,9 +150,14 @@ public class BillController {
         this.billService.updateStatusBill(idAccount ,id);
     }
 
+//    @GetMapping(value = "/search/{code}")
+//    public Bill paydone(@PathVariable String code){
+//        return this.billService.findByCode(code);
+//    }
+
     @GetMapping(value = "/search/{code}")
-    public Bill paydone(@PathVariable String code){
-        return this.billService.findByCode(code);
+    public BillPayDone paydone(@PathVariable String code){
+        return this.billService.findBillPayDoneByCode(code);
     }
 
     @PostMapping("/account")

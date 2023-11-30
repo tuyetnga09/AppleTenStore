@@ -538,7 +538,7 @@ const Checkout = () => {
       setIsChecked(false);
       setBill({
         ...bill,
-        paymentMethod: "VN_PAY",
+        paymentMethod: "CHUYEN_KHOAN",
       });
     }
   }
