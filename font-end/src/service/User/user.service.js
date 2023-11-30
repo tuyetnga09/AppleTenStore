@@ -15,3 +15,7 @@ export const update = (id, editCustomer) => {
 export const updatePassword = (id, editPassword) => {
   return httpClient.put(`/admin/user/updatePassword/${id}`, editPassword);
 };
+
+export const deleteUser = (id) => {
+  return httpClient.put(`/admin/user/deleteUser?id=${id}`);
+};

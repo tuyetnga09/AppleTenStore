@@ -2,7 +2,10 @@ import {
   listRoles,
   updateRole,
 } from "../../../service/Account/account.service";
-import { readAllUserByRole } from "../../../service/User/user.service";
+import {
+  readAllUserByRole,
+  deleteUser,
+} from "../../../service/User/user.service";
 // import { listProductByCategories } from "../../../service/product.service";
 import React, { useEffect, useState } from "react";
 import {
@@ -16,6 +19,7 @@ import {
   useDrawerForm,
 } from "@refinedev/antd";
 import {
+  CloseOutlined,
   FileDoneOutlined,
   FormOutlined,
   MoreOutlined,
@@ -340,6 +344,20 @@ const UserAccountTable = ({ record }) => {
       });
   };
 
+  const deleteUserById = (id) => {
+    deleteUser(id)
+      .then((res) => {
+        notification.success({
+          message: "Xóa tài khoản",
+          description: "Xóa tài khoản thành công",
+        });
+        setIsUpdate(!isUpdate);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     readAllUserByRole(record)
       .then((res) => {
@@ -399,6 +417,27 @@ const UserAccountTable = ({ record }) => {
           >
             Nhân viên quản lý
           </Menu.Item>
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <CloseOutlined
+                style={{
+                  color: "red",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => deleteUserById(record1.id)}
+          >
+            Xóa tài khoản
+          </Menu.Item>
         </Menu>
       ) : record === "NHAN_VIEN_BAN_HANG" ? (
         <Menu
@@ -447,6 +486,27 @@ const UserAccountTable = ({ record }) => {
           >
             Nhân viên quản lý
           </Menu.Item>
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <CloseOutlined
+                style={{
+                  color: "red",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => deleteUserById(record1.id)}
+          >
+            Xóa tài khoản
+          </Menu.Item>
         </Menu>
       ) : record === "NHAN_VIEN_QUAN_LY" ? (
         <Menu
@@ -494,6 +554,27 @@ const UserAccountTable = ({ record }) => {
             onClick={() => editRole("NHAN_VIEN_BAN_HANG", record1.id)}
           >
             Nhân viên bán hàng
+          </Menu.Item>
+          <Menu.Item
+            key="edit"
+            style={{
+              fontSize: 15,
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+            }}
+            icon={
+              <CloseOutlined
+                style={{
+                  color: "red",
+                  fontSize: 17,
+                  fontWeight: 500,
+                }}
+              />
+            }
+            onClick={() => deleteUserById(record1.id)}
+          >
+            Xóa tài khoản
           </Menu.Item>
         </Menu>
       ) : (

@@ -14,4 +14,6 @@ public interface UserService {
     List<User> findByRole(Pageable pageable, String role);
 
     Boolean updateUser(String fullName, String email, String phoneNumber, LocalDate dateOfBirth, Integer id);
+
+    void deleteUser(Integer id);
 }
