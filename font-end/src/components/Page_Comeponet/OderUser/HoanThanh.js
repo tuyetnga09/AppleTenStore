@@ -1,17 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
-import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
+import {
+  readAll,
+  getAllBillDetail,
+  yeuCauTraHang,
+  checkBillTraHang,
+  traTatCaSanPham,
+} from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllByIdAndDTT } from "../../../service/Bill/billCustomer.service";
 import { account } from "../Login/login";
-import { Row } from "antd";
+import {
+  Avatar,
+  Modal,
+  Select,
+  notification,
+  Table,
+  Form,
+  Checkbox,
+  Input,
+  Row,
+} from "antd";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import {
+  WarningFilled,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
+import { Toast } from "primereact/toast";
+const { Option } = Select;
 
 const OderUserHoanThanh = () => {
   const [billDetails, setBillDetails] = useState([]);
   const [bills, setBills] = useState([]);
   const storedUser = JSON.parse(localStorage.getItem("account"));
+  const [banks, setBanks] = useState([]);
 
   useEffect(() => {
     readAllByIdAndDTT(storedUser?.id)
@@ -40,6 +65,19 @@ const OderUserHoanThanh = () => {
     };
 
     fetchData();
+    const loadBankList = async () => {
+      const apiUrl = "https://api.vietqr.io/v2/banks";
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = response.json();
+        data.then((res) => setBanks(res.data));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    loadBankList();
   }, [bills]);
 
   const result = bills.map((b, index) => {
@@ -167,7 +205,11 @@ const OderUserHoanThanh = () => {
                 ) : b.statusBill === "VAN_CHUYEN" ? (
                   ""
                 ) : b.statusBill === "DA_THANH_TOAN" && khoangCachNgay <= 3 ? (
-                  <button type="button" class="btn btn-light">
+                  <button
+                    type="button"
+                    class="btn btn-light"
+                    onClick={() => handleNoteReturnsClick(b)}
+                  >
                     Trả hàng
                   </button>
                 ) : (
@@ -183,10 +225,336 @@ const OderUserHoanThanh = () => {
       </>
     );
   });
+  // phongnh
+
+  const [billReturn, setBillReturn] = useState({
+    id: null,
+    note: null,
+  });
+  const [isModalVisibleXemHoaDonChiTiet, setIsModalVisibleXemHoaDonChiTiet] =
+    useState(false); // Trạng thái hiển thị Modal
+
+  // Hàm để mở Modal
+  const handleOpenXemHoaDonChiTiet = () => {
+    setIsModalVisibleXemHoaDonChiTiet(true);
+  };
+  // Hàm để ẩn Modal
+  const handleCancelXemHoaDonChiTiet = () => {
+    setCheckDataBill();
+    setDataBillDetails([]);
+    setSelectedCheckboxes([]);
+    setIsModalVisibleXemHoaDonChiTiet(false);
+  };
+
+  const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
+  const [dataCheckBill, setCheckDataBill] = useState(true); // check bill da tra hang lan nao hay chua
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState([]); //list id imei da ban
+
+  function handleCheckboxChange(e) {
+    const checkboxValue = e.target.value;
+    setSelectedCheckboxes((prevSelectedCheckboxes) => {
+      if (e.target.checked) {
+        // Nếu được chọn, thêm giá trị vào danh sách
+        return [...prevSelectedCheckboxes, checkboxValue];
+      } else {
+        // Nếu bỏ chọn, loại bỏ giá trị khỏi danh sách
+        return prevSelectedCheckboxes.filter((item) => item !== checkboxValue);
+      }
+    });
+  }
+  // Sử dụng useEffect để theo dõi thay đổi của selectedCheckboxes và in giá trị mới
+  // useEffect(() => {
+  //   console.log(selectedCheckboxes + " :imei da ban ++--");
+  // }, [selectedCheckboxes]);
+
+  //nút trả hàng - phongnh *
+  const toast = useRef(null);
+  const handleNoteReturnsClick = (record) => {
+    setBillReturn({
+      ...billReturn,
+      id: record.id,
+    });
+    checkBillTraHang(record.id)
+      .then((res) => {
+        setCheckDataBill(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    getAllBillDetail(record.id)
+      .then((res) => {
+        setDataBillDetails(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    // setIsModalVisibleNoteReturns(true);
+    handleOpenXemHoaDonChiTiet();
+  };
+
+  //huy chon check box
+  const huyChonCheckBox = () => {
+    setSelectedCheckboxes([]);
+  };
+  const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
+    useState(false); // Trạng thái hiển thị Modal
+
+  const handleOpenNoteReturnsCancel = () => {
+    setIsModalVisibleNoteReturns(true);
+    // In ra danh sách id
+  };
+
+  //tra 1 phan
+  const traSanPhamDaChon = () => {
+    if (
+      selectedCheckboxes === undefined ||
+      selectedCheckboxes.length === 0 ||
+      selectedCheckboxes === null
+    ) {
+      toast.current.show({
+        severity: "warn",
+        summary: "THÔNG BÁO",
+        detail: "Hãy chọn sản phẩm.",
+        life: 3000,
+      });
+    } else {
+      handleOpenNoteReturnsCancel(selectedCheckboxes);
+    }
+  };
+  const rejectTraHang = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục mua sắm.",
+      life: 3000,
+    });
+  };
+  const confirmTraSanPhamDaChon = () => {
+    confirmDialog({
+      message: "Bạn chắc chắc trả sản phẩm đã chọn?",
+      header: "XÁC NHẬN THÔNG BÁO",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => traSanPhamDaChon(),
+      reject: () => rejectTraHang(),
+    });
+  };
+
+  //tra tat ca
+  const [dataTraTatCaSP, setDataTraTatCaSP] = useState([]);
+  const traTatCaSP = () => {
+    const idList = dataBillDetails.map((obj) => obj.idImei);
+    setDataTraTatCaSP(idList);
+    handleOpenNoteReturnsCancel();
+  };
+  const rejectTraTatCaSP = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục mua sắm.",
+      life: 3000,
+    });
+  };
+  const confirmTraTatCaSanPham = () => {
+    confirmDialog({
+      message: "Bạn chắc chắc trả sản phẩm đã chọn?",
+      header: "XÁC NHẬN THÔNG BÁO",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => traTatCaSP(),
+      reject: () => rejectTraTatCaSP(),
+    });
+  };
+
+  // Hàm để ẩn Modal
+  const handleNoteReturnsCancel = () => {
+    setDataTraTatCaSP([]);
+    setSelectNganHang(null);
+    console.log(billReturn);
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1"
+    );
+    textNoteReturn.value = "";
+    const stk = document.getElementById("stk");
+    stk.value = "";
+
+    const chuTaiKhoan = document.getElementById("id-chu-tai-khoan");
+    chuTaiKhoan.value = "";
+
+    const sdt = document.getElementById("id-sdt");
+    sdt.value = "";
+
+    setIsModalVisibleNoteReturns(false);
+  };
+
+  const [idNganHang, setIdNganHang] = useState();
+
+  // function returnBill(id, noteReturn) {
+  //   returnBillById(id, null, noteReturn).then((response) =>
+  //     console.log(response.data)
+  //   );
+  // }
+  // phongnh 1
+  const handleNoteReturns = (event) => {
+    const stk = document.getElementById("stk").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const sdt = document.getElementById("id-sdt").value;
+    const updatedNote = `Ghi chú:${event.target.value}, Ngân hàng: ${idNganHang},
+   STK: ${stk}, Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${sdt}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+  };
+  const [selectNganHang, setSelectNganHang] = useState(null);
+
+  // phongnh 2
+  function handleSelectBank(value) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const stk = document.getElementById("stk").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const sdt = document.getElementById("id-sdt").value;
+
+    setIdNganHang(value);
+    setSelectNganHang(value);
+    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${value}, STK: ${stk},
+   Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${sdt}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+  }
+
+  // phongnh 3
+  function handleSoTaiKhoan(event) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const sdt = document.getElementById("id-sdt").value;
+    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${idNganHang}, STK: ${event.target.value}, 
+  Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${sdt}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+  }
+
+  // phongnh 4
+  function handleNoteReturnsChuTaiKhoan(event) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const stk = document.getElementById("stk").value;
+    const sdt = document.getElementById("id-sdt").value;
+    const updatedNote = `${note}, ${idNganHang}, STK: ${stk},
+   Tên: ${event.target.value}, SĐT: ${sdt}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+  }
+
+  // phongnh 5
+  function handleNoteReturnsSdt(event) {
+    const note = document.getElementById("exampleFormControlTextarea1").value;
+    const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
+    const stk = document.getElementById("stk").value;
+    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${idNganHang}, STK: ${stk},
+   Chủ tài khoản: ${tenTaiKhoan}, SĐT: ${event.target.value}`;
+    setBillReturn({
+      ...billReturn,
+      note: updatedNote,
+    });
+    console.log(billReturn);
+  }
+
+  const handleSubmitReturns2 = (event) => {
+    event.preventDefault();
+
+    if (selectNganHang === null || selectNganHang === undefined) {
+      notification.warning({
+        message: "Thông báo",
+        description: "Vui lòng nhập đủ thông tin!",
+      });
+    } else {
+      if (
+        (selectedCheckboxes === undefined ||
+          selectedCheckboxes.length === 0 ||
+          selectedCheckboxes === null) &&
+        (dataTraTatCaSP !== null ||
+          dataTraTatCaSP !== undefined ||
+          dataTraTatCaSP.length > 0)
+      ) {
+        traTatCaSanPham(billReturn.id, billReturn.note, dataTraTatCaSP)
+          .then((res) => {
+            if (res.data !== "" && res.data !== undefined) {
+              setDataBillDetails(res.data);
+              notification.success({
+                message: "Trả hàng",
+                description:
+                  "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
+              });
+              checkBillTraHang(billReturn.id)
+                .then((res) => {
+                  setCheckDataBill(res.data);
+                  console.log(res.data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+              handleNoteReturnsCancel();
+            } else {
+              notification.warn({
+                message: "Trả hàng thất bại!",
+                description:
+                  "Yêu cầu trả hàng của quý khách thất bại! Vui lòng thử lại!",
+              });
+            }
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        yeuCauTraHang(billReturn.id, billReturn.note, selectedCheckboxes)
+          .then((res) => {
+            if (res.data !== "" && res.data !== undefined) {
+              setDataBillDetails(res.data);
+              notification.success({
+                message: "Trả hàng",
+                description:
+                  "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
+              });
+              checkBillTraHang(billReturn.id)
+                .then((res) => {
+                  setCheckDataBill(res.data);
+                  console.log(res.data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+              handleNoteReturnsCancel();
+            } else {
+              notification.warn({
+                message: "Trả hàng thất bại!",
+                description:
+                  "Yêu cầu trả hàng của quý khách thất bại! Vui lòng thử lại!",
+              });
+            }
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
+  };
 
   return (
     <>
       <Header />
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <br />
       <section>
         <ul class="nav nav-tabs">
@@ -225,13 +593,372 @@ const OderUserHoanThanh = () => {
       <section
         style={{
           position: "relative",
-          maxHeight: 550,
+          maxHeight: 500,
           width: "1200px",
           overflowY: "auto",
         }}
       >
         {result}
       </section>
+      <Modal
+        visible={isModalVisibleNoteReturns}
+        onCancel={handleNoteReturnsCancel}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <h4
+          style={{
+            textAlign: "center",
+            marginTop: "15px",
+            marginBottom: "20px",
+          }}
+        >
+          THÔNG TIN NGƯỜI HOÀN TRẢ
+        </h4>
+        <form onSubmit={handleSubmitReturns2}>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Lí do trả hàng:
+            </label>
+            <textarea
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="3"
+              required
+              onChange={handleNoteReturns}
+            ></textarea>
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Ngân hàng:
+            </label>
+            <Select
+              style={{ width: "100%", height: "100%" }}
+              value={selectNganHang}
+              onChange={handleSelectBank}
+            >
+              {banks.map((option) => (
+                <Option key={option.id} value={option.shortName} id={option.id}>
+                  <Avatar
+                    size="small"
+                    src={option.logo}
+                    style={{ width: "50%", height: "100%" }}
+                  />
+                  {/* {option.shortName} */}
+                </Option>
+              ))}
+            </Select>
+            <br />
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Nhập số tài khoản:
+            </label>
+            <div class="input-group mb-3">
+              <input
+                type="number"
+                class="form-control"
+                aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default"
+                id="stk"
+                required
+                onChange={handleSoTaiKhoan}
+              />
+            </div>
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Chủ tài khoản:
+            </label>
+            <input
+              class="form-control"
+              id="id-chu-tai-khoan"
+              aria-label="Sizing example input"
+              aria-describedby="inputGroup-sizing-default"
+              rows="3"
+              required
+              onChange={handleNoteReturnsChuTaiKhoan}
+            />
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Số điện thoại hiện tại:
+            </label>
+            <input
+              class="form-control"
+              id="id-sdt"
+              aria-label="Sizing example input"
+              aria-describedby="inputGroup-sizing-default"
+              rows="3"
+              type="number"
+              required
+              // placeholder="Nhập số"
+              onChange={handleNoteReturnsSdt}
+            />
+          </div>
+          <button type="submit" class="btn btn-success">
+            Xác nhận
+          </button>
+        </form>
+      </Modal>
+      <Modal
+        visible={isModalVisibleXemHoaDonChiTiet}
+        onCancel={handleCancelXemHoaDonChiTiet}
+        width={900}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <h4
+          style={{
+            textAlign: "center",
+            marginTop: "15px",
+            marginBottom: "20px",
+          }}
+        >
+          THÔNG TIN TRẢ HÀNG
+        </h4>
+        <span style={{ color: "red", marginBottom: "15px", marginTop: "15px" }}>
+          * Lưu ý: Quý khách chỉ được trả hàng một lần duy nhất trên một hoá đơn
+          trong vòng 3 ngày kể từ lúc nhận được hàng.
+        </span>
+        <Row style={{ marginTop: "28px", marginBottom: "10px" }}>
+          <input
+            // id="id-imeis"
+            className="form-control me-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+            name="key"
+            // onChange={handleChangeImeis}
+          />
+        </Row>
+        {dataCheckBill === true ? (
+          <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
+            <div className="col-6">
+              <button
+                type="button"
+                class="btn btn-danger"
+                onClick={() => huyChonCheckBox()}
+              >
+                Huỷ Chọn Tất Cả
+              </button>
+            </div>
+            <div className="col-6">
+              <button
+                type="button"
+                class="btn btn-warning"
+                style={{ color: "white" }}
+                onClick={() => confirmTraSanPhamDaChon()}
+              >
+                Trả Sản Phẩm Đã Chọn
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                style={{ marginLeft: "10px" }}
+                onClick={() => confirmTraTatCaSanPham()}
+              >
+                Trả Tất Cả Sản Phẩm
+              </button>
+            </div>
+          </Row>
+        ) : (
+          <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
+            <div class="col-6">
+              <span style={{ color: "red" }}>
+                * Quý khách đã hết số lần trả hàng.
+              </span>
+            </div>
+            <div class="col-6">
+              <button
+                type="button"
+                class="btn btn-danger"
+                style={{ float: "right" }}
+              >
+                Huỷ Yêu Cầu Trả Hàng
+              </button>
+            </div>
+          </Row>
+        )}
+
+        <Table
+          rowKey="oop"
+          dataSource={dataBillDetails}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showTotal: (total) => `Tổng số ${total} sản phẩm`,
+            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+          }}
+        >
+          {/* tên sp */}
+          <Table.Column
+            align="center"
+            key="checked"
+            dataIndex="checked"
+            title="Chọn"
+            render={(text, record) => {
+              return (
+                <div>
+                  {record.statusImei == 3 && dataCheckBill === true ? (
+                    <Checkbox
+                      value={record.idImei}
+                      checked={selectedCheckboxes.includes(record.idImei)}
+                      onChange={handleCheckboxChange}
+                    />
+                  ) : (
+                    <CloseCircleOutlined
+                      style={{
+                        color: "red",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            }}
+          />
+          <Table.Column
+            align="center"
+            dataIndex="images"
+            title="Ảnh"
+            render={(text, record) => (
+              <div style={{ textAlign: "center" }}>
+                <AvtProduct product={record.idProduct} />
+              </div>
+            )}
+            width={150}
+          />
+
+          {/* tên sp */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Tên Sản Phẩm"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>{record.nameProduct}</p>
+                </Form.Item>
+              );
+            }}
+          />
+          {/* sumSKU */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Phiên Bản"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>
+                    {record.capacity} - {record.color}
+                  </p>
+                </Form.Item>
+              );
+            }}
+          />
+          {/* priceSKU  */}
+          <Table.Column
+            align="center"
+            key="price"
+            dataIndex="price"
+            title="Giá Bán"
+            sorter={(a, b) => a.price - b.price}
+            render={(text, record) => {
+              return record.price === null ? (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <WarningFilled
+                    value={false}
+                    style={{
+                      color: "#FFCC00",
+                    }}
+                  />
+                  {parseFloat(0).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Form.Item>
+              ) : (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  {parseFloat(record.price).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Form.Item>
+              );
+            }}
+          />
+
+          {/* sumImeiTrongKho */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Mã Imei"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>{record.imei}</p>
+                </Form.Item>
+              );
+            }}
+          />
+
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Trạng Thái"
+            render={(text, record) => {
+              return (
+                <div>
+                  {record.statusImei === 3 ? (
+                    <CheckCircleOutlined
+                      style={{
+                        color: "#52c41a",
+                      }}
+                    />
+                  ) : record.statusImei === 6 ? (
+                    <CloseCircleOutlined
+                      style={{
+                        color: "red",
+                      }}
+                    />
+                  ) : record.statusImei === 4 ? (
+                    <div
+                      style={{
+                        backgroundColor: "blue",
+                        color: "white",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      Đã gửi yêu cầu
+                    </div>
+                  ) : record.statusImei === 5 ? (
+                    <div
+                      style={{
+                        backgroundColor: "orange",
+                        color: "white",
+                        borderRadius: "5px",
+                      }}
+                    >
+                      Chờ kiểm tra
+                    </div>
+                  ) : (
+                    <WarningFilled
+                      style={{
+                        color: "#FFCC00",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+              {
+                /* <Form.Item name="title" style={{ margin: 0 }}>
+                    <p>{record.idImei}</p>
+                  </Form.Item> */
+              }
+              //   </div>
+              // );
+            }}
+          />
+        </Table>
+      </Modal>
       <br />
       <footer
         style={{

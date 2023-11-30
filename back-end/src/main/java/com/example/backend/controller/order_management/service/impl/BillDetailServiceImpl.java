@@ -76,6 +76,7 @@ public class BillDetailServiceImpl implements BillDetailService {
         Boolean check = billRepository.existsById(id);
         if (check){
             List<BillDetailCustomerIon> billDetailCustomerIons = billDetailRepository.getAllBillDetaillOfIdBill(id);
+
             return  billDetailCustomerIons;
         }
         return null;

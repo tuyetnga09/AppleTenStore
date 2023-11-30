@@ -27,7 +27,7 @@ public interface BillDetailCustomerIon {
 
     String getImei();
 
-    String getStatusImei();
+    Integer getStatusImei();
 
 
 }

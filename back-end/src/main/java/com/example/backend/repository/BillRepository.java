@@ -249,9 +249,11 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     Integer getCountBillCXN();
 
     // lấy ra bill detail trong dashboard
-    @Query(value = "select product.id as 'idProduct', image.name as 'nameImage', product.name as 'nameProduct', sku.capacity as 'capacity', sku.color as 'color', sku.price  as 'price', imei_da_ban.code_imei  as 'imei'  from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail \n" +
-            "join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id join image on product.id = image.id_product\n" +
-            " where bill_detail.id_bill =?1", nativeQuery = true)
+    @Query(value = "select product.id as 'idProduct', product.name as 'nameProduct', sku.capacity as 'capacity',\n" +
+            " sku.color as 'color', sku.price  as 'price', imei_da_ban.code_imei  as 'imei'  from bill_detail \n" +
+            " join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail \n" +
+            "join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id \n" +
+            "where bill_detail.id_bill =?1", nativeQuery = true)
     List<BillDetailDashboardIon> getListBillDetail(Integer idBill);
 
     @Query(value = "select * from bill where type = 'OFFLINE' and status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)

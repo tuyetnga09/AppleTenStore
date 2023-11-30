@@ -7,6 +7,8 @@ import {
   readAll,
   getAllBillDetail,
   yeuCauTraHang,
+  checkBillTraHang,
+  traTatCaSanPham,
 } from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllById } from "../../../service/Bill/billCustomer.service";
 import {
@@ -290,12 +292,14 @@ const OderUserAll = () => {
   };
   // Hàm để ẩn Modal
   const handleCancelXemHoaDonChiTiet = () => {
+    setCheckDataBill();
     setDataBillDetails([]);
     setSelectedCheckboxes([]);
     setIsModalVisibleXemHoaDonChiTiet(false);
   };
 
   const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
+  const [dataCheckBill, setCheckDataBill] = useState(true); // check bill da tra hang lan nao hay chua
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]); //list id imei da ban
 
   function handleCheckboxChange(e) {
@@ -322,6 +326,14 @@ const OderUserAll = () => {
       ...billReturn,
       id: record.id,
     });
+    checkBillTraHang(record.id)
+      .then((res) => {
+        setCheckDataBill(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     getAllBillDetail(record.id)
       .then((res) => {
         setDataBillDetails(res.data);
@@ -338,10 +350,30 @@ const OderUserAll = () => {
   const huyChonCheckBox = () => {
     setSelectedCheckboxes([]);
   };
+  const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
+    useState(false); // Trạng thái hiển thị Modal
+
+  const handleOpenNoteReturnsCancel = () => {
+    setIsModalVisibleNoteReturns(true);
+    // In ra danh sách id
+  };
 
   //tra 1 phan
   const traSanPhamDaChon = () => {
-    handleOpenNoteReturnsCancel(selectedCheckboxes);
+    if (
+      selectedCheckboxes === undefined ||
+      selectedCheckboxes.length === 0 ||
+      selectedCheckboxes === null
+    ) {
+      toast.current.show({
+        severity: "warn",
+        summary: "THÔNG BÁO",
+        detail: "Hãy chọn sản phẩm.",
+        life: 3000,
+      });
+    } else {
+      handleOpenNoteReturnsCancel(selectedCheckboxes);
+    }
   };
   const rejectTraHang = () => {
     toast.current.show({
@@ -351,7 +383,7 @@ const OderUserAll = () => {
       life: 3000,
     });
   };
-  const confirmTraSanPhamDaChon = (idBillDetail, codeBill) => {
+  const confirmTraSanPhamDaChon = () => {
     confirmDialog({
       message: "Bạn chắc chắc trả sản phẩm đã chọn?",
       header: "XÁC NHẬN THÔNG BÁO",
@@ -362,14 +394,35 @@ const OderUserAll = () => {
     });
   };
 
-  const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
-    useState(false); // Trạng thái hiển thị Modal
-
-  const handleOpenNoteReturnsCancel = () => {
-    setIsModalVisibleNoteReturns(true);
+  //tra tat ca
+  const [dataTraTatCaSP, setDataTraTatCaSP] = useState([]);
+  const traTatCaSP = () => {
+    const idList = dataBillDetails.map((obj) => obj.idImei);
+    setDataTraTatCaSP(idList);
+    handleOpenNoteReturnsCancel();
   };
+  const rejectTraTatCaSP = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục mua sắm.",
+      life: 3000,
+    });
+  };
+  const confirmTraTatCaSanPham = () => {
+    confirmDialog({
+      message: "Bạn chắc chắc trả sản phẩm đã chọn?",
+      header: "XÁC NHẬN THÔNG BÁO",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => traTatCaSP(),
+      reject: () => rejectTraTatCaSP(),
+    });
+  };
+
   // Hàm để ẩn Modal
   const handleNoteReturnsCancel = () => {
+    setDataTraTatCaSP([]);
     setSelectNganHang(null);
     console.log(billReturn);
     const textNoteReturn = document.getElementById(
@@ -445,8 +498,8 @@ const OderUserAll = () => {
     const tenTaiKhoan = document.getElementById("id-chu-tai-khoan").value;
     const stk = document.getElementById("stk").value;
     const sdt = document.getElementById("id-sdt").value;
-    const updatedNote = `Ghi chú:${note}, Ngân hàng: ${idNganHang}, STK: ${stk},
-     Chủ tài khoản: ${event.target.value}, SĐT: ${sdt}`;
+    const updatedNote = `${note}, ${idNganHang}, STK: ${stk},
+     Tên: ${event.target.value}, SĐT: ${sdt}`;
     setBillReturn({
       ...billReturn,
       note: updatedNote,
@@ -469,33 +522,83 @@ const OderUserAll = () => {
 
   const handleSubmitReturns2 = (event) => {
     event.preventDefault();
+
     if (selectNganHang === null || selectNganHang === undefined) {
       notification.warning({
         message: "Thông báo",
         description: "Vui lòng nhập đủ thông tin!",
       });
     } else {
-      yeuCauTraHang(billReturn.id, billReturn.note, selectedCheckboxes)
-        .then((res) => {
-          if (res.data !== "" && res.data !== undefined) {
-            setDataBillDetails(res.data);
-            notification.success({
-              message: "Trả hàng",
-              description: "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
-            });
-            handleNoteReturnsCancel();
-          } else {
-            notification.warn({
-              message: "Trả hàng thất bại!",
-              description:
-                "Yêu cầu trả hàng của quý khách thất bại! Vui lòng thử lại!",
-            });
-          }
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      if (
+        (selectedCheckboxes === undefined ||
+          selectedCheckboxes.length === 0 ||
+          selectedCheckboxes === null) &&
+        (dataTraTatCaSP !== null ||
+          dataTraTatCaSP !== undefined ||
+          dataTraTatCaSP.length > 0)
+      ) {
+        traTatCaSanPham(billReturn.id, billReturn.note, dataTraTatCaSP)
+          .then((res) => {
+            if (res.data !== "" && res.data !== undefined) {
+              setDataBillDetails(res.data);
+              notification.success({
+                message: "Trả hàng",
+                description:
+                  "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
+              });
+              checkBillTraHang(billReturn.id)
+                .then((res) => {
+                  setCheckDataBill(res.data);
+                  console.log(res.data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+              handleNoteReturnsCancel();
+            } else {
+              notification.warn({
+                message: "Trả hàng thất bại!",
+                description:
+                  "Yêu cầu trả hàng của quý khách thất bại! Vui lòng thử lại!",
+              });
+            }
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        yeuCauTraHang(billReturn.id, billReturn.note, selectedCheckboxes)
+          .then((res) => {
+            if (res.data !== "" && res.data !== undefined) {
+              setDataBillDetails(res.data);
+              notification.success({
+                message: "Trả hàng",
+                description:
+                  "Bạn sẽ nhận được tiền khi người bán nhận lại hàng",
+              });
+              checkBillTraHang(billReturn.id)
+                .then((res) => {
+                  setCheckDataBill(res.data);
+                  console.log(res.data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+              handleNoteReturnsCancel();
+            } else {
+              notification.warn({
+                message: "Trả hàng thất bại!",
+                description:
+                  "Yêu cầu trả hàng của quý khách thất bại! Vui lòng thử lại!",
+              });
+            }
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   };
 
@@ -542,7 +645,7 @@ const OderUserAll = () => {
       <section
         style={{
           position: "relative",
-          maxHeight: 550,
+          maxHeight: 500,
           width: "1200px",
           overflowY: "auto",
         }}
@@ -650,7 +753,7 @@ const OderUserAll = () => {
               onChange={handleNoteReturnsChuTaiKhoan}
             />
             <label for="exampleFormControlTextarea1" class="form-label">
-              Số diện thoại hiện tại:
+              Số điện thoại hiện tại:
             </label>
             <input
               class="form-control"
@@ -676,6 +779,19 @@ const OderUserAll = () => {
         footer={null}
         bodyStyle={{ minHeight: "150px" }}
       >
+        <h4
+          style={{
+            textAlign: "center",
+            marginTop: "15px",
+            marginBottom: "20px",
+          }}
+        >
+          THÔNG TIN TRẢ HÀNG
+        </h4>
+        <span style={{ color: "red", marginBottom: "15px", marginTop: "15px" }}>
+          * Lưu ý: Quý khách chỉ được trả hàng một lần duy nhất trên một hoá đơn
+          trong vòng 3 ngày kể từ lúc nhận được hàng.
+        </span>
         <Row style={{ marginTop: "28px", marginBottom: "10px" }}>
           <input
             // id="id-imeis"
@@ -687,34 +803,55 @@ const OderUserAll = () => {
             // onChange={handleChangeImeis}
           />
         </Row>
-        <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
-          <div className="col-6">
-            <button
-              type="button"
-              class="btn btn-danger"
-              onClick={() => huyChonCheckBox()}
-            >
-              Huỷ Chọn Tất Cả
-            </button>
-          </div>
-          <div className="col-6">
-            <button
-              type="button"
-              class="btn btn-warning"
-              style={{ color: "white" }}
-              onClick={() => confirmTraSanPhamDaChon()}
-            >
-              Trả Sản Phẩm Đã Chọn
-            </button>
-            <button
-              type="button"
-              class="btn btn-success"
-              style={{ marginLeft: "20px" }}
-            >
-              Trả Tất Cả Sản Phẩm
-            </button>
-          </div>
-        </Row>
+        {dataCheckBill === true ? (
+          <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
+            <div className="col-6">
+              <button
+                type="button"
+                class="btn btn-danger"
+                onClick={() => huyChonCheckBox()}
+              >
+                Huỷ Chọn Tất Cả
+              </button>
+            </div>
+            <div className="col-6">
+              <button
+                type="button"
+                class="btn btn-warning"
+                style={{ color: "white" }}
+                onClick={() => confirmTraSanPhamDaChon()}
+              >
+                Trả Sản Phẩm Đã Chọn
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                style={{ marginLeft: "10px" }}
+                onClick={() => confirmTraTatCaSanPham()}
+              >
+                Trả Tất Cả Sản Phẩm
+              </button>
+            </div>
+          </Row>
+        ) : (
+          <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
+            <div class="col-6">
+              <span style={{ color: "red" }}>
+                * Quý khách đã hết số lần trả hàng.
+              </span>
+            </div>
+            <div class="col-6">
+              <button
+                type="button"
+                class="btn btn-danger"
+                style={{ float: "right" }}
+              >
+                Huỷ Yêu Cầu Trả Hàng
+              </button>
+            </div>
+          </Row>
+        )}
+
         <Table
           rowKey="oop"
           dataSource={dataBillDetails}
@@ -734,14 +871,18 @@ const OderUserAll = () => {
             render={(text, record) => {
               return (
                 <div>
-                  {record.statusImei == 3 ? (
+                  {record.statusImei == 3 && dataCheckBill === true ? (
                     <Checkbox
                       value={record.idImei}
                       checked={selectedCheckboxes.includes(record.idImei)}
                       onChange={handleCheckboxChange}
                     />
                   ) : (
-                    "-"
+                    <CloseCircleOutlined
+                      style={{
+                        color: "red",
+                      }}
+                    />
                   )}
                 </div>
               );
@@ -844,19 +985,19 @@ const OderUserAll = () => {
             render={(text, record) => {
               return (
                 <div>
-                  {record.statusImei === "3" ? (
+                  {record.statusImei === 3 ? (
                     <CheckCircleOutlined
                       style={{
                         color: "#52c41a",
                       }}
                     />
-                  ) : record.statusImei === "6" ? (
+                  ) : record.statusImei === 6 ? (
                     <CloseCircleOutlined
                       style={{
                         color: "red",
                       }}
                     />
-                  ) : record.statusImei === "4" ? (
+                  ) : record.statusImei === 4 ? (
                     <div
                       style={{
                         backgroundColor: "blue",
@@ -866,7 +1007,7 @@ const OderUserAll = () => {
                     >
                       Đã gửi yêu cầu
                     </div>
-                  ) : record.statusImei === "5" ? (
+                  ) : record.statusImei === 5 ? (
                     <div
                       style={{
                         backgroundColor: "orange",

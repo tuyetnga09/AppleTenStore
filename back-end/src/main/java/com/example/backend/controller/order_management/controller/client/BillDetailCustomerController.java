@@ -44,6 +44,12 @@ public class BillDetailCustomerController {
         return new ResponseEntity<>(billDetailCustomerIons, HttpStatus.OK);
     }
 
+    @GetMapping("/check-bill-tra-hang")
+    public ResponseEntity<Boolean> checkBillTraHang(@RequestParam("id") Integer id){
+        Boolean check = traHangService.checkTraHang(id);
+        return new ResponseEntity<>(check, HttpStatus.OK);
+    }
+
     @GetMapping("/yeu-cau-tra-hang")
     public ResponseEntity<List<BillDetailCustomerIon>> yeuCauTraHang(@RequestParam("idBillReturn")Integer idBillReturn,
                                                                      @RequestParam("noteBillReturn")String noteBillReturn,
@@ -51,5 +57,14 @@ public class BillDetailCustomerController {
         List<BillDetailCustomerIon> billDetailCustomerIons =
                 traHangService.khachHangTraHang( idBillReturn, noteBillReturn, idImeiDaBans);
         return new ResponseEntity<>(billDetailCustomerIons, HttpStatus.OK);
+    }
+
+    @GetMapping("/yeu-cau-tra-tat-ca")
+    public ResponseEntity<List<BillDetailCustomerIon>> traTatCaSanPham(@RequestParam("idBillReturn")Integer idBillReturn,
+                                                                     @RequestParam("noteBillReturn")String noteBillReturn,
+                            @RequestParam("idImeiDaBans") List<Long> idImeiDaBans){
+        List<BillDetailCustomerIon> list =
+                traHangService.khachHangTraHang( idBillReturn, noteBillReturn, idImeiDaBans);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }

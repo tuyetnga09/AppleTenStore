@@ -239,7 +239,7 @@ const OderUserChoThanhToan = () => {
       <section
         style={{
           position: "relative",
-          maxHeight: 550,
+          maxHeight: 500,
           width: "1200px",
           overflowY: "auto",
         }}
