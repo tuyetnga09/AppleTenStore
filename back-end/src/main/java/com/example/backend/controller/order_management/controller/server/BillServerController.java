@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,4 +69,14 @@ public class BillServerController {
 //            return new ResponseEntity(billDetailService.getAll(null, pageable), HttpStatus.OK);
 //        }
 //    }
+
+    @PutMapping("/acceptReturn")
+    public Bill acceptReturn(@RequestBody AcceptReturn acceptReturn){
+        return billService.acceptReturn(acceptReturn);
+    }
+
+    @PutMapping("/noAcceptReturn")
+    public Bill noAcceptReturn(@RequestBody AcceptReturn acceptReturn){
+        return billService.noAcceptReturn(acceptReturn);
+    }
 }

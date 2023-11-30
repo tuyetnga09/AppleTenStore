@@ -4,6 +4,8 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
+import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.entity.Bill;
 
 import java.time.LocalDate;
@@ -51,4 +53,10 @@ public interface BillService {
     Integer getCountBillCXN();
 
     List<Bill> getBillOfflineCXN();
+
+    Bill acceptReturn(AcceptReturn acceptReturn);
+
+    Bill noAcceptReturn(AcceptReturn AcceptReturn);
+
+    BillPayDone findBillPayDoneByCode(String code);
 }

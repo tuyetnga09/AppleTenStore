@@ -3,6 +3,7 @@ package com.example.backend.controller.order_management.service.impl;
 import com.example.backend.controller.order_management.model.billDetail.request.FindBillDetailRequest;
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerIon;
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerResponse;
+import com.example.backend.controller.order_management.model.billDetail.response.BillDetailReturnAdmin;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.service.BillDetailService;
 import com.example.backend.entity.BillDetails;
@@ -79,6 +80,11 @@ public class BillDetailServiceImpl implements BillDetailService {
             return  billDetailCustomerIons;
         }
         return null;
+    }
+
+    @Override
+    public List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill) {
+        return billDetailRepository.getAllBillDetailReturn(status, idBill);
     }
 
 }

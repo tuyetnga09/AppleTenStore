@@ -1,5 +1,6 @@
 package com.example.backend.controller.order_management.controller.server;
 
+import com.example.backend.controller.order_management.model.billDetail.response.BillDetailReturnAdmin;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.service.BillDetailService;
 import com.example.backend.entity.BillDetails;
@@ -40,4 +41,8 @@ public class BillDetailController {
         return this.billDetailService.findBillDetails(id);
     }
 
+    @GetMapping("/getAllBillDetailReturn")
+    public List<BillDetailReturnAdmin> getAllBillDetailReturn(@RequestParam("status") Integer status, @RequestParam("idBill") Integer idBill){
+        return billDetailService.getAllBillDetailReturn(status, idBill);
+    }
 }

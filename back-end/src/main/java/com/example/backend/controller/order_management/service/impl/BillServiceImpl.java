@@ -5,6 +5,8 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
+import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.*;
 import com.example.backend.repository.*;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -146,7 +149,7 @@ public class BillServiceImpl implements BillService {
 
         // hình thức thanh toán của hoá đơn
         Payments payments = Payments.builder()
-                .method(request.getPaymentMethod().equals("OFFLINE") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
+                .method(request.getPaymentMethod().equals("TIEN_MAT") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                 .bill(bill)
                 .moneyPayment(request.getTotalMoney())
                 .dateCreate(new Date(new java.util.Date().getTime()))
@@ -271,7 +274,7 @@ public class BillServiceImpl implements BillService {
             }
 
             Payments payments = Payments.builder()
-                    .method(request.getPaymentMethod().equals("OFFLINE") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
+                    .method(request.getPaymentMethod().equals("TIEN_MAT") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                     .bill(bill)
                     .moneyPayment(request.getTotalMoney())
                     .typePayment(StatusPayment.THANH_TOAN).build();
@@ -629,6 +632,34 @@ public class BillServiceImpl implements BillService {
     @Override
     public List<Bill> getBillOfflineCXN() {
         return billRepository.getBillOfflineCXN();
+    }
+
+    @Override
+    public Bill acceptReturn(AcceptReturn acceptReturn) {
+        Bill bill = billRepository.findById(acceptReturn.getIdBill()).get();
+        bill.setStatusBill(StatusBill.TRA_HANG);
+        for (String codeImei : acceptReturn.getCodeImeiDaBan()
+             ) {
+            imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(6, codeImei);
+        }
+        return bill;
+    }
+
+    @Override
+    public Bill noAcceptReturn(AcceptReturn acceptReturn) {
+        Bill bill = billRepository.findById(acceptReturn.getIdBill()).get();
+        bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
+        for (String codeImei : acceptReturn.getCodeImeiDaBan()
+        ) {
+            imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(5, codeImei);
+            imeiRepository.updateStatusImeiByCodeImei(5, codeImei);
+        }
+        return bill;
+    }
+
+    @Override
+    public BillPayDone findBillPayDoneByCode(String code) {
+        return billRepository.findBillPayDoneByCode(code);
     }
 
 }

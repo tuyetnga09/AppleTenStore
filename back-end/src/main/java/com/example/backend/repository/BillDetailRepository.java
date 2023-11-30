@@ -2,6 +2,7 @@ package com.example.backend.repository;
 
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerIon;
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerResponse;
+import com.example.backend.controller.order_management.model.billDetail.response.BillDetailReturnAdmin;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
@@ -94,4 +95,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
             " where bill_detail.id_bill =?1\n" +
             " order by sku.id desc", nativeQuery = true)
     List<BillDetailCustomerIon> getAllBillDetaillOfIdBill(Integer idBill);
+
+    @Query(value = "select product_id as 'ProductId', product.name as 'NameProduct', capacity, color, sku.price, imei_da_ban.code_imei as 'CodeImei' from imei_da_ban join bill_detail on imei_da_ban.id_bill_detail = bill_detail.id join bill on bill_detail.id_bill = bill.id join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id where imei_da_ban.status = ?1 and id_bill = ?2", nativeQuery = true)
+    List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill);
 }
