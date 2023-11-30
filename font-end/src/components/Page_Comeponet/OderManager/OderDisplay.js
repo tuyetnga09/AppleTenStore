@@ -574,24 +574,31 @@ const OderDisplay = ({}) => {
   }
 
   function handUpdateTrangThai() {
-    if (checkSoluongImei() === true) {
-      const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
-      updateAllCVC(personUpdate)
-        .then((response) => {
-          setLoad(!load);
-          notification.success({
-            message: "Accept",
-            description: "Xác nhận thành công",
-          });
-        })
-        .catch((error) => {
-          console.error("Error updating data:", error);
-        });
-    } else {
-      notification.error({
-        message: "KIỂM TRA IMEI",
-        description: "Vui lòng kiểm tra lại imei",
+    if (pendingBills === 0 || pendingBills === null || pendingBills === "") {
+      notification.success({
+        message: "Accept",
+        description: "Tất cả đơn hàng đã được xác nhận thanh công",
       });
+    } else {
+      if (checkSoluongImei() === true) {
+        const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
+        updateAllCVC(personUpdate)
+          .then((response) => {
+            setLoad(!load);
+            notification.success({
+              message: "Accept",
+              description: "Xác nhận thành công",
+            });
+          })
+          .catch((error) => {
+            console.error("Error updating data:", error);
+          });
+      } else {
+        notification.error({
+          message: "KIỂM TRA IMEI",
+          description: "Vui lòng kiểm tra lại imei của các đơn hàng ",
+        });
+      }
     }
   }
 
@@ -742,8 +749,15 @@ const OderDisplay = ({}) => {
                 <Link to="/product-detail/chip">Chip</Link>
               </Menu.Item>
             </SubMenu>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/logout">Đăng xuất</Link>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -947,9 +961,7 @@ const OderDisplay = ({}) => {
                       key="user"
                       dataIndex="user"
                       title={t("Tên khách hàng")}
-                      render={(text, record) => (
-                        <span>{record?.userName}</span>
-                      )}
+                      render={(text, record) => <span>{record?.userName}</span>}
                     />
 
                     {/* <Table.Column
@@ -1824,7 +1836,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       {" "}
       <Toast ref={toast} />
       <ConfirmDialog />
-      <List title="Bill Detail" createButtonProps={undefined}>
+      <List title="Sản phẩm" createButtonProps={undefined}>
         <Col>
           <List>
             <Table
@@ -1843,7 +1855,9 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 dataIndex="code"
                 title={"Ảnh sản phẩm"}
                 render={(text, record) => (
-                  <span>{<AvatarProduct product={record.idProduct} />}</span>
+                  <div style={{ width: "150px" }}>
+                    {<AvatarProduct product={record.idProduct} />}
+                  </div>
                 )}
               />
               <Table.Column
@@ -1956,15 +1970,15 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 render={(_, record) => (
                   <Dropdown overlay={moreMenu2(record)} trigger={["click"]}>
                     {/* các nút delete accept ... nằm trong moreMenu2 */}
-                    {/* <MoreOutlined
+              {/* <MoreOutlined
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         fontSize: 24,
                       }}
                     />
                   </Dropdown> */}
-                {/* )}
-              /> */} 
+              {/* )}
+              /> */}
             </Table>
           </List>
         </Col>

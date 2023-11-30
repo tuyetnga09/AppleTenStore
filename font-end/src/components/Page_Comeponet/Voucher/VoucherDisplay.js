@@ -393,9 +393,14 @@ const VoucherDisplay = ({}) => {
             <Menu.Item key="1" icon={<DashboardOutlined />}>
               <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Quản lý đơn hàng</Link>
-            </Menu.Item>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Quản lý đơn hàng</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">Quản lý trả hàng</Link>
+              </Menu.Item>
+            </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
               <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
@@ -403,7 +408,7 @@ const VoucherDisplay = ({}) => {
               <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Quảng lý Voucher</Link>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
               <Link to="/categories">Thể loại</Link>
@@ -429,8 +434,15 @@ const VoucherDisplay = ({}) => {
                 <Link to="/product-detail/chip">Chip</Link>
               </Menu.Item>
             </SubMenu>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/logout">Đăng xuất</Link>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>

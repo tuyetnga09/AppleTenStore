@@ -3237,7 +3237,7 @@ export default function SellSmart() {
                               className="form-control"
                               type="number"
                               min={0}
-                              defaultValue={0}
+                              // defaultValue={0}
                               onChange={calculateChange}
                               onBlur={(event) => {
                                 if (event.target.value <= 0) {
@@ -3303,7 +3303,7 @@ export default function SellSmart() {
                               className="form-control"
                               type="number"
                               min={0}
-                              defaultValue={0}
+                              // defaultValue={0}
                               onChange={calculateChange}
                               onBlur={(event) => {
                                 if (event.target.value <= 0) {

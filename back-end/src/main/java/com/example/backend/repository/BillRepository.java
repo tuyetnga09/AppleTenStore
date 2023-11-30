@@ -227,9 +227,9 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     List<AnnualRevenueIon> seachDoanhSoTheoNam(Integer year);
 
     @Modifying
-    @Query(value = "update bill\n" +
-            "set status_bill = 'CHO_VAN_CHUYEN', date_update = CURRENT_DATE(), person_update = ?1\n" +
-            "where type = 'ONLINE' and status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
+    @Query(value = "update bill join bill_detail bd on bill.id = bd.id_bill\n" +
+            "set bill.status_bill = 'CHO_VAN_CHUYEN', bd.status_bill = 'CHO_VAN_CHUYEN', bill.date_update = CURRENT_DATE(), bill.person_update = ?1\n" +
+            "where bill.type = 'ONLINE' and bill.status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
     void updateAllChoVanChuyen(String personUpdate);
 
     @Query(value = "select b.id as 'id', b.quantity as 'quantity', b.price as 'price', b.status_bill as 'statusBillDetail',\n" +
@@ -245,7 +245,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             "             dateUpdate, idSKU, skuCapacity, skuColor, skuPrice, idProduct, nameProduct, totalManyOneBillDetail", nativeQuery = true)
     List<BillDetailOffLineIon> getAllBillChoXacNhan();
 
-    @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN'\n", nativeQuery = true)
+    @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN' and type = 'ONLINE'\n", nativeQuery = true)
     Integer getCountBillCXN();
 
     // lấy ra bill detail trong dashboard
