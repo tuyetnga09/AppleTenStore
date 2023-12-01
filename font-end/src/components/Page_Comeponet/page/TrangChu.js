@@ -106,7 +106,7 @@ export default function TrangChu() {
                     <PriceProduct product={dl.id}></PriceProduct>
                   </div>
                   <label className="giamgia">
-                    <i className="fa fa-bolt" /> Giảm 1.000₫
+                    <i className="fa fa-bolt" /> Sản phẩm nổi bật
                   </label>
                   <div className="tooltip">
                     <button
@@ -461,7 +461,7 @@ export default function TrangChu() {
             <PriceProduct product={dl.id}></PriceProduct>
           </div>
           <label className="giamgia">
-            <i className="fa fa-bolt" /> Giảm 1.000₫
+            <i className="fa fa-bolt" /> Sản phẩm nổi bật
           </label>
           <div className="tooltip">
             <button

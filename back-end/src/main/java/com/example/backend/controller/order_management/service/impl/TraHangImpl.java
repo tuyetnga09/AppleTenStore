@@ -69,7 +69,7 @@ public class TraHangImpl implements TraHangService {
     }
 
     @Override
-    public  Boolean checkTraHang(Integer idBill){
+    public  Integer checkTraHang(Integer idBill){
         Boolean check = billRepository.existsById(idBill);
         List<BillDetailCustomerIon> billDetailCustomerIons = new ArrayList<>();
         if (check){
@@ -77,12 +77,21 @@ public class TraHangImpl implements TraHangService {
         }
         if (billDetailCustomerIons.size()>0){
             for (BillDetailCustomerIon bill: billDetailCustomerIons) {
-                if (bill.getStatusImei() != 3){
-                    return false;
+                if (bill.getStatusImei() == 4){
+                    return 4;
+                }
+                if (bill.getStatusImei() == 5){
+                    return 5;
+                }
+                if (bill.getStatusImei() == 6){
+                    return 6;
+                }
+                if (bill.getStatusImei() == 7){
+                    return 7;
                 }
             }
         }
-        return true;
+        return 0;
     }
 
     @Override
@@ -121,5 +130,46 @@ public class TraHangImpl implements TraHangService {
             return billDetails;
         }
         return null;
+    }
+
+    @Override
+    public List<BillDetailCustomerIon> khachHuyYeuCauTraHang(Integer idBillReturn, String noteBillReturn){
+        Boolean check = billRepository.existsById(idBillReturn);
+        if (check == false){
+            return null;
+        }
+        List<BillDetailCustomerIon> list =  billDetailRepository.getAllBillDetaillOfIdBill(idBillReturn);
+
+        for (int i = 0; i < list.size(); i++) {
+            ImeiDaBan imeiDaBan = imeiDaBanRepository.findById(list.get(i).getIdImei()).get();
+            if (imeiDaBan.getStatus() == 4){
+                imeiDaBan.setStatus(7);
+                imeiDaBanRepository.save(imeiDaBan);
+            }
+        }
+        // Lấy ngày giờ hiện tại
+        Date date = new Date();
+        // Định dạng ngày giờ
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        // Chuyển đổi thành chuỗi và hiển thị
+        String formattedDate = dateFormat.format(date);
+
+        StatusBill yeuCau = StatusBill.DA_THANH_TOAN;
+
+        Bill bill = billRepository.findById(idBillReturn).get();
+        String noteBillTraHang = bill.getNoteReturn() + " - Huỷ: " + formattedDate + noteBillReturn;
+
+        if (noteBillTraHang.length() < 250){
+            bill.setNoteReturn(noteBillTraHang);
+        }else {
+            String noteBillHuyTraHang = "Huỷ: " + formattedDate + noteBillReturn;
+            bill.setNoteReturn(noteBillHuyTraHang);
+        }
+
+        bill.setStatusBill(yeuCau);
+        billRepository.save(bill);
+
+        List<BillDetailCustomerIon> billDetails = billDetailRepository.getAllBillDetaillOfIdBill(bill.getId());
+        return billDetails;
     }
 }

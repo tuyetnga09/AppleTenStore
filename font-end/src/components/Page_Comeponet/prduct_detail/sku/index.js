@@ -2035,8 +2035,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               return (
                 <Form.Item name="title" style={{ margin: 0 }}>
                   <p>
-                    {record.idSku}
-
                     <button
                       type="button"
                       class="btn btn-secondary"

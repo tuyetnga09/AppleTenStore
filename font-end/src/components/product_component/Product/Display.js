@@ -633,7 +633,7 @@ const StoreProducts = ({}) => {
                                 >
                                   {item.description}
                                 </Paragraph>
-                                <Text
+                                {/* <Text
                                   className="item-id"
                                   style={{
                                     fontSize: "18px",
@@ -642,7 +642,7 @@ const StoreProducts = ({}) => {
                                   }}
                                 >
                                   #{item.id}
-                                </Text>
+                                </Text> */}
                                 {/* <NumberField
                                   style={{
                                     fontSize: "24px",
