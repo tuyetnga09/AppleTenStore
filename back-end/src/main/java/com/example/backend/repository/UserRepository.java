@@ -48,11 +48,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User getOneUserByEmail(@Param("email") String email);
 
 //    @Query(value = "select user.id, user.avatar, user.citizen_identity, user.date_create, user.date_of_birth, user.date_update, user.email, user.full_name, user.gender, user.person_create, user.person_update, user.phone_number, user.points, user.status from account join user on account.id_user = user.id join address on user.id = address.id_user where roles = ?1", nativeQuery = true)
-    @Query(value = "select user.id, user.avatar, user.citizen_identity, user.date_create, user.date_of_birth, user.date_update, user.email, user.full_name, user.gender, user.person_create, user.person_update, user.phone_number, user.points, user.status, user.points_history from account join user on account.id_user = user.id where roles = ?1 and user.status = 'DANG_SU_DUNG'", nativeQuery = true)
-    List<User> findByRole(Pageable pageable, String role);
+    @Query(value = "select user.id, user.avatar, user.citizen_identity, user.date_create, user.date_of_birth, user.date_update, user.email, user.full_name, user.gender, user.person_create, user.person_update, user.phone_number, user.points, user.status, user.points_history from account join user on account.id_user = user.id where roles = ?1 and user.status = ?2", nativeQuery = true)
+    List<User> findByRoleAndStatus(Pageable pageable, String role, String status);
 
     @Modifying
     @Transactional
-    @Query(value = "update user set status = 'KHONG_SU_DUNG' where id = ?1", nativeQuery = true)
-    void deleteUser(Integer id);
+    @Query(value = "update user set status = ?1 where id = ?2", nativeQuery = true)
+    void updateStatusUser(String status, Integer id);
 }

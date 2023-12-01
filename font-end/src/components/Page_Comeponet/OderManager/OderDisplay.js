@@ -136,6 +136,7 @@ const OderDisplay = ({}) => {
       { label: "Không trả hàng", value: "KHONG_TRA_HANG" },
       { label: "Trả hàng", value: "TRA_HANG" },
       { label: "Đã hủy", value: "DA_HUY" },
+      { label: "Yêu cầu trả hàng", value: "YEU_CAU_TRA_HANG" },
       // Thêm các giá trị khác nếu cần
     ],
   };
@@ -954,7 +955,7 @@ const OderDisplay = ({}) => {
                             name="status"
                             onChange={handleChangeStatus}
                             allowClear
-                            placeholder={"trạng thái"}
+                            placeholder={"Trạng thái"}
                           >
                             {orderSelectProps.options.map((st) => {
                               return (
@@ -987,7 +988,7 @@ const OderDisplay = ({}) => {
                         </Form.Item>
                       </Col> */}
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Ngày")} name="createdAt">
+                        <Form.Item label={t("Ngày tạo")} name="createdAt">
                           <RangePicker
                             id="dateFilter"
                             style={{ width: "100%" }}

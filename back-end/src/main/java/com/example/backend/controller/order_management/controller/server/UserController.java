@@ -37,8 +37,8 @@ public class UserController {
     }
 
     @GetMapping("/findByRole")
-    public List<User> findByRole(Pageable pageable, @RequestParam("role") String role) {
-        return userService.findByRole(pageable, role);
+    public List<User> findByRole(Pageable pageable, @RequestParam("role") String role, @RequestParam("status") String status) {
+        return userService.findByRoleAndStatus(pageable, role, status);
     }
 
     @PutMapping("/{id}")
@@ -57,8 +57,8 @@ public class UserController {
         return false;
     }
 
-    @PutMapping("/deleteUser")
-    public void deleteUser(@RequestParam("id") Integer id) {
-        userService.deleteUser(id);
+    @PutMapping("/updateStatusUser")
+    public void updateStatusUser(@RequestParam("status") String status, @RequestParam("id") Integer id) {
+        userService.updateStatusUser(status, id);
     }
 }

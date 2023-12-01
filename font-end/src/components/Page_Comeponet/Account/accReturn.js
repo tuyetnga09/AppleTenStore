@@ -61,7 +61,7 @@ import SubMenu from "antd/es/menu/SubMenu";
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
-export const AccountList = () => {
+export const AccountListReturn = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
@@ -255,54 +255,12 @@ export const AccountList = () => {
                       );
                     }}
                   />
-                  {/* <Table.Column
-                    key="isActive"
-                    dataIndex="isActive"
-                    title="Active"
-                    render={(text, record) => {
-                      return (
-                        <Form.Item
-                          name="isActive"
-                          style={{ margin: 0 }}
-                          valuePropName="checked"
-                        >
-                          <BooleanField value={true} />
-                        </Form.Item>
-                      );
-                    }}
-                  />
-                  <Table.Column
-                    title="Actions"
-                    dataIndex="actions"
-                    key="actions"
-                    align="center"
-                    render={(_text, record) => {
-                      return (
-                        <Dropdown
-                          overlay={moreMenu(record)}
-                          trigger={["click"]}
-                        >
-                          <MoreOutlined
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                              fontSize: 24,
-                            }}
-                          />
-                        </Dropdown>
-                      );
-                    }}
-                  /> */}
                 </Table>
               </Form>
             </List>
-            <Link to="/signupAdmin">
+            <Link to="/users">
               <button type="button" class="btn btn-outline-info">
-                Đăng kí nhân viên
-              </button>
-            </Link>{" "}
-            <Link to="/usersReturn">
-              <button type="button" class="btn btn-outline-warning">
-                Khôi phục tài khoản
+                Trở lại
               </button>
             </Link>
           </Content>
@@ -349,12 +307,12 @@ const UserAccountTable = ({ record }) => {
       });
   };
 
-  const deleteUserById = (id) => {
-    updateStatusUser("KHONG_SU_DUNG", id)
+  const returnUser = (id) => {
+    updateStatusUser("DANG_SU_DUNG", id)
       .then((res) => {
         notification.success({
-          message: "Xóa tài khoản",
-          description: "Xóa tài khoản thành công",
+          message: "Khôi phục tài khoản",
+          description: "Khôi phục tài khoản thành công",
         });
         setIsUpdate(!isUpdate);
       })
@@ -364,7 +322,7 @@ const UserAccountTable = ({ record }) => {
   };
 
   useEffect(() => {
-    readAllUserByRole(record, "DANG_SU_DUNG")
+    readAllUserByRole(record, "KHONG_SU_DUNG")
       .then((res) => {
         setUsers(res.data);
       })
@@ -375,216 +333,32 @@ const UserAccountTable = ({ record }) => {
 
   const moreMenu = (record1) => (
     <>
-      {record === "ADMIN" ? (
-        <Menu
-          mode="vertical"
-          onClick={({ domEvent }) => domEvent.stopPropagation()}
+      <Menu
+        mode="vertical"
+        onClick={({ domEvent }) => domEvent.stopPropagation()}
+      >
+        <Menu.Item
+          key="edit"
+          style={{
+            fontSize: 15,
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+          }}
+          icon={
+            <CloseOutlined
+              style={{
+                color: "red",
+                fontSize: 17,
+                fontWeight: 500,
+              }}
+            />
+          }
+          onClick={() => returnUser(record1.id)}
         >
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <TeamOutlined
-                style={{
-                  color: "yellow",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => editRole("NHAN_VIEN_BAN_HANG", record1.id)}
-          >
-            Nhân viên bán hàng
-          </Menu.Item>
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <TeamOutlined
-                style={{
-                  color: "red",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => editRole("NHAN_VIEN_QUAN_LY", record1.id)}
-          >
-            Nhân viên quản lý
-          </Menu.Item>
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <CloseOutlined
-                style={{
-                  color: "red",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => deleteUserById(record1.id)}
-          >
-            Xóa tài khoản
-          </Menu.Item>
-        </Menu>
-      ) : record === "NHAN_VIEN_BAN_HANG" ? (
-        <Menu
-          mode="vertical"
-          onClick={({ domEvent }) => domEvent.stopPropagation()}
-        >
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <TeamOutlined
-                style={{
-                  color: "#52c41a",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => editRole("ADMIN", record1.id)}
-          >
-            Admin
-          </Menu.Item>
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <TeamOutlined
-                style={{
-                  color: "red",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => editRole("NHAN_VIEN_QUAN_LY", record1.id)}
-          >
-            Nhân viên quản lý
-          </Menu.Item>
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <CloseOutlined
-                style={{
-                  color: "red",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => deleteUserById(record1.id)}
-          >
-            Xóa tài khoản
-          </Menu.Item>
-        </Menu>
-      ) : record === "NHAN_VIEN_QUAN_LY" ? (
-        <Menu
-          mode="vertical"
-          onClick={({ domEvent }) => domEvent.stopPropagation()}
-        >
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <TeamOutlined
-                style={{
-                  color: "#52c41a",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => editRole("ADMIN", record1.id)}
-          >
-            Admin
-          </Menu.Item>
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <TeamOutlined
-                style={{
-                  color: "yellow",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => editRole("NHAN_VIEN_BAN_HANG", record1.id)}
-          >
-            Nhân viên bán hàng
-          </Menu.Item>
-          <Menu.Item
-            key="edit"
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              fontWeight: 500,
-            }}
-            icon={
-              <CloseOutlined
-                style={{
-                  color: "red",
-                  fontSize: 17,
-                  fontWeight: 500,
-                }}
-              />
-            }
-            onClick={() => deleteUserById(record1.id)}
-          >
-            Xóa tài khoản
-          </Menu.Item>
-        </Menu>
-      ) : (
-        ""
-      )}
+          Khôi phục tài khoản
+        </Menu.Item>
+      </Menu>
     </>
   );
 
@@ -674,4 +448,4 @@ const expandedRowRender = (record) => {
   return <UserAccountTable record={record} />;
 };
 
-export default AccountList;
+export default AccountListReturn;

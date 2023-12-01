@@ -263,29 +263,9 @@ public class BillController {
         return billService.listBillByIdAccount(id);
     }
 
-    @GetMapping("/CXN")
-    public List<Bill> listBillByIdAccountCXN(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountCXN(id);
-    }
-
-    @GetMapping("/CVC")
-    public List<Bill> listBillByIdAccountCVC(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountCVC(id);
-    }
-
-    @GetMapping("/VC")
-    public List<Bill> listBillByIdAccountVC(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountVC(id);
-    }
-
-    @GetMapping("/DTT")
-    public List<Bill> listBillByIdAccountDTT(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountDTT(id);
-    }
-
-    @GetMapping("/DH")
-    public List<Bill> listBillByIdAccountDH(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountDH(id);
+    @GetMapping("/getAllByStatus")
+    public List<Bill> listBillByIdAccountAndStatus(@RequestParam("id") Integer id, @RequestParam("status") String status){
+        return billService.listBillByIdAccountAndStatus(id, status);
     }
 
     @DeleteMapping(value = "/delete/{id}")

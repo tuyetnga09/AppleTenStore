@@ -54,6 +54,8 @@ import {
   getCountBillChoXacNhan,
   returnBillById,
   getAllBillOFFLINECXN,
+  acceptReturn,
+  noAcceptReturn,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -77,8 +79,12 @@ import {
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
 import { Toast } from "primereact/toast";
-import { findBillDetails } from "../../../service/BillDetail/billDetail.service";
+import {
+  findBillDetails,
+  getAllBillDetailReturn,
+} from "../../../service/BillDetail/billDetail.service";
 import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
+import AvtProduct from "../../custumer_componet/avtProduct";
 
 const { RangePicker } = DatePicker;
 const { SubMenu } = Menu;
@@ -177,7 +183,7 @@ const OderDisplay = ({}) => {
 
   const [filtersNoDate, setFiltersNoDate] = useState({
     key: "",
-    status: "",
+    status: "YEU_CAU_TRA_HANG",
     // user: "",
   });
 
@@ -204,19 +210,19 @@ const OderDisplay = ({}) => {
       });
       history.replace("/");
     } else {
-      //   const paramsString = queryString.stringify(filtersNoDate);
+      const paramsString = queryString.stringify(filtersNoDate);
       //   const paramsString2 = queryString.stringify(filtersWithDate);
       //   const dateFilter = document.getElementById("dateFilter");
       //   if (dateFilter.value == "") {
-      //     searchNoDate(paramsString)
-      //       .then((response) => {
-      //         // console.log(response.data);
-      //         setOder(response.data);
-      //         // setEditedVoucher(response.data);
-      //       })
-      //       .catch((error) => {
-      //         console.log(`${error}`);
-      //       });
+      searchNoDate(paramsString)
+        .then((response) => {
+          // console.log(response.data);
+          setOder(response.data);
+          // setEditedVoucher(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       //   } else {
       //     searchWithDate(paramsString2)
       //       .then((response) => {
@@ -314,16 +320,9 @@ const OderDisplay = ({}) => {
     const value = target.value;
     const name = target.name;
     let item = {};
-    const dateFilter = document.getElementById("dateFilter");
-    if (dateFilter.value == "") {
-      item = { ...filtersNoDate };
-      item[name] = value;
-      setFiltersNoDate(item);
-    } else {
-      item = { ...filtersWithDate };
-      item[name] = value;
-      setFiltersWithDate(item);
-    }
+    item = { ...filtersNoDate };
+    item[name] = value;
+    setFiltersNoDate(item);
   }
 
   function handleChangeStatus(value) {
@@ -495,6 +494,13 @@ const OderDisplay = ({}) => {
         style={{ backgroundColor: "red" }}
       />
     ),
+    YEU_CAU_TRA_HANG: (
+      <Badge
+        className="site-badge-count-109"
+        count={"Yêu cầu trả hàng"}
+        style={{ backgroundColor: "pink" }}
+      />
+    ),
   };
 
   function confirm2(id) {
@@ -659,6 +665,77 @@ const OderDisplay = ({}) => {
       description: "Hủy đơn thành công",
     });
   };
+  const [isModalVisibleReturnDetails, setIsModalVisibleReturnDetails] =
+    useState(false); // Trạng thái hiển thị Modal
+  const [noteReturnDetail, setNoteReturnDetail] = useState(null);
+  const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
+  const [acceptReturnBill, setAcceptReturnBill] = useState({
+    idBill: null,
+    codeImeiDaBan: [],
+  });
+  const handleClickReturnDetails = (record) => {
+    let arrCodeImeiDaBan = [];
+    setIsModalVisibleReturnDetails(true);
+    console.log(record);
+    setNoteReturnDetail(record.noteReturn);
+    getAllBillDetailReturn(4, record.id)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+        response.data.map((item) => {
+          if (!arrCodeImeiDaBan.includes(item.codeImei)) {
+            arrCodeImeiDaBan.push(item.codeImei);
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setAcceptReturnBill({
+      idBill: record.id,
+      codeImeiDaBan: arrCodeImeiDaBan,
+    });
+  };
+
+  const handleCannelReturnDetails = () => {
+    setIsModalVisibleReturnDetails(false);
+    setAcceptReturnBill({
+      idBill: null,
+      codeImeiDaBan: [],
+    });
+  };
+
+  function returnConfirmation() {
+    acceptReturn(acceptReturnBill)
+      .then((res) => {
+        setLoad(!load);
+        notification.success({
+          message: "Trả hàng!",
+          description: "Trả hàng thành công",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsModalVisibleReturnDetails(false);
+    setLoad(!load);
+  }
+
+  function noReturnConfirmation() {
+    noAcceptReturn(acceptReturnBill)
+      .then((res) => {
+        setLoad(!load);
+        notification.success({
+          message: "Trả hàng!",
+          description: "Đã hủy yêu cầu",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsModalVisibleReturnDetails(false);
+    setLoad(!load);
+  }
 
   const expandedRowRender = (record) => {
     return (
@@ -804,7 +881,7 @@ const OderDisplay = ({}) => {
                 name="key"
                 placeholder={t("Code, Person Create")}
                 prefix={<SearchOutlined />}
-                // onChange={handleChangeSearch}
+                onChange={handleChangeSearch}
               />
               {/* <button
                 class="btn btn-success"
@@ -1105,6 +1182,37 @@ const OderDisplay = ({}) => {
                             }}
                           />
                         </Dropdown>
+                      ) : record.statusBill === "YEU_CAU_TRA_HANG" ? (
+                        <Dropdown
+                          overlay={
+                            <Menu mode="vertical">
+                              <Menu.Item
+                                key="1"
+                                disabled={record.stock <= 0}
+                                style={{
+                                  fontWeight: 500,
+                                }}
+                                icon={
+                                  <CloseCircleOutlined
+                                    style={{
+                                      color: "green",
+                                    }}
+                                  />
+                                }
+                                onClick={() => handleClickReturnDetails(record)}
+                              >
+                                Xem chi tiết
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={["click"]}
+                        >
+                          <MoreOutlined
+                            style={{
+                              fontSize: 24,
+                            }}
+                          />
+                        </Dropdown>
                       ) : (
                         ""
                       )}
@@ -1162,6 +1270,143 @@ const OderDisplay = ({}) => {
                   Xác nhận
                 </button>
               </form>
+            </Modal>
+            <Modal
+              visible={isModalVisibleReturnDetails}
+              onCancel={handleCannelReturnDetails}
+              width={900}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <form>
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea2" class="form-label">
+                    Lí do trả hàng:
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="exampleFormControlTextarea3"
+                    rows="3"
+                    required
+                    disabled
+                    value={noteReturnDetail}
+                  ></textarea>
+                </div>
+              </form>
+              <Table
+                rowKey="oop"
+                dataSource={dataBillDetails}
+                pagination={{
+                  pageSize: 5,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                  showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                }}
+              >
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  dataIndex="images"
+                  title="Ảnh"
+                  render={(text, record) => (
+                    <div style={{ textAlign: "center" }}>
+                      <AvtProduct product={record.productId} />
+                    </div>
+                  )}
+                  width={150}
+                />
+
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Tên Sản Phẩm"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.nameProduct}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* sumSKU */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Phiên Bản"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>
+                          {record.capacity} - {record.color}
+                        </p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* priceSKU  */}
+                <Table.Column
+                  align="center"
+                  key="price"
+                  dataIndex="price"
+                  title="Giá Bán"
+                  sorter={(a, b) => a.price - b.price}
+                  render={(text, record) => {
+                    return record.price === null ? (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <WarningFilled
+                          value={false}
+                          style={{
+                            color: "#FFCC00",
+                          }}
+                        />
+                        {parseFloat(0).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    ) : (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    );
+                  }}
+                />
+
+                {/* sumImeiTrongKho */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Mã Imei"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.codeImei}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+              </Table>
+              <button
+                type="submit"
+                class="btn btn-success"
+                onClick={() => returnConfirmation()}
+              >
+                Xác nhận
+              </button>{" "}
+              <button
+                type="submit"
+                class="btn btn-warning"
+                onClick={() => noReturnConfirmation()}
+              >
+                Hủy yêu cầu
+              </button>
             </Modal>
           </Content>
         </Layout>

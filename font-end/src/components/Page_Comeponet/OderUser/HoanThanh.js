@@ -10,7 +10,7 @@ import {
   checkBillTraHang,
   traTatCaSanPham,
 } from "../../../service/BillDetail/billDetailCustomer.service";
-import { readAllByIdAndDTT } from "../../../service/Bill/billCustomer.service";
+import { readAllByIdAndStatus } from "../../../service/Bill/billCustomer.service";
 import { account } from "../Login/login";
 import {
   Avatar,
@@ -39,7 +39,7 @@ const OderUserHoanThanh = () => {
   const [banks, setBanks] = useState([]);
 
   useEffect(() => {
-    readAllByIdAndDTT(storedUser?.id)
+    readAllByIdAndStatus(storedUser?.id, "DA_THANH_TOAN")
       .then((res) => {
         setBills(res.data);
         console.log(res.data);
@@ -161,27 +161,7 @@ const OderUserHoanThanh = () => {
         <hr />
         <div>
           <Row>
-            <div className="col-6">
-              {b.statusBill === "CHO_XAC_NHAN" ? (
-                <p>
-                  Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-                <p>
-                  Dự kiến giao hàng ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "VAN_CHUYEN" ? (
-                <p>
-                  Dự kiến giao hàng ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "DA_THANH_TOAN" ? (
-                <p>
-                  Ngày hoàn thành đơn hàng <u>{formattedDateStart}</u>
-                </p>
-              ) : (
-                ""
-              )}
-            </div>
+            <div className="col-6"></div>
             <div className="col-6">
               <span style={{ float: "right" }}>
                 Thành tiền:{" "}
@@ -588,12 +568,22 @@ const OderUserHoanThanh = () => {
               Đã hủy
             </Link>
           </li>
+          <li class="nav-item">
+            <Link class="nav-link" to="/oderUserYCTH">
+              Yêu cầu trả hàng
+            </Link>
+          </li>
+          <li class="nav-item">
+            <Link class="nav-link" aria-current="page" to="/oderUserTH">
+              Trả hàng
+            </Link>
+          </li>
         </ul>
       </section>
       <section
         style={{
           position: "relative",
-          maxHeight: 500,
+          maxHeight: 400,
           width: "1200px",
           overflowY: "auto",
         }}
