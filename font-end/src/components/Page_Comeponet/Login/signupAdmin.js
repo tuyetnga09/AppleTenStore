@@ -229,6 +229,8 @@ const SignUpAdmin = () => {
 
       history.replace("/");
     } else {
+      const nvbh = document.getElementById("flexRadioDefault3");
+      nvbh.checked = true;
       readAllProvince()
         .then((response) => {
           setProvinces(response.data.data);
@@ -272,6 +274,27 @@ const SignUpAdmin = () => {
         avatar: value.file.originFileObj.name,
       },
     });
+  }
+
+  function selectedNvbh() {
+    const nvql = document.getElementById("flexRadioDefault4");
+    const admin = document.getElementById("flexRadioDefault5");
+    nvql.checked = false;
+    admin.checked = false;
+  }
+
+  function selectedNvql() {
+    const nvbh = document.getElementById("flexRadioDefault3");
+    const admin = document.getElementById("flexRadioDefault5");
+    nvbh.checked = false;
+    admin.checked = false;
+  }
+
+  function selectedAdmin() {
+    const nvbh = document.getElementById("flexRadioDefault3");
+    const nvql = document.getElementById("flexRadioDefault4");
+    nvbh.checked = false;
+    nvql.checked = false;
   }
 
   return (
@@ -550,11 +573,12 @@ const SignUpAdmin = () => {
                   <input
                     class="form-check-input"
                     type="radio"
-                    name="roles"
+                    // name="roles"
                     id="flexRadioDefault3"
                     value={"NHAN_VIEN_BAN_HANG"}
                     onChange={handleRole}
-                    checked={isChecked2}
+                    // checked={isChecked2}
+                    onClick={() => selectedNvbh()}
                   />
                   <label
                     class="form-check-label"
@@ -570,10 +594,11 @@ const SignUpAdmin = () => {
                   <input
                     class="form-check-input"
                     type="radio"
-                    name="roles"
+                    // name="roles"
                     id="flexRadioDefault4"
                     value={"NHAN_VIEN_QUAN_LY"}
                     onChange={handleRole}
+                    onClick={() => selectedNvql()}
                   />
                   <label
                     class="form-check-label"
@@ -581,6 +606,23 @@ const SignUpAdmin = () => {
                     style={{ color: "#fff", fontSize: "12px" }}
                   >
                     Nhân viên quản lý
+                  </label>{" "}
+                  <br />
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    // name="roles"
+                    id="flexRadioDefault5"
+                    value={"ADMIN"}
+                    onChange={handleRole}
+                    onClick={() => selectedAdmin()}
+                  />
+                  <label
+                    class="form-check-label"
+                    for="flexRadioDefault5"
+                    style={{ color: "#fff", fontSize: "12px" }}
+                  >
+                    Admin
                   </label>
                 </div>
               </div>
