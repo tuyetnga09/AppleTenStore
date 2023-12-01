@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,28 +32,33 @@ public class UserController {
     private AccountService accountService;
 
     @GetMapping("")
-    public List<User> getAll(){
+    public List<User> getAll() {
         return userService.getAll();
     }
 
     @GetMapping("/findByRole")
-    public List<User> findByRole(Pageable pageable, @RequestParam("role") String role){
-        return userService.findByRole(pageable, role);
+    public List<User> findByRole(Pageable pageable, @RequestParam("role") String role, @RequestParam("status") String status) {
+        return userService.findByRoleAndStatus(pageable, role, status);
     }
 
     @PutMapping("/{id}")
-    public Boolean editCustomer(@PathVariable("id") Integer id, @RequestBody EditCustomer editCustomer){
-        if (accountService.updateAccount(editCustomer.getEmail(), id) && userService.updateUser(editCustomer.getFullName(), editCustomer.getEmail(), editCustomer.getPhoneNumber(), editCustomer.getDateOfBirth(), id)){
+    public Boolean editCustomer(@PathVariable("id") Integer id, @RequestBody EditCustomer editCustomer) {
+        if (accountService.updateAccount(editCustomer.getEmail(), id) && userService.updateUser(editCustomer.getFullName(), editCustomer.getEmail(), editCustomer.getPhoneNumber(), editCustomer.getDateOfBirth(), id)) {
             return true;
         }
         return false;
     }
 
     @PutMapping("/updatePassword/{id}")
-    public Boolean editPasswordCustomer(@PathVariable("id") Integer id, @RequestBody EditPassword editPassword){
-        if (accountService.updatePassword(editPassword.getPassword(), editPassword.getPasswordNew(), editPassword.getPasswordRepeat(), id)){
+    public Boolean editPasswordCustomer(@PathVariable("id") Integer id, @RequestBody EditPassword editPassword) {
+        if (accountService.updatePassword(editPassword.getPassword(), editPassword.getPasswordNew(), editPassword.getPasswordRepeat(), id)) {
             return true;
         }
         return false;
+    }
+
+    @PutMapping("/updateStatusUser")
+    public void updateStatusUser(@RequestParam("status") String status, @RequestParam("id") Integer id) {
+        userService.updateStatusUser(status, id);
     }
 }

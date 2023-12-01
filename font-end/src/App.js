@@ -66,6 +66,7 @@ import ChatManager from "./components/Page_Comeponet/Chat/ChatManger";
 import SkuDisplay from "./components/product_component/SKU/SkuDisplay";
 import CategoryDisplay from "./components/Page_Comeponet/Categories/index";
 import AccountList from "./components/Page_Comeponet/Account/index";
+import AccountListReturn from "./components/Page_Comeponet/Account/accReturn";
 import SellOffline from "./components/Page_Comeponet/SellOffline/SellSmartOffline";
 import Paydone from "./components/Page_Comeponet/Paydone";
 import SignUpAdmin from "./components/Page_Comeponet/Login/signupAdmin";
@@ -75,6 +76,8 @@ import OderUserChoVanChuyen from "./components/Page_Comeponet/OderUser/ChoVanChu
 import OderUserVanChuyen from "./components/Page_Comeponet/OderUser/VanChuyen";
 import OderUserHoanThanh from "./components/Page_Comeponet/OderUser/HoanThanh";
 import OderUserDaHuy from "./components/Page_Comeponet/OderUser/DaHuy";
+import OderUserYeuCauTraHang from "./components/Page_Comeponet/OderUser/YeuCauTraHang";
+import OderUserTraHang from "./components/Page_Comeponet/OderUser/TraHang";
 import ProfileCustomer from "./components/Page_Comeponet/ProfileCustomer/index";
 import Product_detail_dashbroad from "./components/Page_Comeponet/prduct_detail/sku/index";
 import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
@@ -339,6 +342,7 @@ function App() {
           <Route path="/sku/display" exact component={SkuDisplay} />
           <Route path="/categories" exact component={CategoryDisplay} />
           <Route path="/users" exact component={AccountList} />
+          <Route path="/usersReturn" exact component={AccountListReturn} />
           <Route path="/sell" exact component={SellOffline} />
           <Route path="/paydone" exact component={Paydone} />
           <Route path="/oderUserAll" exact component={OderUserAll} />
@@ -347,6 +351,8 @@ function App() {
           <Route path="/oderUserVC" exact component={OderUserVanChuyen} />
           <Route path="/oderUserHT" exact component={OderUserHoanThanh} />
           <Route path="/oderUserDH" exact component={OderUserDaHuy} />
+          <Route path="/oderUserYCTH" exact component={OderUserYeuCauTraHang} />
+          <Route path="/oderUserTH" exact component={OderUserTraHang} />
           <Route path="/profile" exact component={ProfileCustomer} />
           <Route
             path="/admin/product-detail"

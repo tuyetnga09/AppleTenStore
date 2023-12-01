@@ -34,15 +34,7 @@ public interface BillService {
 
     List<Bill> listBillByIdAccount(Integer id);
 
-    List<Bill> listBillByIdAccountCXN(Integer id);
-
-    List<Bill> listBillByIdAccountCVC(Integer id);
-
-    List<Bill> listBillByIdAccountVC(Integer id);
-
-    List<Bill> listBillByIdAccountDTT(Integer id);
-
-    List<Bill> listBillByIdAccountDH(Integer id);
+    List<Bill> listBillByIdAccountAndStatus(Integer id, String status);
 
     void deleteBill(String noteReturn, Integer id);
 

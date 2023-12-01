@@ -136,23 +136,11 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             " where date(bill.date_create) = CURDATE() and bill.status_bill='TRA_HANG' group by  account.id", nativeQuery = true)
     List<Integer> countCustomersReturnedToday();
 
-    @Query(value = "select * from bill where id_account = ?1 and type = 'ONLINE'", nativeQuery = true)
+    @Query(value = "select * from bill where id_account = ?1 and type = 'ONLINE' order by id desc", nativeQuery = true)
     List<Bill> listBillByIdAccount(Integer id);
 
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'CHO_XAC_NHAN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountCXN(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'CHO_VAN_CHUYEN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountCVC(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'VAN_CHUYEN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountVC(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_THANH_TOAN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountDTT(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_HUY' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountDH(Integer id);
+    @Query(value = "select * from bill where id_account = ?1 and status_bill = ?2 and type = 'ONLINE' order by id desc", nativeQuery = true)
+    List<Bill> listBillByIdAccountAndStatus(Integer id, String status);
 
     @Modifying
     @Query(value = "update bill set status_bill = 'DA_HUY', note_return = ?1 where id = ?2", nativeQuery = true)

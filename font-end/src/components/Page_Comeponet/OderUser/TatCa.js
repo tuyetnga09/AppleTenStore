@@ -129,6 +129,8 @@ const OderUserAll = () => {
                   ? "Hoàn thành"
                   : b.statusBill === "TRA_HANG"
                   ? "Trả hàng"
+                  : b.statusBill === "YEU_CAU_TRA_HANG"
+                  ? "Yêu cầu trả hàng"
                   : "Đã hủy"}
               </span>
             </div>
@@ -717,6 +719,16 @@ const OderUserAll = () => {
           <li class="nav-item">
             <Link class="nav-link" to="/oderUserDH">
               Đã hủy
+            </Link>
+          </li>
+          <li class="nav-item">
+            <Link class="nav-link" to="/oderUserYCTH">
+              Yêu cầu trả hàng
+            </Link>
+          </li>
+          <li class="nav-item">
+            <Link class="nav-link" aria-current="page" to="/oderUserTH">
+              Trả hàng
             </Link>
           </li>
         </ul>

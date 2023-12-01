@@ -436,7 +436,7 @@ const StoreProducts = ({}) => {
                         <StyledStoreProducts>
                           <Text style={{ fontSize: "24px" }} strong>
                             {/* {t("stores.storeProducts")} */}
-                            PRODUCT
+                            Sản phẩm
                           </Text>
                           <Form.Item name="name" noStyle>
                             <Input
@@ -447,9 +447,9 @@ const StoreProducts = ({}) => {
                               name="key"
                             />
                           </Form.Item>
-                          <Button onClick={showModal}>AddProduct</Button>
+                          <Button onClick={showModal}>Thêm mới</Button>
                           <Link to="/product/displayDelete">
-                            <Button>Deleted</Button>
+                            <Button>Đã xóa</Button>
                           </Link>
                           <div className="sortFilter dropdown">
                             {/* <Button className="dropbtn">Sắp xếp</Button> */}

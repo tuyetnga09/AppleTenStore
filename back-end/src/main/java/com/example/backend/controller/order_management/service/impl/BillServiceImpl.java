@@ -558,28 +558,8 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<Bill> listBillByIdAccountCXN(Integer id) {
-        return billRepository.listBillByIdAccountCXN(id);
-    }
-
-    @Override
-    public List<Bill> listBillByIdAccountCVC(Integer id) {
-        return billRepository.listBillByIdAccountCVC(id);
-    }
-
-    @Override
-    public List<Bill> listBillByIdAccountVC(Integer id) {
-        return billRepository.listBillByIdAccountVC(id);
-    }
-
-    @Override
-    public List<Bill> listBillByIdAccountDTT(Integer id) {
-        return billRepository.listBillByIdAccountDTT(id);
-    }
-
-    @Override
-    public List<Bill> listBillByIdAccountDH(Integer id) {
-        return billRepository.listBillByIdAccountDH(id);
+    public List<Bill> listBillByIdAccountAndStatus(Integer id, String status) {
+        return billRepository.listBillByIdAccountAndStatus(id, status);
     }
 
     @Override
