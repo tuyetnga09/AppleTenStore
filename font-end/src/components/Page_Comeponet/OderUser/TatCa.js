@@ -169,7 +169,7 @@ const OderUserAll = () => {
         <div>
           <Row>
             <div className="col-6">
-              {b.statusBill === "CHO_XAC_NHAN" ? (
+              {/* {b.statusBill === "CHO_XAC_NHAN" ? (
                 <p>
                   Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
                 </p>
@@ -187,7 +187,7 @@ const OderUserAll = () => {
                 </p>
               ) : (
                 ""
-              )}
+              )} */}
             </div>
             <div className="col-6">
               <span style={{ float: "right" }}>
@@ -215,9 +215,9 @@ const OderUserAll = () => {
                   ""
                 ) : b.statusBill === "VAN_CHUYEN" ? (
                   ""
-                ) : b.statusBill === "DA_THANH_TOAN" ||
-                  (b.statusBill === "YEU_CAU_TRA_HANG" &&
-                    khoangCachNgay <= 3) ? (
+                ) : (b.statusBill === "DA_THANH_TOAN" ||
+                    b.statusBill === "YEU_CAU_TRA_HANG") &&
+                  khoangCachNgay <= 3 ? (
                   <button
                     type="button"
                     class="btn btn-light"
@@ -226,9 +226,10 @@ const OderUserAll = () => {
                     Trả hàng
                   </button>
                 ) : (
-                  <button type="button" class="btn btn-light">
-                    Mua lại
-                  </button>
+                  // <button type="button" class="btn btn-light">
+                  //   Mua lại
+                  // </button>
+                  ""
                 )}
               </div>
             </div>

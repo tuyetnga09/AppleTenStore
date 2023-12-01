@@ -722,40 +722,42 @@ export default function SellSmart() {
   };
   const history = useHistory();
   const handleSave = () => {
-    const fullname = document.getElementById('fullname').value;
-    const email = document.getElementById('email').value;
-    const phoneNumber = document.getElementById('phoneNumber').value;
+    const fullname = document.getElementById("fullname").value;
+    const email = document.getElementById("email").value;
+    const phoneNumber = document.getElementById("phoneNumber").value;
     if (
-      fullname !== null && fullname !== "" &&
-      email !== null && email !== "" &&
-      phoneNumber !== null && phoneNumber !== ""
+      fullname !== null &&
+      fullname !== "" &&
+      email !== null &&
+      email !== "" &&
+      phoneNumber !== null &&
+      phoneNumber !== ""
     ) {
       addCustomerOffline(customer)
+        .then((response) => {
+          history.push("/sell");
+          setCustomer({
+            fullName: "",
+            email: "",
+            phoneNumber: "",
+          });
+          getCustomer()
             .then((response) => {
-              history.push("/sell");
-              setCustomer({
-                fullName: "",
-                email: "",
-                phoneNumber: "",
-              });
-              getCustomer()
-                .then((response) => {
-                  setKhachHang(response.data);
-                })
-                .catch((error) => {
-                  console.log(`${error}`);
-                });
-                setIsModalVisible(false);
+              setKhachHang(response.data);
             })
             .catch((error) => {
-              alert("Thêm khách hàng thất bại");
+              console.log(`${error}`);
             });
-    }else{
+          setIsModalVisible(false);
+        })
+        .catch((error) => {
+          alert("Thêm khách hàng thất bại");
+        });
+    } else {
       notification.error({
         message: "Vui lòng nhập thông tin khách hàng!",
       });
     }
-    
   };
 
   function giaoTanNoi() {
@@ -965,7 +967,7 @@ export default function SellSmart() {
     ) => {
       const columnWidth = tableWidth / columns.length;
       const rowHeight = tableHeight / (data.length + 1); // Số dòng bằng số dòng dữ liệu cộng thêm 1 dòng tiêu đề
-    
+
       // Vẽ tiêu đề cho từng cột
       columns.forEach((column, index) => {
         const x = tableX + columnWidth * index;
@@ -978,7 +980,7 @@ export default function SellSmart() {
           font: customFontItalic,
         });
       });
-    
+
       // Vẽ dữ liệu từ mảng
       data.forEach((row, rowIndex) => {
         const y = tableY - (rowIndex + 2) * rowHeight; // Bắt đầu từ hàng thứ 2 (hàng tiêu đề cộng thêm 1)
@@ -995,18 +997,13 @@ export default function SellSmart() {
           });
         });
       });
-    
+
       // Vẽ đường ngang
       for (let i = 0; i <= data.length + 1; i++) {
         const y = tableY - i * rowHeight;
-        drawLine(
-          { x: tableX, y },
-          { x: tableX + tableWidth, y },
-          1,
-          [0, 0, 0]
-        );
+        drawLine({ x: tableX, y }, { x: tableX + tableWidth, y }, 1, [0, 0, 0]);
       }
-    
+
       // Vẽ đường dọc
       for (let i = 0; i <= columns.length; i++) {
         const x = tableX + i * columnWidth;
@@ -1019,7 +1016,14 @@ export default function SellSmart() {
       }
     };
 
-    const columns = ["Ten SP", "Dung luong", "Mau sac", "Gia SP", "So luong", "Thanh Tien"];
+    const columns = [
+      "Ten SP",
+      "Dung luong",
+      "Mau sac",
+      "Gia SP",
+      "So luong",
+      "Thanh Tien",
+    ];
     const data = productList.map((product) => [
       product.nameProduct,
       product.skuCapacity,
@@ -3401,13 +3405,13 @@ export default function SellSmart() {
                               marginRight: "10px",
                               marginBottom: "10px",
                               height: "90px",
-                              fontSize: "50px"
+                              fontSize: "50px",
                             }}
                             onClick={() => confirm2()}
                           >
                             Lưu hóa đơn
                           </button>
-                        
+
                           <Space size="middle">
                             <Badge count={slHoaDonCho} overflowCount={10}>
                               <button
@@ -3484,7 +3488,12 @@ export default function SellSmart() {
             </div>
           </div>
           <br />
-          <button className="btn btn-success" style={{marginRight: "10px"}} type="button" onClick={handleSave}>
+          <button
+            className="btn btn-success"
+            style={{ marginRight: "10px" }}
+            type="button"
+            onClick={handleSave}
+          >
             Lưu lại
           </button>
           <button

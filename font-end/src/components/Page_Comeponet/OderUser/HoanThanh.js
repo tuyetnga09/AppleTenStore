@@ -194,9 +194,10 @@ const OderUserHoanThanh = () => {
                     Trả hàng
                   </button>
                 ) : (
-                  <button type="button" class="btn btn-light">
-                    Mua lại
-                  </button>
+                  ""
+                  // <button type="button" class="btn btn-light">
+                  //   Mua lại
+                  // </button>
                 )}
               </div>
             </div>
