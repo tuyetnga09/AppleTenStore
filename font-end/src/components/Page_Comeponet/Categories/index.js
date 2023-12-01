@@ -229,7 +229,7 @@ export const CategoryList = () => {
                   <Table.Column
                     key="title"
                     dataIndex="title"
-                    title="Title"
+                    title="Tên thể loại"
                     render={(text, record) => {
                       return (
                         <Form.Item name="title" style={{ margin: 0 }}>
@@ -238,7 +238,7 @@ export const CategoryList = () => {
                       );
                     }}
                   />
-                  <Table.Column
+                  {/* <Table.Column
                     key="isActive"
                     dataIndex="isActive"
                     title="Active"
@@ -278,7 +278,7 @@ export const CategoryList = () => {
                         </Dropdown>
                       );
                     }}
-                  />
+                  /> */}
                 </Table>
               </Form>
             </List>
@@ -344,7 +344,7 @@ const CategoryProductsTable = ({ record }) => {
   );
 
   return (
-    <List title="Products" createButtonProps={undefined}>
+    <List title="Sản phẩm" createButtonProps={undefined}>
       <Table
         rowKey="id"
         dataSource={products}
@@ -357,17 +357,18 @@ const CategoryProductsTable = ({ record }) => {
       >
         <Table.Column
           dataIndex="images"
+          title="Ảnh"
           render={(text, record) => (
             <AvtProduct size={74} product={record.id} />
           )}
           width={200}
         />
-        <Table.Column key="name" dataIndex="name" title="Name" />
+        <Table.Column key="name" dataIndex="name" title="Tên sản phẩm" />
         <Table.Column
           align="right"
           key="price"
           dataIndex="price"
-          title="Price"
+          title="Giá"
           render={(value) => {
             return (
               <NumberField
@@ -385,7 +386,7 @@ const CategoryProductsTable = ({ record }) => {
         <Table.Column
           key="isActive"
           dataIndex="isActive"
-          title="Active"
+          title="Trạng thái"
           render={(value, record) => {
             return record.status === 0 ? (
               <BooleanField value={true} />
@@ -397,7 +398,7 @@ const CategoryProductsTable = ({ record }) => {
         <Table.Column
           key="createdAt"
           dataIndex="createdAt"
-          title="CreatedAt"
+          title="Ngày tạo"
           render={(value, record) => (
             <DateField value={record.dateCreate} format="DD/MM/YYYY" />
           )}

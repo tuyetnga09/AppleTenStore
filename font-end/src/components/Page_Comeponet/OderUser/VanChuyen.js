@@ -4,7 +4,7 @@ import Footer from "../layout/Footer";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import { readAll } from "../../../service/BillDetail/billDetailCustomer.service";
-import { readAllByIdAndVC } from "../../../service/Bill/billCustomer.service";
+import { readAllByIdAndStatus } from "../../../service/Bill/billCustomer.service";
 import { account } from "../Login/login";
 import { Row } from "antd";
 const OderUserVanChuyen = () => {
@@ -12,7 +12,7 @@ const OderUserVanChuyen = () => {
   const [bills, setBills] = useState([]);
   const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
-    readAllByIdAndVC(storedUser?.id)
+    readAllByIdAndStatus(storedUser?.id, "VAN_CHUYEN")
       .then((res) => {
         setBills(res.data);
         console.log(res.data);
@@ -52,15 +52,7 @@ const OderUserVanChuyen = () => {
               <span
                 style={{ paddingTop: "20px", float: "right", color: "red" }}
               >
-                {b.statusBill === "CHO_XAC_NHAN"
-                  ? "Chờ xác nhận"
-                  : b.statusBill === "CHO_VAN_CHUYEN"
-                  ? "Chờ vận chuyển"
-                  : b.statusBill === "VAN_CHUYEN"
-                  ? "Vận chuyển"
-                  : b.statusBill === "DA_THANH_TOAN"
-                  ? "Hoàn thành"
-                  : "Đã hủy"}
+                Vận chuyển
               </span>
             </div>
           </Row>
@@ -97,25 +89,7 @@ const OderUserVanChuyen = () => {
         <hr />
         <div>
           <Row>
-            <div className="col-6">
-              {b.statusBill === "CHO_XAC_NHAN" ? (
-                <p>
-                  Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-                <p>
-                  Dự kiến giao hàng ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "VAN_CHUYEN" ? (
-                <p>
-                  Dự kiến giao hàng ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "DA_THANH_TOAN" ? (
-                ""
-              ) : (
-                ""
-              )}
-            </div>
+            <div className="col-6"></div>
             <div className="col-6">
               <span style={{ float: "right" }}>
                 Thành tiền:{" "}
@@ -130,23 +104,6 @@ const OderUserVanChuyen = () => {
                 <button type="button" class="btn btn-danger">
                   Liên hệ người bán
                 </button>{" "}
-                {b.statusBill === "CHO_XAC_NHAN" ? (
-                  <button type="button" class="btn btn-light">
-                    Hủy đơn
-                  </button>
-                ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-                  ""
-                ) : b.statusBill === "VAN_CHUYEN" ? (
-                  ""
-                ) : b.statusBill === "DA_THANH_TOAN" ? (
-                  <button type="button" class="btn btn-light">
-                    Mua lại
-                  </button>
-                ) : (
-                  <button type="button" class="btn btn-light">
-                    Mua lại
-                  </button>
-                )}
               </div>
             </div>
           </Row>
@@ -192,12 +149,22 @@ const OderUserVanChuyen = () => {
               Đã hủy
             </Link>
           </li>
+          <li class="nav-item">
+            <Link class="nav-link" to="/oderUserYCTH">
+              Yêu cầu trả hàng
+            </Link>
+          </li>
+          <li class="nav-item">
+            <Link class="nav-link" aria-current="page" to="/oderUserTH">
+              Trả hàng
+            </Link>
+          </li>
         </ul>
       </section>
       <section
         style={{
           position: "relative",
-          maxHeight: 500,
+          maxHeight: 400,
           width: "1200px",
           overflowY: "auto",
         }}
