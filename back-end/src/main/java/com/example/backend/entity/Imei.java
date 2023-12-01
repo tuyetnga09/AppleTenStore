@@ -40,5 +40,6 @@ public class Imei extends DuplicateAttribute implements Identify {
     @JoinColumn(name = "sku_id")
     private SKU idSku;
 
-    //status của imei: 0 - hoạt động, 1 - đã xoá, 2 - giỏ hàng, 3 đã bán, 4 yêu cầu trả hàng, 5 trả hàng không thành công, 6 đã trả hàng
+    //status của imei: 0 - hoạt động, 1 - đã xoá, 2 - giỏ hàng, 3 đã bán, 4 yêu cầu trả hàng, 5 trả hàng không thành công,
+    // 6 đã trả hàng, 7 khach hàng huỷ yêu cầu
 }

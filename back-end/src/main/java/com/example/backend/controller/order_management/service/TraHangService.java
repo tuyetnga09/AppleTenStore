@@ -9,6 +9,7 @@ import java.util.List;
 public interface TraHangService {
     //viet tra hang - khach hang
     List<BillDetailCustomerIon> khachHangTraHang( Integer idBillReturn, String noteBillReturn, List<Long> idImeiDaBans);
-    Boolean checkTraHang(Integer idBill);
+    Integer checkTraHang(Integer idBill);
     List<BillDetailCustomerIon> khachHangTraTatCaHang( Integer idBillReturn, String noteBillReturn, List<BillDetailCustomerIon> billDetailCustomerIons);
+    List<BillDetailCustomerIon> khachHuyYeuCauTraHang(Integer idBillReturn, String noteBillReturn);
 }

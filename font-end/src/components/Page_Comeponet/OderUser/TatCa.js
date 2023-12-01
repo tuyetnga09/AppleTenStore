@@ -9,6 +9,7 @@ import {
   yeuCauTraHang,
   checkBillTraHang,
   traTatCaSanPham,
+  khachHangHuyYeuCauTraHang,
 } from "../../../service/BillDetail/billDetailCustomer.service";
 import { readAllById } from "../../../service/Bill/billCustomer.service";
 import {
@@ -253,11 +254,11 @@ const OderUserAll = () => {
   };
 
   const handleCannelOrderCancel = () => {
-    setIsModalVisibleCannelOrder(false);
     const textNoteReturn = document.getElementById(
       "exampleFormControlTextarea1"
     );
     textNoteReturn.value = "";
+    setIsModalVisibleCannelOrder(false);
   };
 
   const handleCannelOrder = (event) => {
@@ -601,6 +602,84 @@ const OderUserAll = () => {
       }
     }
   };
+  // phongnh
+  const [isModalVisibleHuyTrahang, setIsModalVisibleHuyTrahang] =
+    useState(false); // Trạng thái hiển thị Modal
+
+  // Hàm để mở Modal
+  const handleOpenXemHuyTrahang = () => {
+    setIsModalVisibleHuyTrahang(true);
+  };
+  // Hàm để ẩn Modal
+  const handleCancelHuyTrahang = () => {
+    const textNoteReturn = document.getElementById(
+      "exampleFormControlTextarea1-1"
+    );
+    textNoteReturn.value = "";
+    setIsModalVisibleHuyTrahang(false);
+  };
+
+  // onClick={() => confirmHuyTraHang()}
+
+  const huyTrahang = () => {
+    handleOpenXemHuyTrahang();
+  };
+  const rejectKhachHuyTraHang = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục mua sắm.",
+      life: 3000,
+    });
+  };
+  const confirmHuyTraHang = () => {
+    confirmDialog({
+      message: "Bạn chắc chắc huỷ trả sản phẩm?",
+      header: "XÁC NHẬN THÔNG BÁO",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => huyTrahang(),
+      reject: () => rejectKhachHuyTraHang(),
+    });
+  };
+  const handleCanneHuyTraHang = (event) => {
+    setBillReturn({
+      ...billReturn,
+      note: event.target.value,
+    });
+  };
+  const handleSubmitHuyTrahang = (event) => {
+    event.preventDefault();
+
+    khachHangHuyYeuCauTraHang(billReturn.id, billReturn.note)
+      .then((res) => {
+        if (res.data !== "" && res.data !== undefined) {
+          setDataBillDetails(res.data);
+          notification.success({
+            message: " Huỷ yêu cầu trả hàng",
+            description: "Huỷ yêu cầu trả hàng thành công.",
+          });
+          checkBillTraHang(billReturn.id)
+            .then((res) => {
+              setCheckDataBill(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          handleCancelHuyTrahang();
+        } else {
+          notification.warn({
+            message: "Huỷ yêu cầu trả hàng thất bại!",
+            description:
+              "Yêu cầu trả hàng của quý khách thất bại! Vui lòng thử lại!",
+          });
+        }
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <>
@@ -803,7 +882,7 @@ const OderUserAll = () => {
             // onChange={handleChangeImeis}
           />
         </Row>
-        {dataCheckBill === true ? (
+        {dataCheckBill === 0 ? (
           <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
             <div className="col-6">
               <button
@@ -833,25 +912,38 @@ const OderUserAll = () => {
               </button>
             </div>
           </Row>
-        ) : (
+        ) : dataCheckBill === 4 ? (
           <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
             <div class="col-6">
               <span style={{ color: "red" }}>
                 * Quý khách đã hết số lần trả hàng.
               </span>
             </div>
+
             <div class="col-6">
               <button
                 type="button"
                 class="btn btn-danger"
                 style={{ float: "right" }}
+                onClick={() => confirmHuyTraHang()}
               >
                 Huỷ Yêu Cầu Trả Hàng
               </button>
             </div>
           </Row>
+        ) : dataCheckBill === 5 ||
+          dataCheckBill === 7 ||
+          dataCheckBill === 7 ? (
+          <Row style={{ marginTop: "10px", marginBottom: "20px" }}>
+            <div class="col-6">
+              <span style={{ color: "red" }}>
+                * Quý khách đã hết số lần trả hàng.
+              </span>
+            </div>
+          </Row>
+        ) : (
+          ""
         )}
-
         <Table
           rowKey="oop"
           dataSource={dataBillDetails}
@@ -871,7 +963,7 @@ const OderUserAll = () => {
             render={(text, record) => {
               return (
                 <div>
-                  {record.statusImei == 3 && dataCheckBill === true ? (
+                  {record.statusImei == 3 && dataCheckBill === 0 ? (
                     <Checkbox
                       value={record.idImei}
                       checked={selectedCheckboxes.includes(record.idImei)}
@@ -992,11 +1084,22 @@ const OderUserAll = () => {
                       }}
                     />
                   ) : record.statusImei === 6 ? (
-                    <CloseCircleOutlined
-                      style={{
-                        color: "red",
-                      }}
-                    />
+                    <div>
+                      <CloseCircleOutlined
+                        style={{
+                          color: "red",
+                        }}
+                      />
+                      <div
+                        style={{
+                          backgroundColor: "orange",
+                          color: "white",
+                          borderRadius: "5px",
+                        }}
+                      >
+                        Trả hàng thành công
+                      </div>
+                    </div>
                   ) : record.statusImei === 4 ? (
                     <div
                       style={{
@@ -1008,21 +1111,41 @@ const OderUserAll = () => {
                       Đã gửi yêu cầu
                     </div>
                   ) : record.statusImei === 5 ? (
-                    <div
-                      style={{
-                        backgroundColor: "orange",
-                        color: "white",
-                        borderRadius: "5px",
-                      }}
-                    >
-                      Chờ kiểm tra
+                    <div>
+                      <WarningFilled
+                        style={{
+                          color: "#FFCC00",
+                        }}
+                      />
+                      <div
+                        style={{
+                          backgroundColor: "orange",
+                          color: "white",
+                          borderRadius: "5px",
+                        }}
+                      >
+                        Trả hàng không thành công
+                      </div>
+                    </div>
+                  ) : record.statusImei === 7 ? (
+                    <div>
+                      <WarningFilled
+                        style={{
+                          color: "#FFCC00",
+                        }}
+                      />
+                      <div
+                        style={{
+                          backgroundColor: "#FFCC00",
+                          color: "white",
+                          borderRadius: "5px",
+                        }}
+                      >
+                        Đã huỷ yêu cầu trả hàng
+                      </div>
                     </div>
                   ) : (
-                    <WarningFilled
-                      style={{
-                        color: "#FFCC00",
-                      }}
-                    />
+                    "!"
                   )}
                 </div>
               );
@@ -1036,6 +1159,32 @@ const OderUserAll = () => {
             }}
           />
         </Table>
+      </Modal>
+      {/* isModalVisibleHuyTrahang */}
+      <Modal
+        visible={isModalVisibleHuyTrahang}
+        onCancel={handleCancelHuyTrahang}
+        width={550}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <form onSubmit={handleSubmitHuyTrahang}>
+          <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">
+              Lí do hủy đơn:
+            </label>
+            <textarea
+              class="form-control"
+              id="exampleFormControlTextarea1-1"
+              rows="3"
+              required
+              onChange={handleCanneHuyTraHang}
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">
+            Xác nhận
+          </button>
+        </form>
       </Modal>
       <footer
         style={{

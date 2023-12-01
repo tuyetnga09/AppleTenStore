@@ -27,3 +27,9 @@ export const traTatCaSanPham = (idBillReturn, noteBillReturn, idImeiDaBans) => {
     `/customer/billDetail/yeu-cau-tra-tat-ca?idBillReturn=${idBillReturn}&noteBillReturn=${noteBillReturn}&idImeiDaBans=${idImeiDaBans}`
   );
 };
+
+export const khachHangHuyYeuCauTraHang = (idBillReturn, noteBillReturn) => {
+  return httpClient.get(
+    `/customer/billDetail/huy-yeu-cau?idBillReturn=${idBillReturn}&noteBillReturn=${noteBillReturn}`
+  );
+};
