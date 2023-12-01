@@ -599,6 +599,7 @@ const OderDisplay = ({}) => {
         message: "Accept",
         description: "Tất cả đơn hàng đã được xác nhận thanh công",
       });
+      loadDisplay = !loadDisplay;
     } else {
       if (checkSoluongImei() === true) {
         const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
