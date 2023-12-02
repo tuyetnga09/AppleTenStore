@@ -43,7 +43,7 @@ const SignUp = () => {
   const [showDistricts, setShowDistricts] = useState(true);
   const [showWards, setShowWards] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [avt, setAvt] = useState({});
+  const [avt, setAvt] = useState(null);
   const form = new FormData();
 
   const handleProvince = (event) => {
@@ -179,6 +179,17 @@ const SignUp = () => {
     console.log(data);
   };
 
+  function handleChangeImage(value) {
+    setAvt(value.file.originFileObj);
+    setData({
+      ...data, // Giữ nguyên các giá trị cũ của data
+      user: {
+        ...data.user,
+        avatar: value.file.originFileObj.name,
+      },
+    });
+  }
+
   const handleSubmit = async (event) => {
     setLoading(true);
     event.preventDefault();
@@ -187,6 +198,10 @@ const SignUp = () => {
 
     add(items)
       .then((res) => {
+        if (avt !== null) {
+          form.append("file", avt);
+          saveImageAccount(form);
+        }
         if (res !== null) {
           notification.success({
             message: "ĐĂNG KÍ",
@@ -194,6 +209,7 @@ const SignUp = () => {
           });
           setLoading(false);
           history.push("/login");
+          // window.location.replace("/login");
         } else {
           notification.error({
             message: "ĐĂNG KÍ",
@@ -204,8 +220,6 @@ const SignUp = () => {
       .catch((err) => {
         console.log(err);
       });
-    await form.append("file", avt);
-    await saveImageAccount(form);
   };
 
   useEffect(() => {
@@ -241,17 +255,6 @@ const SignUp = () => {
         console.log(`${error}`);
       });
   }, [province_id, district_id, showDistricts, showWards]);
-
-  function handleChangeImage(value) {
-    setAvt(value.file.originFileObj);
-    setData({
-      ...data, // Giữ nguyên các giá trị cũ của data
-      user: {
-        ...data.user,
-        avatar: value.file.originFileObj.name,
-      },
-    });
-  }
 
   return (
     <>

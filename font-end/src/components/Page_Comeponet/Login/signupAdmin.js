@@ -200,6 +200,10 @@ const SignUpAdmin = () => {
 
     add(items, role)
       .then((res) => {
+        if (avt !== null) {
+          form.append("file", avt);
+          saveImageAccount(form);
+        }
         if (res !== null) {
           notification.success({
             message: "ĐĂNG KÍ",
@@ -217,8 +221,6 @@ const SignUpAdmin = () => {
       .catch((err) => {
         console.log(err);
       });
-    await form.append("file", avt);
-    await saveImageAccount(form);
   };
   const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {
