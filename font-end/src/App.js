@@ -84,6 +84,7 @@ import OderCustomerAll from "./components/Page_Comeponet/OderCustomer";
 import Policy from "./components/Page_Comeponet/Policy";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import OderPayBackProduct from "./components/Page_Comeponet/OderManager/OderBackProduct";
+import GioiThieu from "./components/gioi_thieu_san_pham/gioi_thieu";
 
 const storedUser = JSON.parse(localStorage.getItem("account"));
 const fetchData = async () => {
@@ -365,6 +366,8 @@ function App() {
             exact
             component={OderPayBackProduct}
           />
+
+          <Route path="/gioi-thieu" exact component={GioiThieu} />
         </Switch>
       </Router>
     </div>

@@ -185,7 +185,9 @@ const OderUserHoanThanh = () => {
                   ""
                 ) : b.statusBill === "VAN_CHUYEN" ? (
                   ""
-                ) : b.statusBill === "DA_THANH_TOAN" && khoangCachNgay <= 3 ? (
+                ) : (b.statusBill === "DA_THANH_TOAN" ||
+                    b.statusBill === "YEU_CAU_TRA_HANG") &&
+                  khoangCachNgay <= 3 ? (
                   <button
                     type="button"
                     class="btn btn-light"
@@ -194,10 +196,10 @@ const OderUserHoanThanh = () => {
                     Trả hàng
                   </button>
                 ) : (
-                  ""
                   // <button type="button" class="btn btn-light">
                   //   Mua lại
                   // </button>
+                  ""
                 )}
               </div>
             </div>
