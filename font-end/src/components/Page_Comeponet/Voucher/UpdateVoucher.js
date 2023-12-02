@@ -15,6 +15,7 @@ import {
   Image,
   Button,
   notification,
+  InputNumber,
 } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import {
@@ -30,6 +31,8 @@ const UpdateVoucher = ({ editedVoucher }) => {
 
   const [voucher, setVoucher] = useState([]);
   const [voucherCreate, setVoucherCreate] = useState([]);
+  const [renDateStart, setRenDateStart] = useState([]);
+  const [renDateEnd, setRenDateEnd] = useState([]);
 
   useEffect(() => {
     if (editedVoucher && editedVoucher.id) {
@@ -37,6 +40,24 @@ const UpdateVoucher = ({ editedVoucher }) => {
         .then((response) => {
           setVoucher(response.data);
           console.log(response.data);
+          // Lấy năm, tháng và ngày từ mảng
+          const year = response.data.dateStart[0];
+          const month = response.data.dateStart[1]?.toString().padStart(2, "0");
+          const day = response.data.dateStart[2]?.toString().padStart(2, "0");
+          setRenDateStart(`${year}-${month}-${day}`);
+          setVoucher((prevVoucher) => ({
+            ...prevVoucher,
+            dateStart: `${year}-${month}-${day}`,
+          }));
+          // Lấy năm, tháng và ngày từ mảng
+          const yearEnd = response.data.dateEnd[0];
+          const monthEnd = response.data.dateEnd[1]?.toString().padStart(2, "0");
+          const dayEnd = response.data.dateEnd[2]?.toString().padStart(2, "0");
+          setRenDateEnd(`${yearEnd}-${monthEnd}-${dayEnd}`);
+          setVoucher((prevVoucher) => ({
+            ...prevVoucher,
+            dateEnd: `${year}-${month}-${day}`,
+          }));
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -68,14 +89,86 @@ const UpdateVoucher = ({ editedVoucher }) => {
     setVoucher(item);
   }
 
+  function handleChangeNumber(value) {
+    setVoucher({
+      ...voucher,
+      quantity: value,
+    });
+  }
+
+  function handleChangeValueVoucher(value) {
+    setVoucher({
+      ...voucher,
+      valueVoucher: value,
+    });
+  }
+
+  function handleChangeValueMinimum(value) {
+    setVoucher({
+      ...voucher,
+      valueMinimum: value,
+    });
+  }
+
+  function handleChangeValueMaximum(value) {
+    setVoucher({
+      ...voucher,
+      valueMaximum: value,
+    });
+  }
+
+  function handleStartDateChange(event) {
+    const startDate = dayjs(event.target.value);
+    const endDate = dayjs(renDateEnd); 
+    if (startDate >= endDate) {
+      notification.error({
+        message: "CẬP NHẬT VOUCHER",
+        description: "Ngày bắt đầu không được lớn hơn hoặc bằng ngày kết thúc",
+      });
+      return;
+    }
+  
+    handleChangeDatePicker(event.target.value, "dateStart");
+  }
+  
+  function handleEndDateChange(event) {
+    const endDate = dayjs(event.target.value);
+    const startDate = dayjs(renDateStart);
+    if (endDate <= startDate) {
+      notification.error({
+        message: "CẬP NHẬT VOUCHER",
+        description: "Ngày kết thúc không được nhỏ hơn hoặc bằng ngày bắt đầu",
+      });
+      return;
+    }
+  
+    handleChangeDatePicker(event.target.value, "dateEnd");
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const items = { ...voucher };
     const { valueMinimum, valueMaximum } = items;
+    const endDate1 = dayjs(document.getElementById('dateStart').value);
+    const startDate1 = dayjs(renDateStart);
+    const endDate2 = dayjs(document.getElementById('dateEnd').value);
+    const startDate2 = dayjs(renDateStart);
     if (valueMinimum > valueMaximum) {
       notification.error({
         message: "SAVE VOUCHER",
         description: "Giá trị nhỏ nhất không được lớn hơn giá trị lớn nhất",
+      });
+      return;
+    }else if(startDate1 >= endDate1){
+      notification.error({
+        message: "SAVE VOUCHER",
+        description: "Vui lòng kiểm tra lại ngày bắt đầu",
+      });
+      return;
+    }else if(endDate2 <= startDate2){
+      notification.error({
+        message: "SAVE VOUCHER",
+        description: "Vui lòng kiểm tra lại ngày kết thúc",
       });
       return;
     }
@@ -101,21 +194,23 @@ const UpdateVoucher = ({ editedVoucher }) => {
   const dateEnd = dayjs(voucher.dateEnd);
 
   // Hàm kiểm tra ngày
-  //  function disabledDate(current, type) {
-  //   if (type === 'start') {
-  //     // Chặn ngày trước ngày hiện tại
-  //     const today = moment().startOf('day');
-  //     return current && current < today;
-  //   }
-  //   if (type === 'end') {
-  //     // Chặn ngày bé hơn ngày bắt đầu
-  //     const { dateStart } = voucher;
-  //     const oneDayAfterStart = moment(dateStart).add(1, 'day');
-  //     const today = moment().startOf('day');
-  //     return current && (current < oneDayAfterStart || current < today);
-  //   }
-  //   return false;
-  // }
+  function disabledDate(current, type) {
+    if (type === "start") {
+      // Chặn ngày trước ngày hiện tại
+      const today = moment().startOf("day");
+      return current && current < today;
+    }
+    if (type === "end") {
+      // Chặn ngày bé hơn ngày bắt đầu
+      // const { dateStart } = voucher;
+      // const oneDayAfterStart = moment(dateStart).add(1, 'day');
+      // const today = moment().startOf('day');
+      // return current && (current < oneDayAfterStart || current < today);
+      const today = moment().startOf("day");
+      return current && current < today;
+    }
+    return false;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -136,6 +231,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
               Mã Voucher
             </label>
             <Input
+              disabled
               type="text"
               required
               value={voucher.code}
@@ -160,7 +256,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
               name="name"
             />
 
-            <Form.Item
+            {/* <Form.Item
               label={t("Ngày bắt đầu")}
               name="dateStart"
               style={{
@@ -171,10 +267,10 @@ const UpdateVoucher = ({ editedVoucher }) => {
                   required: true,
                 },
               ]}
-            >
-              <DatePicker
+            > */}
+              {/* <DatePicker
                 type="text"
-                // disabledDate={current => disabledDate(current, 'start')}
+                disabledDate={(current) => disabledDate(current, "start")}
                 required
                 defaultValue={dateStart.locale("vi-VN")}
                 onChange={(date, dateString) =>
@@ -182,10 +278,23 @@ const UpdateVoucher = ({ editedVoucher }) => {
                 }
                 id="dateStart"
                 name="dateStart"
+              /> */}
+              <label class="small mb-1" for="inputBirthday" style={{marginTop: "20px"}}>
+                Ngày bắt đầu
+              </label>
+              <input
+                required
+                class="form-control"
+                id="dateStart"
+                type="date"
+                name="dateStart"
+                onChange={handleStartDateChange}
+                defaultValue={renDateStart}
+                min={dayjs().format("YYYY-MM-DD")}
               />
-            </Form.Item>
+            {/* </Form.Item> */}
 
-            <Form.Item
+            {/* <Form.Item
               label={t("Ngày kết thúc")}
               name="dateEnd"
               rules={[
@@ -193,10 +302,10 @@ const UpdateVoucher = ({ editedVoucher }) => {
                   required: true,
                 },
               ]}
-            >
-              <DatePicker
+            > */}
+              {/* <DatePicker
                 type="text"
-                // disabledDate={current => disabledDate(current, 'end')}
+                disabledDate={(current) => disabledDate(current, "end")}
                 required
                 defaultValue={dateEnd.locale("vi-VN")}
                 onChange={(date, dateString) =>
@@ -204,10 +313,21 @@ const UpdateVoucher = ({ editedVoucher }) => {
                 }
                 id="dateEnd"
                 name="dateEnd"
+              /> */}
+              <label class="small mb-1" for="inputBirthday" style={{marginTop: "20px"}}>
+                Ngày kết thúc
+              </label>
+              <input
+                required
+                class="form-control"
+                id="dateEnd"
+                type="date"
+                name="dateEnd"
+                onChange={handleEndDateChange}
+                defaultValue={renDateEnd}
+                min={dayjs().format("YYYY-MM-DD")}
               />
-            </Form.Item>
-
-            
+            {/* </Form.Item> */}
           </Col>
           <Col xs={24} lg={8}>
             <label
@@ -217,13 +337,15 @@ const UpdateVoucher = ({ editedVoucher }) => {
             >
               Số lượng
             </label>
-            <Input
-              type="number"
-              required
-              value={voucher.quantity}
-              onChange={handleChange}
+            <InputNumber
+              style={{ width: "300px" }}
               id="quantity"
               name="quantity"
+              type="number"
+              min={0}
+              required
+              value={voucher.quantity || ""}
+              onChange={handleChangeNumber}
             />
 
             {/* <label
@@ -249,11 +371,13 @@ const UpdateVoucher = ({ editedVoucher }) => {
             >
               Giá trị Voucher
             </label>
-            <Input
+            <InputNumber
+              style={{ width: "300px" }}
               type="number"
+              min={0}
               required
-              value={voucher.valueVoucher}
-              onChange={handleChange}
+              value={voucher.valueVoucher || ""}
+              onChange={handleChangeValueVoucher}
               id="valueVoucher"
               name="valueVoucher"
             />
@@ -265,13 +389,15 @@ const UpdateVoucher = ({ editedVoucher }) => {
             >
               Giá trị đơn hàng tối hiểu
             </label>
-            <Input
+            <InputNumber
+              style={{ width: "300px" }}
               type="number"
+              min={0}
               required
-              value={voucher.valueMinimum}
-              onChange={handleChange}
-              id="giaTriToiThieu"
-              name="giaTriToiThieu"
+              value={voucher.valueMinimum || ""}
+              onChange={handleChangeValueMinimum}
+              id="valueMinimum"
+              name="valueMinimum"
             />
 
             <label
@@ -281,11 +407,13 @@ const UpdateVoucher = ({ editedVoucher }) => {
             >
               Giá trị đơn hàng tối đa
             </label>
-            <Input
+            <InputNumber
+              style={{ width: "300px" }}
               type="number"
+              min={0}
               required
-              value={voucher.valueMaximum}
-              onChange={handleChange}
+              value={voucher.valueMaximum || ""}
+              onChange={handleChangeValueMaximum}
               id="valueMaximum"
               name="valueMaximum"
             />
