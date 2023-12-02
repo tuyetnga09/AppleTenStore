@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   useGetLocale,
   useSetLocale,
@@ -78,111 +78,10 @@ const Header = () => {
       </Link>
     ),
   });
-
-  // const [value, setValue] = useState < string > "";
   const [options, setOptions] = useState([]);
-
-  // const { refetch: refetchOrders } =
-  //   useList <
-  //   // IOrder >
-  //   {
-  //     resource: "orders",
-  //     config: {
-  //       // filters: [{ field: "q", operator: "contains", value }],
-  //       filters: [{ field: "q", operator: "contains" }],
-  //     },
-  //     queryOptions: {
-  //       enabled: false,
-  //       onSuccess: (data) => {
-  //         const orderOptionGroup = data.data.map((item) =>
-  //           renderItem(
-  //             `${item.store.title} / #${item.orderNumber}`,
-  //             "/images/default-order-img.png",
-  //             `/orders/show/${item.id}`
-  //           )
-  //         );
-  //         if (orderOptionGroup.length > 0) {
-  //           setOptions((prevOptions) => [
-  //             ...prevOptions,
-  //             {
-  //               label: renderTitle(t("orders.orders")),
-  //               options: orderOptionGroup,
-  //             },
-  //           ]);
-  //         }
-  //       },
-  //     },
-  //   };
-
-  // const { refetch: refetchStores } =
-  //   useList <
-  //   // IStore >
-  //   {
-  //     resource: "stores",
-  //     config: {
-  //       // filters: [{ field: "q", operator: "contains", value }],
-  //       filters: [{ field: "q", operator: "contains" }],
-  //     },
-  //     queryOptions: {
-  //       enabled: false,
-  //       onSuccess: (data) => {
-  //         const storeOptionGroup = data.data.map((item) =>
-  //           renderItem(
-  //             item.title,
-  //             "/images/default-store-img.png",
-  //             `/stores/edit/${item.id}`
-  //           )
-  //         );
-  //         if (storeOptionGroup.length > 0) {
-  //           setOptions((prevOptions) => [
-  //             ...prevOptions,
-  //             {
-  //               label: renderTitle(t("stores.stores")),
-  //               options: storeOptionGroup,
-  //             },
-  //           ]);
-  //         }
-  //       },
-  //     },
-  //   };
-
-  // const { refetch: refetchCouriers } =
-  //   useList <
-  //   // ICourier >
-  //   {
-  //     resource: "couriers",
-  //     config: {
-  //       // filters: [{ field: "q", operator: "contains", value }],
-  //       filters: [{ field: "q", operator: "contains" }],
-  //     },
-  //     queryOptions: {
-  //       enabled: false,
-  //       onSuccess: (data) => {
-  //         const courierOptionGroup = data.data.map((item) =>
-  //           renderItem(
-  //             `${item.name} ${item.surname}`,
-  //             item.avatar[0].url,
-  //             `/couriers/show/${item.id}`
-  //           )
-  //         );
-  //         if (courierOptionGroup.length > 0) {
-  //           setOptions((prevOptions) => [
-  //             ...prevOptions,
-  //             {
-  //               label: renderTitle(t("couriers.couriers")),
-  //               options: courierOptionGroup,
-  //             },
-  //           ]);
-  //         }
-  //       },
-  //     },
-  //   };
 
   useEffect(() => {
     setOptions([]);
-    // refetchOrders();
-    // refetchCouriers();
-    // refetchStores();
   }, []);
 
   const menuItems = [...(i18n.languages || [])].sort().map((lang) => ({
@@ -195,9 +94,8 @@ const Header = () => {
     ),
     label: lang === "en" ? "English" : "German",
   }));
-
+  const storedUser = JSON.parse(localStorage.getItem("account"));
   return (
-    // <QueryClientProvider client={queryClient}>
     <AntdHeader
       style={{
         backgroundColor: token.colorBgElevated,
@@ -213,69 +111,9 @@ const Header = () => {
           justifyContent: screens.sm ? "space-between" : "end",
         }}
       >
-        <Col xs={0} sm={12}>
-          <AutoComplete
-            style={{
-              width: "100%",
-              maxWidth: "550px",
-            }}
-            options={options}
-            filterOption={false}
-            // onSearch={debounce((value) => setValue(), 300)}
-          >
-            <Input
-              size="large"
-              placeholder={"Search by Keyword"}
-              suffix={<SearchOutlined />}
-            />
-          </AutoComplete>
-        </Col>
+        <Col xs={0} sm={12}></Col>
         <Col>
           <Space size="middle" align="center">
-            <Button
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              type="default"
-              // icon={mode === "light" ? <IconMoon /> : <IconSun />}
-              onClick={() => {
-                // setMode(mode === "light" ? "dark" : "light");
-              }}
-            />
-            <Dropdown
-              menu={{
-                items: menuItems,
-                selectedKeys: currentLocale ? [currentLocale] : [],
-              }}
-            >
-              <a
-                style={{ color: "inherit" }}
-                onClick={(e) => e.preventDefault()}
-              >
-                <Space>
-                  <Avatar
-                    size={16}
-                    src={`/images/flags/${currentLocale}.svg`}
-                  />
-                  <div
-                    style={{
-                      display: screens.lg ? "block" : "none",
-                    }}
-                  >
-                    {currentLocale === "en" ? "English" : "German"}
-                    <DownOutlined
-                      style={{
-                        fontSize: "12px",
-                        marginLeft: "6px",
-                      }}
-                    />
-                  </div>
-                </Space>
-              </a>
-            </Dropdown>
-
             <Text
               ellipsis
               strong
@@ -283,13 +121,12 @@ const Header = () => {
                 display: "flex",
               }}
             >
-              {/* {user?.name} */}
+              {storedUser?.user?.fullName}
             </Text>
             <Avatar
               size="large"
-              src={
-                "https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-1/362902247_953032899257221_1009685178607494555_n.jpg?stp=dst-jpg_p320x320&_nc_cat=104&ccb=1-7&_nc_sid=fe8171&_nc_ohc=kkXSLwM8WgoAX_cPNMH&_nc_oc=AQmCyESRvgENnBuqoFytPcye-g3AgnUkmCGa_879Bl0qmTO-WGXztYQoQIxhkffzyto&_nc_ht=scontent.fhan3-4.fna&oh=00_AfC_92H_0YZ3Yync7GPlHIuL6IiayozJYlpujJ3z8iRN-g&oe=651949F7"
-              }
+              src={`/imageUpload/` + storedUser?.user?.avatar}
+              shape="square"
             />
           </Space>
         </Col>

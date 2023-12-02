@@ -90,4 +90,9 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
     //seach all imei
     @Query(value = "select * from imei where code_imei  like %?1% and sku_id=?2  ORDER BY Id DESC", nativeQuery = true)
     List<Imei> seachAllImeis(String codeImei,  Long idSku);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update imei set status = ?1 where code_imei = ?2", nativeQuery = true)
+    void updateStatusImeiByCodeImei(Integer status, String codeImei);
 }

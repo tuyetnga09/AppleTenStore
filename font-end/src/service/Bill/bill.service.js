@@ -52,3 +52,11 @@ export const getAllBillOFFLINECXN = () => {
 export const getCountBillChoXacNhan = () => {
   return httpClient.get("/manager/bill/getAccountBillCXN");
 };
+
+export const acceptReturn = (acceptReturn) => {
+  return httpClient.put(`/manager/bill/acceptReturn`, acceptReturn);
+};
+
+export const noAcceptReturn = (acceptReturn) => {
+  return httpClient.put(`/manager/bill/noAcceptReturn`, acceptReturn);
+};

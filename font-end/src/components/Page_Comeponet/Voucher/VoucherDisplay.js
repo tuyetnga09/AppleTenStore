@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   readAll,
   deleteVoucher,
@@ -8,7 +8,7 @@ import {
   searchNoDate,
   searchWithDate,
   updateStatusVoucher,
-  returnStatusVoucher
+  returnStatusVoucher,
 } from "../../../service/Voucher/voucher.service";
 import { useTranslate } from "@refinedev/core";
 import {
@@ -24,6 +24,8 @@ import {
   CloseCircleOutlined,
   FormOutlined,
   MoreOutlined,
+  UnorderedListOutlined,
+  FileDoneOutlined,
 } from "@ant-design/icons";
 import {
   Typography,
@@ -65,6 +67,7 @@ import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 const { RangePicker } = DatePicker;
+const { SubMenu } = Menu;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
 
@@ -376,23 +379,70 @@ const VoucherDisplay = ({}) => {
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
           <Menu theme="dark" mode="inline" defaultSelectedKeys={["5"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
+            </Menu.Item>
+            <Menu.Item key="0" icon={<FileDoneOutlined />}>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
+            </Menu.Item>
             <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
-            </Menu.Item>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Quản lý đơn hàng</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">Quản lý trả hàng</Link>
+              </Menu.Item>
+            </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined />}>
-              <Link to="/logout">Logout</Link>
+            <Menu.Item key="6" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Thể loại</Link>
+            </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Chi tiết sản phẩm"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -445,26 +495,26 @@ const VoucherDisplay = ({}) => {
                   marginTop: "52px",
                 }}
               >
-                <Card title={t("Filter")}>
+                <Card title={t("Tìm kiếm")}>
                   <Form>
                     <Row gutter={[10, 0]} align="bottom">
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Search")} name="q">
+                        <Form.Item label={t("Tìm kiếm")} name="q">
                           <Input
                             name="key"
-                            placeholder={t("Code, Name")}
+                            placeholder={t("Mã voucher, Tên")}
                             prefix={<SearchOutlined />}
                             onChange={handleChangeSearch}
                           />
                         </Form.Item>
                       </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Status")} name="status">
+                        <Form.Item label={t("Trạng thái")} name="status">
                           <Select
                             name="status"
                             allowClear
                             onChange={handleChangeStatus}
-                            placeholder={t("Status")}
+                            placeholder={t("Trạng thái")}
                           >
                             {orderSelectProps.options.map((st) => {
                               return (
@@ -474,26 +524,8 @@ const VoucherDisplay = ({}) => {
                           </Select>
                         </Form.Item>
                       </Col>
-                      {/* <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Store")} name="store">
-                          <Select
-                            // {...storeSelectProps}
-                            allowClear
-                            // placeholder={t("orders.filter.store.placeholder")}
-                          />
-                        </Form.Item>
-                      </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Filter")} name="user">
-                          <Select
-                            // {...userSelectProps}
-                            allowClear
-                            // placeholder={t("orders.filter.user.placeholder")}
-                          />
-                        </Form.Item>
-                      </Col> */}
-                      <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Date")} name="createdAt">
+                        <Form.Item label={t("Ngày")} name="createdAt">
                           <RangePicker
                             id="dateFilter"
                             style={{ width: "100%" }}
@@ -510,14 +542,14 @@ const VoucherDisplay = ({}) => {
                             block
                             onClick={() => search()}
                           >
-                            {t("FILLTER")}
+                            {t("Tìm kiếm")}
                           </Button>
                         </Form.Item>
                       </Col>
                     </Row>
                   </Form>
                 </Card>
-                <Button onClick={handlePointClick}>Point</Button>
+                {/* <Button onClick={handlePointClick}>Point</Button> */}
               </Col>
 
               <Col xl={18} xs={24}>
@@ -549,7 +581,7 @@ const VoucherDisplay = ({}) => {
                     <Table.Column
                       key="status"
                       dataIndex="status"
-                      title={t("Status")}
+                      title={t("Trạng thái")}
                       render={(text, record) => (
                         <span>
                           {record.status === 0 ? (
@@ -567,19 +599,19 @@ const VoucherDisplay = ({}) => {
                     <Table.Column
                       key="code"
                       dataIndex="code"
-                      title={t("Code")}
+                      title={t("Mã Voucher")}
                       render={(text, record) => <span>{record.code}</span>}
                     />
                     <Table.Column
                       key="name"
                       dataIndex="name"
-                      title={t("Name")}
+                      title={t("Tên")}
                       render={(text, record) => <span>{record.name}</span>}
                     />
                     <Table.Column
                       key="dateStart"
                       dataIndex="dateStart"
-                      title={t("DateStart")}
+                      title={t("Ngày bắt đầu")}
                       render={(text, record) => (
                         <span>
                           <DateField
@@ -592,7 +624,7 @@ const VoucherDisplay = ({}) => {
                     <Table.Column
                       key="dateEnd"
                       dataIndex="dateEnd"
-                      title={t("DateEnd")}
+                      title={t("Ngày kết thúc")}
                       render={(text, record) => (
                         <span>
                           <DateField
@@ -602,7 +634,7 @@ const VoucherDisplay = ({}) => {
                         </span>
                       )}
                     />
-                    <Table.Column
+                    {/* <Table.Column
                       key="conditionsApply"
                       dataIndex="conditionsApply"
                       title={t("ConditionsApply")}
@@ -617,11 +649,11 @@ const VoucherDisplay = ({}) => {
                           )}
                         </span>
                       )}
-                    />
+                    /> */}
                     <Table.Column
                       key="valueVoucher"
                       dataIndex="valueVoucher"
-                      title={t("ValueVoucher")}
+                      title={t("Giá trị Voucher")}
                       render={(text, record) => (
                         <span>
                           {parseFloat(record.valueVoucher).toLocaleString(
@@ -637,7 +669,7 @@ const VoucherDisplay = ({}) => {
                     <Table.Column
                       key="valueMinimum"
                       dataIndex="valueMinimum"
-                      title={t("ValueMinimum")}
+                      title={t("Giá trị ĐH tối hiểu")}
                       render={(text, record) => (
                         <span>
                           {parseFloat(record.valueMinimum).toLocaleString(
@@ -653,7 +685,7 @@ const VoucherDisplay = ({}) => {
                     <Table.Column
                       key="valueMaximum"
                       dataIndex="valueMaximum"
-                      title={t("ValueMaximum")}
+                      title={t("Giá trị ĐH tối đa")}
                       render={(text, record) => (
                         <span>
                           {parseFloat(record.valueMaximum).toLocaleString(
@@ -666,7 +698,7 @@ const VoucherDisplay = ({}) => {
                         </span>
                       )}
                     />
-                    <Table.Column
+                    {/* <Table.Column
                       key="typeVoucher"
                       dataIndex="typeVoucher"
                       title={t("TypeVoucher")}
@@ -681,17 +713,17 @@ const VoucherDisplay = ({}) => {
                           )}
                         </span>
                       )}
-                    />
+                    /> */}
                     <Table.Column
                       key="quantity"
                       dataIndex="quantity"
-                      title={t("Quantity")}
+                      title={t("Số lượng")}
                       render={(text, record) => <span>{record.quantity}</span>}
                     />
                     <Table.Column
                       key="actions"
                       dataIndex="actions"
-                      title={t("Action")}
+                      title={t("Sự kiện")}
                       fixed="right"
                       align="center"
                       render={(text, record) => (
@@ -715,7 +747,7 @@ const VoucherDisplay = ({}) => {
                                   }
                                   onClick={() => confirmCallUpdateStatusVoucher(record.id)}
                                 >
-                                  Delete
+                                  Dừng hoạt động
                                 </Menu.Item>
                                 <Menu.Item
                                   key="2"
@@ -731,7 +763,7 @@ const VoucherDisplay = ({}) => {
                                   }
                                   onClick={() => handleEditClick(record)}
                                 >
-                                  Edit
+                                  Sửa Voucher
                                 </Menu.Item>
                               </Menu>
                             }
@@ -764,7 +796,7 @@ const VoucherDisplay = ({}) => {
                                       callReturnStatusVoucher(record.id)
                                     }
                                   >
-                                    Hoàn tác
+                                    Kích hoạt
                                   </Menu.Item>
                                 </Menu>
                               }

@@ -6,4 +6,10 @@ export const readAll = () => {
 
 export const findBillDetails = (idBill) => {
   return httpClient.get(`/admin/billDetail/findBillDetails?idBill=${idBill}`);
-}
+};
+
+export const getAllBillDetailReturn = (status, idBill) => {
+  return httpClient.get(
+    `/admin/billDetail/getAllBillDetailReturn?status=${status}&idBill=${idBill}`
+  );
+};

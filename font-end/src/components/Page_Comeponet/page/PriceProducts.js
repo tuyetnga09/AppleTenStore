@@ -19,15 +19,33 @@ const PriceProduct = (props) => {
 
   return (
     <strong>
-      {parseFloat(priceMin).toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })}{" "}
-      -{" "}
-      {parseFloat(priceMax).toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })}
+      {priceMax === null && priceMin === null ? (
+        <strong>
+          {parseFloat(0).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </strong>
+      ) : priceMin === undefined || priceMin === NaN || priceMin === null ? (
+        <strong>
+          {parseFloat(priceMax).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </strong>
+      ) : (
+        <strong>
+          {parseFloat(priceMin).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}{" "}
+          -{" "}
+          {parseFloat(priceMax).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </strong>
+      )}
     </strong>
   );
 };

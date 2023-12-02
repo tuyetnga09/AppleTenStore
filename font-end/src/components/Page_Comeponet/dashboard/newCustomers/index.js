@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { ConfigProvider, theme, Typography } from "antd";
 import { Column } from "@ant-design/charts";
@@ -264,16 +264,6 @@ const NewCustomers = (props) => {
             stroke="rgb(75, 192, 192)"
           />
         </LineChart>
-        <TitleArea>
-          <Title level={5} style={{ color: "white" }}>
-            1 - test
-          </Title>
-          <TitleAreNumber>
-            <Title level={5} style={{ color: "white" }}>
-              - {dataCustomer}
-            </Title>
-          </TitleAreNumber>
-        </TitleArea>
         {/* 1 */}
         <TitleArea>
           <Title level={5} style={{ color: "white" }}>

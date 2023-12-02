@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@refinedev/core";
 import {
   AppstoreAddOutlined,
@@ -17,6 +17,8 @@ import {
   WarningFilled,
   BellOutlined,
   SettingOutlined,
+  UnorderedListOutlined,
+  FileDoneOutlined,
 } from "@ant-design/icons";
 import {
   Badge,
@@ -51,7 +53,9 @@ import {
   getAllBillCXN,
   getCountBillChoXacNhan,
   returnBillById,
-  getAllBillOFFLINECXN
+  getAllBillOFFLINECXN,
+  acceptReturn,
+  noAcceptReturn,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -75,13 +79,18 @@ import {
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
 import { Toast } from "primereact/toast";
-import { findBillDetails } from "../../../service/BillDetail/billDetail.service";
+import {
+  findBillDetails,
+  getAllBillDetailReturn,
+} from "../../../service/BillDetail/billDetail.service";
 import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
+import AvtProduct from "../../custumer_componet/avtProduct";
 
 const { RangePicker } = DatePicker;
+const { SubMenu } = Menu;
 const { Text } = Typography;
 const { Header, Sider, Content } = Layout;
-
+let loadDisplay = false;
 const OderDisplay = ({}) => {
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const idAccount = storedUser !== null ? storedUser.id : ""; //sau khi đăng nhập thì truyền idAccount vào đây
@@ -100,6 +109,10 @@ const OderDisplay = ({}) => {
     useState(false); // Trạng thái hiển thị Modal
   const [isModalVisibleCannelOrder, setIsModalVisibleCannelOrder] =
     useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleReturnDetails, setIsModalVisibleReturnDetails] =
+    useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleReturnedProducts, setIsModalVisibleReturnedProducts] =
+    useState(false); // Trạng thái hiển thị Modal
   const breakpoint = Grid.useBreakpoint();
   const [load, setLoad] = useState(true);
   const [billCXN, setBillCXN] = useState([]);
@@ -111,7 +124,7 @@ const OderDisplay = ({}) => {
     note: null,
   });
   const [billOFFCXN, setBillOFFCXN] = useState([]);
-
+  const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
 
   const orderSelectProps = {
     options: [
@@ -123,6 +136,7 @@ const OderDisplay = ({}) => {
       { label: "Không trả hàng", value: "KHONG_TRA_HANG" },
       { label: "Trả hàng", value: "TRA_HANG" },
       { label: "Đã hủy", value: "DA_HUY" },
+      { label: "Yêu cầu trả hàng", value: "YEU_CAU_TRA_HANG" },
       // Thêm các giá trị khác nếu cần
     ],
   };
@@ -245,12 +259,12 @@ const OderDisplay = ({}) => {
         });
       //lấy toàn bộ billOFF chờ xác nhận để check
       getAllBillOFFLINECXN()
-      .then((response) => {
-        setBillOFFCXN(response.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+        .then((response) => {
+          setBillOFFCXN(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       console.log(billCXN);
       console.log(billOFFCXN);
       //thông báo khi có hóa đơn mới
@@ -493,6 +507,13 @@ const OderDisplay = ({}) => {
         style={{ backgroundColor: "red" }}
       />
     ),
+    YEU_CAU_TRA_HANG: (
+      <Badge
+        className="site-badge-count-109"
+        count={"Yêu cầu trả hàng"}
+        style={{ backgroundColor: "pink" }}
+      />
+    ),
   };
 
   function confirm2(id) {
@@ -500,11 +521,12 @@ const OderDisplay = ({}) => {
       notification.error({
         message: "Hóa đơn chưa thể xác nhận! - Hóa Đơn Bán Offline",
       });
-    }else{
+    } else {
       if (checkImeiSelectInBillDetail(id) === true) {
         updateStatusBill(idAccount, id)
           .then((response) => {
             setLoad(!load);
+            loadDisplay = !loadDisplay;
           })
           .catch((error) => {
             console.error("Error updating status:", error);
@@ -559,34 +581,46 @@ const OderDisplay = ({}) => {
     for (let index = 0; index < billOFFCXN.length; index++) {
       if (billOFFCXN[index]?.id === id) {
         if (billOFFCXN[index]?.typeBill === "OFFLINE") {
-          if (billOFFCXN[index]?.totalMoney === null || billOFFCXN[index]?.totalMoney === 0) {
+          if (
+            billOFFCXN[index]?.totalMoney === null ||
+            billOFFCXN[index]?.totalMoney === 0
+          ) {
             return false;
           }
         }
       }
     }
     return true;
-}
+  }
 
   function handUpdateTrangThai() {
-    if (checkSoluongImei() === true) {
-      const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
-      updateAllCVC(personUpdate)
-        .then((response) => {
-          setLoad(!load);
-          notification.success({
-            message: "Accept",
-            description: "Xác nhận thành công",
-          });
-        })
-        .catch((error) => {
-          console.error("Error updating data:", error);
-        });
-    } else {
-      notification.error({
-        message: "KIỂM TRA IMEI",
-        description: "Vui lòng kiểm tra lại imei",
+    if (pendingBills === 0 || pendingBills === null || pendingBills === "") {
+      notification.success({
+        message: "Accept",
+        description: "Tất cả đơn hàng đã được xác nhận thanh công",
       });
+      loadDisplay = !loadDisplay;
+    } else {
+      if (checkSoluongImei() === true) {
+        const personUpdate = storedUser.code + " - " + storedUser.user.fullName;
+        updateAllCVC(personUpdate)
+          .then((response) => {
+            setLoad(!load);
+            loadDisplay = !loadDisplay;
+            notification.success({
+              message: "Accept",
+              description: "Xác nhận thành công",
+            });
+          })
+          .catch((error) => {
+            console.error("Error updating data:", error);
+          });
+      } else {
+        notification.error({
+          message: "KIỂM TRA IMEI",
+          description: "Vui lòng kiểm tra lại imei của các đơn hàng ",
+        });
+      }
     }
   }
 
@@ -645,6 +679,7 @@ const OderDisplay = ({}) => {
     );
     setIsModalVisibleCannelOrder(false);
     setLoad(!load);
+    loadDisplay = !loadDisplay;
     const textNoteReturn = document.getElementById(
       "exampleFormControlTextarea2"
     );
@@ -653,6 +688,90 @@ const OderDisplay = ({}) => {
       message: "Hủy đơn",
       description: "Hủy đơn thành công",
     });
+  };
+  const [noteReturnDetail, setNoteReturnDetail] = useState(null);
+  const [acceptReturnBill, setAcceptReturnBill] = useState({
+    idBill: null,
+    codeImeiDaBan: [],
+  });
+  const handleClickReturnDetails = (record) => {
+    let arrCodeImeiDaBan = [];
+    setIsModalVisibleReturnDetails(true);
+    console.log(record);
+    setNoteReturnDetail(record.noteReturn);
+    getAllBillDetailReturn(4, record.id)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+        response.data.map((item) => {
+          if (!arrCodeImeiDaBan.includes(item.codeImei)) {
+            arrCodeImeiDaBan.push(item.codeImei);
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setAcceptReturnBill({
+      idBill: record.id,
+      codeImeiDaBan: arrCodeImeiDaBan,
+    });
+  };
+
+  // Hàm để ẩn Modal
+  const handleCannelReturnDetails = () => {
+    setIsModalVisibleReturnDetails(false);
+    setAcceptReturnBill({
+      idBill: null,
+      codeImeiDaBan: [],
+    });
+  };
+
+  function returnConfirmation() {
+    acceptReturn(acceptReturnBill)
+      .then((res) => {
+        notification.success({
+          message: "Trả hàng!",
+          description: "Trả hàng thành công",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsModalVisibleReturnDetails(false);
+    setLoad(!load);
+  }
+
+  function noReturnConfirmation() {
+    noAcceptReturn(acceptReturnBill)
+      .then((res) => {
+        notification.success({
+          message: "Trả hàng!",
+          description: "Đã hủy yêu cầu",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setIsModalVisibleReturnDetails(false);
+    setLoad(!load);
+  }
+
+  const handleClickReturnedProducts = (record) => {
+    setIsModalVisibleReturnedProducts(true);
+    getAllBillDetailReturn(6, record.id)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // Hàm để ẩn Modal
+  const handleCannelReturnedProducts = () => {
+    setIsModalVisibleReturnedProducts(false);
   };
 
   const expandedRowRender = (record) => {
@@ -682,23 +801,70 @@ const OderDisplay = ({}) => {
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
           <Menu theme="dark" mode="inline" defaultSelectedKeys={["2"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
+            </Menu.Item>
+            <Menu.Item key="0" icon={<FileDoneOutlined />}>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
+            </Menu.Item>
             <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
-            </Menu.Item>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Quản lý đơn hàng</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">Quản lý trả hàng</Link>
+              </Menu.Item>
+            </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+              <Link to="/voucher">Quảng lý Voucher</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined />}>
-              <Link to="/logout">Logout</Link>
+            <Menu.Item key="6" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Thể loại</Link>
+            </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Chi tiết sản phẩm"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -749,7 +915,7 @@ const OderDisplay = ({}) => {
             }}
           >
             <Text style={{ fontSize: "24px", color: "blue" }} strong>
-              ODERS
+              QUẢN LÝ ĐƠN HÀNG
             </Text>
             <div
               class="d-grid gap-2 d-md-flex justify-content-md-end"
@@ -760,7 +926,7 @@ const OderDisplay = ({}) => {
                 type="button"
                 onClick={() => handUpdateTrangThai()}
               >
-                ACCEPT ALL
+                Xác nhận tất cả
               </button>
             </div>
             <Row gutter={[16, 16]}>
@@ -772,26 +938,26 @@ const OderDisplay = ({}) => {
                   marginTop: "52px",
                 }}
               >
-                <Card title={t("Filter")}>
+                <Card title={t("Tìm kiếm")}>
                   <Form>
                     <Row gutter={[10, 0]} align="bottom">
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Search")}>
+                        <Form.Item label={t("Tìm kiếm")}>
                           <Input
                             name="key"
-                            placeholder={t("Code, Person Create")}
+                            placeholder={t("Code, Người tạo")}
                             prefix={<SearchOutlined />}
                             onChange={handleChangeSearch}
                           />
                         </Form.Item>
                       </Col>
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Status")}>
+                        <Form.Item label={t("Trạng thái")}>
                           <Select
                             name="status"
                             onChange={handleChangeStatus}
                             allowClear
-                            placeholder={"Status"}
+                            placeholder={"Trạng thái"}
                           >
                             {orderSelectProps.options.map((st) => {
                               return (
@@ -824,7 +990,7 @@ const OderDisplay = ({}) => {
                         </Form.Item>
                       </Col> */}
                       <Col xl={24} md={8} sm={12} xs={24}>
-                        <Form.Item label={t("Date")} name="createdAt">
+                        <Form.Item label={t("Ngày tạo")} name="createdAt">
                           <RangePicker
                             id="dateFilter"
                             style={{ width: "100%" }}
@@ -841,7 +1007,7 @@ const OderDisplay = ({}) => {
                             block
                             onClick={() => search()}
                           >
-                            {t("FILLTER")}
+                            {t("TÌM KIẾM")}
                           </Button>
                         </Form.Item>
                       </Col>
@@ -870,13 +1036,13 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="code"
                       dataIndex="code"
-                      title={t("Code")}
+                      title={t("Mã hóa đơn")}
                       render={(text, record) => <span>{record.code}</span>}
                     />
                     <Table.Column
                       key="status"
                       dataIndex="status"
-                      title={t("Status")}
+                      title={t("Trạng thái")}
                       render={(text, record) => (
                         <span>{statusBadgeMapping[record.statusBill]}</span>
                       )}
@@ -884,7 +1050,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="total"
                       dataIndex="total"
-                      title={t("Total")}
+                      title={t("Tổng tiền")}
                       render={(text, record) => {
                         return (
                           <NumberField
@@ -901,10 +1067,8 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="user"
                       dataIndex="user"
-                      title={t("User")}
-                      render={(text, record) => (
-                        <span>{record?.customer?.fullName}</span>
-                      )}
+                      title={t("Tên khách hàng")}
+                      render={(text, record) => <span>{record?.userName}</span>}
                     />
 
                     {/* <Table.Column
@@ -916,13 +1080,13 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="address"
                       dataIndex="address"
-                      title={t("Address")}
+                      title={t("Địa chỉ")}
                       render={(text, record) => <span>{record.address}</span>}
                     />
                     <Table.Column
                       key="personCreate"
                       dataIndex="personCreate"
-                      title={t("PersonCreate")}
+                      title={t("Người tạo HĐ")}
                       render={(text, record) => (
                         <span>{record.personCreate}</span>
                       )}
@@ -930,7 +1094,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="personUpdate"
                       dataIndex="personUpdate"
-                      title={t("PersonUpdate")}
+                      title={t("Người cập nhật HĐ")}
                       render={(text, record) => (
                         <span>{record.personUpdate}</span>
                       )}
@@ -938,7 +1102,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="dateCreate"
                       dataIndex="dateCreate"
-                      title={t("DateCreate")}
+                      title={t("Ngày tạo")}
                       render={(text, record) => (
                         // <span>{record.dateCreate}</span>
                         <DateField
@@ -951,7 +1115,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="dateUpdate"
                       dataIndex="dateUpdate"
-                      title={t("DateUpdate")}
+                      title={t("Người cập nhật")}
                       render={(text, record) => (
                         // <span>{record.dateUpdate}</span>
                         <DateField
@@ -965,7 +1129,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="actions"
                       dataIndex="actions"
-                      title={t("Action")}
+                      title={t("Sự kiện")}
                       fixed="right"
                       align="center"
                       render={(text, record) => (
@@ -1158,6 +1322,72 @@ const OderDisplay = ({}) => {
                                 }}
                               />
                             </Dropdown>
+                          ) : record.statusBill === "YEU_CAU_TRA_HANG" ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "green",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      handleClickReturnDetails(record)
+                                    }
+                                  >
+                                    Xem chi tiết
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
+                          ) : record.statusBill === "TRA_HANG" ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "green",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      handleClickReturnedProducts(record)
+                                    }
+                                  >
+                                    Xem chi tiết
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
                           ) : (
                             ""
                           )}
@@ -1218,6 +1448,254 @@ const OderDisplay = ({}) => {
                 </button>
               </form>
             </Modal>
+            <Modal
+              visible={isModalVisibleReturnDetails}
+              onCancel={handleCannelReturnDetails}
+              width={900}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <form>
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea2" class="form-label">
+                    Lí do trả hàng:
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="exampleFormControlTextarea3"
+                    rows="3"
+                    required
+                    disabled
+                    value={noteReturnDetail}
+                  ></textarea>
+                </div>
+              </form>
+              <Table
+                rowKey="oop"
+                dataSource={dataBillDetails}
+                pagination={{
+                  pageSize: 5,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                  showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                }}
+              >
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  dataIndex="images"
+                  title="Ảnh"
+                  render={(text, record) => (
+                    <div style={{ textAlign: "center" }}>
+                      <AvtProduct product={record.productId} />
+                    </div>
+                  )}
+                  width={150}
+                />
+
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Tên Sản Phẩm"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.nameProduct}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* sumSKU */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Phiên Bản"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>
+                          {record.capacity} - {record.color}
+                        </p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* priceSKU  */}
+                <Table.Column
+                  align="center"
+                  key="price"
+                  dataIndex="price"
+                  title="Giá Bán"
+                  sorter={(a, b) => a.price - b.price}
+                  render={(text, record) => {
+                    return record.price === null ? (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <WarningFilled
+                          value={false}
+                          style={{
+                            color: "#FFCC00",
+                          }}
+                        />
+                        {parseFloat(0).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    ) : (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    );
+                  }}
+                />
+
+                {/* sumImeiTrongKho */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Mã Imei"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.codeImei}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+              </Table>
+              <button
+                type="submit"
+                class="btn btn-success"
+                onClick={() => returnConfirmation()}
+              >
+                Xác nhận
+              </button>{" "}
+              <button
+                type="submit"
+                class="btn btn-warning"
+                onClick={() => noReturnConfirmation()}
+              >
+                Hủy yêu cầu
+              </button>
+            </Modal>
+            <Modal
+              visible={isModalVisibleReturnedProducts}
+              onCancel={handleCannelReturnedProducts}
+              width={900}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <label for="exampleFormControlTextarea2" class="form-label">
+                Sản phẩm đã trả:
+              </label>
+              <Table
+                rowKey="oop"
+                dataSource={dataBillDetails}
+                pagination={{
+                  pageSize: 5,
+                  showSizeChanger: false,
+                  showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                  showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                }}
+              >
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  dataIndex="images"
+                  title="Ảnh"
+                  render={(text, record) => (
+                    <div style={{ textAlign: "center" }}>
+                      <AvtProduct product={record.productId} />
+                    </div>
+                  )}
+                  width={150}
+                />
+
+                {/* tên sp */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Tên Sản Phẩm"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.nameProduct}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* sumSKU */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Phiên Bản"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>
+                          {record.capacity} - {record.color}
+                        </p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                {/* priceSKU  */}
+                <Table.Column
+                  align="center"
+                  key="price"
+                  dataIndex="price"
+                  title="Giá Bán"
+                  sorter={(a, b) => a.price - b.price}
+                  render={(text, record) => {
+                    return record.price === null ? (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <WarningFilled
+                          value={false}
+                          style={{
+                            color: "#FFCC00",
+                          }}
+                        />
+                        {parseFloat(0).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    ) : (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
+                    );
+                  }}
+                />
+
+                {/* sumImeiTrongKho */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Mã Imei"
+                  render={(text, record) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.codeImei}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+              </Table>
+            </Modal>
           </Content>
         </Layout>
       </Layout>
@@ -1253,7 +1731,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
     //   .catch((err) => {
     //     console.log(err);
     //   });
-  }, [isModalVisible, isUpdate]);
+  }, [isModalVisible, isUpdate, loadDisplay]);
 
   //tạo danh sach imei thất lạc
   const [dataImeiThatLac, setDataImeiThatLac] = useState([]);
@@ -1779,7 +2257,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       {" "}
       <Toast ref={toast} />
       <ConfirmDialog />
-      <List title="Bill Detail" createButtonProps={undefined}>
+      <List title="Sản phẩm" createButtonProps={undefined}>
         <Col>
           <List>
             <Table
@@ -1796,21 +2274,23 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Image"}
+                title={"Ảnh sản phẩm"}
                 render={(text, record) => (
-                  <span>{<AvatarProduct product={record.idProduct} />}</span>
+                  <div style={{ width: "150px" }}>
+                    {<AvatarProduct product={record.idProduct} />}
+                  </div>
                 )}
               />
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Name"}
+                title={"Tên sản phẩm"}
                 render={(text, record) => <span>{record.nameProduct}</span>}
               />
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Version"}
+                title={"Phiên bản"}
                 render={(text, record) => (
                   <span>{record.skuColor + "-" + record.skuCapacity}</span>
                 )}
@@ -1818,14 +2298,24 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Quantity"}
+                title={"Số lượng"}
                 render={(text, record) => <span>{record.quantity}</span>}
               />
               <Table.Column
                 key="code"
                 dataIndex="code"
-                title={"Price"}
-                render={(text, record) => <span>{record.price}</span>}
+                title={"Giá"}
+                render={(text, record) => {
+                  return (
+                    <NumberField
+                      options={{
+                        currency: "VND",
+                        style: "currency",
+                      }}
+                      value={record.price}
+                    />
+                  );
+                }}
               />
 
               <Table.Column
@@ -1848,7 +2338,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                             openModalAddImei(record.idSKU);
                           }}
                         >
-                          Add imei
+                          Thêm Imei
                         </button>
                       </p>
                     ) : (
@@ -1864,7 +2354,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                             showImeiSold(record.id);
                           }}
                         >
-                          Xem imei
+                          Xem Imei
                         </button>
                       </p>
                     )}
@@ -1875,7 +2365,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <Table.Column
                 key="total"
                 dataIndex="total"
-                title={"Total"}
+                title={"Thành tiền"}
                 render={(text, record) => {
                   return (
                     <NumberField
@@ -1890,7 +2380,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 sorter={(a, b) => a.totalMoney - b.totalMoney}
               />
 
-              <Table.Column
+              {/* <Table.Column
                 key="actions"
                 dataIndex="actions"
                 title={"Action"}
@@ -1901,15 +2391,15 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 render={(_, record) => (
                   <Dropdown overlay={moreMenu2(record)} trigger={["click"]}>
                     {/* các nút delete accept ... nằm trong moreMenu2 */}
-                    <MoreOutlined
+              {/* <MoreOutlined
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         fontSize: 24,
                       }}
                     />
-                  </Dropdown>
-                )}
-              />
+                  </Dropdown> */}
+              {/* )}
+              /> */}
             </Table>
           </List>
         </Col>
@@ -2273,6 +2763,3 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 };
 
 export default OderDisplay;
-
-
-

@@ -6,6 +6,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
+import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.BillDetails;
@@ -149,9 +150,14 @@ public class BillController {
         this.billService.updateStatusBill(idAccount ,id);
     }
 
+//    @GetMapping(value = "/search/{code}")
+//    public Bill paydone(@PathVariable String code){
+//        return this.billService.findByCode(code);
+//    }
+
     @GetMapping(value = "/search/{code}")
-    public Bill paydone(@PathVariable String code){
-        return this.billService.findByCode(code);
+    public BillPayDone paydone(@PathVariable String code){
+        return this.billService.findBillPayDoneByCode(code);
     }
 
     @PostMapping("/account")
@@ -242,7 +248,7 @@ public class BillController {
         message.append("<h3 class=\"formatted-money\">Tiền ship: ").append(formattedMoneyShip).append("</h5>");
         message.append("<h3 class=\"formatted-money\">Tiền giảm giá Voucher: ").append(formattedItemDiscount).append("</h3>");
         message.append("<h3 class=\"formatted-money\">Tiền giảm giá vận chuyển: ").append(formattedItemDiscountFreeShip).append("</h3>");
-        message.append("<h3 class=\"formatted-money\">Số điểm đã sử dụng: ").append(formattedPoint).append("</h3>");
+        message.append("<h3 class=\"formatted-money\">Số điểm đã sử dụng: ").append(request.getPoint() + " Point").append("</h3>");
         message.append("<h3 class=\"formatted-money\">Số tiền đã thanh toán: ").append(formattedAfterPrice).append("</h3>");
 
         message.append("</body></html>");
@@ -257,29 +263,9 @@ public class BillController {
         return billService.listBillByIdAccount(id);
     }
 
-    @GetMapping("/CXN")
-    public List<Bill> listBillByIdAccountCXN(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountCXN(id);
-    }
-
-    @GetMapping("/CVC")
-    public List<Bill> listBillByIdAccountCVC(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountCVC(id);
-    }
-
-    @GetMapping("/VC")
-    public List<Bill> listBillByIdAccountVC(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountVC(id);
-    }
-
-    @GetMapping("/DTT")
-    public List<Bill> listBillByIdAccountDTT(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountDTT(id);
-    }
-
-    @GetMapping("/DH")
-    public List<Bill> listBillByIdAccountDH(@RequestParam("id") Integer id){
-        return billService.listBillByIdAccountDH(id);
+    @GetMapping("/getAllByStatus")
+    public List<Bill> listBillByIdAccountAndStatus(@RequestParam("id") Integer id, @RequestParam("status") String status){
+        return billService.listBillByIdAccountAndStatus(id, status);
     }
 
     @DeleteMapping(value = "/delete/{id}")

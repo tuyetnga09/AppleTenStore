@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
-import { Link } from "react-router-dom/cjs/react-router-dom.min";
-import { useEffect, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useParams } from "react-router-dom";
 import {
   createBill,
   createBillAccount,
@@ -61,6 +61,7 @@ const Paydone = () => {
               findBillByCode(storedBill?.code)
                 .then((response) => {
                   setBill(response.data);
+                  console.log(response.data);
                   localStorage.removeItem("bill");
                   setLoading(false);
                 })
@@ -78,6 +79,7 @@ const Paydone = () => {
               findBillByCode(storedBill?.code)
                 .then((response) => {
                   setBill(response.data);
+                  console.log(response.data);
                   localStorage.removeItem("bill");
                   setLoading(false);
                 })
@@ -95,6 +97,7 @@ const Paydone = () => {
       findBillByCode(storedBill2?.code)
         .then((response) => {
           setBill(response.data);
+          console.log(response.data);
           localStorage.removeItem("bill2");
           setLoading(false);
         })
@@ -137,7 +140,9 @@ const Paydone = () => {
             <p>Hình thức thanh toán:</p>
           </div>
           <div class="col-6">
-            <p>{bill.paymentMethod}</p>
+            <p>
+              {bill.paymentMethod === "TIEN_MAT" ? "Tiền mặt" : "Chuyển khoản"}
+            </p>
           </div>
         </div>
         <div class="row">

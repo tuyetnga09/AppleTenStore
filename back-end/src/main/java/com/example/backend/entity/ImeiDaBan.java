@@ -30,7 +30,7 @@ public class ImeiDaBan {
     private BillDetails billDetail;
 
     private String codeImei;
-    private Integer status; // 2 - giỏ hàng, 3 đã bán
+    private Integer status; // 2 - giỏ hàng, 3 đã bán, 4 yêu cầu trả hàng, 5 trả hàng không thành công, 6 đã trả hàng, 7 khach hàng huỷ yêu cầu
     private LocalDate dateSell;
     private String personSell;
 }

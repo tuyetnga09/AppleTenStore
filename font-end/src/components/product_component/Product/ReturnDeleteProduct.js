@@ -39,6 +39,8 @@ import {
   GiftOutlined,
   LogoutOutlined,
   ShopOutlined,
+  FileDoneOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import { StyledStoreProducts } from "./Interface/index";
 import { NumberField } from "@refinedev/antd";
@@ -52,6 +54,9 @@ import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
 import "primereact/resources/primereact.css"; // core css
 import { Toast } from "primereact/toast";
 import { QueryClient, QueryClientProvider } from "react-query";
+import AvatarProduct from "./AvatarProduct";
+import PriceProduct from "../../Page_Comeponet/page/PriceProducts";
+import SubMenu from "antd/es/menu/SubMenu";
 const queryClient = new QueryClient();
 const { Header, Sider, Content } = Layout;
 
@@ -184,24 +189,71 @@ const StoreProducts = ({}) => {
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={["4"]}>
-            <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["5"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
+            <Menu.Item key="1" icon={<FileDoneOutlined />}>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+            <Menu.Item key="2" icon={<DashboardOutlined />}>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Orders</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">OrderBackProducts</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item key="4" icon={<UserOutlined />}>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+            <Menu.Item key="5" icon={<AppstoreAddOutlined />}>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined />}>
-              <Link to="/logout">Logout</Link>
+            <Menu.Item key="6" icon={<GiftOutlined />}>
+              <Link to="/voucher">Quản lý Voucher</Link>
+            </Menu.Item>
+            <Menu.Item key="7" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Thể loại</Link>
+            </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Chi tiết sản phẩm"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -249,7 +301,7 @@ const StoreProducts = ({}) => {
                         <StyledStoreProducts>
                           <Text style={{ fontSize: "24px" }} strong>
                             {/* {t("stores.storeProducts")} */}
-                            ALL PRODUCT DELETE
+                            Sản phẩm đã xóa
                           </Text>
                           <Form.Item name="name" noStyle>
                             <Input
@@ -261,7 +313,7 @@ const StoreProducts = ({}) => {
                             />
                           </Form.Item>
                           <Link to="/product">
-                            <Button>Back</Button>
+                            <Button>Trở lại</Button>
                           </Link>
                         </StyledStoreProducts>
                         {/* <AntdList
@@ -351,10 +403,9 @@ const StoreProducts = ({}) => {
                                 }}
                               >
                                 <div style={{ textAlign: "center" }}>
-                                  <Avatar
-                                    size={128}
-                                    src="https://images.unsplash.com/photo-1544025162-d76694265947?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY5fHxmb29kfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                                  />
+                                  <AvatarProduct
+                                    product={item.id}
+                                  ></AvatarProduct>
                                 </div>
                                 <Divider />
                                 <Paragraph
@@ -383,7 +434,7 @@ const StoreProducts = ({}) => {
                                 >
                                   #{item.id}
                                 </Text>
-                                <NumberField
+                                {/* <NumberField
                                   style={{
                                     fontSize: "24px",
                                     fontWeight: 500,
@@ -394,7 +445,8 @@ const StoreProducts = ({}) => {
                                     style: "currency",
                                   }}
                                   value={item.price}
-                                />
+                                /> */}
+                                <PriceProduct product={item.id}></PriceProduct>
                                 {/* {updateStock && (
                             <div id="stock-number">
                               <InputNumber

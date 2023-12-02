@@ -8,8 +8,6 @@ public interface BillDetailDashboardIon {
     @Value("#{target.idProduct}")
     Integer getIdProduct();
 
-    @Value("#{target.nameImage}")
-    String getNameImage();
 
     @Value("#{target.nameProduct}")
     String getNameProduct();

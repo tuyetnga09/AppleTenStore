@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
 import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
@@ -19,6 +20,11 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface BillRepository extends JpaRepository<Bill, Integer> {
+
+
+    @Query(value = "select p.method as 'PaymentMethod', bill.address as 'Address', bill.phone_number as 'PhoneNumber', bill.code, bill.total_money as 'TotalMoney' from bill join payments p on bill.id = p.id_bill where bill.code = ?1", nativeQuery = true)
+    BillPayDone findBillPayDoneByCode(String code);
+
     Optional<Bill> findByCode(String code);
 
 //    @Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill join account on bill.id_account = account.id join user on account.id_user = user.id where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and user.id like %?3% ORDER BY date_create DESC, Id DESC", nativeQuery = true)
@@ -130,23 +136,11 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             " where date(bill.date_create) = CURDATE() and bill.status_bill='TRA_HANG' group by  account.id", nativeQuery = true)
     List<Integer> countCustomersReturnedToday();
 
-    @Query(value = "select * from bill where id_account = ?1 and type = 'ONLINE'", nativeQuery = true)
+    @Query(value = "select * from bill where id_account = ?1 and type = 'ONLINE' order by id desc", nativeQuery = true)
     List<Bill> listBillByIdAccount(Integer id);
 
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'CHO_XAC_NHAN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountCXN(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'CHO_VAN_CHUYEN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountCVC(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'VAN_CHUYEN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountVC(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_THANH_TOAN' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountDTT(Integer id);
-
-    @Query(value = "select * from bill where id_account = ?1 and status_bill = 'DA_HUY' and type = 'ONLINE'", nativeQuery = true)
-    List<Bill> listBillByIdAccountDH(Integer id);
+    @Query(value = "select * from bill where id_account = ?1 and status_bill = ?2 and type = 'ONLINE' order by id desc", nativeQuery = true)
+    List<Bill> listBillByIdAccountAndStatus(Integer id, String status);
 
     @Modifying
     @Query(value = "update bill set status_bill = 'DA_HUY', note_return = ?1 where id = ?2", nativeQuery = true)
@@ -227,9 +221,9 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     List<AnnualRevenueIon> seachDoanhSoTheoNam(Integer year);
 
     @Modifying
-    @Query(value = "update bill\n" +
-            "set status_bill = 'CHO_VAN_CHUYEN', date_update = CURRENT_DATE(), person_update = ?1\n" +
-            "where type = 'ONLINE' and status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
+    @Query(value = "update bill join bill_detail bd on bill.id = bd.id_bill\n" +
+            "set bill.status_bill = 'CHO_VAN_CHUYEN', bd.status_bill = 'CHO_VAN_CHUYEN', bill.date_update = CURRENT_DATE(), bill.person_update = ?1\n" +
+            "where bill.type = 'ONLINE' and bill.status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
     void updateAllChoVanChuyen(String personUpdate);
 
     @Query(value = "select b.id as 'id', b.quantity as 'quantity', b.price as 'price', b.status_bill as 'statusBillDetail',\n" +
@@ -245,13 +239,15 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             "             dateUpdate, idSKU, skuCapacity, skuColor, skuPrice, idProduct, nameProduct, totalManyOneBillDetail", nativeQuery = true)
     List<BillDetailOffLineIon> getAllBillChoXacNhan();
 
-    @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN'\n", nativeQuery = true)
+    @Query(value = "SELECT COUNT(code) FROM bill WHERE status_bill = 'CHO_XAC_NHAN' and type = 'ONLINE'\n", nativeQuery = true)
     Integer getCountBillCXN();
 
     // lấy ra bill detail trong dashboard
-    @Query(value = "select product.id as 'idProduct', image.name as 'nameImage', product.name as 'nameProduct', sku.capacity as 'capacity', sku.color as 'color', sku.price  as 'price', imei_da_ban.code_imei  as 'imei'  from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail \n" +
-            "join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id join image on product.id = image.id_product\n" +
-            " where bill_detail.id_bill =?1", nativeQuery = true)
+    @Query(value = "select product.id as 'idProduct', product.name as 'nameProduct', sku.capacity as 'capacity',\n" +
+            " sku.color as 'color', sku.price  as 'price', imei_da_ban.code_imei  as 'imei'  from bill_detail \n" +
+            " join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail \n" +
+            "join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id \n" +
+            "where bill_detail.id_bill =?1", nativeQuery = true)
     List<BillDetailDashboardIon> getListBillDetail(Integer idBill);
 
     @Query(value = "select * from bill where type = 'OFFLINE' and status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)

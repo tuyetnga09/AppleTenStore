@@ -44,6 +44,8 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   FileAddFilled,
+  FileDoneOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 import { StyledStoreProducts } from "./Interface/index";
 import { NumberField } from "@refinedev/antd";
@@ -66,6 +68,8 @@ import { Toast } from "primereact/toast";
 import { FaFileExcel } from "react-icons/fa";
 import AvatarProduct from "./AvatarProduct";
 import * as XLSX from "xlsx";
+import PriceProduct from "../../Page_Comeponet/page/PriceProducts";
+import SubMenu from "antd/es/menu/SubMenu";
 
 const queryClient = new QueryClient();
 const { Header, Sider, Content } = Layout;
@@ -200,10 +204,10 @@ const StoreProducts = ({}) => {
       history.replace("/");
     } else {
       const paramsString = queryString.stringify(filters);
-      const paramsStringAcendingPrice =
-        queryString.stringify(filtersAcendingPrice);
-      const paramsStringDecreasePrice =
-        queryString.stringify(filtersDecreasePrice);
+      // const paramsStringAcendingPrice =
+      //   queryString.stringify(filtersAcendingPrice);
+      // const paramsStringDecreasePrice =
+      //   queryString.stringify(filtersDecreasePrice);
       readAll(paramsString)
         .then((response) => {
           console.log(response.data);
@@ -213,24 +217,24 @@ const StoreProducts = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
-      readFilterProductByAscendingPrice(paramsStringAcendingPrice)
-        .then((response) => {
-          console.log(response.data);
-          setDisplay(response.data.content);
-          setPagination(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
-      readFilterProductByDecreasePrice(paramsStringDecreasePrice)
-        .then((response) => {
-          console.log(response.data);
-          setDisplay(response.data.content);
-          setPagination(response.data);
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
+      // readFilterProductByAscendingPrice(paramsStringAcendingPrice)
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     setDisplay(response.data.content);
+      //     setPagination(response.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log(`${error}`);
+      //   });
+      // readFilterProductByDecreasePrice(paramsStringDecreasePrice)
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     setDisplay(response.data.content);
+      //     setPagination(response.data);
+      //   })
+      //   .catch((error) => {
+      //     console.log(`${error}`);
+      //   });
     }
   }, [filters, filtersAcendingPrice, filtersDecreasePrice]);
 
@@ -286,6 +290,20 @@ const StoreProducts = ({}) => {
     setFilters(null);
     setFiltersAcendingPrice(item);
     setFiltersDecreasePrice(null);
+    const paramsStringAcendingPrice = queryString.stringify(item);
+    readFilterProductByAscendingPrice(paramsStringAcendingPrice)
+      .then((response) => {
+        if (response.data.content.length === 0) {
+          setDisplay((display) => display);
+        } else {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   }
 
   function decreasePrice() {
@@ -293,6 +311,20 @@ const StoreProducts = ({}) => {
     setFilters(null);
     setFiltersAcendingPrice(null);
     setFiltersDecreasePrice(item);
+    const paramsStringDecreasePrice = queryString.stringify(item);
+    readFilterProductByDecreasePrice(paramsStringDecreasePrice)
+      .then((response) => {
+        if (response.data.content.length === 0) {
+          setDisplay((display) => display);
+        } else {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   }
 
   return (
@@ -300,24 +332,71 @@ const StoreProducts = ({}) => {
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={["4"]}>
-            <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={["5"]}>
+            <Menu.Item key="0">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+                style={{ width: "150px" }}
+              />
             </Menu.Item>
-            <Menu.Item key="2" icon={<ShopOutlined />}>
-              <Link to="/orders">Orders</Link>
+            <Menu.Item key="1" icon={<FileDoneOutlined />}>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+            <Menu.Item key="2" icon={<DashboardOutlined />}>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
+              <Menu.Item key="2" icon={<ShopOutlined />}>
+                <Link to="/orders">Orders</Link>
+              </Menu.Item>
+              <Menu.Item key="11" icon={<ShopOutlined />}>
+                <Link to="/orderBackProduct">OrderBackProducts</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item key="4" icon={<UserOutlined />}>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
-            <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+            <Menu.Item key="5" icon={<AppstoreAddOutlined />}>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
-            <Menu.Item key="6" icon={<LogoutOutlined />}>
-              <Link to="/logout">Logout</Link>
+            <Menu.Item key="6" icon={<GiftOutlined />}>
+              <Link to="/voucher">Quản lý Voucher</Link>
+            </Menu.Item>
+            <Menu.Item key="7" icon={<UnorderedListOutlined />}>
+              <Link to="/categories">Thể loại</Link>
+            </Menu.Item>
+            <SubMenu
+              key="8"
+              title="Chi tiết sản phẩm"
+              icon={<AppstoreAddOutlined />}
+            >
+              <Menu.Item key="8">
+                <Link to="/admin/product-detail">SKU</Link>
+              </Menu.Item>
+              <Menu.Item key="color">
+                <Link to="/product-detail/color">Color</Link>
+              </Menu.Item>
+              <Menu.Item key="capacity">
+                <Link to="/product-detail/capacity">Capacity</Link>
+              </Menu.Item>
+              <Menu.Item key="ram">
+                <Link to="/product-detail/ram">RAM</Link>
+              </Menu.Item>
+              <Menu.Item key="chip">
+                <Link to="/product-detail/chip">Chip</Link>
+              </Menu.Item>
+            </SubMenu>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
@@ -338,7 +417,7 @@ const StoreProducts = ({}) => {
             style={{
               margin: "24px 16px",
               padding: 24,
-              minHeight: 280,
+              minHeight: 600,
               background: colorBgContainer,
             }}
           >
@@ -365,7 +444,7 @@ const StoreProducts = ({}) => {
                         <StyledStoreProducts>
                           <Text style={{ fontSize: "24px" }} strong>
                             {/* {t("stores.storeProducts")} */}
-                            PRODUCT
+                            Sản phẩm
                           </Text>
                           <Form.Item name="name" noStyle>
                             <Input
@@ -376,9 +455,9 @@ const StoreProducts = ({}) => {
                               name="key"
                             />
                           </Form.Item>
-                          <Button onClick={showModal}>AddProduct</Button>
+                          <Button onClick={showModal}>Thêm mới</Button>
                           <Link to="/product/displayDelete">
-                            <Button>Deleted</Button>
+                            <Button>Đã xóa</Button>
                           </Link>
                           <div className="sortFilter dropdown">
                             {/* <Button className="dropbtn">Sắp xếp</Button> */}
@@ -562,7 +641,7 @@ const StoreProducts = ({}) => {
                                 >
                                   {item.description}
                                 </Paragraph>
-                                <Text
+                                {/* <Text
                                   className="item-id"
                                   style={{
                                     fontSize: "18px",
@@ -571,8 +650,8 @@ const StoreProducts = ({}) => {
                                   }}
                                 >
                                   #{item.id}
-                                </Text>
-                                <NumberField
+                                </Text> */}
+                                {/* <NumberField
                                   style={{
                                     fontSize: "24px",
                                     fontWeight: 500,
@@ -583,7 +662,8 @@ const StoreProducts = ({}) => {
                                     style: "currency",
                                   }}
                                   value={item.price}
-                                />
+                                /> */}
+                                <PriceProduct product={item.id}></PriceProduct>
                                 {/* {updateStock && (
                             <div id="stock-number">
                               <InputNumber

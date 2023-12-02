@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
@@ -176,7 +176,8 @@ const ProfileCustomer = () => {
             <div class="card mb-4 mb-xl-0">
               <div class="card-header">Profile Picture</div>
               <div class="card-body text-center">
-                {storedUser?.user?.avatar == null ? (
+                {storedUser?.user?.avatar == null ||
+                storedUser?.user?.avatar == "" ? (
                   <img
                     style={{ width: 290, height: 290 }}
                     class="img-account-profile rounded-circle mb-2"

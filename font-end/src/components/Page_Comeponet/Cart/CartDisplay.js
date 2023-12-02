@@ -21,6 +21,7 @@ import AvtProduct from "../../custumer_componet/avtProduct";
 import { event } from "jquery";
 import { DateField } from "@refinedev/antd";
 import queryString from "query-string";
+import { readQuantityInCart } from "../../../service/cart.service";
 
 export default function CartDisplay() {
   const storedUser = JSON.parse(localStorage.getItem("account"));
@@ -36,6 +37,9 @@ export default function CartDisplay() {
   const skuIds = cartItems ? cartItems.map((item) => item.idSKU) : []; // Lấy danh sách idSKU từ mảng cartItems
 
   const requests = cartItems ? skuIds.map((idSKU) => getbysku(idSKU)) : []; // Tạo mảng các promise từ việc gọi API
+
+  const [quantity, setQuantity] = useState([]);
+  const storedBill = JSON.parse(localStorage.getItem("bill"));
 
   useEffect(() => {
     if (idAccount !== null && idAccount !== "") {
@@ -71,7 +75,24 @@ export default function CartDisplay() {
           console.log(`${error}`);
         });
     }
-  }, []);
+    if (idAccount !== null && idAccount !== "") {
+      readQuantityInCart(idAccount)
+        .then((response) => {
+          console.log(response.data);
+          setQuantity(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      // Tính tổng số lượng sản phẩm trong giỏ hàng
+      const totalQuantity = cartItems.reduce(
+        (total, product) => total + product.quantity,
+        0
+      );
+      setQuantity(totalQuantity);
+    }
+  }, [storedBill]);
 
   async function remove(id, idSKU) {
     if (idAccount !== null && idAccount !== "") {
@@ -113,6 +134,14 @@ export default function CartDisplay() {
               .catch((error) => {
                 console.log("Lỗi khi đọc lại giỏ hàng:", error);
               });
+              readQuantityInCart(idAccount)
+              .then((response) => {
+                console.log(response.data);
+                setQuantity(response.data);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
           })
           .catch((error) => {
             console.log(`Lỗi khi cập nhật số lượng: ${error}`);
@@ -124,6 +153,11 @@ export default function CartDisplay() {
             item.quantity = newQuantity;
             item.total = newQuantity * item.price;
           }
+           const totalQuantity = cartItems.reduce(
+            (total, product) => total + product.quantity,
+            0
+          );
+          setQuantity(totalQuantity);
           return item;
         });
 
@@ -191,7 +225,153 @@ export default function CartDisplay() {
   return (
     <React.Fragment>
       <>
-        <Header />
+      <div class="top-nav group">
+          <section>
+            <div class="social-top-nav">
+              <a class="fa fa-facebook"></a>
+              <a class="fa fa-twitter"></a>
+              <a class="fa fa-google"></a>
+              <a class="fa fa-youtube"></a>
+            </div>
+            {/* <!-- End Social Topnav --> */}
+
+            <ul class="top-nav-quicklink flexContain">
+              <li>
+                <Link to="/">
+                  <i className="fa fa-newspaper-o"></i> Trang chủ
+                </Link>
+              </li>
+
+              <li>
+                <Link to="/blog">
+                  <i className="fa fa-newspaper-o"></i> Blogs
+                </Link>
+              </li>
+
+              <li>
+                <Link to="/chat">
+                  <i className="fa fa-newspaper-o"></i> Liên hệ/Chat
+                </Link>
+              </li>
+              <li>
+                <a href="gioithieu.html">
+                  <i class="fa fa-info-circle"></i> Giới thiệu
+                </a>
+              </li>
+              <li>
+                <a href="trungtambaohanh.html">
+                  <i class="fa fa-wrench"></i> Bảo hành
+                </a>
+              </li>
+              <li>
+                <Link to="/policy">
+                  <i className="fa fa-newspaper-o"></i>Chính sách
+                </Link>
+              </li>
+            </ul>
+            {/* <!-- End Quick link --> */}
+          </section>
+          {/* <!-- End Section --> */}
+        </div>
+        {/* <!-- End Top Nav  --> */}
+        <div className="header group">
+          <div className="logo">
+            <Link to="/">
+              <img
+                src="/img/logo.jpg"
+                alt="Trang chủ Smartphone Store"
+                title="Trang chủ Smartphone Store"
+              />
+            </Link>
+          </div>{" "}
+          {/* End Logo */}
+          <div className="content">
+            <div
+              className="search-header"
+              style={{ position: "relative", left: 162, top: 1 }}
+            >
+              {/* <form className="input-search" method="get" action="index.html">
+                <div className="autocomplete">
+                  <input
+                    id="search-box"
+                    name="search"
+                    autoComplete="off"
+                    type="text"
+                    placeholder="Tìm kiếm..."
+                  />
+                  <button type="submit">
+                    <i className="fa fa-search" />
+                    Tìm kiếm
+                  </button>
+                </div>
+              </form>{" "} */}
+              {/* End Form search */}
+              {/* <div className="tags">
+                <strong>Từ khóa: </strong>
+                <a href="index.html?search=Samsung">Iphone 11</a>
+                <a href="index.html?search=Samsung">Iphone 12</a>
+                <a href="index.html?search=Samsung">Iphone 13</a>
+              </div> */}
+            </div>{" "}
+            {/* End Search header */}
+            <div className="tools-member">
+              <div className="cart">
+                <Link to={storedUser !== null ? "/profile" : "/login"}>
+                {storedUser?.user?.avatar == null ? (
+                  <img
+                    style={{ width: 36, height: 36 }}
+                    class="img-account-profile rounded-circle mb-2"
+                    src={
+                      "https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg"
+                    }
+                    alt=""
+                  />
+                ) : (
+                  <img
+                    style={{ width: 36, height: 36 }}
+                    class="img-account-profile rounded-circle mb-2"
+                    src={`/imageUpload/` + storedUser?.user?.avatar}
+                    alt=""
+                  />
+                )}{" "}
+                  {/* {account == null ? "Tài khoản" : account.user.fullName} */}
+                  {localStorage.getItem("account") !== null
+                    ? storedUser?.user?.fullName
+                    : "Tài khoản"}
+                </Link>
+                {/* <div className="menuMember hide">
+            <a href="nguoidung.html">Trang người dùng</a>
+            <a onclick="if(window.confirm('Xác nhận đăng xuất ?')) logOut();">
+              Đăng xuất
+            </a>
+          </div> */}
+              </div>{" "}
+              {/* End Member */}
+              <div className="cart">
+                <Link to="/cart">
+                  <i className="fa fa-shopping-cart" />{" "}
+                  <span>Giỏ hàng</span>
+                  <span className="cart-number">{quantity}</span>
+                </Link>
+              </div>{" "}
+              {/* End Cart */}
+              <div class="check-order">
+                {/* <Link to="/oderUserAll">
+                  <i class="fa fa-truck"></i>
+                  <span>Đơn hàng</span>
+                </Link> */}
+                <Link
+                  to={storedUser === null ? "/oderCustomerAll" : "/oderUserAll"}
+                >
+                  <i class="fa fa-truck"></i>{" "}
+                  <span>Đơn hàng</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+          {/* End Tools Member */}
+        </div>{" "}
+        {/* End Content */} {/* End Header */}
         <section>
           <div className="breadcrumbs_area">
             <div className="row" style={{ marginTop: "10px" }}>
@@ -219,194 +399,146 @@ export default function CartDisplay() {
                         <h3 className="mb-5 pt-2 text-center fw-bold text-uppercase">
                           Giỏ hàng
                         </h3>
-                        <table>
-                          <thead>
-                            <tr style={{ textAlign: "center" }}>
-                              <th>
-                                <h5 className="fw-bold mb-0 me-5 pe-3">Ảnh</h5>
-                              </th>
-                              <th>
-                                <h5 className="fw-bold mb-0 me-5 pe-3">
-                                  Sản phẩm
-                                </h5>
-                              </th>
-                              <th>
-                                <h5 className="fw-bold mb-0 me-5 pe-3">Giá</h5>
-                              </th>
-                              <th>
-                                <h5 className="fw-bold mb-0 me-5 pe-3">SL</h5>
-                              </th>
-                              <th>
-                                <h5 className="fw-bold mb-0 me-5 pe-3">
-                                  Thành tiền
-                                </h5>
-                              </th>
-                              <th>
-                                <h5 className="fw-bold mb-0 me-5 pe-3">
-                                  Thời gian
-                                </h5>
-                              </th>
-                              <th></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {products.map((product, index) => (
-                              <tr class="alert" role="alert">
-                                <td>
-                                  <div className="flex-shrink-0">
-                                    <AvtProduct
-                                      product={product.idProduct}
-                                    ></AvtProduct>
-                                  </div>
-                                </td>
-                                <td>
-                                  <h5
-                                    className="text-primary"
-                                    style={{ paddingTop: "15px" }}
-                                  >
-                                    {product.nameProduct}
+                        <div style={{ maxHeight: 290, overflow: 'auto' }}>
+                          <table>
+                            <thead>
+                              <tr style={{ textAlign: "center" }}>
+                                <th>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">Ảnh</h5>
+                                </th>
+                                <th>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">
+                                    Sản phẩm
                                   </h5>
-                                  <p style={{ fontSize: "15px" }}>
-                                    Dung lượng: {product.capacity}
-                                    <br />
-                                    Màu sắc: {product.color}
-                                  </p>
-                                </td>
-                                <td>
-                                  <p className="fw-bold mb-0 me-5 pe-3">
-                                    {parseFloat(product.price).toLocaleString(
-                                      "vi-VN",
-                                      {
-                                        style: "currency",
-                                        currency: "VND",
-                                      }
-                                    )}
-                                  </p>
-                                </td>
-                                <td>
-                                  <div
-                                    className="def-number-input number-input safari_only"
-                                    style={{ paddingRight: "10px" }}
-                                  >
-                                    <button
-                                      onClick={() => {
-                                        const quantity =
-                                          document.getElementById(
-                                            `quantity-${index}`
-                                          );
-                                        quantity.value = product.quantity - 1;
-                                        console.log(quantity.value);
-                                        if (quantity.value <= 0) {
-                                          notification.error({
-                                            message: "ADD TO CART",
-                                            description:
-                                              "Số lượng phải lớn hơn 0",
-                                          });
-                                          quantity.value = 1;
+                                </th>
+                                <th>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">Giá</h5>
+                                </th>
+                                <th>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">SL</h5>
+                                </th>
+                                <th>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">
+                                    Thành tiền
+                                  </h5>
+                                </th>
+                                <th>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">
+                                    Thời gian
+                                  </h5>
+                                </th>
+                                <th></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {products.map((product, index) => (
+                                <tr class="alert" role="alert">
+                                  <td>
+                                    <div className="flex-shrink-0">
+                                      <AvtProduct
+                                        product={product.idProduct}
+                                      ></AvtProduct>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <h5
+                                      className="text-primary"
+                                      style={{ paddingTop: "15px" }}
+                                    >
+                                      {product.nameProduct}
+                                    </h5>
+                                    <p style={{ fontSize: "15px" }}>
+                                      Dung lượng: {product.capacity}
+                                      <br />
+                                      Màu sắc: {product.color}
+                                    </p>
+                                  </td>
+                                  <td>
+                                    <p className="fw-bold mb-0 me-5 pe-3">
+                                      {parseFloat(product.price).toLocaleString(
+                                        "vi-VN",
+                                        {
+                                          style: "currency",
+                                          currency: "VND",
                                         }
-                                        handleUpdateQuantity(
-                                          product.idCartDetail,
-                                          product.quantity - 1,
-                                          product.idSKU
-                                        );
-                                      }}
-                                      className="minus"
-                                    />
-                                    <input
-                                      id={`quantity-${index}`}
-                                      className="quantity fw-bold text-black"
-                                      min={0}
-                                      name="quantity"
-                                      type="number"
-                                      defaultValue={product.quantity}
-                                      onChange={() => {
-                                        if (
-                                          idAccount !== null &&
-                                          idAccount !== ""
-                                        ) {
-                                          getOneSKU(product.idSKU).then(
-                                            (res) => {
-                                              setQuantitySKU(res.data.quantity);
-                                            }
-                                          );
-                                        }
-                                      }}
-                                      onBlur={(event) => {
-                                        if (
-                                          idAccount !== null &&
-                                          idAccount !== ""
-                                        ) {
-                                          if (event.target.value <= 0) {
+                                      )}
+                                    </p>
+                                  </td>
+                                  <td>
+                                    <div
+                                      className="def-number-input number-input safari_only"
+                                      style={{ paddingRight: "10px" }}
+                                    >
+                                      <button
+                                        onClick={() => {
+                                          const quantity =
+                                            document.getElementById(
+                                              `quantity-${index}`
+                                            );
+                                          quantity.value = product.quantity - 1;
+                                          console.log(quantity.value);
+                                          if (quantity.value <= 0) {
                                             notification.error({
                                               message: "ADD TO CART",
                                               description:
-                                                "Vui lòng kiểm tra lại số lượng",
+                                                "Số lượng phải lớn hơn 0",
                                             });
-                                            const quantity =
-                                              document.getElementById(
-                                                `quantity-${index}`
-                                              );
-                                            quantity.value = product.quantity;
-                                            handleUpdateQuantity(
-                                              product.idCartDetail,
-                                              product.quantity,
-                                              product.idSKU
-                                            );
-                                          } else if (
-                                            event.target.value >
-                                            parseInt(quantitySKU)
-                                            // +
-                                            //   parseInt(product.quantity)
+                                            quantity.value = 1;
+                                          }
+                                          handleUpdateQuantity(
+                                            product.idCartDetail,
+                                            product.quantity - 1,
+                                            product.idSKU
+                                          );
+                                        }}
+                                        className="minus"
+                                      />
+                                      <input
+                                        id={`quantity-${index}`}
+                                        className="quantity fw-bold text-black"
+                                        min={0}
+                                        name="quantity"
+                                        type="number"
+                                        defaultValue={product.quantity}
+                                        onChange={() => {
+                                          if (
+                                            idAccount !== null &&
+                                            idAccount !== ""
                                           ) {
-                                            notification.error({
-                                              message: "ADD TO CART",
-                                              description:
-                                                "Không thể nhập quá số lượng đang có",
-                                            });
-                                            const quantity =
-                                              document.getElementById(
-                                                `quantity-${index}`
-                                              );
-                                            quantity.value = product.quantity;
-                                            handleUpdateQuantity(
-                                              product.idCartDetail,
-                                              product.quantity,
-                                              product.idSKU
-                                            );
-                                          } else {
-                                            const quantity =
-                                              document.getElementById(
-                                                `quantity-${index}`
-                                              );
-                                            quantity.value = event.target.value;
-                                            handleUpdateQuantity(
-                                              product.idCartDetail,
-                                              event.target.value,
-                                              product.idSKU
+                                            getOneSKU(product.idSKU).then(
+                                              (res) => {
+                                                setQuantitySKU(res.data.quantity);
+                                              }
                                             );
                                           }
-                                        } else {
-                                          const newQuantity = parseInt(
-                                            event.target.value
-                                          );
-                                          if (newQuantity < 1) {
-                                            // Kiểm tra số lượng không được nhỏ hơn 1
-                                            notification.error({
-                                              message: "ADD TO CART",
-                                              description:
-                                                "Vui lòng kiểm tra lại số lượng",
-                                            });
-                                          } else {
-                                            // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
-                                            if (
-                                              newQuantity <= product.quantitySKU
-                                            ) {
+                                        }}
+                                        onBlur={(event) => {
+                                          if (
+                                            idAccount !== null &&
+                                            idAccount !== ""
+                                          ) {
+                                            if (event.target.value <= 0) {
+                                              notification.error({
+                                                message: "ADD TO CART",
+                                                description:
+                                                  "Vui lòng kiểm tra lại số lượng",
+                                              });
+                                              const quantity =
+                                                document.getElementById(
+                                                  `quantity-${index}`
+                                                );
+                                              quantity.value = product.quantity;
                                               handleUpdateQuantity(
                                                 product.idCartDetail,
-                                                newQuantity,
+                                                product.quantity,
                                                 product.idSKU
                                               );
-                                            } else {
+                                            } else if (
+                                              event.target.value >
+                                              parseInt(quantitySKU)
+                                              // +
+                                              //   parseInt(product.quantity)
+                                            ) {
                                               notification.error({
                                                 message: "ADD TO CART",
                                                 description:
@@ -422,127 +554,177 @@ export default function CartDisplay() {
                                                 product.quantity,
                                                 product.idSKU
                                               );
-                                            }
-                                          }
-                                        }
-                                      }}
-                                    />
-                                    <button
-                                      onClick={() => {
-                                        if (
-                                          idAccount !== null &&
-                                          idAccount !== ""
-                                        ) {
-                                          getOneSKU(product.idSKU).then(
-                                            (res) => {
+                                            } else {
                                               const quantity =
                                                 document.getElementById(
                                                   `quantity-${index}`
                                                 );
-                                              quantity.value =
-                                                parseInt(product.quantity) + 1;
+                                              quantity.value = event.target.value;
+                                              handleUpdateQuantity(
+                                                product.idCartDetail,
+                                                event.target.value,
+                                                product.idSKU
+                                              );
+                                            }
+                                          } else {
+                                            const newQuantity = parseInt(
+                                              event.target.value
+                                            );
+                                            if (newQuantity < 1) {
+                                              // Kiểm tra số lượng không được nhỏ hơn 1
+                                              notification.error({
+                                                message: "ADD TO CART",
+                                                description:
+                                                  "Vui lòng kiểm tra lại số lượng",
+                                              });
+                                            } else {
+                                              // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
                                               if (
-                                                quantity.value >
-                                                parseInt(res.data.quantity)
-                                                // + parseInt(product.quantity)
+                                                newQuantity <= product.quantitySKU
                                               ) {
+                                                handleUpdateQuantity(
+                                                  product.idCartDetail,
+                                                  newQuantity,
+                                                  product.idSKU
+                                                );
+                                              } else {
                                                 notification.error({
                                                   message: "ADD TO CART",
                                                   description:
                                                     "Không thể nhập quá số lượng đang có",
                                                 });
-                                                quantity.value = parseInt(
-                                                  res.data.quantity
+                                                const quantity =
+                                                  document.getElementById(
+                                                    `quantity-${index}`
+                                                  );
+                                                quantity.value = product.quantity;
+                                                handleUpdateQuantity(
+                                                  product.idCartDetail,
+                                                  product.quantity,
+                                                  product.idSKU
                                                 );
-                                                // +
-                                                // parseInt(product.quantity);
                                               }
                                             }
-                                          );
-                                          handleUpdateQuantity(
-                                            product.idCartDetail,
-                                            parseInt(product.quantity) + 1,
-                                            product.idSKU
-                                          );
-                                        } else {
-                                          const quantity =
-                                            document.getElementById(
-                                              `quantity-${index}`
-                                            );
-                                          const newQuantity =
-                                            product.quantity + 1;
-
-                                          // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
+                                          }
+                                        }}
+                                      />
+                                      <button
+                                        onClick={() => {
                                           if (
-                                            newQuantity <= product.quantitySKU
+                                            idAccount !== null &&
+                                            idAccount !== ""
                                           ) {
-                                            quantity.value = newQuantity;
+                                            getOneSKU(product.idSKU).then(
+                                              (res) => {
+                                                const quantity =
+                                                  document.getElementById(
+                                                    `quantity-${index}`
+                                                  );
+                                                quantity.value =
+                                                  parseInt(product.quantity) + 1;
+                                                if (
+                                                  quantity.value >
+                                                  parseInt(res.data.quantity)
+                                                  // + parseInt(product.quantity)
+                                                ) {
+                                                  notification.error({
+                                                    message: "ADD TO CART",
+                                                    description:
+                                                      "Không thể nhập quá số lượng đang có",
+                                                  });
+                                                  quantity.value = parseInt(
+                                                    res.data.quantity
+                                                  );
+                                                  // +
+                                                  // parseInt(product.quantity);
+                                                }
+                                              }
+                                            );
                                             handleUpdateQuantity(
                                               product.idCartDetail,
-                                              newQuantity,
+                                              parseInt(product.quantity) + 1,
                                               product.idSKU
                                             );
                                           } else {
-                                            notification.error({
-                                              message: "ADD TO CART",
-                                              description:
-                                                "Không thể nhập quá số lượng đang có",
-                                            });
-                                          }
-                                        }
-                                      }}
-                                      className="plus"
-                                    />
-                                  </div>
-                                  <p style={{ fontSize: "10px", color: "red" }}>
-                                    Còn {product.quantitySKU} sản phẩm
-                                  </p>
-                                </td>
-                                <td>
-                                  <p className="fw-bold mb-0 me-5 pe-3">
-                                    {parseFloat(product.total).toLocaleString(
-                                      "vi-VN",
-                                      {
-                                        style: "currency",
-                                        currency: "VND",
-                                      }
-                                    )}
-                                  </p>
-                                </td>
-                                <td>
-                                  <p className="fw-bold mb-0 me-5 pe-3">
-                                    <DateField
-                                      value={product.dateCreate}
-                                      format="DD/MM/YYYY"
-                                    />
-                                  </p>
-                                </td>
+                                            const quantity =
+                                              document.getElementById(
+                                                `quantity-${index}`
+                                              );
+                                            const newQuantity =
+                                              product.quantity + 1;
 
-                                <td>
-                                  <button
-                                    type="button"
-                                    className="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    onClick={() => {
-                                      remove(
-                                        product.idCartDetail,
-                                        product.idSKU
-                                      );
-                                    }}
-                                  >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon
-                                        icon={faTimes}
-                                        style={{ paddingRight: "10px" }}
+                                            // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
+                                            if (
+                                              newQuantity <= product.quantitySKU
+                                            ) {
+                                              quantity.value = newQuantity;
+                                              handleUpdateQuantity(
+                                                product.idCartDetail,
+                                                newQuantity,
+                                                product.idSKU
+                                              );
+                                            } else {
+                                              notification.error({
+                                                message: "ADD TO CART",
+                                                description:
+                                                  "Không thể nhập quá số lượng đang có",
+                                              });
+                                            }
+                                          }
+                                        }}
+                                        className="plus"
                                       />
-                                    </span>
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                                    </div>
+                                    <p style={{ fontSize: "10px", color: "red" }}>
+                                      Còn {product.quantitySKU} sản phẩm
+                                    </p>
+                                  </td>
+                                  <td>
+                                    <p className="fw-bold mb-0 me-5 pe-3">
+                                      {parseFloat(product.total).toLocaleString(
+                                        "vi-VN",
+                                        {
+                                          style: "currency",
+                                          currency: "VND",
+                                        }
+                                      )}
+                                    </p>
+                                  </td>
+                                  <td>
+                                    <p className="fw-bold mb-0 me-5 pe-3">
+                                      <DateField
+                                        value={product.dateCreate}
+                                        format="DD/MM/YYYY"
+                                      />
+                                    </p>
+                                  </td>
+
+                                  <td>
+                                    <button
+                                      type="button"
+                                      className="close"
+                                      data-dismiss="alert"
+                                      aria-label="Close"
+                                      onClick={() => {
+                                        remove(
+                                          product.idCartDetail,
+                                          product.idSKU
+                                        );
+                                      }}
+                                    >
+                                      <span aria-hidden="true">
+                                        <FontAwesomeIcon
+                                          icon={faTimes}
+                                          style={{ paddingRight: "10px" }}
+                                        />
+                                      </span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
 
                         <div
                           class="d-grid gap-2 d-md-flex justify-content-md-end"

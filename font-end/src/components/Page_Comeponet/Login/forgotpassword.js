@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
+import React, { useState } from "react";
 import "../Login/login.css";
 
 const ForgotPassword = () => {

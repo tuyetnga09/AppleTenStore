@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+
 export const IncreaseIcon = (props) => (
   <svg
     width="12"

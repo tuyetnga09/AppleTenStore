@@ -4,6 +4,8 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
+import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.entity.Bill;
 
 import java.time.LocalDate;
@@ -32,15 +34,7 @@ public interface BillService {
 
     List<Bill> listBillByIdAccount(Integer id);
 
-    List<Bill> listBillByIdAccountCXN(Integer id);
-
-    List<Bill> listBillByIdAccountCVC(Integer id);
-
-    List<Bill> listBillByIdAccountVC(Integer id);
-
-    List<Bill> listBillByIdAccountDTT(Integer id);
-
-    List<Bill> listBillByIdAccountDH(Integer id);
+    List<Bill> listBillByIdAccountAndStatus(Integer id, String status);
 
     void deleteBill(String noteReturn, Integer id);
 
@@ -52,4 +46,9 @@ public interface BillService {
 
     List<Bill> getBillOfflineCXN();
 
+    Bill acceptReturn(AcceptReturn acceptReturn);
+
+    Bill noAcceptReturn(AcceptReturn AcceptReturn);
+
+    BillPayDone findBillPayDoneByCode(String code);
 }

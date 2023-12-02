@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { readAll,add, detail, update } from "../../../service/Voucher/voucher.service";
+import {
+  readAll,
+  add,
+  detail,
+  update,
+} from "../../../service/Voucher/voucher.service";
 import { useTranslate } from "@refinedev/core";
 // import { Create, useForm } from "@refinedev/antd";
 import {
@@ -10,7 +15,10 @@ import {
   // Typography,
   DatePicker,
   Image,
-  Button, notification, Modal
+  Button,
+  notification,
+  Modal,
+  InputNumber,
 } from "antd";
 // import {
 //     SaveOutlined
@@ -20,7 +28,7 @@ import {
   useHistory,
   // useParams,
 } from "react-router-dom/cjs/react-router-dom.min";
-import moment from 'moment';
+import moment from "moment";
 
 const CreateVoucher = ({}) => {
   const t = useTranslate();
@@ -40,7 +48,6 @@ const CreateVoucher = ({}) => {
       });
   }, []);
 
-
   function handleChangeDatePicker(value, name) {
     setVoucher((prevVoucher) => ({
       ...prevVoucher,
@@ -57,6 +64,33 @@ const CreateVoucher = ({}) => {
     setVoucher(item);
   }
 
+  function handleChangeNumber(value) {
+    setVoucher({
+      ...voucher,
+      quantity: value,
+    });
+  }
+
+  function handleChangeValueVoucher(value) {
+    setVoucher({
+      ...voucher,
+      valueVoucher: value,
+    });
+  }
+
+  function handleChangeValueMinimum(value) {
+    setVoucher({
+      ...voucher,
+      valueMinimum: value,
+    });
+  }
+
+  function handleChangeValueMaximum(value) {
+    setVoucher({
+      ...voucher,
+      valueMaximum: value,
+    });
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -107,27 +141,26 @@ const CreateVoucher = ({}) => {
 
   // Hàm kiểm tra ngày
   function disabledDate(current, type) {
-    if (type === 'start') {
+    if (type === "start") {
       // Chặn ngày trước ngày hiện tại
-      const today = moment().startOf('day');
+      const today = moment().startOf("day");
       return current && current < today;
     }
-    if (type === 'end') {
+    if (type === "end") {
       // Chặn ngày bé hơn ngày bắt đầu
-      const { dateStart } = voucher; 
-      const oneDayAfterStart = moment(dateStart).add(1, 'day');
-      const today = moment().startOf('day');
+      const { dateStart } = voucher;
+      const oneDayAfterStart = moment(dateStart).add(1, "day");
+      const today = moment().startOf("day");
       return current && (current < oneDayAfterStart || current < today);
     }
     return false;
   }
-  
+
   return (
     <form onSubmit={handleSubmit}>
       {/* <Create title={title}> */}
       <Form
         layout="vertical"
-        
         initialValues={{
           isActive: true,
         }}
@@ -141,7 +174,7 @@ const CreateVoucher = ({}) => {
                                 src="https://help.turitop.com/hc/article_attachments/360007926459/voucher.png"
                             /> */}
             <Form.Item
-              label={t("Code")}
+              label={t("Mã Voucher")}
               name="code"
               rules={[
                 {
@@ -159,7 +192,7 @@ const CreateVoucher = ({}) => {
               />
             </Form.Item>
             <Form.Item
-              label={t("Name")}
+              label={t("Tên")}
               name="name"
               rules={[
                 {
@@ -178,7 +211,7 @@ const CreateVoucher = ({}) => {
             </Form.Item>
 
             <Form.Item
-              label={t("Date Start")}
+              label={t("Ngày bắt đầu	")}
               name="dateStart"
               rules={[
                 {
@@ -188,7 +221,7 @@ const CreateVoucher = ({}) => {
             >
               <DatePicker
                 type="text"
-                disabledDate={current => disabledDate(current, 'start')}
+                disabledDate={(current) => disabledDate(current, "start")}
                 required
                 value={voucher.dateStart || ""}
                 onChange={(date, dateString) =>
@@ -200,7 +233,7 @@ const CreateVoucher = ({}) => {
             </Form.Item>
 
             <Form.Item
-              label={t("Date End")}
+              label={t("Ngày kết thúc	")}
               name="dateEnd"
               rules={[
                 {
@@ -210,7 +243,7 @@ const CreateVoucher = ({}) => {
             >
               <DatePicker
                 type="text"
-                disabledDate={current => disabledDate(current, 'end')}
+                disabledDate={(current) => disabledDate(current, "end")}
                 required
                 value={voucher.dateEnd || ""}
                 onChange={(date, dateString) =>
@@ -223,31 +256,22 @@ const CreateVoucher = ({}) => {
           </Col>
           <Col xs={24} lg={8}>
             <Form.Item
-              label={t("Quantity")}
+              label={t("Số lượng")}
               name="quantity"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+              rules={[{ required: true, type: "number" }]}
             >
-              <Input
+              <InputNumber
+                style={{ width: "300px" }}
                 id="quantity"
                 name="quantity"
                 type="number"
                 min={0}
                 required
                 value={voucher.quantity || ""}
-                onChange={handleChange}
-                onBlur={(event) => {
-                  if (event.target.value <= 0) {
-                    const quantity = document.getElementById(`quantity`);
-                    quantity.value = 0;
-                  }
-                }}
+                onChange={handleChangeNumber}
               />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               label={t("Conditions Apply")}
               name="conditionsApply"
               rules={[
@@ -265,67 +289,58 @@ const CreateVoucher = ({}) => {
                 id="conditionsApply"
                 name="conditionsApply"
               />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
-              label={t("Value Voucher")}
+              label={t("Giá trị Voucher	")}
               name="valueVoucher"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+              rules={[{ required: true, type: "number" }]}
             >
-              <Input
+              <InputNumber
+                style={{ width: "300px" }}
                 type="number"
                 min={0}
                 required
                 value={voucher.valueVoucher || ""}
-                onChange={handleChange}
+                onChange={handleChangeValueVoucher}
                 id="valueVoucher"
                 name="valueVoucher"
               />
             </Form.Item>
             <Form.Item
-              label={t("Value Minimum")}
+              label={t("Giá trị đơn hàng tối hiểu	")}
               name="valueMinimum"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+              rules={[{ required: true, type: "number" }]}
             >
-              <Input
+              <InputNumber
+                style={{ width: "300px" }}
                 type="number"
                 min={0}
                 required
                 value={voucher.valueMinimum || ""}
-                onChange={handleChange}
+                onChange={handleChangeValueMinimum}
                 id="valueMinimum"
                 name="valueMinimum"
               />
             </Form.Item>
-          </Col>
-          <Col xs={24} lg={8}>
             <Form.Item
-              label={t("Value Maximum")}
+              label={t("Giá trị đơn hàng tối đa")}
               name="valueMaximum"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+              rules={[{ required: true, type: "number" }]}
             >
-              <Input
+              <InputNumber
+                style={{ width: "300px" }}
                 type="number"
                 min={0}
                 required
                 value={voucher.valueMaximum || ""}
-                onChange={handleChange}
+                onChange={handleChangeValueMaximum}
                 id="valueMaximum"
                 name="valueMaximum"
               />
             </Form.Item>
-            <Form.Item
+          </Col>
+          <Col xs={24} lg={8}>
+            {/* <Form.Item
               label={t("Type Voucher")}
               name="typeVoucher"
               rules={[
@@ -343,7 +358,7 @@ const CreateVoucher = ({}) => {
                 id="typeVoucher"
                 name="typeVoucher"
               />
-            </Form.Item>
+            </Form.Item> */}
 
             <Image
               style={{
