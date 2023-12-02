@@ -606,6 +606,7 @@ const OderDisplay = ({}) => {
         updateAllCVC(personUpdate)
           .then((response) => {
             setLoad(!load);
+            loadDisplay = !loadDisplay;
             notification.success({
               message: "Accept",
               description: "Xác nhận thành công",
