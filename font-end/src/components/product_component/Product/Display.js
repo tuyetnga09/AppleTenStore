@@ -293,9 +293,13 @@ const StoreProducts = ({}) => {
     const paramsStringAcendingPrice = queryString.stringify(item);
     readFilterProductByAscendingPrice(paramsStringAcendingPrice)
       .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data);
+        if (response.data.content.length === 0) {
+          setDisplay((display) => display);
+        } else {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        }
       })
       .catch((error) => {
         console.log(`${error}`);
@@ -310,9 +314,13 @@ const StoreProducts = ({}) => {
     const paramsStringDecreasePrice = queryString.stringify(item);
     readFilterProductByDecreasePrice(paramsStringDecreasePrice)
       .then((response) => {
-        console.log(response.data);
-        setDisplay(response.data.content);
-        setPagination(response.data);
+        if (response.data.content.length === 0) {
+          setDisplay((display) => display);
+        } else {
+          console.log(response.data);
+          setDisplay(response.data.content);
+          setPagination(response.data);
+        }
       })
       .catch((error) => {
         console.log(`${error}`);

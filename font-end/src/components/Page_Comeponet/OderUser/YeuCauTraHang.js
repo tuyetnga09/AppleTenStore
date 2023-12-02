@@ -61,6 +61,7 @@ const OderUserYeuCauTraHang = () => {
   const [dataCheckBill, setCheckDataBill] = useState(true); // check bill da tra hang lan nao hay chua
   const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]); //list id imei da ban
+  const [data3Ngay, setData3Ngay] = useState(); //list id imei da ban
   const handleNoteReturnsClick = (record) => {
     setBillReturn({
       ...billReturn,
@@ -80,6 +81,30 @@ const OderUserYeuCauTraHang = () => {
       .catch((err) => {
         console.log(err);
       });
+    const completionDate = new Date(record.completionDate);
+    const yearStart = completionDate.getFullYear();
+    const monthStart = completionDate.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+    const dayStart = completionDate.getDate();
+    const formattedDateStart = `${yearStart}-${monthStart
+      .toString()
+      .padStart(2, "0")}-${dayStart.toString().padStart(2, "0")}`;
+    // Ngày hoàn thành đơn hàng
+    const ngayHoanThanh = new Date(formattedDateStart);
+
+    // Ngày hiện tại
+    const dateNow = new Date();
+    const yearStart1 = dateNow.getFullYear();
+    const monthStart1 = dateNow.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
+    const dayStart1 = dateNow.getDate();
+    const formattedDateStart1 = `${yearStart1}-${monthStart1
+      .toString()
+      .padStart(2, "0")}-${dayStart1.toString().padStart(2, "0")}`;
+    const ngayHienTai = new Date(formattedDateStart1);
+    // Tính khoảng cách giữa hai ngày
+    const khoangCachNgay = Math.floor(
+      (ngayHienTai - ngayHoanThanh) / (1000 * 60 * 60 * 24)
+    );
+    setData3Ngay(khoangCachNgay);
     handleOpenXemHoaDonChiTiets();
   };
 
@@ -257,30 +282,6 @@ const OderUserYeuCauTraHang = () => {
     );
   });
 
-  // const completionDate = new Date(b.completionDate);
-  // const yearStart = completionDate.getFullYear();
-  // const monthStart = completionDate.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
-  // const dayStart = completionDate.getDate();
-  // const formattedDateStart = `${yearStart}-${monthStart
-  //   .toString()
-  //   .padStart(2, "0")}-${dayStart.toString().padStart(2, "0")}`;
-  // // Ngày hoàn thành đơn hàng
-  // const ngayHoanThanh = new Date(formattedDateStart);
-
-  // // Ngày hiện tại
-  // const dateNow = new Date();
-  // const yearStart1 = dateNow.getFullYear();
-  // const monthStart1 = dateNow.getMonth() + 1; // Tháng bắt đầu từ 0, nên cần cộng thêm 1
-  // const dayStart1 = dateNow.getDate();
-  // const formattedDateStart1 = `${yearStart1}-${monthStart1
-  //   .toString()
-  //   .padStart(2, "0")}-${dayStart1.toString().padStart(2, "0")}`;
-  // const ngayHienTai = new Date(formattedDateStart1);
-  // // Tính khoảng cách giữa hai ngày
-  // const khoangCachNgay = Math.floor(
-  //   (ngayHienTai - ngayHoanThanh) / (1000 * 60 * 60 * 24)
-  // );
-
   return (
     <>
       <Header />
@@ -374,17 +375,20 @@ const OderUserYeuCauTraHang = () => {
                 * Quý khách đã hết số lần trả hàng.
               </span>
             </div>
-
-            <div class="col-6">
-              <button
-                type="button"
-                class="btn btn-danger"
-                style={{ float: "right" }}
-                onClick={() => confirmHuyTraHang()}
-              >
-                Huỷ Yêu Cầu Trả Hàng
-              </button>
-            </div>
+            {data3Ngay > 3 ? (
+              ""
+            ) : (
+              <div class="col-6">
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  style={{ float: "right" }}
+                  onClick={() => confirmHuyTraHang()}
+                >
+                  Huỷ Yêu Cầu Trả Hàng
+                </button>
+              </div>
+            )}
           </Row>
         ) : dataCheckBill === 5 ||
           dataCheckBill === 7 ||
