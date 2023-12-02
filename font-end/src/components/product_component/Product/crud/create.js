@@ -419,7 +419,7 @@ const Test = (setDisplay, setPagination) => {
               </Form.Item>
             </Form.Item>
             <Form.Item
-              label={t("Name")}
+              label={t("Tên sản phẩm")}
               // name="nameProduct"
               rules={[{ required: true }]}
             >
@@ -438,7 +438,7 @@ const Test = (setDisplay, setPagination) => {
               />
             </Form.Item>
             <Form.Item
-              label={t("Description")}
+              label={t("Mô tả")}
               name="description"
               rules={[
                 {
@@ -462,7 +462,7 @@ const Test = (setDisplay, setPagination) => {
               />
             </Form.Item>
             <Form.Item
-              label={t("Price")}
+              label={t("Giá")}
               name="price"
               rules={[{ required: true, type: "number" }]}
             >
@@ -477,7 +477,7 @@ const Test = (setDisplay, setPagination) => {
               />
             </Form.Item>
             <Form.Item
-              label={t("Category")}
+              label={t("Hãng")}
               name={["category", "id"]}
               rules={[
                 {
@@ -525,7 +525,7 @@ const Test = (setDisplay, setPagination) => {
             </Form.Item>
 
             <Form.Item
-              label={t("Battery")}
+              label={t("Dung lượng pin")}
               name={["battery", "id"]}
               rules={[{ required: true }]}
             >
@@ -555,7 +555,7 @@ const Test = (setDisplay, setPagination) => {
               </Select>
             </Form.Item>
             <Form.Item
-              label={t("Color")}
+              label={t("Màu sắc")}
               name="color"
               rules={[
                 {
@@ -580,7 +580,7 @@ const Test = (setDisplay, setPagination) => {
             </Form.Item>
 
             <Form.Item
-              label={t("Manufacture")}
+              label={t("Xuất sứ")}
               name={["manufacturer", "id"]}
               rules={[
                 {
@@ -618,7 +618,7 @@ const Test = (setDisplay, setPagination) => {
               </Select>
             </Form.Item>
             <Form.Item
-              label={t("Screen")}
+              label={t("Màn hình")}
               name={["screen", "id"]}
               rules={[{ required: true }]}
             >
@@ -633,7 +633,7 @@ const Test = (setDisplay, setPagination) => {
               </Select>
             </Form.Item>
             <Form.Item
-              label={t("Size")}
+              label={t("Kích thước")}
               name={["size", "id"]}
               rules={[{ required: true }]}
             >
@@ -656,10 +656,10 @@ const Test = (setDisplay, setPagination) => {
           <table class="table">
             <thead class="table-dark">
               <th>STT</th>
-              <th>COLOR</th>
-              <th>CAPACITY</th>
-              <th>QUANTITY</th>
-              <th>PRICE</th>
+              <th>Màu sắc</th>
+              <th>Dung lượng</th>
+              <th>Số lượng</th>
+              <th>Giá</th>
               <th>IMPORT IMEI</th>
             </thead>
             <tbody>

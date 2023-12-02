@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import {useZxing} from "react-zxing"
-import data from "bootstrap/js/src/dom/data";
 
 const QrScanner = (props) => {
     const [qrResult, setQrResult] =  useState("");
     const {ref} = useZxing({
         onDecodeResult(result){
             setQrResult(JSON.parse(result.getText()));
-            props.data(qrResult)
+            console.log(JSON.parse(result.getText()))
+            props.data(JSON.parse(result.getText()))
         }
     })
 
