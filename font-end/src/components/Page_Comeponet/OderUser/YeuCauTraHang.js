@@ -34,7 +34,7 @@ const OderUserYeuCauTraHang = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [billDetails]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -187,6 +187,7 @@ const OderUserYeuCauTraHang = () => {
             .catch((err) => {
               console.log(err);
             });
+
           handleCancelHuyTrahang();
         } else {
           notification.warn({
