@@ -527,7 +527,7 @@ const Test = (setDisplay, setPagination) => {
                                 onChange={handleNumberChangePrice}
                             />
                         </Form.Item>
-                        <div className="form-group col-md-10">
+                        <div className="form-group">
                             <Form.Item
                                 label={t("Hãng")}
                                 name={["category", "id"]}
@@ -551,17 +551,18 @@ const Test = (setDisplay, setPagination) => {
                                     })}
                                 </Select>
                             </Form.Item>
+                            <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "930px"}}>
+                                <button
+                                    className="btn btn-secondary btn-them"
+                                    data-toggle="modal"
+                                    data-target="#exampleModalCenter"
+                                    onClick={() => handleEditModalCategory()}
+                                >
+                                    +
+                                </button>
+                            </div>
                         </div>
-                        <div className="form-group col-md-2">
-                            <button
-                                className="btn btn-secondary btn-them"
-                                data-toggle="modal"
-                                data-target="#exampleModalCenter"
-                                onClick={() => handleEditModalCategory()}
-                            >
-                                +
-                            </button>
-                        </div>
+
                         <Form.Item
                             label="Chọn Dung Lượng"
                             name="capacity"
