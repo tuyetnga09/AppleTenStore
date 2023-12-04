@@ -41,3 +41,7 @@ export const importRam = (form) => {
 export const search = (page, search) => {
   return httpClient.get(`/admin/ram/search?${page}`, search);
 };
+
+export const getCodeRam = () => {
+  return httpClient.get(`admin/ram/getCode`)
+}

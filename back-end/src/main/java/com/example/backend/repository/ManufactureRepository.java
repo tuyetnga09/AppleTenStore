@@ -26,4 +26,8 @@ public interface ManufactureRepository extends JpaRepository<Manufacture, Intege
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
             " FROM Manufacture WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     List<Manufacture> getAll();
+
+    @Query(value = "select code from manufacture", nativeQuery = true)
+    List<String> getCode();
+
 }

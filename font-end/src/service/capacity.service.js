@@ -45,3 +45,7 @@ export const search = (page, search) => {
 export const findCapacitisByIdProduct = (id) => {
   return httpClient.get(`/admin/capacity/find-capacity-by-id-product/${id}`);
 };
+
+export const getCodeCapacity = () => {
+  return httpClient.get(`admin/capacity/getCode`);
+}

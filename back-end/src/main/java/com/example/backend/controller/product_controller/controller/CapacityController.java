@@ -96,5 +96,10 @@ public class CapacityController {
         return this.capacityRepository.findCapacitiesByIdProduct(id);
     }
 
+    @GetMapping(value = "getCode")
+    public List<String> getCode(){
+        return capacityRepository.getCode();
+    }
+
 
 }

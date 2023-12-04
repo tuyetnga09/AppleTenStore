@@ -99,4 +99,10 @@ public class CategoryController {
 //        Page<Category> listCategory = categoryService.getAll(pageable);
         return categoryService.viewAllDashboard();
     }
+
+    @GetMapping(value = "getCode")
+    public List<String> getCode(){
+        return categoryService.getCode();
+    }
+
 }

@@ -91,4 +91,10 @@ public class SizeController {
             return ResponseEntity.ok("Import Thất bại");
         }
     }
+
+    @GetMapping(value = "getCode")
+    public List<String> getCode(){
+        return this.service.getCode();
+    }
+
 }

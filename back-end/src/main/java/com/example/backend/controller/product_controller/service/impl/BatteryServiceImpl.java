@@ -109,4 +109,9 @@ public class BatteryServiceImpl implements Iservice<Battery> {
     public Page<Battery> search(Pageable pageable, String key) {
         return batteryRepository.search(pageable, key);
     }
+
+    public List<String> getCode(){
+        return batteryRepository.getCode();
+    }
+
 }

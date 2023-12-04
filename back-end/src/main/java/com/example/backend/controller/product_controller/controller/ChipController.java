@@ -91,4 +91,10 @@ public class ChipController {
             return ResponseEntity.ok("Import Thất bại");
         }
     }
+
+    @GetMapping("getCode")
+    public List<String> getCode(){
+        return chipServiceIpml.getCode();
+    }
+
 }

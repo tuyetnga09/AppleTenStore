@@ -114,4 +114,9 @@ public class ManufactureServiceImpl implements Iservice<Manufacture> {
     public Page<Manufacture> search(String search, Pageable pageable) {
         return manufactureRepository.search(search, pageable);
     }
+
+    public List<String> getCode(){
+        return manufactureRepository.getCode();
+    }
+
 }

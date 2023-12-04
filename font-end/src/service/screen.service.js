@@ -37,3 +37,7 @@ export const returnScreen = (id) => {
 export const importScreen = (form) => {
   return httpClient.post("/admin/screen/import", form, config);
 };
+
+export const getCodeScreen = () => {
+  return httpClient.get(`admin/screen/getCode`);
+}

@@ -98,4 +98,9 @@ public class ColorController {
         return this.colorService.findColorByProduct(id);
     }
 
+    @GetMapping(value = "getCode")
+    public List<String> getCode(){
+        return this.colorService.getCode();
+    }
+
 }

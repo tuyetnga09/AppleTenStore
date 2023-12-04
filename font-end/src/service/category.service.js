@@ -42,3 +42,7 @@ export const search = (page, search) => {
 export const readAllDashboard = () => {
   return httpClient.get(`/admin/category/displayDashboard`);
 };
+
+export const getCodeCategory = () => {
+  return httpClient.get(`/admin/category/getCode`);
+}

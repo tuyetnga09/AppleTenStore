@@ -37,3 +37,7 @@ export const returnChip = (id) => {
 export const importChip = (form) => {
   return httpClient.post("/admin/chip/import", form, config);
 };
+
+export const getCodeChip = () => {
+  return httpClient.get(`admin/chip/getCode`);
+}

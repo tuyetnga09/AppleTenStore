@@ -109,4 +109,9 @@ public class ScreenServiceImpl implements Iservice<Screen> {
 
         workbook.close();
     }
+
+    public List<String> getCode(){
+        return this.screenRepository.getCode();
+    }
+
 }

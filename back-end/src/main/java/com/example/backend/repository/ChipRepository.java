@@ -34,4 +34,7 @@ public interface ChipRepository extends JpaRepository<Chip, Integer> {
 
     Chip findByName(String name);
 
+    @Query(value = "select code from chip", nativeQuery = true)
+    List<String> getCode();
+
 }

@@ -91,5 +91,9 @@ public class ManufactureController {
         return listManufacture;
     }
 
+    @GetMapping("getCode")
+    public List<String> getCode(){
+        return this.manufactureService.getCode();
+    }
 
 }

@@ -111,4 +111,8 @@ public class CapacityServiceImpl implements Iservice<Capacity> {
         return capacityRepository.findCapacitiesByIdProduct(id);
     }
 
+    public List<String> getCode(){
+        return capacityRepository.getCode();
+    }
+
 }
