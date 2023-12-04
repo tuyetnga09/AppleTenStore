@@ -265,8 +265,13 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
-      console.log(billCXN);
-      console.log(billOFFCXN);
+      getCountBillChoXacNhan()
+        .then((response) => {
+          setPendingBills(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       //thông báo khi có hóa đơn mới
       let lastPendingBills = null;
       let timeout = null;
@@ -830,7 +835,7 @@ const OderDisplay = ({}) => {
               <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Quảng lý Voucher</Link>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
               <Link to="/categories">Thể loại</Link>
@@ -926,7 +931,7 @@ const OderDisplay = ({}) => {
                 type="button"
                 onClick={() => handUpdateTrangThai()}
               >
-                Xác nhận tất cả
+                Xác nhận tất cả Hóa Đơn Online
               </button>
             </div>
             <Row gutter={[16, 16]}>
