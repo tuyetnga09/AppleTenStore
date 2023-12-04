@@ -8,6 +8,7 @@ import { readAllWard } from "../../../service/AddressAPI/ward.service";
 import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { addImage, saveImageAccount } from "../../../service/image.service";
+import { getAllAccount } from "../../../service/Account/account.service"
 
 const SignUpAdmin = () => {
   const { Text } = Typography;
@@ -50,6 +51,19 @@ const SignUpAdmin = () => {
   const [showWards, setShowWards] = useState(true);
   const [loading, setLoading] = useState(false);
   const form = new FormData();
+
+  const [dataCheck, setDataCheck] = useState([]);
+
+  useEffect(() => {
+    getAllAccount()
+      .then((response) => {
+        console.log(response.data);
+        setDataCheck(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
 
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
@@ -193,11 +207,49 @@ const SignUpAdmin = () => {
   };
 
   const handleSubmit = async (event) => {
-    setLoading(true);
     event.preventDefault();
-
     const items = { ...data };
+    const newEmail= items.user.email;
+    const newPhoneNumber = items.user.phoneNumber;
+    const newPassword = items.account.password;
+    const emailCode = new Set();
+    const phoneNumberCode = new Set();
+    const emailUserCode = new Set();
+    const regexPass = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const { user, address, account } = items;
 
+    for (let i = 0; i < dataCheck.data.length; i++) {
+      const item = dataCheck.data[i];
+      if (item && item.user && item.user.phoneNumber) {
+        const { email, user } = item;
+        emailCode.add(email);
+        phoneNumberCode.add(user.phoneNumber);
+        emailUserCode.add(user.email);
+      }
+    }
+    if (!user.fullName.trim() || !user.email.trim() || !user.phoneNumber.trim() || !account.password.trim()) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Vui lòng điền đầy đủ thông tin.",
+      });
+      return;
+    }else if (emailCode.has(newEmail) || emailUserCode.has(newEmail)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Email đã tồn tại",
+      });
+    }else if (phoneNumberCode.has(newPhoneNumber)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Số điện thoại đã tồn tại",
+      });
+    }else if (!regexPass.test(newPassword)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Mật khẩu phải có ít nhất 8 ký tự bao gồm cả chữ và số",
+      });
+    }else{
+    setLoading(true);
     add(items, role)
       .then((res) => {
         if (avt !== null) {
@@ -221,6 +273,7 @@ const SignUpAdmin = () => {
       .catch((err) => {
         console.log(err);
       });
+    }
   };
   const storedUser = JSON.parse(localStorage.getItem("account"));
   useEffect(() => {

@@ -70,6 +70,7 @@ import AvatarProduct from "./AvatarProduct";
 import * as XLSX from "xlsx";
 import PriceProduct from "../../Page_Comeponet/page/PriceProducts";
 import SubMenu from "antd/es/menu/SubMenu";
+import HeaderDashBoard from "../../Page_Comeponet/header/index";
 
 const queryClient = new QueryClient();
 const { Header, Sider, Content } = Layout;
@@ -349,10 +350,10 @@ const StoreProducts = ({}) => {
             </Menu.Item>
             <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
               <Menu.Item key="2" icon={<ShopOutlined />}>
-                <Link to="/orders">Orders</Link>
+                <Link to="/orders">Quản lý đơn hàng</Link>
               </Menu.Item>
               <Menu.Item key="11" icon={<ShopOutlined />}>
-                <Link to="/orderBackProduct">OrderBackProducts</Link>
+                <Link to="/orderBackProduct">Quản lý trả hàng</Link>
               </Menu.Item>
             </SubMenu>
             <Menu.Item key="4" icon={<UserOutlined />}>
@@ -372,20 +373,35 @@ const StoreProducts = ({}) => {
               title="Chi tiết sản phẩm"
               icon={<AppstoreAddOutlined />}
             >
-              <Menu.Item key="8">
+              <Menu.Item key="sku">
                 <Link to="/admin/product-detail">SKU</Link>
               </Menu.Item>
               <Menu.Item key="color">
-                <Link to="/product-detail/color">Color</Link>
+                <Link to="/color/display">Color</Link>
               </Menu.Item>
               <Menu.Item key="capacity">
-                <Link to="/product-detail/capacity">Capacity</Link>
+                <Link to="/capacity/display">Capacity</Link>
               </Menu.Item>
               <Menu.Item key="ram">
-                <Link to="/product-detail/ram">RAM</Link>
+                <Link to="/ram/display">Ram</Link>
               </Menu.Item>
               <Menu.Item key="chip">
-                <Link to="/product-detail/chip">Chip</Link>
+                <Link to="/chip/display">Chip</Link>
+              </Menu.Item>
+              <Menu.Item key="size">
+                <Link to="/size/display">Size</Link>
+              </Menu.Item>
+              <Menu.Item key="screen">
+                <Link to="/screen/display">Screen</Link>
+              </Menu.Item>
+              <Menu.Item key="manufacture">
+                <Link to="/manufacture/display">Manufacture</Link>
+              </Menu.Item>
+              <Menu.Item key="category">
+                <Link to="/category/display">Category</Link>
+              </Menu.Item>
+              <Menu.Item key="battery">
+                <Link to="/battery/display">Battery</Link>
               </Menu.Item>
             </SubMenu>
             <Menu.Item
@@ -401,7 +417,7 @@ const StoreProducts = ({}) => {
           </Menu>
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Header style={{ padding: 0, background: "#F5F5F5" }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -412,7 +428,9 @@ const StoreProducts = ({}) => {
                 height: 64,
               }}
             />
-          </Header>
+            <HeaderDashBoard />
+          </Header>{" "}
+          <br /> <br /> <br />
           <Content
             style={{
               margin: "24px 16px",
@@ -677,7 +695,7 @@ const StoreProducts = ({}) => {
                             </div>
                           )} */}
                                 <span>
-                                  <b>Quantity:</b> {item.quantity}
+                                  <b>Tổng phiên bản:</b> {item.quantity}
                                   <Link to="/imei/getAll">
                                     <FaFileExcel
                                       style={{

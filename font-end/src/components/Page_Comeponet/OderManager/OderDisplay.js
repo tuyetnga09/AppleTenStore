@@ -85,6 +85,7 @@ import {
 } from "../../../service/BillDetail/billDetail.service";
 import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
 import AvtProduct from "../../custumer_componet/avtProduct";
+import HeaderDashBoard from "../header/index";
 
 const { RangePicker } = DatePicker;
 const { SubMenu } = Menu;
@@ -265,8 +266,13 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
-      console.log(billCXN);
-      console.log(billOFFCXN);
+      getCountBillChoXacNhan()
+        .then((response) => {
+          setPendingBills(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       //thông báo khi có hóa đơn mới
       let lastPendingBills = null;
       let timeout = null;
@@ -568,12 +574,19 @@ const OderDisplay = ({}) => {
 
   function checkImeiSelectInBillDetail(id) {
     let tempObj = {};
-    for (let index = 0; index < billCXN.length; index++) {
-      if (billCXN[index]?.bill === id) {
-        tempObj = billCXN[index];
-        break;
-      }
-    }
+    getAllBillCXN()
+      .then((response) => {
+        for (let index = 0; index < response.data.length; index++) {
+          if (billCXN[index]?.bill === id) {
+            tempObj = billCXN[index];
+            break;
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
     return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
   }
 
@@ -830,7 +843,7 @@ const OderDisplay = ({}) => {
               <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Quảng lý Voucher</Link>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
               <Link to="/categories">Thể loại</Link>
@@ -840,20 +853,35 @@ const OderDisplay = ({}) => {
               title="Chi tiết sản phẩm"
               icon={<AppstoreAddOutlined />}
             >
-              <Menu.Item key="8">
+              <Menu.Item key="sku">
                 <Link to="/admin/product-detail">SKU</Link>
               </Menu.Item>
               <Menu.Item key="color">
-                <Link to="/product-detail/color">Color</Link>
+                <Link to="/color/display">Color</Link>
               </Menu.Item>
               <Menu.Item key="capacity">
-                <Link to="/product-detail/capacity">Capacity</Link>
+                <Link to="/capacity/display">Capacity</Link>
               </Menu.Item>
               <Menu.Item key="ram">
-                <Link to="/product-detail/ram">RAM</Link>
+                <Link to="/ram/display">Ram</Link>
               </Menu.Item>
               <Menu.Item key="chip">
-                <Link to="/product-detail/chip">Chip</Link>
+                <Link to="/chip/display">Chip</Link>
+              </Menu.Item>
+              <Menu.Item key="size">
+                <Link to="/size/display">Size</Link>
+              </Menu.Item>
+              <Menu.Item key="screen">
+                <Link to="/screen/display">Screen</Link>
+              </Menu.Item>
+              <Menu.Item key="manufacture">
+                <Link to="/manufacture/display">Manufacture</Link>
+              </Menu.Item>
+              <Menu.Item key="category">
+                <Link to="/category/display">Category</Link>
+              </Menu.Item>
+              <Menu.Item key="battery">
+                <Link to="/battery/display">Battery</Link>
               </Menu.Item>
             </SubMenu>
             <Menu.Item
@@ -869,7 +897,7 @@ const OderDisplay = ({}) => {
           </Menu>
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Header style={{ padding: 0, background: "#F5F5F5" }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -905,12 +933,14 @@ const OderDisplay = ({}) => {
                 />
               </Badge>
             </Space>
+            <HeaderDashBoard />
           </Header>
+          <br /> <br /> <br />
           <Content
             style={{
               margin: "24px 16px",
               padding: 24,
-              minHeight: 280,
+              minHeight: 600,
               background: colorBgContainer,
             }}
           >
@@ -926,7 +956,7 @@ const OderDisplay = ({}) => {
                 type="button"
                 onClick={() => handUpdateTrangThai()}
               >
-                Xác nhận tất cả
+                Xác nhận tất cả Hóa Đơn Online
               </button>
             </div>
             <Row gutter={[16, 16]}>
@@ -1290,38 +1320,39 @@ const OderDisplay = ({}) => {
                                 )) /
                                 (1000 * 60 * 60 * 24)
                             ) <= 3 ? (
-                            <Dropdown
-                              overlay={
-                                <Menu mode="vertical">
-                                  <Menu.Item
-                                    key="1"
-                                    disabled={record?.stock <= 0}
-                                    style={{
-                                      fontWeight: 500,
-                                    }}
-                                    icon={
-                                      <CloseCircleOutlined
-                                        style={{
-                                          color: "red",
-                                        }}
-                                      />
-                                    }
-                                    onClick={() =>
-                                      handleNoteReturnsClick(record)
-                                    }
-                                  >
-                                    Trả hàng
-                                  </Menu.Item>
-                                </Menu>
-                              }
-                              trigger={["click"]}
-                            >
-                              <MoreOutlined
-                                style={{
-                                  fontSize: 24,
-                                }}
-                              />
-                            </Dropdown>
+                            // <Dropdown
+                            //   overlay={
+                            //     <Menu mode="vertical">
+                            //       <Menu.Item
+                            //         key="1"
+                            //         disabled={record?.stock <= 0}
+                            //         style={{
+                            //           fontWeight: 500,
+                            //         }}
+                            //         icon={
+                            //           <CloseCircleOutlined
+                            //             style={{
+                            //               color: "red",
+                            //             }}
+                            //           />
+                            //         }
+                            //         onClick={() =>
+                            //           handleNoteReturnsClick(record)
+                            //         }
+                            //       >
+                            //         Trả hàng
+                            //       </Menu.Item>
+                            //     </Menu>
+                            //   }
+                            //   trigger={["click"]}
+                            // >
+                            //   <MoreOutlined
+                            //     style={{
+                            //       fontSize: 24,
+                            //     }}
+                            //   />
+                            // </Dropdown>
+                            ""
                           ) : record.statusBill === "YEU_CAU_TRA_HANG" ? (
                             <Dropdown
                               overlay={
@@ -2047,6 +2078,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       .catch((error) => {
         console.log(`Lỗi xoá imei_da_ban: ${error}`);
       });
+    handleClick();
   };
 
   function handleCheckboxChange(e) {
@@ -2141,6 +2173,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
             .catch((error) => {
               console.log(`${error}`);
             });
+          handleClick();
           notification.success({
             message: "Thêm Imei Thành Công",
           });

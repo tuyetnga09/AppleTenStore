@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import "../Login/login.css";
-import { Form, Space, Avatar, Typography, Upload, notification } from "antd";
+import { Form, Space, Avatar, Typography, Upload, notification,  Button, Input, } from "antd";
 import React, { useEffect, useState } from "react";
 import { add } from "../../../service/Customer/customer.service";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
@@ -8,6 +8,7 @@ import { readAllWard } from "../../../service/AddressAPI/ward.service";
 import { readAllDistrict } from "../../../service/AddressAPI/district.service";
 import { readAllProvince } from "../../../service/AddressAPI/province.service";
 import { saveImageAccount } from "../../../service/image.service";
+import { getAllAccount } from "../../../service/Account/account.service"
 
 const SignUp = () => {
   const { Text } = Typography;
@@ -45,6 +46,19 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [avt, setAvt] = useState(null);
   const form = new FormData();
+
+  const [dataCheck, setDataCheck] = useState([]);
+
+  useEffect(() => {
+    getAllAccount()
+      .then((response) => {
+        console.log(response.data);
+        setDataCheck(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  }, []);
 
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
@@ -191,12 +205,50 @@ const SignUp = () => {
   }
 
   const handleSubmit = async (event) => {
-    setLoading(true);
     event.preventDefault();
-
     const items = { ...data };
+    const newEmail= items.user.email;
+    const newPhoneNumber = items.user.phoneNumber;
+    const newPassword = items.account.password;
+    const emailCode = new Set();
+    const phoneNumberCode = new Set();
+    const emailUserCode = new Set();
+    const regexPass = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const { user, address, account } = items;
 
-    add(items)
+    for (let i = 0; i < dataCheck.data.length; i++) {
+      const item = dataCheck.data[i];
+      if (item && item.user && item.user.phoneNumber) {
+        const { email, user } = item;
+        emailCode.add(email);
+        phoneNumberCode.add(user.phoneNumber);
+        emailUserCode.add(user.email);
+      }
+    }
+
+    if (!user.fullName.trim() || !user.email.trim() || !user.phoneNumber.trim() || !account.password.trim()) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Vui lòng điền đầy đủ thông tin.",
+      });
+    }else if (emailCode.has(newEmail) || emailUserCode.has(newEmail)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Email đã tồn tại",
+      });
+    }else if (phoneNumberCode.has(newPhoneNumber)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Số điện thoại đã tồn tại",
+      });
+    }else if (!regexPass.test(newPassword)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Mật khẩu phải có ít nhất 8 ký tự bao gồm cả chữ và số",
+      });
+    }else{
+      setLoading(true);
+      add(items)
       .then((res) => {
         if (avt !== null) {
           form.append("file", avt);
@@ -220,6 +272,8 @@ const SignUp = () => {
       .catch((err) => {
         console.log(err);
       });
+    }
+    
   };
 
   useEffect(() => {
@@ -371,8 +425,16 @@ const SignUp = () => {
                     required
                     onChange={handleAccount}
                   />
+                 
                   <label>Password</label>
                 </div>
+                {/* <Space direction="vertical">
+                    <Input.Password 
+                      placeholder="input password" 
+                      required
+                      onChange={handleAccount}
+                    />
+                  </Space> */}
               </div>
             </div>
             <div className="row">

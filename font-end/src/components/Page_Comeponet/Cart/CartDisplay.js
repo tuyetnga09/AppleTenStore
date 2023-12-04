@@ -134,7 +134,7 @@ export default function CartDisplay() {
               .catch((error) => {
                 console.log("Lỗi khi đọc lại giỏ hàng:", error);
               });
-              readQuantityInCart(idAccount)
+            readQuantityInCart(idAccount)
               .then((response) => {
                 console.log(response.data);
                 setQuantity(response.data);
@@ -153,7 +153,7 @@ export default function CartDisplay() {
             item.quantity = newQuantity;
             item.total = newQuantity * item.price;
           }
-           const totalQuantity = cartItems.reduce(
+          const totalQuantity = cartItems.reduce(
             (total, product) => total + product.quantity,
             0
           );
@@ -225,7 +225,7 @@ export default function CartDisplay() {
   return (
     <React.Fragment>
       <>
-      <div class="top-nav group">
+        <div class="top-nav group">
           <section>
             <div class="social-top-nav">
               <a class="fa fa-facebook"></a>
@@ -317,23 +317,24 @@ export default function CartDisplay() {
             <div className="tools-member">
               <div className="cart">
                 <Link to={storedUser !== null ? "/profile" : "/login"}>
-                {storedUser?.user?.avatar == null ? (
-                  <img
-                    style={{ width: 36, height: 36 }}
-                    class="img-account-profile rounded-circle mb-2"
-                    src={
-                      "https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg"
-                    }
-                    alt=""
-                  />
-                ) : (
-                  <img
-                    style={{ width: 36, height: 36 }}
-                    class="img-account-profile rounded-circle mb-2"
-                    src={`/imageUpload/` + storedUser?.user?.avatar}
-                    alt=""
-                  />
-                )}{" "}
+                  {storedUser?.user?.avatar == null ||
+                  storedUser?.user?.avatar == "" ? (
+                    <img
+                      style={{ width: 36, height: 36 }}
+                      class="img-account-profile rounded-circle mb-2"
+                      src={
+                        "https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg"
+                      }
+                      alt=""
+                    />
+                  ) : (
+                    <img
+                      style={{ width: 36, height: 36 }}
+                      class="img-account-profile rounded-circle mb-2"
+                      src={`/imageUpload/` + storedUser?.user?.avatar}
+                      alt=""
+                    />
+                  )}{" "}
                   {/* {account == null ? "Tài khoản" : account.user.fullName} */}
                   {localStorage.getItem("account") !== null
                     ? storedUser?.user?.fullName
@@ -349,8 +350,7 @@ export default function CartDisplay() {
               {/* End Member */}
               <div className="cart">
                 <Link to="/cart">
-                  <i className="fa fa-shopping-cart" />{" "}
-                  <span>Giỏ hàng</span>
+                  <i className="fa fa-shopping-cart" /> <span>Giỏ hàng</span>
                   <span className="cart-number">{quantity}</span>
                 </Link>
               </div>{" "}
@@ -363,8 +363,7 @@ export default function CartDisplay() {
                 <Link
                   to={storedUser === null ? "/oderCustomerAll" : "/oderUserAll"}
                 >
-                  <i class="fa fa-truck"></i>{" "}
-                  <span>Đơn hàng</span>
+                  <i class="fa fa-truck"></i> <span>Đơn hàng</span>
                 </Link>
               </div>
             </div>
@@ -399,12 +398,14 @@ export default function CartDisplay() {
                         <h3 className="mb-5 pt-2 text-center fw-bold text-uppercase">
                           Giỏ hàng
                         </h3>
-                        <div style={{ maxHeight: 290, overflow: 'auto' }}>
+                        <div style={{ maxHeight: 290, overflow: "auto" }}>
                           <table>
                             <thead>
                               <tr style={{ textAlign: "center" }}>
                                 <th>
-                                  <h5 className="fw-bold mb-0 me-5 pe-3">Ảnh</h5>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">
+                                    Ảnh
+                                  </h5>
                                 </th>
                                 <th>
                                   <h5 className="fw-bold mb-0 me-5 pe-3">
@@ -412,7 +413,9 @@ export default function CartDisplay() {
                                   </h5>
                                 </th>
                                 <th>
-                                  <h5 className="fw-bold mb-0 me-5 pe-3">Giá</h5>
+                                  <h5 className="fw-bold mb-0 me-5 pe-3">
+                                    Giá
+                                  </h5>
                                 </th>
                                 <th>
                                   <h5 className="fw-bold mb-0 me-5 pe-3">SL</h5>
@@ -507,7 +510,9 @@ export default function CartDisplay() {
                                           ) {
                                             getOneSKU(product.idSKU).then(
                                               (res) => {
-                                                setQuantitySKU(res.data.quantity);
+                                                setQuantitySKU(
+                                                  res.data.quantity
+                                                );
                                               }
                                             );
                                           }
@@ -548,7 +553,7 @@ export default function CartDisplay() {
                                                 document.getElementById(
                                                   `quantity-${index}`
                                                 );
-                                              quantity.value = product.quantity;
+                                              quantity.value = quantitySKU;
                                               handleUpdateQuantity(
                                                 product.idCartDetail,
                                                 product.quantity,
@@ -559,7 +564,8 @@ export default function CartDisplay() {
                                                 document.getElementById(
                                                   `quantity-${index}`
                                                 );
-                                              quantity.value = event.target.value;
+                                              quantity.value =
+                                                event.target.value;
                                               handleUpdateQuantity(
                                                 product.idCartDetail,
                                                 event.target.value,
@@ -580,7 +586,8 @@ export default function CartDisplay() {
                                             } else {
                                               // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
                                               if (
-                                                newQuantity <= product.quantitySKU
+                                                newQuantity <=
+                                                product.quantitySKU
                                               ) {
                                                 handleUpdateQuantity(
                                                   product.idCartDetail,
@@ -597,7 +604,8 @@ export default function CartDisplay() {
                                                   document.getElementById(
                                                     `quantity-${index}`
                                                   );
-                                                quantity.value = product.quantity;
+                                                quantity.value =
+                                                  product.quantity;
                                                 handleUpdateQuantity(
                                                   product.idCartDetail,
                                                   product.quantity,
@@ -621,7 +629,8 @@ export default function CartDisplay() {
                                                     `quantity-${index}`
                                                   );
                                                 quantity.value =
-                                                  parseInt(product.quantity) + 1;
+                                                  parseInt(product.quantity) +
+                                                  1;
                                                 if (
                                                   quantity.value >
                                                   parseInt(res.data.quantity)
@@ -675,7 +684,9 @@ export default function CartDisplay() {
                                         className="plus"
                                       />
                                     </div>
-                                    <p style={{ fontSize: "10px", color: "red" }}>
+                                    <p
+                                      style={{ fontSize: "10px", color: "red" }}
+                                    >
                                       Còn {product.quantitySKU} sản phẩm
                                     </p>
                                   </td>

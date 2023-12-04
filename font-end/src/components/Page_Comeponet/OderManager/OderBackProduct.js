@@ -85,6 +85,7 @@ import {
 } from "../../../service/BillDetail/billDetail.service";
 import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
 import AvtProduct from "../../custumer_componet/avtProduct";
+import HeaderDashBoard from "../header/index";
 
 const { RangePicker } = DatePicker;
 const { SubMenu } = Menu;
@@ -773,59 +774,81 @@ const OderDisplay = ({}) => {
               />
             </Menu.Item>
             <Menu.Item key="0" icon={<FileDoneOutlined />}>
-              <Link to="/sell">SELL OFFLINE</Link>
+              <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
             </Menu.Item>
             <Menu.Item key="1" icon={<DashboardOutlined />}>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/dashboard">Thống kê</Link>
             </Menu.Item>
-            <SubMenu key="2" title="Orders" icon={<ShopOutlined />}>
+            <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined />}>
               <Menu.Item key="2" icon={<ShopOutlined />}>
-                <Link to="/orders">Orders</Link>
+                <Link to="/orders">Quản lý đơn hàng</Link>
               </Menu.Item>
               <Menu.Item key="11" icon={<ShopOutlined />}>
-                <Link to="/orderBackProduct">OrderBackProducts</Link>
+                <Link to="/orderBackProduct">Quản lý trả hàng</Link>
               </Menu.Item>
             </SubMenu>
             <Menu.Item key="3" icon={<UserOutlined />}>
-              <Link to="/users">Users</Link>
+              <Link to="/users">Quản lý người dùng</Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<AppstoreAddOutlined />}>
-              <Link to="/product">Product</Link>
+              <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Voucher</Link>
+              <Link to="/voucher">Quảng lý Voucher</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
-              <Link to="/categories">Categories</Link>
+              <Link to="/categories">Thể loại</Link>
             </Menu.Item>
             <SubMenu
               key="8"
-              title="Product-Detail"
+              title="Chi tiết sản phẩm"
               icon={<AppstoreAddOutlined />}
             >
-              <Menu.Item key="8">
+              <Menu.Item key="sku">
                 <Link to="/admin/product-detail">SKU</Link>
               </Menu.Item>
               <Menu.Item key="color">
-                <Link to="/product-detail/color">Color</Link>
+                <Link to="/color/display">Color</Link>
               </Menu.Item>
               <Menu.Item key="capacity">
-                <Link to="/product-detail/capacity">Capacity</Link>
+                <Link to="/capacity/display">Capacity</Link>
               </Menu.Item>
               <Menu.Item key="ram">
-                <Link to="/product-detail/ram">RAM</Link>
+                <Link to="/ram/display">Ram</Link>
               </Menu.Item>
               <Menu.Item key="chip">
-                <Link to="/product-detail/chip">Chip</Link>
+                <Link to="/chip/display">Chip</Link>
+              </Menu.Item>
+              <Menu.Item key="size">
+                <Link to="/size/display">Size</Link>
+              </Menu.Item>
+              <Menu.Item key="screen">
+                <Link to="/screen/display">Screen</Link>
+              </Menu.Item>
+              <Menu.Item key="manufacture">
+                <Link to="/manufacture/display">Manufacture</Link>
+              </Menu.Item>
+              <Menu.Item key="category">
+                <Link to="/category/display">Category</Link>
+              </Menu.Item>
+              <Menu.Item key="battery">
+                <Link to="/battery/display">Battery</Link>
               </Menu.Item>
             </SubMenu>
-            <Menu.Item key="7" icon={<LogoutOutlined />}>
-              <Link to="/logout">Logout</Link>
+            <Menu.Item
+              key="8"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                localStorage.removeItem("account");
+                window.location.replace("/login");
+              }}
+            >
+              Đăng xuất
             </Menu.Item>
           </Menu>
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Header style={{ padding: 0, background: "#F5F5F5" }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -861,17 +884,19 @@ const OderDisplay = ({}) => {
                 />
               </Badge>
             </Space>
+            <HeaderDashBoard />
           </Header>
+          <br /> <br /> <br />
           <Content
             style={{
               margin: "24px 16px",
               padding: 24,
-              minHeight: 280,
+              minHeight: 600,
               background: colorBgContainer,
             }}
           >
             <Text style={{ fontSize: "24px", color: "blue" }} strong>
-              ODERS
+              QUẢN LÝ TRẢ HÀNG
             </Text>
             <div
               class="d-grid gap-2 d-md-flex justify-content-md-end"

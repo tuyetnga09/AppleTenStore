@@ -215,6 +215,11 @@ export default function ProductDetail() {
                 message: "ADD TO CART",
                 description: "Số lượng trong kho không đủ",
               });
+            } else if(item2.status === 1){
+              notification.error({
+                message: "ADD TO CART",
+                description: "Sản phẩm đã ngừng bán",
+              });
             } else {
               addToCart(addToCartData)
                 .then((response) => {
@@ -419,16 +424,27 @@ export default function ProductDetail() {
                 ) : item && item.price ? (
                   <PriceProduct product={id}></PriceProduct>
                 ) : null}
+                {item2.status === 0 ?
+                  <label className="giamgia">
+                    Số lượng:{" "}
+                    {item2 && item2.quantity
+                      ? item2.quantity && item2.quantity
+                      : item2 && item2.quantity === 0
+                      ? item2.quantity && item2.quantity
+                      : item && item.quantity
+                      ? item.quantity && item.quantity
+                      : null}
+                  </label>
+                : ""}
+                {item2.status === 1 ? 
                 <label className="giamgia">
-                  Số lượng:{" "}
-                  {item2 && item2.quantity
-                    ? item2.quantity && item2.quantity
-                    : item2 && item2.quantity === 0
-                    ? item2.quantity && item2.quantity
-                    : item && item.quantity
-                    ? item.quantity && item.quantity
-                    : null}
-                </label>
+                  Ngừng bán
+                </label> : ""}
+                {item2.quantity === 0 ? 
+                <label className="giamgia">
+                  Hết hàng
+                </label> : ""}
+                
               </div>
               {/* <div className="ship" style={{ display: "none" }}>
                 <img src="img/chitietsanpham/clock-152067_960_720.png" />
@@ -518,7 +534,7 @@ export default function ProductDetail() {
                 </a>
               </div>
             </div>
-            <div className="info_product">
+            <div className="info_product" style={{marginTop: "35px"}}>
               <h2>Thông số kỹ thuật</h2>
               <ul className="info">
                 <li>
@@ -723,17 +739,21 @@ export default function ProductDetail() {
             <div className="listSpTrongKhung flexContain">
               {outstandingProducts}
             </div>
-            <Link
-              className="xemTatCa"
-              to="/"
-              onClick={() => noiBatNhat()}
-              style={{
-                borderLeft: "2px solid #ff9c00",
-                borderRight: "2px solid #ff9c00",
-              }}
-            >
-              Xem tất cả {quantityNoiBat} sản phẩm
-            </Link>
+            {quantityNoiBat > 10 ? (
+              <Link
+                className="xemTatCa"
+                to="/"
+                onClick={() => noiBatNhat()}
+                style={{
+                  borderLeft: "2px solid #ff9c00",
+                  borderRight: "2px solid #ff9c00",
+                }}
+              >
+                Xem tất cả {quantityNoiBat} sản phẩm
+              </Link>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </section>

@@ -27,3 +27,7 @@ export const updateRole = (role, idUser) => {
     `/admin/account/updateRole?role=${role}&idUser=${idUser}`
   );
 };
+
+export const getAllAccount = () => {
+  return httpClient.get(`/admin/account`);
+};
