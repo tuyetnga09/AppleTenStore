@@ -568,12 +568,19 @@ const OderDisplay = ({}) => {
 
   function checkImeiSelectInBillDetail(id) {
     let tempObj = {};
-    for (let index = 0; index < billCXN.length; index++) {
-      if (billCXN[index]?.bill === id) {
-        tempObj = billCXN[index];
-        break;
-      }
-    }
+    getAllBillCXN()
+      .then((response) => {
+        for (let index = 0; index < response.data.length; index++) {
+          if (billCXN[index]?.bill === id) {
+            tempObj = billCXN[index];
+            break;
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
     return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
   }
 
@@ -2047,6 +2054,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       .catch((error) => {
         console.log(`Lỗi xoá imei_da_ban: ${error}`);
       });
+    handleClick();
   };
 
   function handleCheckboxChange(e) {
@@ -2141,6 +2149,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
             .catch((error) => {
               console.log(`${error}`);
             });
+          handleClick();
           notification.success({
             message: "Thêm Imei Thành Công",
           });

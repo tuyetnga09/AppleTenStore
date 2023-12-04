@@ -188,6 +188,7 @@ public class ProductServiceImpl {
 
 
     public Product getOne(Integer id) {
+
         return this.productRepository.findById(id).orElse(null);
     }
 
@@ -347,9 +348,11 @@ public class ProductServiceImpl {
                         List<SKU> listSkuDelete = skuRepositoty.findByProductAndCapacity(product, capacity);
                         if (!listSkuDelete.isEmpty()) {
                             for (int i = 0; i < listSkuDelete.size(); i++) {
-                                skuRepositoty.deleteById(listSkuDelete.get(i).getId());
-                                System.out.println("------------1 ok");
 
+//                                skuRepositoty.deleteById(listSkuDelete.get(i).getId());
+                                SKU sku = listSkuDelete.get(i);
+                                sku.setStatus(1);
+                                skuRepositoty.save(sku);
                             }
                         }
                     }
@@ -361,22 +364,20 @@ public class ProductServiceImpl {
                     // -> lúc này cần xoá các bản ghi  SKU cũ có chữa colorListDelete
                     for (String color : colorListDelete) {
                         List<SKU> listSkuDelete = skuRepositoty.findByProductAndColor(product, color);
+
                         if (!listSkuDelete.isEmpty()) {
                             for (int i = 0; i < listSkuDelete.size(); i++) {
-                                skuRepositoty.deleteById(listSkuDelete.get(i).getId());
-                                System.out.println("------------2 ok");
-
+//                                skuRepositoty.deleteById(listSkuDelete.get(i).getId());
+                                SKU sku = listSkuDelete.get(i);
+                                sku.setStatus(1);
+                                skuRepositoty.save(sku);
                             }
+
 
                         }
                     }
 
                 }
-                System.out.println(colorListDelete.size() + " hihi -------------------------");
-                System.out.println(colorListDelete + " hihi -------------------------");
-                System.out.println(colorListDelete.isEmpty() + " hihi -------------------------");
-                System.out.println((colorListDelete == null) + " hihi -------------------------");
-
 
                 if (capacityListDelete.size() > 0 && colorListDelete.size() > 0) {
                     // nếu colorListDelete != null thì đã có color bị xoá đi khi edit product
@@ -387,7 +388,9 @@ public class ProductServiceImpl {
                         for (String color : colorListDelete) {
                             SKU skuDelete = skuRepositoty.findByProductAndCapacityAndColor(product, capacity, color);
                             if (skuDelete != null) {
-                                skuRepositoty.deleteById(skuDelete.getId());
+                                skuDelete.setStatus(1);
+                                skuRepositoty.save(skuDelete);
+//                                skuRepositoty.deleteById(skuDelete.getId());
                             }
                         }
 
@@ -398,7 +401,10 @@ public class ProductServiceImpl {
                         for (String capacity : capacityListDelete) {
                             SKU skuDelete = skuRepositoty.findByProductAndCapacityAndColor(product, capacity, color);
                             if (skuDelete != null) {
-                                skuRepositoty.deleteById(skuDelete.getId());
+                                skuDelete.setStatus(1);
+                                skuRepositoty.save(skuDelete);
+//                                skuRepositoty.deleteById(skuDelete.getId());
+//                                System.out.println( skuRepositoty.deleteById(skuDelete.getId()) + " kho lawm roi --------------------------------met" );
                             }
                         }
 
@@ -407,6 +413,7 @@ public class ProductServiceImpl {
 
                 if (capacityList != null && colorList != null) {
                     skuList.clear(); // xoá rỗng list
+                    System.out.println(skuList.size() + " kho lawm roi --------------------------------0");
                     for (String colorName : colorList) {
                         for (String capacityName : capacityList) {
                             SKU skuCheck = skuRepositoty.findByProductAndCapacityAndColor(product, capacityName, colorName);
@@ -423,6 +430,7 @@ public class ProductServiceImpl {
                                 sku.setColor(color.getName());
                                 sku.setCapacity(capacity.getName());
                                 sku.setQuantity(0);  //các sku chưa có imei mặc đinh là 0
+                                sku.setStatus(0);
                                 sku.setProduct(product);
                                 skuList.add(sku);
                             }
