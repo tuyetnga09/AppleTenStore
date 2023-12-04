@@ -106,6 +106,15 @@ const CreateVoucher = ({}) => {
       voucherCodes.add(code);
       voucherNames.add(name);
     }
+    if(items.code == null || items.name == null || items.dateStart == null
+    || items.valueVoucher == null || items.valueMinimum == null
+    || items.valueMaximum == null){
+      notification.error({
+        message: "SAVE VOUCHER",
+        description: "Vui lòng không để trống dữ liệu",
+      });
+      return;
+    }
     if (voucherCodes.has(newCode) || voucherNames.has(newName)) {
       notification.error({
         message: "SAVE VOUCHER",
@@ -307,7 +316,7 @@ const CreateVoucher = ({}) => {
               />
             </Form.Item>
             <Form.Item
-              label={t("Giá trị đơn hàng tối hiểu	")}
+              label={t("Giá trị đơn hàng tối thiểu	")}
               name="valueMinimum"
               rules={[{ required: true, type: "number" }]}
             >

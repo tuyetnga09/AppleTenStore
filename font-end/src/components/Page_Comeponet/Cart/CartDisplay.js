@@ -317,7 +317,8 @@ export default function CartDisplay() {
             <div className="tools-member">
               <div className="cart">
                 <Link to={storedUser !== null ? "/profile" : "/login"}>
-                  {storedUser?.user?.avatar == null ? (
+                  {storedUser?.user?.avatar == null ||
+                  storedUser?.user?.avatar == "" ? (
                     <img
                       style={{ width: 36, height: 36 }}
                       class="img-account-profile rounded-circle mb-2"

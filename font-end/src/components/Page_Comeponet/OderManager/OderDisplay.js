@@ -266,8 +266,13 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
-      console.log(billCXN);
-      console.log(billOFFCXN);
+      getCountBillChoXacNhan()
+        .then((response) => {
+          setPendingBills(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       //thông báo khi có hóa đơn mới
       let lastPendingBills = null;
       let timeout = null;
@@ -569,12 +574,19 @@ const OderDisplay = ({}) => {
 
   function checkImeiSelectInBillDetail(id) {
     let tempObj = {};
-    for (let index = 0; index < billCXN.length; index++) {
-      if (billCXN[index]?.bill === id) {
-        tempObj = billCXN[index];
-        break;
-      }
-    }
+    getAllBillCXN()
+      .then((response) => {
+        for (let index = 0; index < response.data.length; index++) {
+          if (billCXN[index]?.bill === id) {
+            tempObj = billCXN[index];
+            break;
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+
     return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
   }
 
@@ -831,7 +843,7 @@ const OderDisplay = ({}) => {
               <Link to="/product">Quản lý sản phẩm</Link>
             </Menu.Item>
             <Menu.Item key="5" icon={<GiftOutlined />}>
-              <Link to="/voucher">Quảng lý Voucher</Link>
+              <Link to="/voucher">Quản lý Voucher</Link>
             </Menu.Item>
             <Menu.Item key="6" icon={<UnorderedListOutlined />}>
               <Link to="/categories">Thể loại</Link>
@@ -944,7 +956,7 @@ const OderDisplay = ({}) => {
                 type="button"
                 onClick={() => handUpdateTrangThai()}
               >
-                Xác nhận tất cả
+                Xác nhận tất cả Hóa Đơn Online
               </button>
             </div>
             <Row gutter={[16, 16]}>
@@ -2066,6 +2078,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       .catch((error) => {
         console.log(`Lỗi xoá imei_da_ban: ${error}`);
       });
+    handleClick();
   };
 
   function handleCheckboxChange(e) {
@@ -2160,6 +2173,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
             .catch((error) => {
               console.log(`${error}`);
             });
+          handleClick();
           notification.success({
             message: "Thêm Imei Thành Công",
           });

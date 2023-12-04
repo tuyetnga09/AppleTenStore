@@ -704,6 +704,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
         console.log(err);
       });
   };
+
   //config khi xoá sku - phongnh
   const toast1 = useRef(null);
   const rejectDeleteSku = () => {
