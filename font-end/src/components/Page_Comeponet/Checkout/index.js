@@ -700,14 +700,27 @@ const Checkout = () => {
     });
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    if (checked) {
-      setLoading(true);
-      const tienMat = document.getElementById("httt-1");
-      if (tienMat.checked === true) {
-        localStorage.removeItem("bill");
-        if (idAccount !== "") {
+  function doneOrder() {
+    const phoneNumberRegex = /^\d{10}$/;
+    const phoneNumber = document.getElementById("phoneNumber");
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const email = document.getElementById("email");
+    setLoading(true);
+    const tienMat = document.getElementById("httt-1");
+    if (tienMat.checked === true) {
+      localStorage.removeItem("bill");
+      if (idAccount !== "") {
+        if (!phoneNumberRegex.test(phoneNumber?.value)) {
+          setLoading(false);
+          notification.error({
+            message: "Số điện thoại sai định dạng!",
+          });
+        } else if (!emailRegex.test(email?.value)) {
+          setLoading(false);
+          notification.error({
+            message: "Email sai định dạng!",
+          });
+        } else {
           createBillAccount(bill)
             .then((response) => {
               console.log(response.data);
@@ -721,6 +734,18 @@ const Checkout = () => {
           localStorage.removeItem("name");
           localStorage.removeItem("phoneNumber");
           localStorage.removeItem("email");
+        }
+      } else {
+        if (!phoneNumberRegex.test(phoneNumber?.value)) {
+          setLoading(false);
+          notification.error({
+            message: "Số điện thoại sai định dạng!",
+          });
+        } else if (!emailRegex.test(email?.value)) {
+          setLoading(false);
+          notification.error({
+            message: "Email sai định dạng!",
+          });
         } else {
           createBill(bill)
             .then((response) => {
@@ -737,17 +762,47 @@ const Checkout = () => {
           setTotalPrice(0);
         }
       }
-      const vnpay = document.getElementById("httt-2");
-      if (vnpay.checked == true) {
-        localStorage.setItem("bill", JSON.stringify(bill));
-        getPay(soTienThanhToan)
-          .then((res) => {
-            setLoading(false);
-            window.location.replace(res.data);
-          })
-          .catch((err) => {
-            console.log(err);
+    }
+    const vnpay = document.getElementById("httt-2");
+    if (vnpay.checked == true) {
+      localStorage.setItem("bill", JSON.stringify(bill));
+      getPay(soTienThanhToan)
+        .then((res) => {
+          setLoading(false);
+          window.location.replace(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    if (checked) {
+      const gtn = document.getElementById("htnn_5");
+      const dcmd = document.getElementById("htnn_6");
+      const wards = document.getElementById("wards");
+      const dcct = document.getElementById("floatingSelect2");
+      const dcmdSelect = document.getElementById("floatingSelect");
+      if (gtn?.checked) {
+        if (wards?.value === "" || dcct?.value === "") {
+          notification.error({
+            message: "Bạn chưa chọn địa chỉ!",
           });
+        } else {
+          doneOrder();
+        }
+      } else if (dcmd?.checked) {
+        if (dcmdSelect?.value == 0) {
+          notification.error({
+            message: "Bạn chưa chọn địa chỉ!",
+          });
+        } else {
+          doneOrder();
+        }
+      } else {
+        doneOrder();
       }
     } else {
       notification.error({
@@ -1207,6 +1262,7 @@ const Checkout = () => {
                   <div className="row">
                     <div class="col-md-6">
                       <input
+                        id="phoneNumber"
                         type="text"
                         class="form-control"
                         placeholder="Số điện thoại"
@@ -1218,6 +1274,7 @@ const Checkout = () => {
                     </div>
                     <div class="col-md-6">
                       <input
+                        id="email"
                         type="email"
                         class="form-control"
                         placeholder="Email"

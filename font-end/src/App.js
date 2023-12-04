@@ -191,7 +191,7 @@ function App() {
             exact
             component={SaveOrUpdateManufacture}
           />
-          <Route path="/size/getAll" exact component={DisplaySize} />
+          <Route path="/size/display" exact component={DisplaySize} />
           <Route path="/size/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
@@ -212,7 +212,7 @@ function App() {
             component={ReturnDeleteSize}
           />
           <Route path="/size/:id" exact component={FormAddOrUpdateSize} />
-          <Route path="/battery/getAll" exact component={DisplayBattery} />
+          <Route path="/battery/display" exact component={DisplayBattery} />
           <Route path="/battery/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />
@@ -247,7 +247,7 @@ function App() {
             component={ScreenDeleteScreen}
           />
           <Route path="/screen/:id" exact component={ScreenCreateOrUpdate} />
-          <Route path="/chip/getAll" exact component={DisplayChip} />
+          <Route path="/chip/display" exact component={DisplayChip} />
           <Route
             path="/chip/displayDelete"
             exact
@@ -276,7 +276,7 @@ function App() {
               <ImageFormAddOrUpdate />
             )}
           </Route>
-          <Route path="/color/getAll" exact component={DisplayColor} />
+          <Route path="/color/display" exact component={DisplayColor} />
           <Route
             path="/color/displayDelete"
             exact
@@ -297,7 +297,7 @@ function App() {
               <ScanColor />
             )}
           </Route>
-          <Route path="/imei/getAll" exact component={DisplayImei} />
+          <Route path="/imei/display" exact component={DisplayImei} />
           <Route path="/imei/im">
             {storedUser?.roles === "CUSTOMER" || storedUser === null ? (
               <Redirect to="/" />

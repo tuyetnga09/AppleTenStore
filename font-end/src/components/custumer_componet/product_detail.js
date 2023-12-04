@@ -723,17 +723,21 @@ export default function ProductDetail() {
             <div className="listSpTrongKhung flexContain">
               {outstandingProducts}
             </div>
-            <Link
-              className="xemTatCa"
-              to="/"
-              onClick={() => noiBatNhat()}
-              style={{
-                borderLeft: "2px solid #ff9c00",
-                borderRight: "2px solid #ff9c00",
-              }}
-            >
-              Xem tất cả {quantityNoiBat} sản phẩm
-            </Link>
+            {quantityNoiBat > 10 ? (
+              <Link
+                className="xemTatCa"
+                to="/"
+                onClick={() => noiBatNhat()}
+                style={{
+                  borderLeft: "2px solid #ff9c00",
+                  borderRight: "2px solid #ff9c00",
+                }}
+              >
+                Xem tất cả {quantityNoiBat} sản phẩm
+              </Link>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </section>

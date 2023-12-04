@@ -1079,92 +1079,118 @@ export default function SellSmart() {
     return pdfBytes;
   }
 
+  const [checked, setChecked] = useState(false);
+
+  function checkQuantitySubmit() {
+    dataBillDetailOffline.map((bd) => {
+      getOneSKU(bd.sku)
+        .then((response) => {
+          if (response.data.quantity < bd.quantity) {
+            setChecked(false);
+          } else {
+            setChecked(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  }
+
   // const [productList, setProductList] = useState([]);
   const [customBill, setCustomBill] = useState([]);
 
   async function accept() {
-    if (dataDoneBill.idBill === null) {
-      toast.current.show({
-        severity: "error",
-        summary: "THANH TOÁN",
-        detail: "Thanh toán thất bại, hãy tạo/chọn hóa đơn",
-        life: 3000,
-      });
-    } else if (dataBillDetailOffline.length === 0) {
-      toast.current.show({
-        severity: "error",
-        summary: "THANH TOÁN",
-        detail: "Thanh toán thất bại, hãy thêm sản phẩm để thanh toán",
-        life: 3000,
-      });
-    } else if (dataDoneBill.idCustomer === null) {
-      toast.current.show({
-        severity: "error",
-        summary: "THANH TOÁN",
-        detail: "Thanh toán thất bại, chưa chọn khách hàng?",
-        life: 3000,
-      });
-    } else {
-      const pdfBytes = await createBillSusses(
-        dataBillOffLine.codeBill,
-        dataBillOffLine.codeAccount,
-        dataBillDetailOffline,
-        selectedValues,
-        selectedOptions
-      );
-      if (checkSoluongImei() === true) {
-        if (tienThua <= 0) {
-          doneBill(dataDoneBill)
-            .then((res) => {
-              if (res.status === 200) {
-                toast.current.show({
-                  severity: "success",
-                  summary: "THANH TOÁN",
-                  detail: "Thanh toán thành công",
-                  life: 3000,
-                });
-                // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
-                //   (response) => {
-                //     setProductList(response.data);
-                //   }
-                // );
-                // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
-                //   setCustomBill(response.data);
-                // });
-                const blob = new Blob([pdfBytes], { type: "application/pdf" });
-                const url = URL.createObjectURL(blob);
-                window.open(url);
+    if (checked) {
+      if (dataDoneBill.idBill === null) {
+        toast.current.show({
+          severity: "error",
+          summary: "THANH TOÁN",
+          detail: "Thanh toán thất bại, hãy tạo/chọn hóa đơn",
+          life: 3000,
+        });
+      } else if (dataBillDetailOffline.length === 0) {
+        toast.current.show({
+          severity: "error",
+          summary: "THANH TOÁN",
+          detail: "Thanh toán thất bại, hãy thêm sản phẩm để thanh toán",
+          life: 3000,
+        });
+      } else if (dataDoneBill.idCustomer === null) {
+        toast.current.show({
+          severity: "error",
+          summary: "THANH TOÁN",
+          detail: "Thanh toán thất bại, chưa chọn khách hàng?",
+          life: 3000,
+        });
+      } else {
+        const pdfBytes = await createBillSusses(
+          dataBillOffLine.codeBill,
+          dataBillOffLine.codeAccount,
+          dataBillDetailOffline,
+          selectedValues,
+          selectedOptions
+        );
+        if (checkSoluongImei() === true) {
+          if (tienThua <= 0) {
+            doneBill(dataDoneBill)
+              .then((res) => {
+                if (res.status === 200) {
+                  toast.current.show({
+                    severity: "success",
+                    summary: "THANH TOÁN",
+                    detail: "Thanh toán thành công",
+                    life: 3000,
+                  });
+                  // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
+                  //   (response) => {
+                  //     setProductList(response.data);
+                  //   }
+                  // );
+                  // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
+                  //   setCustomBill(response.data);
+                  // });
+                  const blob = new Blob([pdfBytes], {
+                    type: "application/pdf",
+                  });
+                  const url = URL.createObjectURL(blob);
+                  window.open(url);
 
-                setDataBillDetailOffline([]);
-                setDataTest(!dataTest);
-                setDataBillOffline([]);
-                document.getElementById("amountGiven").value = 0;
-                document.getElementById("transferAmount").value = 0;
-                getBillChoThanhToanOff();
-                setSelectedVoucher(0);
-                setSelectedVoucherFreeShip(0);
-              }
-            })
-            .catch((err) => {
-              console.log(err);
+                  setDataBillDetailOffline([]);
+                  setDataTest(!dataTest);
+                  setDataBillOffline([]);
+                  document.getElementById("amountGiven").value = 0;
+                  document.getElementById("transferAmount").value = 0;
+                  getBillChoThanhToanOff();
+                  setSelectedVoucher(0);
+                  setSelectedVoucherFreeShip(0);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            console.log("ok");
+          } else {
+            toast.current.show({
+              severity: "error",
+              summary: "THANH TOÁN",
+              detail: "Chưa thanh toán đủ tiền",
+              life: 3000,
             });
-          console.log("ok");
+          }
         } else {
           toast.current.show({
             severity: "error",
-            summary: "THANH TOÁN",
-            detail: "Chưa thanh toán đủ tiền",
+            summary: "KIỂM TRA IMEI",
+            detail: "Vui lòng kiểm tra lại imei",
             life: 3000,
           });
         }
-      } else {
-        toast.current.show({
-          severity: "error",
-          summary: "KIỂM TRA IMEI",
-          detail: "Vui lòng kiểm tra lại imei",
-          life: 3000,
-        });
       }
+    } else {
+      notification.error({
+        message: "Mặt hàng đã có người mua hết!",
+      });
     }
   }
 
@@ -2689,56 +2715,68 @@ export default function SellSmart() {
                                   );
                                 }}
                                 onBlur={(event) => {
-                                  if (event.target.value <= 0) {
-                                    notification.error({
-                                      message: "ADD TO CART",
-                                      description: "Số lượng phải lớn hơn 0",
+                                  getOneSKU(record.idSKU)
+                                    .then((res) => {
+                                      console.log(res.data);
+                                      if (event.target.value <= 0) {
+                                        notification.error({
+                                          message: "ADD TO CART",
+                                          description:
+                                            "Số lượng phải lớn hơn 0",
+                                        });
+                                        const quantity =
+                                          document.getElementById(
+                                            `quantity-${index}`
+                                          );
+                                        quantity.value = record.quantity;
+                                        handleUpdateQuantity(
+                                          record.id,
+                                          record.quantity,
+                                          record.codeBill
+                                        );
+                                      } else if (
+                                        event.target.value >
+                                        parseInt(res.data.quantity)
+                                        // parseInt(skuProduct[index].quantitySKU)
+                                        // +
+                                        //   parseInt(product.quantity)
+                                      ) {
+                                        notification.error({
+                                          message: "ADD TO CART",
+                                          description:
+                                            "Không thể nhập quá số lượng đang có",
+                                        });
+                                        const quantity =
+                                          document.getElementById(
+                                            `quantity-${index}`
+                                          );
+                                        quantity.value = res.data.quantity;
+                                        handleUpdateQuantity(
+                                          record.id,
+                                          record.quantity,
+                                          record.codeBill
+                                        );
+                                      } else {
+                                        const quantity =
+                                          document.getElementById(
+                                            `quantity-${index}`
+                                          );
+                                        quantity.value = event.target.value;
+                                        handleUpdateQuantity(
+                                          record.id,
+                                          quantity.value,
+                                          record.codeBill
+                                        );
+                                      }
+                                      setDataCheckSoLuongImei(
+                                        index,
+                                        record.id,
+                                        record.idSKU
+                                      );
+                                    })
+                                    .catch((err) => {
+                                      console.log(err);
                                     });
-                                    const quantity = document.getElementById(
-                                      `quantity-${index}`
-                                    );
-                                    quantity.value = record.quantity;
-                                    handleUpdateQuantity(
-                                      record.id,
-                                      record.quantity,
-                                      record.codeBill
-                                    );
-                                  } else if (
-                                    event.target.value >
-                                    parseInt(skuProduct[index].quantitySKU)
-                                    // +
-                                    //   parseInt(product.quantity)
-                                  ) {
-                                    notification.error({
-                                      message: "ADD TO CART",
-                                      description:
-                                        "Không thể nhập quá số lượng đang có",
-                                    });
-                                    const quantity = document.getElementById(
-                                      `quantity-${index}`
-                                    );
-                                    quantity.value = record.quantity;
-                                    handleUpdateQuantity(
-                                      record.id,
-                                      record.quantity,
-                                      record.codeBill
-                                    );
-                                  } else {
-                                    const quantity = document.getElementById(
-                                      `quantity-${index}`
-                                    );
-                                    quantity.value = event.target.value;
-                                    handleUpdateQuantity(
-                                      record.id,
-                                      quantity.value,
-                                      record.codeBill
-                                    );
-                                  }
-                                  setDataCheckSoLuongImei(
-                                    index,
-                                    record.id,
-                                    record.idSKU
-                                  );
                                 }}
                               />
                               <button
@@ -3408,6 +3446,7 @@ export default function SellSmart() {
                               fontSize: "50px",
                             }}
                             onClick={() => confirm2()}
+                            onMouseOver={() => checkQuantitySubmit()}
                           >
                             Lưu hóa đơn
                           </button>
