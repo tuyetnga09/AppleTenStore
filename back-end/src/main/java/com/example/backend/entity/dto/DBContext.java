@@ -123,18 +123,18 @@ public class DBContext implements CommandLineRunner {
 //        addVoucher("VC044", "Sale sập sàn", LocalDate.of(2023, 10, 21), LocalDate.of(2023, 11, 30), new BigDecimal("2200000"), new BigDecimal("2500000"), new BigDecimal("11000000"), new BigDecimal("15000000"), 100, 9);
 //        addVoucher("VC05", "Tưng bừng giảm giá", LocalDate.of(2023, 10, 20), LocalDate.of(2023, 11, 21), new BigDecimal("2600000"), new BigDecimal("3000000"), new BigDecimal("15000000"), new BigDecimal("25000000"), 150, 8);
 
-        addUser("Trung Hieu", LocalDate.of(2003, 12, 10), "0355969499", "trunghieunguyen673@gmail.com", true, 100000, Status.DANG_SU_DUNG);
-        addUser("Công Minh", LocalDate.of(2003, 7, 23), "0355969888", "congminh673@gmail.com", true, 200000, Status.DANG_SU_DUNG);
-        addUser("Hong Phong", LocalDate.of(1998, 10, 10), "0355969555", "hongphong673@gmail.com", true, 200000, Status.DANG_SU_DUNG);
-        addUser("Tuyet Nga", LocalDate.of(2003, 9, 14), "0333369499", "tuyetnga673@gmail.com", false, 500000, Status.DANG_SU_DUNG);
-        addUser("Van Hieu", LocalDate.of(2003, 9, 8), "0355933499", "vanhieu673@gmail.com", true, 50000, Status.DANG_SU_DUNG);
+//        addUser("Trung Hieu", LocalDate.of(2003, 12, 10), "0355969499", "trunghieunguyen673@gmail.com", true, 100000, Status.DANG_SU_DUNG);
+//        addUser("Công Minh", LocalDate.of(2003, 7, 23), "0355969888", "congminh673@gmail.com", true, 200000, Status.DANG_SU_DUNG);
+//        addUser("Hong Phong", LocalDate.of(1998, 10, 10), "0355969555", "hongphong673@gmail.com", true, 200000, Status.DANG_SU_DUNG);
+//        addUser("Tuyet Nga", LocalDate.of(2003, 9, 14), "0333369499", "tuyetnga673@gmail.com", false, 500000, Status.DANG_SU_DUNG);
+//        addUser("Van Hieu", LocalDate.of(2003, 9, 8), "0355933499", "vanhieu673@gmail.com", true, 50000, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Account
-        addAccount("NV1","trunghieunguyen673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV2","congminh673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV3","hongphong673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV4","ngaptt1409@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
-        addAccount("NV5","hoanghieu673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+//        addAccount("NV1","trunghieunguyen673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+//        addAccount("NV2","congminh673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+//        addAccount("NV3","hongphong673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+//        addAccount("NV4","ngaptt1409@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
+//        addAccount("NV5","hoanghieu673@gmail.com", "MTIzNDU2", Roles.ADMIN, Status.DANG_SU_DUNG);
 
         // Thêm dữ liệu cho bảng Product
 //        addProduct("PR1", "Iphone 11 Pro Max", "Khung viền thép", 0, new BigDecimal(11000000));
