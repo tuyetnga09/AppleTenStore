@@ -215,7 +215,7 @@ export default function ProductDetail() {
                 message: "ADD TO CART",
                 description: "Số lượng trong kho không đủ",
               });
-            } else if(item2.status === 1){
+            } else if (item2.status === 1) {
               notification.error({
                 message: "ADD TO CART",
                 description: "Sản phẩm đã ngừng bán",
@@ -424,7 +424,7 @@ export default function ProductDetail() {
                 ) : item && item.price ? (
                   <PriceProduct product={id}></PriceProduct>
                 ) : null}
-                {item2.status === 0 ?
+                {item2.status === 0 ? (
                   <label className="giamgia">
                     Số lượng:{" "}
                     {item2 && item2.quantity
@@ -435,16 +435,19 @@ export default function ProductDetail() {
                       ? item.quantity && item.quantity
                       : null}
                   </label>
-                : ""}
-                {item2.status === 1 ? 
-                <label className="giamgia">
-                  Ngừng bán
-                </label> : ""}
-                {item2.quantity === 0 ? 
-                <label className="giamgia">
-                  Hết hàng
-                </label> : ""}
-                
+                ) : (
+                  ""
+                )}
+                {item2.status === 1 ? (
+                  <label className="giamgia">Ngừng bán</label>
+                ) : (
+                  ""
+                )}
+                {item2.quantity === 0 ? (
+                  <label className="giamgia">Hết hàng</label>
+                ) : (
+                  ""
+                )}
               </div>
               {/* <div className="ship" style={{ display: "none" }}>
                 <img src="img/chitietsanpham/clock-152067_960_720.png" />
@@ -499,8 +502,8 @@ export default function ProductDetail() {
                 <div className="promo">
                   <img src="/img/chitietsanpham/icon-tick.png" />
                   <div id="detailPromo">
-                    Khách hàng sẽ được thử máy miễn phí tại cửa hàng. Có thể đổi
-                    trả lỗi trong vòng 2 tháng.
+                    Khách hàng sẽ được thử máy miễn phí tại cửa hàng. Có thể trả
+                    máy lỗi trong vòng 3 ngày.
                   </div>
                 </div>
               </div>
@@ -519,8 +522,8 @@ export default function ProductDetail() {
                 <div className="last">
                   <img src="/img/chitietsanpham/1-1.jpg" />
                   <p>
-                    1 đổi 1 trong 1 tháng nếu lỗi, đổi sản phẩm tại nhà trong 1
-                    ngày.
+                    Trả hàng trong vòng 3 ngày kể từ khi thanh toán nếu sản phẩm
+                    có lỗi.
                   </p>
                 </div>
               </div>
@@ -534,7 +537,7 @@ export default function ProductDetail() {
                 </a>
               </div>
             </div>
-            <div className="info_product" style={{marginTop: "35px"}}>
+            <div className="info_product" style={{ marginTop: "35px" }}>
               <h2>Thông số kỹ thuật</h2>
               <ul className="info">
                 <li>

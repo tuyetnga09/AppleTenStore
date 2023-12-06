@@ -8,7 +8,6 @@ const PriceProduct = (props) => {
   useEffect(() => {
     priceMinAndMaxBySKU(props.product)
       .then((response) => {
-        console.log(response.data);
         setPriceMin(response.data[0]);
         setPriceMax(response.data[1]);
       })

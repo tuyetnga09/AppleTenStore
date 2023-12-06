@@ -73,10 +73,10 @@ public class BillDetailServiceImpl implements BillDetailService {
     }
 
     @Override
-    public List<BillDetailCustomerIon> getBillDetailOfIdBill(Integer id) {
+    public List<BillDetailCustomerIon> getBillDetailOfIdBill(Integer id, String codeImei) {
         Boolean check = billRepository.existsById(id);
         if (check){
-            List<BillDetailCustomerIon> billDetailCustomerIons = billDetailRepository.getAllBillDetaillOfIdBill(id);
+            List<BillDetailCustomerIon> billDetailCustomerIons = billDetailRepository.getAllBillDetaillOfIdBill(id, codeImei);
 
             return  billDetailCustomerIons;
         }
@@ -84,8 +84,8 @@ public class BillDetailServiceImpl implements BillDetailService {
     }
 
     @Override
-    public List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill) {
-        return billDetailRepository.getAllBillDetailReturn(status, idBill);
+    public List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill, String codeImei) {
+        return billDetailRepository.getAllBillDetailReturn(status, idBill, codeImei);
     }
 
 }

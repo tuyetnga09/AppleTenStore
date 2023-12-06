@@ -13,7 +13,7 @@ const AvtProduct = (props) => {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [props]);
 
   return (
     <>

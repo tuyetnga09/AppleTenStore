@@ -42,7 +42,7 @@ public class BillDetailController {
     }
 
     @GetMapping("/getAllBillDetailReturn")
-    public List<BillDetailReturnAdmin> getAllBillDetailReturn(@RequestParam("status") Integer status, @RequestParam("idBill") Integer idBill){
-        return billDetailService.getAllBillDetailReturn(status, idBill);
+    public List<BillDetailReturnAdmin> getAllBillDetailReturn(@RequestParam("status") Integer status, @RequestParam("idBill") Integer idBill, @RequestParam("codeImei") String codeImei){
+        return billDetailService.getAllBillDetailReturn(status, idBill, codeImei);
     }
 }

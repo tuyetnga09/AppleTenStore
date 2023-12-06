@@ -679,7 +679,7 @@ const OderDisplay = ({}) => {
     setIsModalVisibleReturnDetails(true);
     console.log(record);
     setNoteReturnDetail(record.noteReturn);
-    getAllBillDetailReturn(4, record.id)
+    getAllBillDetailReturn(4, record.id, "")
       .then((response) => {
         setDataBillDetails(response.data);
         console.log(response.data);
@@ -736,6 +736,16 @@ const OderDisplay = ({}) => {
       });
     setIsModalVisibleReturnDetails(false);
     setLoad(!load);
+  }
+
+  function handleChangeSearchYCTH(event) {
+    getAllBillDetailReturn(4, acceptReturnBill.idBill, event.target.value)
+      .then((response) => {
+        setDataBillDetails(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   const expandedRowRender = (record) => {
@@ -1318,6 +1328,17 @@ const OderDisplay = ({}) => {
                   ></textarea>
                 </div>
               </form>
+              <Row style={{ marginTop: "28px", marginBottom: "10px" }}>
+                <input
+                  // id="id-imeis"
+                  className="form-control me-2"
+                  type="search"
+                  placeholder="Tìm theo imei"
+                  aria-label="Search"
+                  name="key"
+                  onChange={handleChangeSearchYCTH}
+                />
+              </Row>
               <Table
                 rowKey="oop"
                 dataSource={dataBillDetails}

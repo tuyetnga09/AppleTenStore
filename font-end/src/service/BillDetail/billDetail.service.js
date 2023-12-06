@@ -8,8 +8,8 @@ export const findBillDetails = (idBill) => {
   return httpClient.get(`/admin/billDetail/findBillDetails?idBill=${idBill}`);
 };
 
-export const getAllBillDetailReturn = (status, idBill) => {
+export const getAllBillDetailReturn = (status, idBill, codeImei) => {
   return httpClient.get(
-    `/admin/billDetail/getAllBillDetailReturn?status=${status}&idBill=${idBill}`
+    `/admin/billDetail/getAllBillDetailReturn?status=${status}&idBill=${idBill}&codeImei=${codeImei}`
   );
 };
