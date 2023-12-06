@@ -55,6 +55,7 @@ const Test = (setDisplay, setPagination) => {
 
     const [displayfile, setFile] = useState(null);
     const [displaySku, setDisplaySku] = useState([]);
+    const [loaded, setLoaded] = useState(false);
 
     const [color, setColor] = useState({
         code: "",
@@ -183,7 +184,7 @@ const Test = (setDisplay, setPagination) => {
     const handleNumberChangePrice = (value) => {
         setProductData({
             ...productData,
-            price: value,
+            price: 0,
         });
     };
 
@@ -206,49 +207,44 @@ const Test = (setDisplay, setPagination) => {
                 message: "Tên sản phẩm không được để trống!",
                 // description: "Add product successfully",
             });
-        } else if(productData.size === "") {
+        } else if (productData.size === "") {
             notification.error({
                 message: "Chưa chọn kích thước!",
                 // description: "Add product successfully",
             });
-        } else if(productData.chip === "") {
+        } else if (productData.chip === "") {
             notification.error({
                 message: "Chưa chọn chip!",
                 // description: "Add product successfully",
             });
-        } else if(productData.ram === "") {
+        } else if (productData.ram === "") {
             notification.error({
                 message: "Chưa chọn ram!",
                 // description: "Add product successfully",
             });
-        } else if(productData.screen === "") {
+        } else if (productData.screen === "") {
             notification.error({
                 message: "Chưa chọn màn hình!",
                 // description: "Add product successfully",
             });
-        } else if(productData.manufacturer === "") {
+        } else if (productData.manufacturer === "") {
             notification.error({
                 message: "Chưa chọn xuất xứ!",
                 // description: "Add product successfully",
             });
-        } else if(productData.category === "") {
+        } else if (productData.category === "") {
             notification.error({
                 message: "Chưa chọn loại sản phẩm!",
                 // description: "Add product successfully",
             });
-        } else if(productData.color.length === 0) {
+        } else if (productData.color.length === 0) {
             notification.error({
                 message: "Chưa chọn màu sắc!",
                 // description: "Add product successfully",
             });
-        } else if(productData.capacities.length === 0) {
+        } else if (productData.capacities.length === 0) {
             notification.error({
                 message: "Chưa chọn dung lượng!",
-                // description: "Add product successfully",
-            });
-        } else if(productData.price <= 0) {
-            notification.error({
-                message: "Chưa chọn kích thước!",
                 // description: "Add product successfully",
             });
         } else {
@@ -394,7 +390,7 @@ const Test = (setDisplay, setPagination) => {
                 console.log(error)
             })
 
-            getCodeChip().then((response)  =>  {
+            getCodeChip().then((response) => {
                 setChipCodes(response.data)
             }).catch((error) => {
                 console.log(error)
@@ -432,9 +428,10 @@ const Test = (setDisplay, setPagination) => {
 
         }
 
-    }, []);
+    }, [loaded]);
 
     const handleFileChange = (event) => {
+
         setFile(event.target.files[0]);
     };
 
@@ -574,7 +571,7 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveColor() {
-        if (!colorCodes.includes(color.code)){
+        if (!colorCodes.includes(color.code)) {
             let checkValue = checkValidate(color);
             if (!checkValue) {
                 addColor(color).then((response) => {
@@ -583,13 +580,7 @@ const Test = (setDisplay, setPagination) => {
                     });
                     console.log(response)
                 })
-                readAllColor()
-                    .then((response) => {
-                        setDisplayColor(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalColor(false);
             } else {
                 notification.error({
@@ -616,7 +607,7 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveCapacity() {
-        if (!capacityCodes.includes(capacity.code)){
+        if (!capacityCodes.includes(capacity.code)) {
             let validate = checkValidate(capacity)
             if (!validate) {
                 createCapacity(capacity).then((response) => {
@@ -625,13 +616,7 @@ const Test = (setDisplay, setPagination) => {
                         message: "Lưu thành công!",
                     });
                 })
-                readAllCapacity()
-                    .then((response) => {
-                        setDisplayCapacity(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalCapacity(false)
             } else {
                 notification.error({
@@ -667,13 +652,7 @@ const Test = (setDisplay, setPagination) => {
                         message: "Lưu thành công!",
                     });
                 })
-                readAllBattery()
-                    .then((response) => {
-                        setDisplayBattery(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalBattery(false)
             } else {
                 notification.error({
@@ -700,22 +679,18 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveCategory() {
-        if (!categoryCodes.includes(category.code)){
+
+        if (!categoryCodes.includes(category.code)) {
             let validate = checkValidate(category)
             if (!validate) {
+
                 createCategory(category).then((response) => {
                     console.log(response)
                     notification.success({
                         message: "Lưu thành công!",
                     });
                 })
-                readAllCategory()
-                    .then((response) => {
-                        setDisplayCategory(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalCategory(false)
             } else {
                 notification.error({
@@ -742,7 +717,7 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveScreen() {
-        if (!screenCodes.includes(screen.code)){
+        if (!screenCodes.includes(screen.code)) {
             let validate = checkValidate(screen)
             if (!validate) {
                 create(screen).then((response) => {
@@ -751,13 +726,7 @@ const Test = (setDisplay, setPagination) => {
                         message: "Lưu thành công!",
                     });
                 })
-                readAllScreen()
-                    .then((response) => {
-                        setDisplayScreen(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalScreen(false)
             } else {
                 notification.error({
@@ -784,7 +753,7 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveChip() {
-        if (!chipCodes.includes(chip.code)){
+        if (!chipCodes.includes(chip.code)) {
             let validate = checkValidate(chip)
             if (!validate) {
                 addChip(chip).then((response) => {
@@ -793,13 +762,7 @@ const Test = (setDisplay, setPagination) => {
                         message: "Lưu thành công!",
                     });
                 })
-                readAllChip()
-                    .then((response) => {
-                        setDisplayChip(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalChip(false)
             } else {
                 notification.error({
@@ -826,7 +789,7 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveRam() {
-        if (!ramCodes.includes(ram.code)){
+        if (!ramCodes.includes(ram.code)) {
             let validate = checkValidate(chip)
             if (!validate) {
                 createRam(ram).then((response) => {
@@ -835,13 +798,7 @@ const Test = (setDisplay, setPagination) => {
                         message: "Lưu thành công!",
                     });
                 })
-                readAllRam()
-                    .then((response) => {
-                        setDisplayRam(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalRam(false)
             } else {
                 notification.error({
@@ -868,7 +825,7 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveManufacturer() {
-        if (!manufactureCodes.includes(manufacturer.code)){
+        if (!manufactureCodes.includes(manufacturer.code)) {
             let validate = checkValidate(chip)
             if (!validate) {
                 createManufacture(manufacturer).then((response) => {
@@ -877,13 +834,7 @@ const Test = (setDisplay, setPagination) => {
                         message: "Lưu thành công!",
                     });
                 })
-                readAllManufacture()
-                    .then((response) => {
-                        setDisplayManufacture(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalManufacturer(false);
             } else {
                 notification.error({
@@ -910,7 +861,7 @@ const Test = (setDisplay, setPagination) => {
     }
 
     function handleSaveSize() {
-        if (!sizeCodes.includes(size.code)){
+        if (!sizeCodes.includes(size.code)) {
             let validate = checkValidate(size)
             if (!validate) {
                 addSize(size).then((response) => {
@@ -919,13 +870,7 @@ const Test = (setDisplay, setPagination) => {
                         message: "Lưu thành công!",
                     });
                 })
-                readAllSize()
-                    .then((response) => {
-                        setDisplaySize(response.data);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
+                setLoaded(!loaded);
                 setModalSize(false)
             } else {
                 notification.error({
@@ -937,14 +882,6 @@ const Test = (setDisplay, setPagination) => {
 
     return (
         <>
-            <button
-                onClick={() => {
-                    setStartScan(!startScan);
-                }}
-            >
-                {!startScan ? "Start Scan" : "Stop Scan"}
-            </button>
-            {startScan && <QRScanner data={setProductData}/>}
             <form onSubmit={handleSubmit}>
                 <Create
                     resource="products"
@@ -1049,21 +986,21 @@ const Test = (setDisplay, setPagination) => {
                                 name="description"
                             />
                         </Form.Item>
-                        <Form.Item
-                            label={t("Giá")}
-                            name="price"
-                            rules={[{required: true, type: "number"}]}
-                        >
-                            <InputNumber
-                                style={{width: "150px"}}
-                                min={0}
-                                type="number"
-                                required
-                                name="price"
-                                value={productData.price}
-                                onChange={handleNumberChangePrice}
-                            />
-                        </Form.Item>
+                        {/*<Form.Item*/}
+                        {/*    label={t("Giá")}*/}
+                        {/*    name="price"*/}
+                        {/*    rules={[{required: true, type: "number"}]}*/}
+                        {/*>*/}
+                        {/*    <InputNumber*/}
+                        {/*        style={{width: "150px"}}*/}
+                        {/*        min={0}*/}
+                        {/*        type="number"*/}
+                        {/*        required*/}
+                        {/*        name="price"*/}
+                        {/*        value={productData.price}*/}
+                        {/*        onChange={handleNumberChangePrice}*/}
+                        {/*    />*/}
+                        {/*</Form.Item>*/}
                         <div className="form-group">
                             <Form.Item
                                 label={t("Hãng")}
@@ -1091,6 +1028,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1128,6 +1066,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1157,6 +1096,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1185,6 +1125,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1220,6 +1161,7 @@ const Test = (setDisplay, setPagination) => {
                                 </Select>
                                 <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                     <button
+                                        type="button"
                                         className="btn btn-secondary btn-them"
                                         data-toggle="modal"
                                         data-target="#exampleModalCenter"
@@ -1258,6 +1200,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1286,6 +1229,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1314,6 +1258,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1324,6 +1269,7 @@ const Test = (setDisplay, setPagination) => {
                             </div>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
@@ -1352,6 +1298,7 @@ const Test = (setDisplay, setPagination) => {
                             </Form.Item>
                             <div className="form-group col-md-2" style={{marginTop: "-59px", marginLeft: "900px"}}>
                                 <button
+                                    type="button"
                                     className="btn btn-secondary btn-them"
                                     data-toggle="modal"
                                     data-target="#exampleModalCenter"
