@@ -1083,7 +1083,7 @@ export default function SellSmart() {
 
   function checkQuantitySubmit() {
     dataBillDetailOffline.map((bd) => {
-      getOneSKU(bd.sku)
+      getOneSKU(bd.idSKU)
         .then((response) => {
           if (response.data.quantity < bd.quantity) {
             setChecked(false);
