@@ -618,6 +618,7 @@ public class BillServiceImpl implements BillService {
     public Bill acceptReturn(AcceptReturn acceptReturn) {
         Bill bill = billRepository.findById(acceptReturn.getIdBill()).get();
         bill.setStatusBill(StatusBill.TRA_HANG);
+        bill.setDateUpdate(LocalDate.now());
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
              ) {
             imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(6, codeImei);
@@ -629,6 +630,7 @@ public class BillServiceImpl implements BillService {
     public Bill noAcceptReturn(AcceptReturn acceptReturn) {
         Bill bill = billRepository.findById(acceptReturn.getIdBill()).get();
         bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
+        bill.setDateUpdate(LocalDate.now());
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
         ) {
             imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(5, codeImei);
