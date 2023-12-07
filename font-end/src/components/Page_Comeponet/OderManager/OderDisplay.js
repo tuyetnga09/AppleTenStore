@@ -521,13 +521,13 @@ const OderDisplay = ({}) => {
     ),
   };
 
-  function confirm2(id) {
+  const confirm2 = async (id) => {
     if (checkProductSelectBillDetail(id) === false) {
       notification.error({
         message: "Hóa đơn chưa thể xác nhận! - Hóa Đơn Bán Offline",
       });
     } else {
-      if (checkImeiSelectInBillDetail(id) === true) {
+      if ((await checkImeiSelectInBillDetail(id)) === true) {
         updateStatusBill(idAccount, id)
           .then((response) => {
             setLoad(!load);
@@ -545,7 +545,7 @@ const OderDisplay = ({}) => {
         });
       }
     }
-  }
+  };
 
   function delete2(id) {
     deleteBillById(id).then((response) => console.log(response.data));
@@ -571,23 +571,24 @@ const OderDisplay = ({}) => {
     return true;
   }
 
-  function checkImeiSelectInBillDetail(id) {
-    let tempObj = {};
-    getAllBillCXN()
-      .then((response) => {
-        for (let index = 0; index < response.data.length; index++) {
-          if (billCXN[index]?.bill === id) {
-            tempObj = billCXN[index];
-            break;
-          }
-        }
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+  const checkImeiSelectInBillDetail = async (id) => {
+    try {
+      let tempObj = {};
+      const responses = await getAllBillCXN();
 
-    return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
-  }
+      for (let index = 0; index < responses.data.length; index++) {
+        if (responses.data[index]?.bill === id) {
+          tempObj = responses.data[index];
+
+          break;
+        }
+      }
+      return tempObj?.quantity === tempObj?.soLuongImeiDaChon;
+    } catch (error) {
+      console.log(`${error}`);
+      return false; // Xử lý lỗi nếu cần
+    }
+  };
 
   function checkProductSelectBillDetail(id) {
     for (let index = 0; index < billOFFCXN.length; index++) {

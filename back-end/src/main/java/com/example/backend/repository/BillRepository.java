@@ -250,6 +250,13 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             "where bill_detail.id_bill =?1", nativeQuery = true)
     List<BillDetailDashboardIon> getListBillDetail(Integer idBill);
 
-    @Query(value = "select * from bill where type = 'OFFLINE' and status_bill = 'CHO_XAC_NHAN';", nativeQuery = true)
+    @Query(value = "select * from bill where type = 'OFFLINE' and status_bill = 'CHO_XAC_NHAN'", nativeQuery = true)
     List<Bill> getBillOfflineCXN();
+
+
+    //list bill trả hàng hom nay
+    @Query(value = "SELECT * FROM bill WHERE DATE(date_update) = CURDATE() and status_bill = 'TRA_HANG'", nativeQuery = true)
+    List<Bill> listBillTraHangHomNay();
+
+
 }

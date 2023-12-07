@@ -18,6 +18,8 @@ import {
   returnAllImei,
   seachImeis,
   seachImeiThatLac,
+  updateImei,
+  detailImei,
 } from "../../../../service/product_detail/sku/sku.service";
 import {
   readImportImei,
@@ -753,8 +755,8 @@ const UserAccountTable = ({ record, onSomeAction }) => {
   };
   const confirmReturnSku = (sku) => {
     confirmDialog({
-      message: "Bạn chắc chắn xoá?",
-      header: "Xác Nhận Xoá Phiên Bản Sản Phẩm?",
+      message: "Bạn chắc chắn khôi phục?",
+      header: "Xác Nhận Khôi Phục Phiên Bản Sản Phẩm?",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
       accept: () => returnSkuWhereIdSku(sku),
@@ -1722,15 +1724,96 @@ const UserAccountTable = ({ record, onSomeAction }) => {
   }
 
   //edit imei
+  //tạo đối tượng imei
+  const [imeiItemEdit, setImeiItemEdit] = useState({});
   // taoj 1 modal khi xem imei
   const [openlModalEditImei, setOpenlModalEditImei] = useState(false); // Trạng thái hiển thị Modal
   //hàm mở modal new imei
-  const handleOpenlEditImei = (dataIdSku, dataIdProduct) => {
+  const handleOpenlEditImei = () => {
+    // updateImei,
+
     setOpenlModalEditImei(true);
   };
+
   // Hàm để ẩn Modal new imei
   const handleCancelEditImei = () => {
+    setImeiItemEdit();
     setOpenlModalEditImei(false);
+  };
+
+  const handlEditImei = (idImei) => {
+    detailImei(idImei)
+      .then((response) => {
+        setImeiItemEdit(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    handleOpenlEditImei();
+  };
+  function handleChangeEditImei(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { ...imeiItemEdit };
+    item[name] = value;
+    setImeiItemEdit(item);
+  }
+
+  const handleSubmitEditImei = () => {
+    const items = { ...imeiItemEdit };
+    updateImei(imeiItemEdit.id, items)
+      .then((response) => {
+        if (response.data === true) {
+          if (dataImeisLoc.length > 0) {
+            getAllImeiWhereIdSkuAndStatus(dataIdSku, selectedOption)
+              .then((res) => {
+                if (res.data.length === 0) {
+                  setSelectedOption("99");
+                  notification.warning({
+                    message: "Không có dữ liệu!",
+                  });
+                }
+                setDataImeisLoc(res.data);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+          getAllImeisWhereIdSku(dataIdSku)
+            .then((res) => {
+              setDataImeisWhereIdSku(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          readAllSku(dataIdProduct)
+            .then((res) => {
+              setDataSkus(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          toast1.current.show({
+            severity: "success",
+            summary: "CẬP NHẬT THÀNH CÔNG",
+            detail: "Cập nhật mã imei thành công.",
+            life: 3000,
+          });
+          handleCancelEditImei();
+        } else {
+          toast1.current.show({
+            severity: "error",
+            summary: "CẬP NHẬT THẤT BẠI",
+            detail: "Cập nhật mã imei thất bại!.",
+            life: 3000,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
   };
   const moreMenu2 = (sku) => (
     <>
@@ -2289,6 +2372,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                     color: "white",
                     width: "130px",
                     height: "36px",
+                    marginLeft: "5px",
                   }}
                 >
                   <option selected value="99">
@@ -2308,6 +2392,9 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                   placeholder="Search"
                   aria-label="Search"
                   name="key"
+                  style={{
+                    marginLeft: "12px",
+                  }}
                   onChange={handleChangeImeisDaBan}
                 />
               </Row>
@@ -2321,13 +2408,14 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                     backgroundColor: "#006699",
                     color: "white",
                     width: "150px",
+                    height: "39px",
                     // marginLeft: "18px",
                   }}
                   className="col-2 btn-xoa"
                   danger
                   onClick={() => addNewImei(dataIdSku, dataIdProduct)}
                 >
-                  Add Imei
+                  Thêm Imei
                 </Button>
                 <Button
                   type="text"
@@ -2336,7 +2424,8 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                     backgroundColor: "#ff7700",
                     color: "white",
                     width: "150px",
-                    marginLeft: "9px",
+                    marginLeft: "2px",
+                    height: "39px",
                   }}
                   className="col-2 btn-xoa"
                   danger
@@ -2353,7 +2442,8 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                     backgroundColor: "#00CC33",
                     color: "white",
                     width: "150px",
-                    marginLeft: "9px",
+                    marginLeft: "2px",
+                    height: "39px",
                   }}
                   className="col-2 btn-xoa"
                   danger
@@ -2371,12 +2461,13 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                     backgroundColor: "red",
                     color: "white",
                     width: "150px",
-                    marginLeft: "9px",
+                    marginLeft: "2px",
+                    height: "39px",
                   }}
-                  className="col-2 btn-xoa"
+                  className="col-3 btn-xoa"
                   onClick={() => confirmDeleteAllImeiSku()}
                 >
-                  Xoá All Imei
+                  Xoá Tất Cả Imei
                 </Button>
 
                 <Button
@@ -2387,12 +2478,13 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                     backgroundColor: "red",
                     color: "white",
                     width: "150px",
-                    marginLeft: "9px",
+                    marginLeft: "2px",
+                    height: "39px",
                   }}
                   className="col-3 btn-xoa"
                   onClick={() => confirmReturnAllImeiSku()}
                 >
-                  Return All Imei
+                  Khôi Phục Tất Imei
                 </Button>
               </Row>
               <p></p>
@@ -2625,7 +2717,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                             }}
                                           />
                                         }
-                                        // onClick={() => openDetailModal(item.id)}
+                                        onClick={() => handlEditImei(imei.id)}
                                       >
                                         Edit
                                       </Menu.Item>
@@ -2909,7 +3001,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                             }}
                                           />
                                         }
-                                        // onClick={() => openDetailModal(item.id)}
+                                        onClick={() => handlEditImei(imei.id)}
                                       >
                                         Edit
                                       </Menu.Item>
@@ -3356,7 +3448,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
           onCancel={handleCancelEditImei}
           width={500}
           footer={null}
-          bodyStyle={{ minHeight: "600px" }}
+          bodyStyle={{ minHeight: "80px" }}
         >
           <div className="container py-15">
             <div className="row d-flex justify-content-center">
@@ -3364,80 +3456,97 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               <div>
                 <h4
                   className="mb-0"
-                  style={{ textAlign: "center", margin: "auto" }}
+                  style={{
+                    textAlign: "center",
+                    margin: "auto",
+                    marginTop: "30px",
+                  }}
                 >
-                  EDIT IMEI
+                  CHỈNH SỬA IMEI
                 </h4>
               </div>
               <div
                 className="card-header d-flex justify-content-between align-items-center p-3"
-                style={{ borderTop: "4px solid green" }}
+                style={{ borderTop: "4px solid green", marginTop: "10px" }}
               ></div>
               <div style={{ marginBottom: "10px" }}>
                 <h6
                   className="mb-0"
-                  style={{ textAlign: "left", margin: "auto", color: "green" }}
+                  style={{
+                    textAlign: "center",
+                    margin: "auto",
+                    color: "green",
+                  }}
                 >
                   Sản Phẩm: {dataSku.nameProduct} - {dataSku.skuCapacity} -{" "}
                   {dataSku.skuColor}
                 </h6>
               </div>
-              <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-                <form onSubmit={handleSubmit}>
-                  <div className="form-row">
-                    <div className="col-8" style={{ marginLeft: "0px" }}>
+              <div style={{ marginTop: "30px" }}>
+                <form onSubmit={handleSubmitEditImei}>
+                  <div className="form-row" style={{ marginBottom: "60px" }}>
+                    <div className="col-11" style={{ marginLeft: "0px" }}>
                       <div className="input-data">
                         <Input
                           type="text"
                           required
-                          value={imeiItem.codeImei || ""}
-                          onChange={handleChange}
-                          id="code-imei"
+                          value={imeiItemEdit?.codeImei || ""}
+                          onChange={handleChangeEditImei}
+                          id="codeImei"
                           name="codeImei"
                         ></Input>
                         <div className="underline"></div>
                         <label htmlFor="">Mã Imei</label>
                       </div>
                     </div>
-                    <div className="col-2"></div>
-                    <div className="col-2" style={{ marginLeft: "0px" }}>
-                      <div
-                        style={{
-                          borderRadius: "10px",
-                          marginLeft: "0px",
-                        }}
-                      >
-                        <button
-                          type="submit"
-                          class="btn btn-outline-success"
-                          style={{
-                            marginLeft: "0px",
-                          }}
-                        >
-                          Update
-                        </button>
-                      </div>
-                      {/* <button class="btn btn-light" type="button">
-                          <Link to="">
-                            <FontAwesomeIcon icon={faTimesCircle} />X
-                          </Link>
-                        </button> */}
-                    </div>
-                    <br />
+                    {/* <div className="col-2"></div> */}
+                  </div>
+                  <div
+                    className="form-row"
+                    style={{
+                      marginTop: "40px",
+                      textAlign: "center",
+                      margin: "auto",
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      class="btn btn-outline-success"
+                      style={{
+                        // marginTop: "40px",
+                        margin: "auto",
+                        textAlign: "center",
+                      }}
+                    >
+                      Cập nhật
+                    </button>
                   </div>
                 </form>
+                <div>
+                  <button
+                    class="btn btn-outline-danger"
+                    style={{
+                      marginTop: "40px",
+                      float: "right",
+                      paddingBottom: "-20px",
+                    }}
+                    onClick={() => handleCancelEditImei()}
+                  >
+                    Thoát
+                  </button>
+                </div>
               </div>
-              <div
+              {/* <div
                 className="card-header d-flex justify-content-between align-items-center p-3"
                 style={{ borderTop: "4px solid green" }}
-              ></div>
+              ></div> */}
               <div style={{ marginTop: "10px" }}>
                 <div
-                  className="card-body"
+                  // className="card-body"
                   data-mdb-perfect-scrollbar="true"
                   style={{
                     position: "relative",
-                    height: 500, // điều chỉnh table dài ra
+                    height: 0, // điều chỉnh table dài ra
                     overflowY: "auto",
                   }}
                 ></div>

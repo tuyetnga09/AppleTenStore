@@ -36,10 +36,19 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
 //            "from sku s join product p on p.id = s.product_id;", nativeQuery = true)
 //    Page<ListSkuProduct> getSkuProductFormSellOffline(Pageable pageable);
 
-    @Query(value = "select s.price AS 'Price SKU', p.id AS 'Product ID', s.id AS 'SKU ID', s.quantity 'SKU Quantity', s.capacity AS 'Capacity', s.color AS 'Color', p.name AS 'Name Product' from sku s join product p on p.id = s.product_id where p.name like %?1% or s.capacity like %?1% or s.color like %?1% or s.price like %?1% or s.quantity like %?1%", nativeQuery = true)
+    @Query(value = "select s.price AS 'Price SKU', p.id AS 'Product ID', s.id AS 'SKU ID', s.quantity 'SKU Quantity', \n" +
+            " s.capacity AS 'Capacity', s.color AS 'Color', p.name AS 'Name Product' \n" +
+            " from sku s join product p on p.id = s.product_id \n" +
+            " where p.status =0 and s.status =0 and (p.name like %?1% or s.capacity like %?1% or s.color like %?1% or s.price like %?1% or s.quantity like %?1%)\n" +
+            " order by s.quantity desc", nativeQuery = true)
     List<ListSkuProduct> getSkuProductFormSellOffline(String key);
 
-    @Query(value = "select sku.price AS 'Price SKU', product.id AS 'Product ID', sku.id AS 'SKU ID', sku.quantity 'SKU Quantity', sku.capacity AS 'Capacity', sku.color AS 'Color', product.name AS 'Name Product' from sku join product on sku.product_id = product.id join category on product.id_category = category.id where category.id = ?1 and (product.name like %?2% or sku.capacity like %?2% or sku.color like %?2% or sku.price like %?2% or sku.quantity like %?2% )", nativeQuery = true)
+    @Query(value = "select sku.price AS 'Price SKU', product.id AS 'Product ID', sku.id AS 'SKU ID', sku.quantity 'SKU Quantity',\n" +
+            " sku.capacity AS 'Capacity', sku.color AS 'Color', product.name AS 'Name Product' \n" +
+            " from sku join product on sku.product_id = product.id join category on product.id_category = category.id \n" +
+            " where category.id = ?1 and product.status =0 and sku.status =0 and (product.name like %?2% or sku.capacity like %?2% or sku.color like %?2% or sku.price \n" +
+            " like %?2% or sku.quantity like %?2% )\n" +
+            " order by sku.quantity desc", nativeQuery = true)
     List<ListSkuProduct> getSkuProductFormSellOfflineByCategory(Integer id, String key);
 
 

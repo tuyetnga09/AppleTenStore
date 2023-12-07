@@ -122,3 +122,13 @@ export const seachImeiThatLac = (codeImei) => {
     `/admin/product-detail/seach-imei-that-lac?codeImei=${codeImei}`
   );
 };
+
+// update imei
+export const updateImei = (id, imei) => {
+  return httpClient.put(`/admin/product-detail/update-imei/${id}`, imei);
+};
+
+//detail imei
+export const detailImei = (id) => {
+  return httpClient.get(`/admin/product-detail/detail-imei?id=${id}`);
+};

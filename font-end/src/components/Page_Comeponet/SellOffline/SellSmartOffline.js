@@ -2345,11 +2345,32 @@ export default function SellSmart() {
                     <div className="app-title">
                       <ul className="app-breadcrumb breadcrumb">
                         <li className="breadcrumb-item">
-                          <Link to="/dashboard">
-                            <button className="btn btn-secondary luu-va-in">
-                              Quay về
+                          {roleAccount === "NHAN_VIEN_BAN_HANG" ? (
+                            <button
+                              className="btn btn-secondary luu-va-in"
+                              onClick={() => {
+                                localStorage.removeItem("account");
+                                window.location.replace("/login");
+                              }}
+                            >
+                              Đăng xuất tài khoản
                             </button>
-                          </Link>
+                          ) : (
+                            <Link
+                              to={
+                                roleAccount === "NHAN_VIEN_QUAN_LY"
+                                  ? "/orders"
+                                  : roleAccount === "ADMIN"
+                                  ? "/dashboard"
+                                  : "/sell"
+                              }
+                            >
+                              <button className="btn btn-secondary luu-va-in">
+                                Quay về
+                              </button>
+                            </Link>
+                          )}
+
                           <br />
                           <b>POS bán hàng</b>
                         </li>

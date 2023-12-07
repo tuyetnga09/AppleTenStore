@@ -346,13 +346,25 @@ public class ProductDetailServiceImpl implements IProductDetailService {
 
     //update imei
     @Override
-    public Imei update(Integer idImei, String codeImei) {
+    public Boolean update(Imei imei, Integer id) {
+        Boolean idCheck = imeiRepository.existsById(id);
+        if (idCheck) {
+            Imei imeiUpdate = imeiRepository.findById(id).get();
+            imeiUpdate.setCodeImei(imei.getCodeImei());
+            imeiRepository.save(imeiUpdate);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Imei getOneImei(Integer idImei) {
         Boolean idCheck = imeiRepository.existsById(idImei);
-        if (idCheck){
+        if (idCheck) {
             Imei imei = imeiRepository.findById(idImei).get();
-            imei.setCodeImei(codeImei);
-            return  imeiRepository.save(imei);
+            return imei;
         }
         return null;
     }
+
 }

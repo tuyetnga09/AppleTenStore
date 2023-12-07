@@ -167,13 +167,13 @@ const DashboardPage = () => {
   // Simulate data from the backend
   const fetchDataFromBackendDailyRevenue = (a, b, c, d, e, f, g) => {
     const dataFromBackend = [
-      { name: "1MU", Tien: a },
-      { name: "2MC", Tien: b },
-      { name: "3MAD", Tien: c },
-      { name: "4MAP", Tien: d },
+      { name: "1", Tien: a },
+      { name: "2", Tien: b },
+      { name: "3", Tien: c },
+      { name: "4", Tien: d },
       // { name: "5MNR", revenue: e },
-      { name: "5MR", Tien: f },
-      { name: "6MCO", Tien: g },
+      { name: "5", Tien: f },
+      { name: "6", Tien: g },
     ];
     setDataDailyRevenue(dataFromBackend);
   };
@@ -977,13 +977,13 @@ const DashboardPage = () => {
   const fetchDataFromBackend = (a, b, c, d, e, f, g) => {
     // Replace this with actual API call to your backend
     const dataFromBackend = [
-      { name: "1U", orders: a },
-      { name: "2C", orders: b },
-      { name: "3AD", orders: c },
-      { name: "4AP", orders: d },
+      { name: "1", orders: a },
+      { name: "2", orders: b },
+      { name: "3", orders: c },
+      { name: "4", orders: d },
       // { name: "5NR", orders: e },
-      { name: "5R", orders: f },
-      { name: "6CO", orders: g },
+      { name: "5", orders: f },
+      { name: "6", orders: g },
     ];
     setDataDailyOrder(dataFromBackend);
   };
@@ -1188,7 +1188,7 @@ const DashboardPage = () => {
                         {/* 2 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            1MU - Tổng tiền đơn hàng chờ xác nhận
+                            1 - Đơn hàng chờ xác nhận
                           </Title>
 
                           <NumberField
@@ -1210,7 +1210,7 @@ const DashboardPage = () => {
                         {/* 3 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            2MC - Tổng tiền đơn hàng chờ vận chuyển
+                            2 - Đơn hàng chờ vận chuyển
                           </Title>
 
                           <NumberField
@@ -1231,7 +1231,7 @@ const DashboardPage = () => {
                         {/* 4 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            3MAD - Tổng tiền đơn hàng đang vận chuyển
+                            3 - Đơn hàng đang vận chuyển
                           </Title>
 
                           <NumberField
@@ -1252,7 +1252,7 @@ const DashboardPage = () => {
                         {/* 5 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            4MAP - Tổng tiền đơn hàng đã thanh toán
+                            4 - Đơn hàng đã thanh toán
                           </Title>
 
                           <NumberField
@@ -1290,7 +1290,7 @@ const DashboardPage = () => {
                         {/* 7 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            5MR - Tổng tiền đơn hàng hoàn trả
+                            5 - Đơn hàng hoàn trả
                           </Title>
 
                           <NumberField
@@ -1311,7 +1311,7 @@ const DashboardPage = () => {
                         {/* 8 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            6MCO - Tổng tiền đơn hàng huỷ đơn
+                            6 - Đơn hàng huỷ đơn
                           </Title>
 
                           <NumberField
@@ -1383,7 +1383,7 @@ const DashboardPage = () => {
                         {/* 1 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            1U - Đơn hàng chờ xác nhận
+                            1 - Đơn hàng chờ xác nhận
                           </Title>
                           <TitleAreNumber>
                             <Title level={5} style={{ color: "white" }}>
@@ -1396,7 +1396,7 @@ const DashboardPage = () => {
                         {/* 2 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            2C - Đơn hàng chờ vận chuyển
+                            2 - Đơn hàng chờ vận chuyển
                           </Title>
                           <TitleAreNumber>
                             <Title level={5} style={{ color: "white" }}>
@@ -1407,7 +1407,7 @@ const DashboardPage = () => {
                         {/* 3 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            3AD - Đơn hàng đang vận chuyển
+                            3 - Đơn hàng đang vận chuyển
                           </Title>
                           <TitleAreNumber>
                             <Title level={5} style={{ color: "white" }}>
@@ -1419,7 +1419,7 @@ const DashboardPage = () => {
                         {/* 4 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            4AP - Đơn hàng đã thanh toán
+                            4 - Đơn hàng đã thanh toán
                           </Title>
                           <TitleAreNumber>
                             <Title level={5} style={{ color: "white" }}>
@@ -1441,7 +1441,7 @@ const DashboardPage = () => {
                         {/* 6 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            5R - Đơn hàng hoàn trả
+                            5 - Đơn hàng hoàn trả
                           </Title>
                           <TitleAreNumber>
                             <Title level={5} style={{ color: "white" }}>
@@ -1452,7 +1452,7 @@ const DashboardPage = () => {
                         {/* 7 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            6CO - Đơn hàng huỷ
+                            6 - Đơn hàng huỷ
                           </Title>
                           <TitleAreNumber>
                             <Title level={5} style={{ color: "white" }}>

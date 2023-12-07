@@ -4,6 +4,7 @@ import com.example.backend.controller.product_controller.model.request.Top8Produ
 import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
 import com.example.backend.controller.product_controller.model.respon.BillSeachKhoangNgay;
 import com.example.backend.controller.product_controller.model.respon.SeachDoanhSoTheoNam;
+import com.example.backend.controller.product_controller.model.respon.TonTienBillTraHang;
 import com.example.backend.controller.product_controller.model.respon.YearOfBill;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Bill;
@@ -11,6 +12,7 @@ import com.example.backend.entity.Imei;
 import com.example.backend.entity.SKU;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import com.example.backend.repository.AccountRepository;
+import com.example.backend.repository.BillDetailRepository;
 import com.example.backend.repository.BillRepository;
 import com.example.backend.repository.ImeiRepository;
 import com.example.backend.untils.Roles;
@@ -43,11 +45,12 @@ public class AdminBillServiceImpl {
 
     @Autowired
     private ImeiRepository imeiRepository;
+
     @Autowired
     private AccountRepository accountRepository;
 
-
-
+    @Autowired
+    private BillDetailRepository billDetailRepository;
 
     // danh sách bills trong ngày hiện tại
     public List<Bill> getAllBillsForTheDay() {
@@ -95,6 +98,7 @@ public class AdminBillServiceImpl {
 
         return sum;
     }
+
 
     //lisst thông tin hoá đơn đã xác nhận - "CHO_VAN_CHUYEN"
     public Page<Bill> getAllBillsForTheDayWhereStatus(Pageable pageable, String key) {
@@ -456,4 +460,22 @@ public class AdminBillServiceImpl {
         return  null;
     }
 
+
+    // danh sách bills trong ngày hiện tại
+    public List<Bill> listBillTraHanghomNayService() {
+        return billRepository.listBillTraHangHomNay();
+    }
+
+    //tong tien bill trar hang hom nay
+    public Long tongTienDonHoanTra() {
+        List<Bill> billList = listBillTraHanghomNayService();
+        Long sum =0l;
+        for (Bill bill : billList) {
+            List<TonTienBillTraHang> tonTienBillTraHangList = billDetailRepository.tongTienBilldetailTraHang(bill.getId());
+            for (TonTienBillTraHang t : tonTienBillTraHangList) {
+                sum = sum + t.getPrice().longValue();
+            }
+        }
+        return sum;
+    }
 }

@@ -63,5 +63,7 @@ public interface IProductDetailService {
      List<ImeiThatLac> seachImeisThatLac(String codeImei);
 
      //update imei
-    Imei update(Integer idImei, String codeImei);
+     Boolean update(Imei imei, Integer id);
+
+    Imei getOneImei(Integer idImei);
 }

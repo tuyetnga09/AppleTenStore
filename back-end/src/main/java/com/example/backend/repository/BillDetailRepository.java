@@ -6,6 +6,7 @@ import com.example.backend.controller.order_management.model.billDetail.response
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
+import com.example.backend.controller.product_controller.model.respon.TonTienBillTraHang;
 import com.example.backend.entity.BillDetails;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -98,4 +99,11 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
 
     @Query(value = "select product_id as 'ProductId', product.name as 'NameProduct', capacity, color, sku.price, imei_da_ban.code_imei as 'CodeImei' from imei_da_ban join bill_detail on imei_da_ban.id_bill_detail = bill_detail.id join bill on bill_detail.id_bill = bill.id join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id where imei_da_ban.status = ?1 and id_bill = ?2", nativeQuery = true)
     List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill);
+
+    //lay ra tien cua tung ban ghi bill detail tar hang
+    @Query(value = "select bill_detail.id_bill as 'idBill', bill_detail.id as 'idBillDetail'," +
+            " imei_da_ban.id as 'idImeiDaBan', bill_detail.price as 'price'\n" +
+            " from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail  " +
+            " where id_bill=?1 and imei_da_ban.status = 6", nativeQuery = true)
+    List<TonTienBillTraHang> tongTienBilldetailTraHang(Integer  idBill);
 }

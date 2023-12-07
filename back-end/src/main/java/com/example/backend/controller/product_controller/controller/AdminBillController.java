@@ -77,8 +77,8 @@ public class AdminBillController {
 
     @GetMapping("/returns") //sum bill  trả hàng
     public ResponseEntity<Integer> sumBillReturns() {
-        StatusBill statusBill = StatusBill.TRA_HANG;
-        Integer sum = adminBillService.sumBillFind(statusBill);
+//        StatusBill statusBill = StatusBill.TRA_HANG;
+        Integer sum = adminBillService.listBillTraHanghomNayService().size();
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
@@ -141,8 +141,8 @@ public class AdminBillController {
 
     @GetMapping("/total-money/returns") //sum tổng tiền các bill tra hang
     public ResponseEntity<Long> sumToTalMoneyOfBillsForTheDayReturns() {
-        StatusBill statusBill = StatusBill.TRA_HANG;
-        Long sum = adminBillService.sumToTalMoneyOfBillswhereStatus(statusBill);
+//        StatusBill statusBill = StatusBill.TRA_HANG;
+        Long sum = adminBillService.tongTienDonHoanTra();
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
@@ -219,7 +219,7 @@ public class AdminBillController {
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
-    //    // số khách hàng trả đơn trong hôm nay
+    // số khách hàng trả đơn trong hôm nay
     @GetMapping("/customer/returns")
     public ResponseEntity<Integer> countCustomersReturnedToday() {
         Integer count = adminBillService.countCustomersReturnedToday();

@@ -171,20 +171,24 @@ public class AdminProductDetailController {
 
     //seach imei thất lạc(tìm kiêm trên all imei)
     @GetMapping("/seach-imei-that-lac")
-    public ResponseEntity<List<ImeiThatLac>> seachImeiThatLac(@RequestParam("codeImei")String codeImei){
+    public ResponseEntity<List<ImeiThatLac>> seachImeiThatLac(@RequestParam("codeImei") String codeImei) {
         List<ImeiThatLac> imeiThatLacs = productDetailService.seachImeisThatLac(codeImei);
         return new ResponseEntity<>(imeiThatLacs, HttpStatus.OK);
     }
 
     //detail imei
-    @GetMapping("{id}")
+    @GetMapping("/detail-imei")
     public ResponseEntity<Imei> detail(@RequestParam("id") Integer id) {
-        return new ResponseEntity<>(imeiService.getOne(id), HttpStatus.OK);
+        Imei imei = productDetailService.getOneImei(id);
+        return new ResponseEntity<>(imei, HttpStatus.OK);
     }
-    //update imei
-//    @PutMapping("/update-imei")
-//    public ResponseEntity<Boolean> updateImei(){
-//
-//    }
+
+    // update imei
+    @PutMapping("/update-imei/{id}")
+    public ResponseEntity<Boolean> updateImei(@RequestBody Imei imei, @PathVariable("id") Integer id) {
+        Boolean update = productDetailService.update(imei, id);
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
 
 }
