@@ -71,6 +71,7 @@ const Test = (setDisplay, setPagination) => {
 
   const [displayfile, setFile] = useState(null);
   const [displaySku, setDisplaySku] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   const [color, setColor] = useState({
     code: "",
@@ -199,7 +200,7 @@ const Test = (setDisplay, setPagination) => {
   const handleNumberChangePrice = (value) => {
     setProductData({
       ...productData,
-      price: value,
+      price: 0,
     });
   };
 
@@ -260,11 +261,6 @@ const Test = (setDisplay, setPagination) => {
     } else if (productData.capacities.length === 0) {
       notification.error({
         message: "Chưa chọn dung lượng!",
-        // description: "Add product successfully",
-      });
-    } else if (productData.price <= 0) {
-      notification.error({
-        message: "Chưa chọn kích thước!",
         // description: "Add product successfully",
       });
     } else {
@@ -464,7 +460,7 @@ const Test = (setDisplay, setPagination) => {
           console.log(error);
         });
     }
-  }, []);
+  }, [loaded]);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -615,13 +611,7 @@ const Test = (setDisplay, setPagination) => {
           });
           console.log(response);
         });
-        readAllColor()
-          .then((response) => {
-            setDisplayColor(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalColor(false);
       } else {
         notification.error({
@@ -657,13 +647,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllCapacity()
-          .then((response) => {
-            setDisplayCapacity(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalCapacity(false);
       } else {
         notification.error({
@@ -699,13 +683,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllBattery()
-          .then((response) => {
-            setDisplayBattery(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalBattery(false);
       } else {
         notification.error({
@@ -741,13 +719,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllCategory()
-          .then((response) => {
-            setDisplayCategory(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalCategory(false);
       } else {
         notification.error({
@@ -783,13 +755,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllScreen()
-          .then((response) => {
-            setDisplayScreen(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalScreen(false);
       } else {
         notification.error({
@@ -825,13 +791,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllChip()
-          .then((response) => {
-            setDisplayChip(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalChip(false);
       } else {
         notification.error({
@@ -867,13 +827,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllRam()
-          .then((response) => {
-            setDisplayRam(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalRam(false);
       } else {
         notification.error({
@@ -909,13 +863,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllManufacture()
-          .then((response) => {
-            setDisplayManufacture(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalManufacturer(false);
       } else {
         notification.error({
@@ -951,13 +899,7 @@ const Test = (setDisplay, setPagination) => {
             message: "Lưu thành công!",
           });
         });
-        readAllSize()
-          .then((response) => {
-            setDisplaySize(response.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        setLoaded(!loaded);
         setModalSize(false);
       } else {
         notification.error({
@@ -969,14 +911,6 @@ const Test = (setDisplay, setPagination) => {
 
   return (
     <>
-      <button
-        onClick={() => {
-          setStartScan(!startScan);
-        }}
-      >
-        {!startScan ? "Start Scan" : "Stop Scan"}
-      </button>
-      {startScan && <QRScanner data={setProductData} />}
       <form onSubmit={handleSubmit}>
         <Create
           resource="products"
@@ -1081,21 +1015,21 @@ const Test = (setDisplay, setPagination) => {
                 name="description"
               />
             </Form.Item>
-            <Form.Item
-              label={t("Giá")}
-              name="price"
-              rules={[{ required: true, type: "number" }]}
-            >
-              <InputNumber
-                style={{ width: "150px" }}
-                min={0}
-                type="number"
-                required
-                name="price"
-                value={productData.price}
-                onChange={handleNumberChangePrice}
-              />
-            </Form.Item>
+            {/*<Form.Item*/}
+            {/*    label={t("Giá")}*/}
+            {/*    name="price"*/}
+            {/*    rules={[{required: true, type: "number"}]}*/}
+            {/*>*/}
+            {/*    <InputNumber*/}
+            {/*        style={{width: "150px"}}*/}
+            {/*        min={0}*/}
+            {/*        type="number"*/}
+            {/*        required*/}
+            {/*        name="price"*/}
+            {/*        value={productData.price}*/}
+            {/*        onChange={handleNumberChangePrice}*/}
+            {/*    />*/}
+            {/*</Form.Item>*/}
             <div className="form-group">
               <Form.Item
                 label={t("Hãng")}
@@ -1129,6 +1063,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1169,6 +1104,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1201,6 +1137,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1232,6 +1169,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1270,6 +1208,7 @@ const Test = (setDisplay, setPagination) => {
                   style={{ marginTop: "-59px", marginLeft: "900px" }}
                 >
                   <button
+                    type="button"
                     className="btn btn-secondary btn-them"
                     data-toggle="modal"
                     data-target="#exampleModalCenter"
@@ -1311,6 +1250,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1342,6 +1282,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1373,6 +1314,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1386,6 +1328,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
@@ -1417,6 +1360,7 @@ const Test = (setDisplay, setPagination) => {
                 style={{ marginTop: "-59px", marginLeft: "900px" }}
               >
                 <button
+                  type="button"
                   className="btn btn-secondary btn-them"
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
