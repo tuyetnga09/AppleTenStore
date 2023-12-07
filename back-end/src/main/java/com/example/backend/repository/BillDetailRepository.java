@@ -99,8 +99,8 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
 
     @Query(value = "select product_id as 'ProductId', product.name as 'NameProduct', capacity, color, sku.price, imei_da_ban.code_imei as 'CodeImei' from imei_da_ban join bill_detail on imei_da_ban.id_bill_detail = bill_detail.id join bill on bill_detail.id_bill = bill.id join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id where imei_da_ban.status = ?1 and id_bill = ?2 and code_imei like %?3%", nativeQuery = true)
     List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill, String codeImei);
-    @Query(value = "select product_id as 'ProductId', product.name as 'NameProduct', capacity, color, sku.price, imei_da_ban.code_imei as 'CodeImei' from imei_da_ban join bill_detail on imei_da_ban.id_bill_detail = bill_detail.id join bill on bill_detail.id_bill = bill.id join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id where imei_da_ban.status = ?1 and id_bill = ?2", nativeQuery = true)
-    List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill);
+//    @Query(value = "select product_id as 'ProductId', product.name as 'NameProduct', capacity, color, sku.price, imei_da_ban.code_imei as 'CodeImei' from imei_da_ban join bill_detail on imei_da_ban.id_bill_detail = bill_detail.id join bill on bill_detail.id_bill = bill.id join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id where imei_da_ban.status = ?1 and id_bill = ?2", nativeQuery = true)
+//    List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill);
 
     //lay ra tien cua tung ban ghi bill detail tar hang
     @Query(value = "select bill_detail.id_bill as 'idBill', bill_detail.id as 'idBillDetail'," +
