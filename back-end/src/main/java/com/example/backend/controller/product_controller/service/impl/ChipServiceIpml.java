@@ -110,4 +110,9 @@ public class ChipServiceIpml implements Iservice<Chip> {
     public Page<Chip> search(Pageable pageable, String key) {
         return chipRepository.search(pageable, key);
     }
+
+    public List<String> getCode(){
+        return chipRepository.getCode();
+    }
+
 }

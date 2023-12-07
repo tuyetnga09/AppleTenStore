@@ -33,4 +33,7 @@ public interface CapacityRepository extends JpaRepository<Capacity, Integer> {
     @Query(value = "select capacity.id, capacity.status, capacity.date_create, capacity.date_update, capacity.code, capacity.name, capacity.person_create, capacity.person_update from capacity inner join product p on capacity.id = p.id_capacity where id_capacity = ?1", nativeQuery = true)
     List<Capacity> findCapacitiesByIdProduct(int id);
 
+    @Query(value = "select code from capacity",  nativeQuery = true)
+    List<String> getCode();
+
 }

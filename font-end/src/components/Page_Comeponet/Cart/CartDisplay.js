@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   readAll,
   deleteCartDetail,
@@ -22,6 +22,8 @@ import { event } from "jquery";
 import { DateField } from "@refinedev/antd";
 import queryString from "query-string";
 import { readQuantityInCart } from "../../../service/cart.service";
+import { Toast } from "primereact/toast";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 export default function CartDisplay() {
   const storedUser = JSON.parse(localStorage.getItem("account"));
@@ -41,6 +43,9 @@ export default function CartDisplay() {
   const [quantity, setQuantity] = useState([]);
   const storedBill = JSON.parse(localStorage.getItem("bill"));
 
+  const toast = useRef(null);
+  const [loaded, setLoaded] = useState(false);
+  
   useEffect(() => {
     if (idAccount !== null && idAccount !== "") {
       readAll(idAccount)
@@ -92,14 +97,16 @@ export default function CartDisplay() {
       );
       setQuantity(totalQuantity);
     }
-  }, [storedBill]);
+  }, [storedBill, loaded]);
 
   async function remove(id, idSKU) {
     if (idAccount !== null && idAccount !== "") {
-      deleteCartDetail(id).then(() => {
-        let newArr = [...products].filter((s) => s.id !== id);
+      await deleteCartDetail(id).then(() => {
+        let newArr = [...products].filter((s) => s.idCartDetail !== id);
         setProducts(newArr);
-        window.location.reload();
+        setLoaded(!loaded);
+        console.log(products);
+        console.log(newArr);
       });
     } else {
       // Xóa sản phẩm khỏi sessionStorage nếu không có idAccount
@@ -109,6 +116,7 @@ export default function CartDisplay() {
       // Cập nhật trạng thái trong ứng dụng React
       setProducts(updatedCartItems);
       calculateTotalPrice();
+      setLoaded(!loaded);
     }
   }
 
@@ -120,7 +128,7 @@ export default function CartDisplay() {
     } else if (newQuantity < 0) {
       // xóa sản phẩm khỏi giỏ hàng khi so luong bang 0
       notification.error({
-        message: "ADD TO CART",
+        message: "Giỏ hàng",
         description: "Không được nhập số lượng âm",
       });
     } else {
@@ -194,37 +202,63 @@ export default function CartDisplay() {
       history.push("/checkout");
     }
   };
+  const reject = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "Giỏ hàng",
+      detail: "Xin mời tiếp tục.",
+      life: 3000,
+    });
+  };
 
+  const confirmXoaAllGioHang = () => {
+    confirmDialog({
+      message: "Bán có muốn xóa hết giỏ hàng?",
+      header: "Giỏ hàng",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleRemoveAllFromCart(),
+      reject,
+    });
+  };
   //xóa all giỏ hàng
   const handleRemoveAllFromCart = () => {
     if (idAccount !== null && idAccount !== "") {
-      deleteAllCart(idAccount).then(() => {
+      if (products.length !== 0) {
+        setLoaded(!loaded);
+        deleteAllCart(idAccount).then(() => {
+          notification.success({
+            message: "CART",
+            description: "Xóa thành công",
+          });
+          readAll(idAccount)
+            .then((response) => {
+              setProducts(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        });
+      }
+    } else {
+      if (sessionStorage.getItem("cartItems") !== null) {
+        setLoaded(!loaded);
+        sessionStorage.removeItem("cartItems");
+        setProducts([]);
+        setTotalPrice(0);
         notification.success({
-          message: "CART",
+          message: "Giỏ hàng",
           description: "Xóa thành công",
         });
-        readAll(idAccount)
-          .then((response) => {
-            setProducts(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-      });
-    } else {
-      sessionStorage.removeItem("cartItems");
-      setProducts([]);
-      setTotalPrice(0);
-      notification.success({
-        message: "CART",
-        description: "Xóa thành công",
-      });
+      }
     }
   };
 
   return (
     <React.Fragment>
       <>
+      <Toast ref={toast} />
+      <ConfirmDialog />
         <div class="top-nav group">
           <section>
             <div class="social-top-nav">
@@ -482,7 +516,7 @@ export default function CartDisplay() {
                                           console.log(quantity.value);
                                           if (quantity.value <= 0) {
                                             notification.error({
-                                              message: "ADD TO CART",
+                                              message: "Giỏ hàng",
                                               description:
                                                 "Số lượng phải lớn hơn 0",
                                             });
@@ -524,7 +558,7 @@ export default function CartDisplay() {
                                           ) {
                                             if (event.target.value <= 0) {
                                               notification.error({
-                                                message: "ADD TO CART",
+                                                message: "Giỏ hàng",
                                                 description:
                                                   "Vui lòng kiểm tra lại số lượng",
                                               });
@@ -545,7 +579,7 @@ export default function CartDisplay() {
                                               //   parseInt(product.quantity)
                                             ) {
                                               notification.error({
-                                                message: "ADD TO CART",
+                                                message: "Giỏ hàng",
                                                 description:
                                                   "Không thể nhập quá số lượng đang có",
                                               });
@@ -553,7 +587,7 @@ export default function CartDisplay() {
                                                 document.getElementById(
                                                   `quantity-${index}`
                                                 );
-                                              quantity.value = product.quantity;
+                                              quantity.value = quantitySKU;
                                               handleUpdateQuantity(
                                                 product.idCartDetail,
                                                 product.quantity,
@@ -579,10 +613,20 @@ export default function CartDisplay() {
                                             if (newQuantity < 1) {
                                               // Kiểm tra số lượng không được nhỏ hơn 1
                                               notification.error({
-                                                message: "ADD TO CART",
+                                                message: "Giỏ hàng",
                                                 description:
                                                   "Vui lòng kiểm tra lại số lượng",
                                               });
+                                              const quantity =
+                                                document.getElementById(
+                                                  `quantity-${index}`
+                                                );
+                                              quantity.value = 1;
+                                              handleUpdateQuantity(
+                                                product.idCartDetail,
+                                                1,
+                                                product.idSKU
+                                              );
                                             } else {
                                               // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
                                               if (
@@ -596,7 +640,7 @@ export default function CartDisplay() {
                                                 );
                                               } else {
                                                 notification.error({
-                                                  message: "ADD TO CART",
+                                                  message: "Giỏ hàng",
                                                   description:
                                                     "Không thể nhập quá số lượng đang có",
                                                 });
@@ -637,7 +681,7 @@ export default function CartDisplay() {
                                                   // + parseInt(product.quantity)
                                                 ) {
                                                   notification.error({
-                                                    message: "ADD TO CART",
+                                                    message: "Giỏ hàng",
                                                     description:
                                                       "Không thể nhập quá số lượng đang có",
                                                   });
@@ -674,7 +718,7 @@ export default function CartDisplay() {
                                               );
                                             } else {
                                               notification.error({
-                                                message: "ADD TO CART",
+                                                message: "Giỏ hàng",
                                                 description:
                                                   "Không thể nhập quá số lượng đang có",
                                               });
@@ -750,7 +794,7 @@ export default function CartDisplay() {
                           <button
                             class="btn btn-outline-primary me-md-2"
                             type="button"
-                            onClick={() => handleRemoveAllFromCart()}
+                            onClick={() => confirmXoaAllGioHang()}
                           >
                             Xóa hết
                           </button>
@@ -790,10 +834,10 @@ export default function CartDisplay() {
                           {/* </Link> */}
                         </div>
                         <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>
-                          <a href="/">
+                          <Link to="/">
                             <FontAwesomeIcon icon={faArrowLeft} />
                             Tiếp tục mua hàng
-                          </a>
+                          </Link>
                         </h5>
                       </div>
                     </div>

@@ -62,7 +62,7 @@ public class TraHangImpl implements TraHangService {
             bill.setStatusBill(yeuCau);
             billRepository.save(bill);
 
-            List<BillDetailCustomerIon> billDetails = billDetailRepository.getAllBillDetaillOfIdBill(bill.getId());
+            List<BillDetailCustomerIon> billDetails = billDetailRepository.getAllBillDetaillOfIdBill(bill.getId(), "");
             return billDetails;
         }
         return null;
@@ -73,7 +73,7 @@ public class TraHangImpl implements TraHangService {
         Boolean check = billRepository.existsById(idBill);
         List<BillDetailCustomerIon> billDetailCustomerIons = new ArrayList<>();
         if (check){
-            billDetailCustomerIons = billDetailRepository.getAllBillDetaillOfIdBill(idBill);
+            billDetailCustomerIons = billDetailRepository.getAllBillDetaillOfIdBill(idBill, "");
         }
         if (billDetailCustomerIons.size()>0){
             for (BillDetailCustomerIon bill: billDetailCustomerIons) {
@@ -126,7 +126,7 @@ public class TraHangImpl implements TraHangService {
             bill.setStatusBill(yeuCau);
             billRepository.save(bill);
 
-            List<BillDetailCustomerIon> billDetails = billDetailRepository.getAllBillDetaillOfIdBill(bill.getId());
+            List<BillDetailCustomerIon> billDetails = billDetailRepository.getAllBillDetaillOfIdBill(bill.getId(),  "");
             return billDetails;
         }
         return null;
@@ -138,7 +138,7 @@ public class TraHangImpl implements TraHangService {
         if (check == false){
             return null;
         }
-        List<BillDetailCustomerIon> list =  billDetailRepository.getAllBillDetaillOfIdBill(idBillReturn);
+        List<BillDetailCustomerIon> list =  billDetailRepository.getAllBillDetaillOfIdBill(idBillReturn, "");
 
         for (int i = 0; i < list.size(); i++) {
             ImeiDaBan imeiDaBan = imeiDaBanRepository.findById(list.get(i).getIdImei()).get();
@@ -169,7 +169,7 @@ public class TraHangImpl implements TraHangService {
         bill.setStatusBill(yeuCau);
         billRepository.save(bill);
 
-        List<BillDetailCustomerIon> billDetails = billDetailRepository.getAllBillDetaillOfIdBill(bill.getId());
+        List<BillDetailCustomerIon> billDetails = billDetailRepository.getAllBillDetaillOfIdBill(bill.getId(), "");
         return billDetails;
     }
 }

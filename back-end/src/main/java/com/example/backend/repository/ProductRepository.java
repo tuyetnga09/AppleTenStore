@@ -64,7 +64,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> productNew(Pageable pageable, String key);
 
 //    @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 and price < 2000000 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
-    @Query(value = "SELECT p.* FROM sku s JOIN product p ON s.product_id = p.id where (name like %?1%) and p.status = 0 GROUP BY p.id HAVING MAX(s.price) < 2000000", nativeQuery = true)
+    @Query(value = "SELECT p.* FROM sku s JOIN product p ON s.product_id = p.id where (name like %?1%) and p.status = 0 GROUP BY p.id HAVING MAX(s.price) < 10000000", nativeQuery = true)
     Page<Product> productCheap(Pageable pageable, String key);
 
 //    @Query(value = "select * from product where (name like %?1% or price like %?1%) and status = 0 and price > ?2 and price < ?3 ORDER BY date_create DESC, Id DESC", nativeQuery = true)

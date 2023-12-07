@@ -116,4 +116,8 @@ public class ColorServiceImpl implements Iservice<Color> {
         return this.colorRepository.findColorByIdProduct(id);
     }
 
+    public List<String> getCode(){
+        return colorRepository.getCode();
+    }
+
 }

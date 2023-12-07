@@ -37,3 +37,7 @@ export const returnSize = (id) => {
 export const importSize = (form) => {
   return httpClient.post("/admin/size/import", form, config);
 };
+
+export const getCodeSize = () => {
+  return httpClient.get(`admin/size/getCode`);
+}

@@ -41,4 +41,7 @@ public interface ColorRepository extends JpaRepository<Color, Integer> {
     @Query(value = "select color.id, color.status, color.date_create, color.date_update, color.code, color.name, color.person_create, color.person_update from color inner join product p on color.id = p.id_color where id_color = ?1", nativeQuery = true)
     List<Color> findColorByIdProduct(int id);
 
+    @Query(value = "select code from color", nativeQuery = true)
+    List<String> getCode();
+
 }

@@ -22,7 +22,7 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
     @Query(value = "select p.id AS 'IDProduct', b.id AS 'IDBill', s.id AS 'IDSKU', p.name AS 'NameProduct', s.capacity AS 'Capacity', s.color AS 'Color', c.name AS 'Category', bd.quantity AS 'Quantity', bd.price AS 'Price', bd.quantity * bd.price AS 'TotalMoney' from bill b join account a on b.id_account = a.id join bill_detail bd on b.id = bd.id_bill join sku s on bd.id_sku = s.id join product p on s.product_id = p.id join category c on p.id_category = c.id where b.id = ?1 order by b.id desc", nativeQuery = true)
     List<BillDetailCustomerResponse> getAll(Integer id);
 
-    @Query(value = "select b.id AS 'IDBill', s.id AS 'IDSKU', p.name AS 'NameProduct', s.capacity AS 'Capacity', s.color AS 'Color', c.name AS 'Category', bd.quantity AS 'Quantity', bd.price AS 'Price', bd.quantity * bd.price AS 'TotalMoney' from bill b join bill_detail bd on b.id = bd.id_bill join sku s on bd.id_sku = s.id join product p on s.product_id = p.id join category c on p.id_category = c.id where b.id = ?1", nativeQuery = true)
+    @Query(value = "select s.product_id as 'IdProduct', b.id AS 'IDBill', s.id AS 'IDSKU', p.name AS 'NameProduct', s.capacity AS 'Capacity', s.color AS 'Color', c.name AS 'Category', bd.quantity AS 'Quantity', bd.price AS 'Price', bd.quantity * bd.price AS 'TotalMoney' from bill b join bill_detail bd on b.id = bd.id_bill join sku s on bd.id_sku = s.id join product p on s.product_id = p.id join category c on p.id_category = c.id where b.id = ?1", nativeQuery = true)
     List<BillDetailCustomerResponse> getAllByCustomer(Integer id);
 
     @Transactional
@@ -93,10 +93,12 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
             " from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail \n" +
             " join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id  " +
             " join category on product.id_category = category.id \n" +
-            " where bill_detail.id_bill =?1\n" +
+            " where bill_detail.id_bill =?1 and code_imei like %?2%\n" +
             " order by sku.id desc", nativeQuery = true)
-    List<BillDetailCustomerIon> getAllBillDetaillOfIdBill(Integer idBill);
+    List<BillDetailCustomerIon> getAllBillDetaillOfIdBill(Integer idBill, String codeImei);
 
+    @Query(value = "select product_id as 'ProductId', product.name as 'NameProduct', capacity, color, sku.price, imei_da_ban.code_imei as 'CodeImei' from imei_da_ban join bill_detail on imei_da_ban.id_bill_detail = bill_detail.id join bill on bill_detail.id_bill = bill.id join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id where imei_da_ban.status = ?1 and id_bill = ?2 and code_imei like %?3%", nativeQuery = true)
+    List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill, String codeImei);
     @Query(value = "select product_id as 'ProductId', product.name as 'NameProduct', capacity, color, sku.price, imei_da_ban.code_imei as 'CodeImei' from imei_da_ban join bill_detail on imei_da_ban.id_bill_detail = bill_detail.id join bill on bill_detail.id_bill = bill.id join sku on bill_detail.id_sku = sku.id join product on sku.product_id = product.id where imei_da_ban.status = ?1 and id_bill = ?2", nativeQuery = true)
     List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill);
 

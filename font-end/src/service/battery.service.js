@@ -37,3 +37,7 @@ export const returnBattery = (id) => {
 export const importBattery = (form) => {
   return httpClient.post("/admin/battery/import", form, config);
 };
+
+export const getCodeBattery = () => {
+  return httpClient.get("/admin/battery/getCode");
+}

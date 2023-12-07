@@ -39,8 +39,8 @@ public class BillDetailCustomerController {
 
 
     @GetMapping("/get-all-bill-detail")
-    public ResponseEntity<List<BillDetailCustomerIon>> getAllBillDetail(@RequestParam("id") Integer id){
-        List<BillDetailCustomerIon> billDetailCustomerIons = billDetailService.getBillDetailOfIdBill(id);
+    public ResponseEntity<List<BillDetailCustomerIon>> getAllBillDetail(@RequestParam("id") Integer id, @RequestParam("codeImei") String codeImei){
+        List<BillDetailCustomerIon> billDetailCustomerIons = billDetailService.getBillDetailOfIdBill(id, codeImei);
         return new ResponseEntity<>(billDetailCustomerIons, HttpStatus.OK);
     }
 

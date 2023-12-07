@@ -74,7 +74,7 @@ const OderUserYeuCauTraHang = () => {
       .catch((err) => {
         console.log(err);
       });
-    getAllBillDetail(record.id)
+    getAllBillDetail(record.id, "")
       .then((res) => {
         setDataBillDetails(res.data);
       })
@@ -264,9 +264,6 @@ const OderUserYeuCauTraHang = () => {
               <br />
               <br />
               <div style={{ float: "right" }}>
-                <button type="button" class="btn btn-danger">
-                  Liên hệ người bán
-                </button>{" "}
                 <button
                   type="button"
                   class="btn btn-light"
@@ -282,7 +279,16 @@ const OderUserYeuCauTraHang = () => {
       </>
     );
   });
-
+  function handleChangeSearch(event) {
+    getAllBillDetail(billReturn.id, event.target.value)
+      .then((res) => {
+        setDataBillDetails(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   return (
     <>
       <Header />
@@ -362,10 +368,10 @@ const OderUserYeuCauTraHang = () => {
             // id="id-imeis"
             className="form-control me-2"
             type="search"
-            placeholder="Search"
+            placeholder="Tìm theo imei"
             aria-label="Search"
             name="key"
-            // onChange={handleChangeImeis}
+            onChange={handleChangeSearch}
           />
         </Row>
 
@@ -623,7 +629,7 @@ const OderUserYeuCauTraHang = () => {
         <form onSubmit={handleSubmitHuyTrahang}>
           <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">
-              Lí do hủy đơn:
+              Lí do hủy yêu cầu:
             </label>
             <textarea
               class="form-control"

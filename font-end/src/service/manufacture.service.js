@@ -41,3 +41,7 @@ export const importManufacture = (form) => {
 export const search = (page, search) => {
   return httpClient.get(`/admin/manufacture/search?${page}`, search);
 };
+
+export const getCodeManufacture = () => {
+  return httpClient.get(`admin/manufacture/getCode`);
+}

@@ -65,6 +65,7 @@ import { DateField } from "@refinedev/antd";
 import { getOne, updateMoney } from "../../../service/Point/point.service";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import HeaderDashBoard from "../header/index";
 
 const { RangePicker } = DatePicker;
 const { SubMenu } = Menu;
@@ -418,20 +419,35 @@ const VoucherDisplay = ({}) => {
               title="Chi tiết sản phẩm"
               icon={<AppstoreAddOutlined />}
             >
-              <Menu.Item key="8">
+              <Menu.Item key="sku">
                 <Link to="/admin/product-detail">SKU</Link>
               </Menu.Item>
               <Menu.Item key="color">
-                <Link to="/product-detail/color">Color</Link>
+                <Link to="/color/display">Color</Link>
               </Menu.Item>
               <Menu.Item key="capacity">
-                <Link to="/product-detail/capacity">Capacity</Link>
+                <Link to="/capacity/display">Capacity</Link>
               </Menu.Item>
               <Menu.Item key="ram">
-                <Link to="/product-detail/ram">RAM</Link>
+                <Link to="/ram/display">Ram</Link>
               </Menu.Item>
               <Menu.Item key="chip">
-                <Link to="/product-detail/chip">Chip</Link>
+                <Link to="/chip/display">Chip</Link>
+              </Menu.Item>
+              <Menu.Item key="size">
+                <Link to="/size/display">Size</Link>
+              </Menu.Item>
+              <Menu.Item key="screen">
+                <Link to="/screen/display">Screen</Link>
+              </Menu.Item>
+              <Menu.Item key="manufacture">
+                <Link to="/manufacture/display">Manufacture</Link>
+              </Menu.Item>
+              <Menu.Item key="category">
+                <Link to="/category/display">Category</Link>
+              </Menu.Item>
+              <Menu.Item key="battery">
+                <Link to="/battery/display">Battery</Link>
               </Menu.Item>
             </SubMenu>
             <Menu.Item
@@ -447,7 +463,7 @@ const VoucherDisplay = ({}) => {
           </Menu>
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Header style={{ padding: 0, background: "#F5F5F5" }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -458,7 +474,11 @@ const VoucherDisplay = ({}) => {
                 height: 64,
               }}
             />
+            <HeaderDashBoard />
           </Header>
+          <br />
+          <br />
+          <br />
           <Content
             style={{
               margin: "24px 16px",
@@ -572,12 +592,13 @@ const VoucherDisplay = ({}) => {
                       showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
                     }}
                   >
-                    <Table.Column
+                    {/* <Table.Column
                       key="id"
                       dataIndex="id"
-                      title={t("ID")}
-                      render={(text, record) => <span>{record.id}</span>}
-                    />
+                      title={t("STT")}
+                      // render={(text, record) => <span>{record.id}</span>}
+                      render={(text, record, index) => <span>{index + 1}</span>}
+                    /> */}
                     <Table.Column
                       key="status"
                       dataIndex="status"
@@ -728,53 +749,55 @@ const VoucherDisplay = ({}) => {
                       align="center"
                       render={(text, record) => (
                         <span>
-                        {record.status === 0 ? (
-                          <Dropdown
-                            overlay={
-                              <Menu mode="vertical">
-                                <Menu.Item
-                                  key="1"
-                                  disabled={record.stock <= 0}
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <CloseCircleOutlined
-                                      style={{
-                                        color: "red",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => confirmCallUpdateStatusVoucher(record.id)}
-                                >
-                                  Dừng hoạt động
-                                </Menu.Item>
-                                <Menu.Item
-                                  key="2"
-                                  style={{
-                                    fontWeight: 500,
-                                  }}
-                                  icon={
-                                    <FormOutlined
-                                      style={{
-                                        color: "green",
-                                      }}
-                                    />
-                                  }
-                                  onClick={() => handleEditClick(record)}
-                                >
-                                  Sửa Voucher
-                                </Menu.Item>
-                              </Menu>
-                            }
-                            trigger={["click"]}
-                          >
-                            <MoreOutlined
-                              style={{
-                                fontSize: 24,
-                              }}
-                            />
-                          </Dropdown>
+                          {record.status === 0 ? (
+                            <Dropdown
+                              overlay={
+                                <Menu mode="vertical">
+                                  <Menu.Item
+                                    key="1"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "red",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      confirmCallUpdateStatusVoucher(record.id)
+                                    }
+                                  >
+                                    Dừng hoạt động
+                                  </Menu.Item>
+                                  <Menu.Item
+                                    key="2"
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <FormOutlined
+                                        style={{
+                                          color: "green",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() => handleEditClick(record)}
+                                  >
+                                    Sửa Voucher
+                                  </Menu.Item>
+                                </Menu>
+                              }
+                              trigger={["click"]}
+                            >
+                              <MoreOutlined
+                                style={{
+                                  fontSize: 24,
+                                }}
+                              />
+                            </Dropdown>
                           ) : record.status === 1 ? (
                             <Dropdown
                               overlay={

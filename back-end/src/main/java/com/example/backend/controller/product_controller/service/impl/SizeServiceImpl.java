@@ -111,4 +111,9 @@ public class SizeServiceImpl implements Iservice<Size> {
     public Page<Size> search(Pageable pageable, String key) {
         return sizeRepository.search(pageable, key);
     }
+
+    public List<String> getCode(){
+        return this.sizeRepository.getCode();
+    }
+
 }

@@ -80,21 +80,21 @@ export default function Header() {
                 </Link>
               </li>
 
-              <li>
+              {/* <li>
                 <Link to="/chat">
                   <i className="fa fa-newspaper-o"></i> Liên hệ/Chat
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link to="/gioi-thieu">
                   <i class="fa fa-info-circle"></i> Tin Tức
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <a href="trungtambaohanh.html">
                   <i class="fa fa-wrench"></i> Bảo hành
                 </a>
-              </li>
+              </li> */}
               <li>
                 <Link to="/policy">
                   <i className="fa fa-newspaper-o"></i>Chính sách
@@ -149,7 +149,6 @@ export default function Header() {
             <div className="tools-member">
               <div className="cart">
                 <Link to={storedUser !== null ? "/profile" : "/login"}>
-
                   {storedUser?.user?.avatar == null ||
                   storedUser?.user?.avatar == "" ? (
                     <img

@@ -97,4 +97,10 @@ public class RamController {
         Page<Ram> listRam = ramService.search(search, pageable);
         return listRam;
     }
+
+    @GetMapping(value = "getCode")
+    public List<String> getCode(){
+        return ramService.getCode();
+    }
+
 }

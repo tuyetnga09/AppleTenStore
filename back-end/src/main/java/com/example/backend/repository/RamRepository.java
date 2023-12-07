@@ -29,4 +29,8 @@ public interface RamRepository extends JpaRepository<Ram, Integer> {
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
             " FROM RAM WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     List<Ram> getAll();
+
+    @Query(value = "select code from ram", nativeQuery = true)
+    List<String> getCode();
+
 }

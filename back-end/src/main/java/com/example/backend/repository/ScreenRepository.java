@@ -24,4 +24,8 @@ public interface ScreenRepository extends JpaRepository<Screen, Integer> {
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
             " FROM screen WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     List<Screen> getAll();
+
+    @Query(value = "select code from screen", nativeQuery = true)
+    List<String> getCode();
+
 }

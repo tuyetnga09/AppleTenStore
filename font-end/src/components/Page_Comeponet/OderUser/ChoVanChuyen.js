@@ -101,11 +101,7 @@ const OderUserChoVanChuyen = () => {
               </span>
               <br />
               <br />
-              <div style={{ float: "right" }}>
-                <button type="button" class="btn btn-danger">
-                  Liên hệ người bán
-                </button>{" "}
-              </div>
+              <div style={{ float: "right" }}></div>
             </div>
           </Row>
         </div>

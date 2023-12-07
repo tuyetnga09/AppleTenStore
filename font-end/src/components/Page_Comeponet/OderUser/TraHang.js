@@ -47,10 +47,12 @@ const OderUserTraHang = () => {
     useState(false); // Trạng thái hiển thị Modal
 
   const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
+  const [idBill, setIdBill] = useState(); //
 
   const handleClickReturnedProducts = (record) => {
     setIsModalVisibleReturnedProducts(true);
-    getAllBillDetailReturn(6, record.id)
+    setIdBill(record.id);
+    getAllBillDetailReturn(6, record.id, "")
       .then((response) => {
         setDataBillDetails(response.data);
         console.log(response.data);
@@ -64,6 +66,17 @@ const OderUserTraHang = () => {
   const handleCannelReturnedProducts = () => {
     setIsModalVisibleReturnedProducts(false);
   };
+
+  function handleChangeSearch(event) {
+    getAllBillDetailReturn(6, idBill, event.target.value)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const result = bills.map((b, index) => {
     return (
@@ -126,9 +139,6 @@ const OderUserTraHang = () => {
               <br />
               <br />
               <div style={{ float: "right" }}>
-                <button type="button" class="btn btn-danger">
-                  Liên hệ người bán
-                </button>{" "}
                 <button
                   type="button"
                   class="btn btn-light"
@@ -151,6 +161,17 @@ const OderUserTraHang = () => {
           <label for="exampleFormControlTextarea2" class="form-label">
             Sản phẩm đã trả:
           </label>
+          <Row style={{ marginTop: "28px", marginBottom: "10px" }}>
+            <input
+              // id="id-imeis"
+              className="form-control me-2"
+              type="search"
+              placeholder="Tìm theo imei"
+              aria-label="Search"
+              name="key"
+              onChange={handleChangeSearch}
+            />
+          </Row>
           <Table
             rowKey="oop"
             dataSource={dataBillDetails}

@@ -115,4 +115,8 @@ public class RamServiceImpl implements Iservice<Ram> {
         return ramRepository.search(search, pageable);
     }
 
+    public List<String> getCode(){
+        return ramRepository.getCode();
+    }
+
 }

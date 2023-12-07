@@ -108,4 +108,9 @@ public class CategoryServiceImpl implements Iservice<Category> {
     public List<Category> viewAllDashboard(){
         return categoryRepository.getAll();
     }
+
+    public List<String> getCode(){
+        return categoryRepository.getCode();
+    }
+
 }

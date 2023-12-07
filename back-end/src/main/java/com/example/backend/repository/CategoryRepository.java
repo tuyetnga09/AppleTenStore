@@ -22,4 +22,8 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status  " +
             " FROM Category WHERE Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     List<Category> getAll();
+
+    @Query(value = "select code from category", nativeQuery = true)
+    List<String> getCode();
+
 }

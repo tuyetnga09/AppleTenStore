@@ -8,8 +8,10 @@ export const readAllByCustomer = (id) => {
   return httpClient.get(`/customer/billDetail/getAllByCustomer?id=${id}`);
 };
 
-export const getAllBillDetail = (id) => {
-  return httpClient.get(`/customer/billDetail/get-all-bill-detail?id=${id}`);
+export const getAllBillDetail = (id, codeImei) => {
+  return httpClient.get(
+    `/customer/billDetail/get-all-bill-detail?id=${id}&codeImei=${codeImei}`
+  );
 };
 
 export const yeuCauTraHang = (idBillReturn, noteBillReturn, idImeiDaBans) => {

@@ -8,7 +8,6 @@ const PriceProduct = (props) => {
   useEffect(() => {
     priceMinAndMaxBySKU(props.product)
       .then((response) => {
-        console.log(response.data);
         setPriceMin(response.data[0]);
         setPriceMax(response.data[1]);
       })
@@ -18,7 +17,7 @@ const PriceProduct = (props) => {
   }, [props]);
 
   return (
-    <strong>
+    <>
       {priceMax === null && priceMin === null ? (
         <strong>
           {parseFloat(0).toLocaleString("vi-VN", {
@@ -27,6 +26,13 @@ const PriceProduct = (props) => {
           })}
         </strong>
       ) : priceMin === undefined || priceMin === NaN || priceMin === null ? (
+        <strong>
+          {parseFloat(priceMax).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </strong>
+      ) : priceMin === priceMax ? (
         <strong>
           {parseFloat(priceMax).toLocaleString("vi-VN", {
             style: "currency",
@@ -46,7 +52,7 @@ const PriceProduct = (props) => {
           })}
         </strong>
       )}
-    </strong>
+    </>
   );
 };
 
