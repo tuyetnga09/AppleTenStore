@@ -46,7 +46,7 @@ const OderUserVanChuyen = () => {
         <div>
           <Row>
             <div className="col-10" style={{ paddingTop: "20px" }}>
-              <strong>AppleTenStore</strong>{" "}
+              <strong>AppleTenStore - {b.code}</strong>{" "}
             </div>
             <div className="col-2">
               <span

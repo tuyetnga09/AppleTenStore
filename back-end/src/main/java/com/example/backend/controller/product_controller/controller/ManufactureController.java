@@ -33,7 +33,7 @@ public class ManufactureController {
 
     @GetMapping("display")
     public Page<Manufacture> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, 2);
+        Pageable pageable = PageRequest.of(page, 5);
         return manufactureService.getAll(pageable);
     }
 

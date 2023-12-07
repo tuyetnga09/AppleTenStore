@@ -27,7 +27,7 @@ const PriceProduct = (props) => {
         </strong>
       ) : priceMin === undefined || priceMin === NaN || priceMin === null ? (
         <strong>
-          {parseFloat(priceMax).toLocaleString("vi-VN", {
+          {parseFloat(0).toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
           })}

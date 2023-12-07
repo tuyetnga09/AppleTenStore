@@ -43,7 +43,7 @@ public class ColorController {
     @GetMapping("getAll")
     public ResponseEntity<Page<Color>> paging(@RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
                                               @RequestParam(value = "key", required = false) String key) {
-        Pageable pageable = PageRequest.of(page, 2);
+        Pageable pageable = PageRequest.of(page, 5);
         Page<Color> colorPage = colorService.search(pageable, key);
         return new ResponseEntity<>(colorPage, HttpStatus.OK);
     }

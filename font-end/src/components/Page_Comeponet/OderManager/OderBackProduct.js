@@ -673,6 +673,7 @@ const OderDisplay = ({}) => {
   const [acceptReturnBill, setAcceptReturnBill] = useState({
     idBill: null,
     codeImeiDaBan: [],
+    personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
   });
   const handleClickReturnDetails = (record) => {
     let arrCodeImeiDaBan = [];
@@ -693,6 +694,7 @@ const OderDisplay = ({}) => {
         console.log(error);
       });
     setAcceptReturnBill({
+      ...acceptReturnBill,
       idBill: record.id,
       codeImeiDaBan: arrCodeImeiDaBan,
     });
@@ -701,6 +703,7 @@ const OderDisplay = ({}) => {
   const handleCannelReturnDetails = () => {
     setIsModalVisibleReturnDetails(false);
     setAcceptReturnBill({
+      ...acceptReturnBill,
       idBill: null,
       codeImeiDaBan: [],
     });
@@ -914,7 +917,7 @@ const OderDisplay = ({}) => {
             >
               <Input
                 name="key"
-                placeholder={t("Code, Person Create")}
+                placeholder={t("Mã hóa đơn, người tạo")}
                 prefix={<SearchOutlined />}
                 onChange={handleChangeSearch}
               />
@@ -946,13 +949,13 @@ const OderDisplay = ({}) => {
                 <Table.Column
                   key="code"
                   dataIndex="code"
-                  title={t("Code")}
+                  title={t("Mã hóa đơn")}
                   render={(text, record) => <span>{record.code}</span>}
                 />
                 <Table.Column
                   key="status"
                   dataIndex="status"
-                  title={t("Status")}
+                  title={t("Trạng thái")}
                   render={(text, record) => (
                     <span>{statusBadgeMapping[record.statusBill]}</span>
                   )}
@@ -960,7 +963,7 @@ const OderDisplay = ({}) => {
                 <Table.Column
                   key="total"
                   dataIndex="total"
-                  title={t("Total")}
+                  title={t("Tổng tiền")}
                   render={(text, record) => {
                     return (
                       <NumberField
@@ -977,7 +980,7 @@ const OderDisplay = ({}) => {
                 <Table.Column
                   key="user"
                   dataIndex="user"
-                  title={t("User")}
+                  title={t("Tên khách hàng")}
                   render={(text, record) => (
                     <span>{record?.customer?.fullName}</span>
                   )}
@@ -992,25 +995,25 @@ const OderDisplay = ({}) => {
                 <Table.Column
                   key="address"
                   dataIndex="address"
-                  title={t("Address")}
+                  title={t("Địa chỉ")}
                   render={(text, record) => <span>{record.address}</span>}
                 />
                 <Table.Column
                   key="personCreate"
                   dataIndex="personCreate"
-                  title={t("PersonCreate")}
+                  title={t("Người tạo HĐ")}
                   render={(text, record) => <span>{record.personCreate}</span>}
                 />
                 <Table.Column
                   key="personUpdate"
                   dataIndex="personUpdate"
-                  title={t("PersonUpdate")}
+                  title={t("Người cập nhật HĐ")}
                   render={(text, record) => <span>{record.personUpdate}</span>}
                 />
                 <Table.Column
                   key="dateCreate"
                   dataIndex="dateCreate"
-                  title={t("DateCreate")}
+                  title={t("Ngày tạo")}
                   render={(text, record) => (
                     // <span>{record.dateCreate}</span>
                     <DateField value={record.dateCreate} format="DD/MM/YYYY" />
@@ -1020,7 +1023,7 @@ const OderDisplay = ({}) => {
                 <Table.Column
                   key="dateUpdate"
                   dataIndex="dateUpdate"
-                  title={t("DateUpdate")}
+                  title={t("Ngày cập nhật")}
                   render={(text, record) => (
                     // <span>{record.dateUpdate}</span>
                     <DateField value={record.dateUpdate} format="DD/MM/YYYY" />
@@ -1031,7 +1034,7 @@ const OderDisplay = ({}) => {
                 <Table.Column
                   key="actions"
                   dataIndex="actions"
-                  title={t("Action")}
+                  title={t("Sự kiện")}
                   fixed="right"
                   align="center"
                   render={(text, record) => (

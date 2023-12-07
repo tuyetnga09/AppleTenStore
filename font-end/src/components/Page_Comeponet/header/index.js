@@ -123,11 +123,22 @@ const Header = () => {
             >
               {storedUser?.user?.fullName}
             </Text>
-            <Avatar
-              size="large"
-              src={`/imageUpload/` + storedUser?.user?.avatar}
-              shape="square"
-            />
+            {storedUser?.user?.avatar == null ||
+            storedUser?.user?.avatar == "" ? (
+              <Avatar
+                size="large"
+                src={
+                  "https://inkythuatso.com/uploads/thumbnails/800/2023/03/9-anh-dai-dien-trang-inkythuatso-03-15-27-03.jpg"
+                }
+                shape="square"
+              />
+            ) : (
+              <Avatar
+                size="large"
+                src={`/imageUpload/` + storedUser?.user?.avatar}
+                shape="square"
+              />
+            )}
           </Space>
         </Col>
       </Row>

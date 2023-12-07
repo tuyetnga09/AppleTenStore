@@ -571,7 +571,7 @@ const OderCustomerAll = () => {
         <section hidden={isShowContent}>
           <div className="row">
             <div className="col-10" style={{ paddingTop: "20px" }}>
-              <strong>AppleTenStore</strong>{" "}
+              <strong>AppleTenStore - {bill.code}</strong>{" "}
             </div>
             <div className="col-2">
               <span

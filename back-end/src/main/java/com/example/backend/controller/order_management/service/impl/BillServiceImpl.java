@@ -619,6 +619,7 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepository.findById(acceptReturn.getIdBill()).get();
         bill.setStatusBill(StatusBill.TRA_HANG);
         bill.setDateUpdate(LocalDate.now());
+        bill.setPersonUpdate(acceptReturn.getPersonUpdate());
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
              ) {
             imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(6, codeImei);

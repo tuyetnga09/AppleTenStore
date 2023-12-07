@@ -33,7 +33,7 @@ public class CapacityController {
 
     @GetMapping("display")
     public Page<Capacity> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page, 2);
+        Pageable pageable = PageRequest.of(page, 5);
         return capacityService.getAll(pageable);
     }
 

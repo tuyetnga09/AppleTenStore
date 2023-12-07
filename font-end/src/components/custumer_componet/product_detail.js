@@ -423,7 +423,9 @@ export default function ProductDetail() {
                   </strong>
                 ) : item && item.price ? (
                   <PriceProduct product={id}></PriceProduct>
-                ) : null}
+                ) : (
+                  <PriceProduct product={id}></PriceProduct>
+                )}
                 {item2.status === 0 ? (
                   <label className="giamgia">
                     Số lượng:{" "}

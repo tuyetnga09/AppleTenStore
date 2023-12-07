@@ -820,7 +820,7 @@ const Test = (setDisplay, setPagination) => {
 
   function handleSaveRam() {
     if (!ramCodes.includes(ram.code)) {
-      let validate = checkValidate(chip);
+      let validate = checkValidate(ram);
       if (!validate) {
         createRam(ram).then((response) => {
           console.log(response);
@@ -856,7 +856,7 @@ const Test = (setDisplay, setPagination) => {
 
   function handleSaveManufacturer() {
     if (!manufactureCodes.includes(manufacturer.code)) {
-      let validate = checkValidate(chip);
+      let validate = checkValidate(manufacturer);
       if (!validate) {
         createManufacture(manufacturer).then((response) => {
           console.log(response);
@@ -1320,20 +1320,6 @@ const Test = (setDisplay, setPagination) => {
                   data-toggle="modal"
                   data-target="#exampleModalCenter"
                   onClick={() => handleEditModalScreen()}
-                >
-                  +
-                </button>
-              </div>
-              <div
-                className="form-group col-md-2"
-                style={{ marginTop: "-59px", marginLeft: "900px" }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-them"
-                  data-toggle="modal"
-                  data-target="#exampleModalCenter"
-                  onClick={() => handleEditModalRam()}
                 >
                   +
                 </button>
@@ -1958,7 +1944,7 @@ const Test = (setDisplay, setPagination) => {
           <div className="row">
             <div className="form-group  col-md-12">
               <span className="thong-tin-thanh-toan">
-                <h5>Tạo mới màu sắc</h5>
+                <h5>Tạo mới xuất sứ</h5>
               </span>
             </div>
             <div className="form-group col-md-6">
@@ -2019,7 +2005,7 @@ const Test = (setDisplay, setPagination) => {
         >
           {/* <div className="modal-body"> */}
           <div className="row">
-            <div className="form-group  col-md-12">
+            <div className="form-group col-md-12">
               <span className="thong-tin-thanh-toan">
                 <h5>Tạo mới kích thước</h5>
               </span>
@@ -2039,10 +2025,10 @@ const Test = (setDisplay, setPagination) => {
             <div className="form-group col-md-6">
               <label className="control-label">Tên</label>
               <input
-                id="code"
+                id="name"
                 className="form-control"
                 type="text"
-                name="code"
+                name="name"
                 value={size.name}
                 onChange={handleChangeSize}
                 required

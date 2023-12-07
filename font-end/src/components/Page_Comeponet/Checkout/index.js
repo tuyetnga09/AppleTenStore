@@ -701,6 +701,8 @@ const Checkout = () => {
   }
 
   function doneOrder() {
+    const buttonDatHang = document.getElementById("buttonDatHang");
+    buttonDatHang.disabled = true;
     const phoneNumberRegex = /^\d{10}$/;
     const phoneNumber = document.getElementById("phoneNumber");
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -1490,6 +1492,7 @@ const Checkout = () => {
                     name="btnDatHang"
                     type="submit"
                     onMouseOver={() => checkQuantitySubmit()}
+                    id="buttonDatHang"
                   >
                     Đặt hàng
                   </button>
