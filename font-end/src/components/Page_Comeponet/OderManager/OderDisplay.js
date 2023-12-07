@@ -956,7 +956,7 @@ const OderDisplay = ({}) => {
                 type="button"
                 onClick={() => handUpdateTrangThai()}
               >
-                Xác nhận tất cả Hóa Đơn Online
+                XÁC NHẬN TẤT CẢ HÓA ĐƠN ONLINE
               </button>
             </div>
             <Row gutter={[16, 16]}>

@@ -592,12 +592,13 @@ const VoucherDisplay = ({}) => {
                       showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
                     }}
                   >
-                    <Table.Column
+                    {/* <Table.Column
                       key="id"
                       dataIndex="id"
-                      title={t("ID")}
-                      render={(text, record) => <span>{record.id}</span>}
-                    />
+                      title={t("STT")}
+                      // render={(text, record) => <span>{record.id}</span>}
+                      render={(text, record, index) => <span>{index + 1}</span>}
+                    /> */}
                     <Table.Column
                       key="status"
                       dataIndex="status"

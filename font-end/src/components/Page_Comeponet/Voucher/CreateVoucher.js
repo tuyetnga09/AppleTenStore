@@ -97,7 +97,7 @@ const CreateVoucher = ({}) => {
     const items = { ...voucher };
     const newCode = items.code;
     const newName = items.name;
-    const { valueMinimum, valueMaximum } = items;
+    const { valueMinimum, valueMaximum, dateStart, dateEnd } = items;
     const voucherCodes = new Set();
     const voucherNames = new Set();
     // Kiểm tra trùng lặp khi thêm mới hoặc chỉnh sửa
@@ -129,6 +129,15 @@ const CreateVoucher = ({}) => {
       });
       return;
     }
+
+      // Kiểm tra và thiết lập ngày kết thúc nếu không được cung cấp
+    if (!dateEnd) {
+      const oneYearLater = new Date(dateStart);
+      oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+
+      items.dateEnd = oneYearLater.toISOString().split("T")[0];
+    }
+
     // Tiếp tục với logic thêm mới hoặc chỉnh sửa
     add(items)
       .then(() => {

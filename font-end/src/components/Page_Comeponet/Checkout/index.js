@@ -509,10 +509,10 @@ const Checkout = () => {
 
   // Hàm để hiển thị Modal khi cần
   const handleEditClick = (record) => {
-    if (totalPrice < 20000000) {
+    if (totalPrice < 5000000) {
       notification.error({
         message: "VOUCHER",
-        description: "Đơn hàng chưa đủ điều kiện (Tối thiểu 20.000.000 đ)",
+        description: "Đơn hàng chưa đủ điều kiện (Tối thiểu 5.000.000 đ)",
       });
     } else {
       setIsModalVisible(true);
