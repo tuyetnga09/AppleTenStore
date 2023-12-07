@@ -102,9 +102,6 @@ const OderUserDaHuy = () => {
               <br />
               <br />
               <div style={{ float: "right" }}>
-                <button type="button" class="btn btn-danger">
-                  Liên hệ người bán
-                </button>{" "}
                 <button type="button" class="btn btn-light">
                   Mua lại
                 </button>

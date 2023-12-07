@@ -42,8 +42,10 @@ export default function CartDisplay() {
 
   const [quantity, setQuantity] = useState([]);
   const storedBill = JSON.parse(localStorage.getItem("bill"));
-  const toast = useRef(null);
 
+  const toast = useRef(null);
+  const [loaded, setLoaded] = useState(false);
+  
   useEffect(() => {
     if (idAccount !== null && idAccount !== "") {
       readAll(idAccount)
@@ -95,14 +97,16 @@ export default function CartDisplay() {
       );
       setQuantity(totalQuantity);
     }
-  }, [storedBill]);
+  }, [storedBill, loaded]);
 
   async function remove(id, idSKU) {
     if (idAccount !== null && idAccount !== "") {
-      deleteCartDetail(id).then(() => {
-        let newArr = [...products].filter((s) => s.id !== id);
+      await deleteCartDetail(id).then(() => {
+        let newArr = [...products].filter((s) => s.idCartDetail !== id);
         setProducts(newArr);
-        window.location.reload();
+        setLoaded(!loaded);
+        console.log(products);
+        console.log(newArr);
       });
     } else {
       // Xóa sản phẩm khỏi sessionStorage nếu không có idAccount
@@ -112,6 +116,7 @@ export default function CartDisplay() {
       // Cập nhật trạng thái trong ứng dụng React
       setProducts(updatedCartItems);
       calculateTotalPrice();
+      setLoaded(!loaded);
     }
   }
 
@@ -219,27 +224,33 @@ export default function CartDisplay() {
   //xóa all giỏ hàng
   const handleRemoveAllFromCart = () => {
     if (idAccount !== null && idAccount !== "") {
-      deleteAllCart(idAccount).then(() => {
+      if (products.length !== 0) {
+        setLoaded(!loaded);
+        deleteAllCart(idAccount).then(() => {
+          notification.success({
+            message: "CART",
+            description: "Xóa thành công",
+          });
+          readAll(idAccount)
+            .then((response) => {
+              setProducts(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        });
+      }
+    } else {
+      if (sessionStorage.getItem("cartItems") !== null) {
+        setLoaded(!loaded);
+        sessionStorage.removeItem("cartItems");
+        setProducts([]);
+        setTotalPrice(0);
         notification.success({
           message: "Giỏ hàng",
           description: "Xóa thành công",
         });
-        readAll(idAccount)
-          .then((response) => {
-            setProducts(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-      });
-    } else {
-      sessionStorage.removeItem("cartItems");
-      setProducts([]);
-      setTotalPrice(0);
-      notification.success({
-        message: "Giỏ hàng",
-        description: "Xóa thành công",
-      });
+      }
     }
   };
 
@@ -606,6 +617,16 @@ export default function CartDisplay() {
                                                 description:
                                                   "Vui lòng kiểm tra lại số lượng",
                                               });
+                                              const quantity =
+                                                document.getElementById(
+                                                  `quantity-${index}`
+                                                );
+                                              quantity.value = 1;
+                                              handleUpdateQuantity(
+                                                product.idCartDetail,
+                                                1,
+                                                product.idSKU
+                                              );
                                             } else {
                                               // Kiểm tra số lượng trong giỏ hàng với số lượng có sẵn
                                               if (
@@ -813,10 +834,10 @@ export default function CartDisplay() {
                           {/* </Link> */}
                         </div>
                         <h5 className="fw-bold mb-5" style={{ bottom: 0 }}>
-                          <a href="/">
+                          <Link to="/">
                             <FontAwesomeIcon icon={faArrowLeft} />
                             Tiếp tục mua hàng
-                          </a>
+                          </Link>
                         </h5>
                       </div>
                     </div>

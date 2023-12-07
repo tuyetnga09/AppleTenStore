@@ -22,7 +22,7 @@ import java.util.Optional;
 public interface BillRepository extends JpaRepository<Bill, Integer> {
 
 
-    @Query(value = "select p.method as 'PaymentMethod', bill.address as 'Address', bill.phone_number as 'PhoneNumber', bill.code, bill.total_money as 'TotalMoney' from bill join payments p on bill.id = p.id_bill where bill.code = ?1", nativeQuery = true)
+    @Query(value = "select bill.id as 'IdBill', p.method as 'PaymentMethod', bill.address as 'Address', bill.phone_number as 'PhoneNumber', bill.code, bill.total_money as 'TotalMoney', bill.status_bill as 'StatusBill' from bill join payments p on bill.id = p.id_bill where bill.code = ?1", nativeQuery = true)
     BillPayDone findBillPayDoneByCode(String code);
 
     Optional<Bill> findByCode(String code);

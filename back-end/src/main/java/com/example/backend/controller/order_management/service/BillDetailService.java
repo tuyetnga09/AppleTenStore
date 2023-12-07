@@ -23,8 +23,8 @@ public interface BillDetailService {
 
     List<BillDetailOffLineIon> findBillDetails(Integer id);
 
-    List<BillDetailCustomerIon> getBillDetailOfIdBill(Integer id);
+    List<BillDetailCustomerIon> getBillDetailOfIdBill(Integer id, String codeImei);
 
-    List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill);
+    List<BillDetailReturnAdmin> getAllBillDetailReturn(Integer status, Integer idBill, String codeImei);
 
 }

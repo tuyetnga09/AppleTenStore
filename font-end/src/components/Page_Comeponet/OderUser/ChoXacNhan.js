@@ -102,9 +102,6 @@ const OderUserChoThanhToan = () => {
               <br />
               <br />
               <div style={{ float: "right" }}>
-                <button type="button" class="btn btn-danger">
-                  Liên hệ người bán
-                </button>{" "}
                 <button
                   type="button"
                   class="btn btn-light"
@@ -162,7 +159,7 @@ const OderUserChoThanhToan = () => {
       "exampleFormControlTextarea1"
     );
     textNoteReturn.value = "";
-    notification.error({
+    notification.success({
       message: "Hủy đơn",
       description: "Hủy đơn thành công",
     });

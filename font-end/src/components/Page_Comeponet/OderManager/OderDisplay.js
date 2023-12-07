@@ -697,7 +697,7 @@ const OderDisplay = ({}) => {
       "exampleFormControlTextarea2"
     );
     textNoteReturn.value = "";
-    notification.error({
+    notification.success({
       message: "Hủy đơn",
       description: "Hủy đơn thành công",
     });
@@ -712,7 +712,7 @@ const OderDisplay = ({}) => {
     setIsModalVisibleReturnDetails(true);
     console.log(record);
     setNoteReturnDetail(record.noteReturn);
-    getAllBillDetailReturn(4, record.id)
+    getAllBillDetailReturn(4, record.id, "")
       .then((response) => {
         setDataBillDetails(response.data);
         console.log(response.data);
@@ -769,10 +769,11 @@ const OderDisplay = ({}) => {
     setIsModalVisibleReturnDetails(false);
     setLoad(!load);
   }
-
+  const [idBillDaTra, setIdBillDaTra] = useState();
   const handleClickReturnedProducts = (record) => {
     setIsModalVisibleReturnedProducts(true);
-    getAllBillDetailReturn(6, record.id)
+    setIdBillDaTra(record.id);
+    getAllBillDetailReturn(6, record.id, "")
       .then((response) => {
         setDataBillDetails(response.data);
         console.log(response.data);
@@ -786,6 +787,27 @@ const OderDisplay = ({}) => {
   const handleCannelReturnedProducts = () => {
     setIsModalVisibleReturnedProducts(false);
   };
+
+  function handleChangeSearchYCTH(event) {
+    getAllBillDetailReturn(4, acceptReturnBill.idBill, event.target.value)
+      .then((response) => {
+        setDataBillDetails(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function handleChangeSearchDaTra(event) {
+    getAllBillDetailReturn(6, idBillDaTra, event.target.value)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const expandedRowRender = (record) => {
     return (
@@ -1501,6 +1523,17 @@ const OderDisplay = ({}) => {
                   ></textarea>
                 </div>
               </form>
+              <Row style={{ marginTop: "28px", marginBottom: "10px" }}>
+                <input
+                  // id="id-imeis"
+                  className="form-control me-2"
+                  type="search"
+                  placeholder="Tìm theo imei"
+                  aria-label="Search"
+                  name="key"
+                  onChange={handleChangeSearchYCTH}
+                />
+              </Row>
               <Table
                 rowKey="oop"
                 dataSource={dataBillDetails}
@@ -1626,6 +1659,17 @@ const OderDisplay = ({}) => {
               <label for="exampleFormControlTextarea2" class="form-label">
                 Sản phẩm đã trả:
               </label>
+              <Row style={{ marginTop: "28px", marginBottom: "10px" }}>
+                <input
+                  // id="id-imeis"
+                  className="form-control me-2"
+                  type="search"
+                  placeholder="Tìm theo imei"
+                  aria-label="Search"
+                  name="key"
+                  onChange={handleChangeSearchDaTra}
+                />
+              </Row>
               <Table
                 rowKey="oop"
                 dataSource={dataBillDetails}

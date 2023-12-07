@@ -174,9 +174,6 @@ const OderUserHoanThanh = () => {
               <br />
               <br />
               <div style={{ float: "right" }}>
-                <button type="button" class="btn btn-danger">
-                  Liên hệ người bán
-                </button>{" "}
                 {b.statusBill === "CHO_XAC_NHAN" ? (
                   <button type="button" class="btn btn-light">
                     Hủy đơn
@@ -266,7 +263,7 @@ const OderUserHoanThanh = () => {
       .catch((err) => {
         console.log(err);
       });
-    getAllBillDetail(record.id)
+    getAllBillDetail(record.id, "")
       .then((res) => {
         setDataBillDetails(res.data);
         console.log(res.data);
@@ -609,7 +606,16 @@ const OderUserHoanThanh = () => {
         console.log(err);
       });
   };
-
+  function handleChangeSearch(event) {
+    getAllBillDetail(billReturn.id, event.target.value)
+      .then((res) => {
+        setDataBillDetails(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   return (
     <>
       <Header />
@@ -789,10 +795,10 @@ const OderUserHoanThanh = () => {
             // id="id-imeis"
             className="form-control me-2"
             type="search"
-            placeholder="Search"
+            placeholder="Tìm theo imei"
             aria-label="Search"
             name="key"
-            // onChange={handleChangeImeis}
+            onChange={handleChangeSearch}
           />
         </Row>
         {dataCheckBill === 0 ? (

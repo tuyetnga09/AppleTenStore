@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public interface BillPayDone {
 
+    Integer getIdBill();
+
     String getPaymentMethod();
 
     String getAddress();
@@ -13,4 +15,6 @@ public interface BillPayDone {
     String getCode();
 
     BigDecimal getTotalMoney();
+
+    String getStatusBill();
 }

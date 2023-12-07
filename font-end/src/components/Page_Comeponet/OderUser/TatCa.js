@@ -34,6 +34,7 @@ import {
 } from "@ant-design/icons";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { Toast } from "primereact/toast";
+import { getAllBillDetailReturn } from "../../../service/BillDetail/billDetail.service";
 const { Option } = Select;
 
 const OderUserAll = () => {
@@ -168,27 +169,7 @@ const OderUserAll = () => {
         <hr />
         <div>
           <Row>
-            <div className="col-6">
-              {/* {b.statusBill === "CHO_XAC_NHAN" ? (
-                <p>
-                  Sản phẩm sẽ được giao trước ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "CHO_VAN_CHUYEN" ? (
-                <p>
-                  Dự kiến giao hàng ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "VAN_CHUYEN" ? (
-                <p>
-                  Dự kiến giao hàng ngày <u>23-07-2003</u>
-                </p>
-              ) : b.statusBill === "DA_THANH_TOAN" ? (
-                <p>
-                  Ngày hoàn thành đơn hàng <u>{formattedDateStart}</u>
-                </p>
-              ) : (
-                ""
-              )} */}
-            </div>
+            <div className="col-6"></div>
             <div className="col-6">
               <span style={{ float: "right" }}>
                 Thành tiền:{" "}
@@ -200,9 +181,6 @@ const OderUserAll = () => {
               <br />
               <br />
               <div style={{ float: "right" }}>
-                <button type="button" class="btn btn-danger">
-                  Liên hệ người bán
-                </button>{" "}
                 {b.statusBill === "CHO_XAC_NHAN" ? (
                   <button
                     type="button"
@@ -224,6 +202,14 @@ const OderUserAll = () => {
                     onClick={() => handleNoteReturnsClick(b)}
                   >
                     Trả hàng
+                  </button>
+                ) : b.statusBill === "TRA_HANG" ? (
+                  <button
+                    type="button"
+                    class="btn btn-light"
+                    onClick={() => handleClickReturnedProducts(b)}
+                  >
+                    Xem chi tiết
                   </button>
                 ) : (
                   // <button type="button" class="btn btn-light">
@@ -281,7 +267,7 @@ const OderUserAll = () => {
       "exampleFormControlTextarea1"
     );
     textNoteReturn.value = "";
-    notification.error({
+    notification.success({
       message: "Hủy đơn",
       description: "Hủy đơn thành công",
     });
@@ -338,7 +324,7 @@ const OderUserAll = () => {
       .catch((err) => {
         console.log(err);
       });
-    getAllBillDetail(record.id)
+    getAllBillDetail(record.id, "")
       .then((res) => {
         setDataBillDetails(res.data);
         console.log(res.data);
@@ -684,6 +670,33 @@ const OderUserAll = () => {
       });
   };
 
+  function handleChangeSearch(event) {
+    getAllBillDetail(billReturn.id, event.target.value)
+      .then((res) => {
+        setDataBillDetails(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  const [isModalVisibleReturnedProducts, setIsModalVisibleReturnedProducts] =
+    useState(false); // Trạng thái hiển thị Modal
+  const handleClickReturnedProducts = (record) => {
+    setIsModalVisibleReturnedProducts(true);
+    getAllBillDetailReturn(6, record.id, "")
+      .then((response) => {
+        setDataBillDetails(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handleCannelReturnedProducts = () => {
+    setIsModalVisibleReturnedProducts(false);
+  };
+
   return (
     <>
       <Header />
@@ -889,10 +902,10 @@ const OderUserAll = () => {
             // id="id-imeis"
             className="form-control me-2"
             type="search"
-            placeholder="Search"
+            placeholder="Tìm theo imei"
             aria-label="Search"
             name="key"
-            // onChange={handleChangeImeis}
+            onChange={handleChangeSearch}
           />
         </Row>
         {dataCheckBill === 0 ? (
@@ -1184,7 +1197,7 @@ const OderUserAll = () => {
         <form onSubmit={handleSubmitHuyTrahang}>
           <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">
-              Lí do hủy đơn:
+              Lí do hủy yêu cầu:
             </label>
             <textarea
               class="form-control"
@@ -1198,6 +1211,117 @@ const OderUserAll = () => {
             Xác nhận
           </button>
         </form>
+      </Modal>
+      <Modal
+        visible={isModalVisibleReturnedProducts}
+        onCancel={handleCannelReturnedProducts}
+        width={900}
+        footer={null}
+        bodyStyle={{ minHeight: "150px" }}
+      >
+        <label for="exampleFormControlTextarea2" class="form-label">
+          Sản phẩm đã trả:
+        </label>
+        <Table
+          rowKey="oop"
+          dataSource={dataBillDetails}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: false,
+            showTotal: (total) => `Tổng số ${total} sản phẩm`,
+            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+          }}
+        >
+          {/* tên sp */}
+          <Table.Column
+            align="center"
+            dataIndex="images"
+            title="Ảnh"
+            render={(text, record) => (
+              <div style={{ textAlign: "center" }}>
+                <AvtProduct product={record.productId} />
+              </div>
+            )}
+            width={150}
+          />
+
+          {/* tên sp */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Tên Sản Phẩm"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>{record.nameProduct}</p>
+                </Form.Item>
+              );
+            }}
+          />
+          {/* sumSKU */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Phiên Bản"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>
+                    {record.capacity} - {record.color}
+                  </p>
+                </Form.Item>
+              );
+            }}
+          />
+          {/* priceSKU  */}
+          <Table.Column
+            align="center"
+            key="price"
+            dataIndex="price"
+            title="Giá Bán"
+            sorter={(a, b) => a.price - b.price}
+            render={(text, record) => {
+              return record.price === null ? (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <WarningFilled
+                    value={false}
+                    style={{
+                      color: "#FFCC00",
+                    }}
+                  />
+                  {parseFloat(0).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Form.Item>
+              ) : (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  {parseFloat(record.price).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </Form.Item>
+              );
+            }}
+          />
+
+          {/* sumImeiTrongKho */}
+          <Table.Column
+            align="center"
+            key="isActive"
+            dataIndex="isActive"
+            title="Mã Imei"
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>{record.codeImei}</p>
+                </Form.Item>
+              );
+            }}
+          />
+        </Table>
       </Modal>
       <footer
         style={{
