@@ -101,9 +101,9 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     @Query(value = "update sku set status =?1 where product_id = ?2 and status =?3", nativeQuery = true)
     void updateStatusSkuWhereIdProduct(Integer status, Integer idProduct, Integer statusWhere);
 
-    @Query(value = "select * from sku where product_id = ?1 order by price asc limit 1", nativeQuery = true)
+    @Query(value = "select * from sku where product_id = ?1 and price is not null order by price asc limit 1", nativeQuery = true)
     SKU findSKUPriceMin(Integer idProduct);
 
-    @Query(value = "select * from sku where product_id = ?1 order by price desc limit 1", nativeQuery = true)
+    @Query(value = "select * from sku where product_id = ?1 and price is not null order by price desc limit 1", nativeQuery = true)
     SKU findSKUPriceMax(Integer idProduct);
 }

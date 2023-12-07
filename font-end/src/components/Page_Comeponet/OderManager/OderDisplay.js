@@ -707,6 +707,7 @@ const OderDisplay = ({}) => {
   const [acceptReturnBill, setAcceptReturnBill] = useState({
     idBill: null,
     codeImeiDaBan: [],
+    personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
   });
   const handleClickReturnDetails = (record) => {
     let arrCodeImeiDaBan = [];
@@ -727,6 +728,7 @@ const OderDisplay = ({}) => {
         console.log(error);
       });
     setAcceptReturnBill({
+      ...acceptReturnBill,
       idBill: record.id,
       codeImeiDaBan: arrCodeImeiDaBan,
     });
@@ -736,6 +738,7 @@ const OderDisplay = ({}) => {
   const handleCannelReturnDetails = () => {
     setIsModalVisibleReturnDetails(false);
     setAcceptReturnBill({
+      ...acceptReturnBill,
       idBill: null,
       codeImeiDaBan: [],
     });
@@ -1168,7 +1171,7 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="dateUpdate"
                       dataIndex="dateUpdate"
-                      title={t("Người cập nhật")}
+                      title={t("Ngày cập nhật")}
                       render={(text, record) => (
                         // <span>{record.dateUpdate}</span>
                         <DateField

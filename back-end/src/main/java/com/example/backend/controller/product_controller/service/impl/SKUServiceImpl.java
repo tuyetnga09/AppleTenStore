@@ -49,18 +49,20 @@ public class SKUServiceImpl implements Iservice<SKU> {
 
     }
 
-    public List<SKU> getAllListSkuFindByProduct(){
+    public List<SKU> getAllListSkuFindByProduct() {
         return skuRepositoty.skuFindByProduct();
     }
 // viet ham hien thi o day
 
-    public SKU getSkuProduct(String capacity, String color, Integer idProduct){
-        return skuRepositoty.skuProduct(capacity,color,idProduct);
+    public SKU getSkuProduct(String capacity, String color, Integer idProduct) {
+        return skuRepositoty.skuProduct(capacity, color, idProduct);
     }
 
-    public SKU findByID(Long id){
-       return skuRepositoty.findById(id).orElse(null);
-    };
+    public SKU findByID(Long id) {
+        return skuRepositoty.findById(id).orElse(null);
+    }
+
+    ;
 
     public List<SKU> getAllSkuFindByProduct(Product product) {
         return skuRepositoty.findByProduct(product);
@@ -69,20 +71,22 @@ public class SKUServiceImpl implements Iservice<SKU> {
 //        return skuRepositoty.getSkuProductFormSellOffline(pageable);
 //    }
 
-    public List<ListSkuProduct> getSKUProductFormSellOff(String key){
+    public List<ListSkuProduct> getSKUProductFormSellOff(String key) {
         return skuRepositoty.getSkuProductFormSellOffline(key);
     }
 
-    public List<ListSkuProduct> getSKUProductFormSellOffByCategory(Integer id, String key){
+    public List<ListSkuProduct> getSKUProductFormSellOffByCategory(Integer id, String key) {
         return skuRepositoty.getSkuProductFormSellOfflineByCategory(id, key);
     }
 
-    public List<BigDecimal> priceMinAndMaxBySKU(Integer idProduct){
+    public List<BigDecimal> priceMinAndMaxBySKU(Integer idProduct) {
         SKU sku = skuRepositoty.findSKUPriceMin(idProduct);
         SKU sku1 = skuRepositoty.findSKUPriceMax(idProduct);
         List<BigDecimal> bigDecimals = new ArrayList<>();
-        bigDecimals.add(sku.getPrice());
-        bigDecimals.add(sku1.getPrice());
+        if (sku != null) {
+            bigDecimals.add(sku.getPrice());
+            bigDecimals.add(sku1.getPrice());
+        }
         return bigDecimals;
     }
 }

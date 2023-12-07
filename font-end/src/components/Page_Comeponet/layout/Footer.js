@@ -21,7 +21,7 @@ export default function Footer() {
           <section>
             <ul className="flexContain">
               <li>Giao hàng nhanh</li>
-              <li>Thanh toán linh hoạt: tiền mặt, vnpay</li>
+              <li>Thanh toán linh hoạt: tiền mặt, VNPAY</li>
               <li>Trải nghiệm sản phẩm tại cửa hàng</li>
               <li>Trả hàng trong vòng 3 ngày</li>
               <li>

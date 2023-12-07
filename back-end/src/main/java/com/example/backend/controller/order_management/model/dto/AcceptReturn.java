@@ -12,4 +12,6 @@ public class AcceptReturn {
     private Integer idBill;
 
     private List<String> codeImeiDaBan;
+
+    private String personUpdate;
 }
