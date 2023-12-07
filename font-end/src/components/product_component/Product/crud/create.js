@@ -128,7 +128,7 @@ const Test = (setDisplay, setPagination) => {
     battery: "",
     chip: "",
     color: [],
-    capacities: [],
+    capacity: [],
     manufacturer: "",
     ram: "",
     screen: "",
@@ -218,6 +218,7 @@ const Test = (setDisplay, setPagination) => {
   }
 
   async function handleSubmit(event) {
+    event.preventDefault();
     if (productData.nameProduct.trim() === "") {
       notification.error({
         message: "Tên sản phẩm không được để trống!",
@@ -258,14 +259,14 @@ const Test = (setDisplay, setPagination) => {
         message: "Chưa chọn màu sắc!",
         // description: "Add product successfully",
       });
-    } else if (productData.capacities.length === 0) {
+    } else if (productData.capacity.length === 0) {
       notification.error({
         message: "Chưa chọn dung lượng!",
         // description: "Add product successfully",
       });
     } else {
+      event.preventDefault();
       try {
-        event.preventDefault();
         const items = { ...productData };
 
         // Thực hiện thêm sản phẩm
