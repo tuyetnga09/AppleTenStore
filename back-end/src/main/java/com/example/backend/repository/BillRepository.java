@@ -258,5 +258,12 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     @Query(value = "SELECT * FROM bill WHERE DATE(date_update) = CURDATE() and status_bill = 'TRA_HANG'", nativeQuery = true)
     List<Bill> listBillTraHangHomNay();
 
+    // lấy ra list bill tra hang trong khoảng ngày a- ngày b
+    @Query(value = "select * from bill where date_update BETWEEN ?1 and ?2 and status_bill ='TRA_HANG'", nativeQuery = true)
+    List<Bill> getBillTraHangSeachKhoangNgay(LocalDate dateBefore, LocalDate dateAfter);
 
+
+    // lấy ra list bill mua hang thanh cong va tra hhang trong ngay
+    @Query(value = "select * from bill where date_create = CURDATE() and date_update = CURDATE() and status_bill ='TRA_HANG'", nativeQuery = true)
+    List<Bill> getBillMuaHangVaTraHangTrongNgay();
 }

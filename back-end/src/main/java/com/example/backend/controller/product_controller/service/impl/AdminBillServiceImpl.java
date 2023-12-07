@@ -79,6 +79,16 @@ public class AdminBillServiceImpl {
                 this.getAllBillsForTheDay().stream().filter(bill -> statusBillFind.equals(bill.getStatusBill()))
                         .map(bill -> bill.getTotalMoney() != null ? bill.getTotalMoney().longValue() : 0)
                         .mapToLong(Long::longValue).sum();
+
+        List<Bill> billListMuaHangVaTraHangTrongNgay = billRepository.getBillMuaHangVaTraHangTrongNgay();
+        if (billListMuaHangVaTraHangTrongNgay.size() >0){
+            for (Bill bill : billListMuaHangVaTraHangTrongNgay) {
+                List<TonTienBillTraHang> tonTienBillTraHangList = billDetailRepository.tongTienBilldetailChuaTraHang(bill.getId());
+                for (TonTienBillTraHang t : tonTienBillTraHangList) {
+                    sum = sum + t.getPrice().longValue();
+                }
+            }
+        }
         if (sum == null) {
             return sum = Long.valueOf(0);
         }
@@ -265,6 +275,8 @@ public class AdminBillServiceImpl {
 
         List<Bill> list = billRepository.getBillSeach(truoc, sau);
 
+        List<Bill> tongTienDonhangHuyKhiTrongKhoangNgay = billRepository.getBillTraHangSeachKhoangNgay(truoc, sau);
+
         BillSeachKhoangNgay billSeachKhoangNgay = new BillSeachKhoangNgay();
 
         //đơn hàng
@@ -286,9 +298,11 @@ public class AdminBillServiceImpl {
                 list.stream().filter(bill -> bill.getStatusBill().equals(daThanhToan)).collect(Collectors.toList());
         billSeachKhoangNgay.setDaThanhToan(daThanhToans.size());
 
-        List<Bill> traHangs =
-                list.stream().filter(bill -> bill.getStatusBill().equals(traHang)).collect(Collectors.toList());
-        billSeachKhoangNgay.setHoanTra(traHangs.size());
+        //sua 1
+//        List<Bill> traHangs =
+//                list.stream().filter(bill -> bill.getStatusBill().equals(traHang)).collect(Collectors.toList());
+//        billSeachKhoangNgay.setHoanTra(traHangs.size());
+        billSeachKhoangNgay.setHoanTra(tongTienDonhangHuyKhiTrongKhoangNgay.size());
 
         List<Bill> daHuys =
                 list.stream().filter(bill -> bill.getStatusBill().equals(daHuy)).collect(Collectors.toList());
@@ -327,11 +341,21 @@ public class AdminBillServiceImpl {
                         .mapToLong(Long::longValue).sum();
         billSeachKhoangNgay.setTongTienDnDaThanhToan(tongTienDnDaThanhToan);
 
-        Long tongTienDonHoanTra =
-                list.stream().filter(bill -> bill.getStatusBill().equals(traHang))
-                        .map(bill -> bill.getTotalMoney() != null ? bill.getTotalMoney().longValue() : 0)
-                        .mapToLong(Long::longValue).sum();
-        billSeachKhoangNgay.setTongTienDonHoanTra(tongTienDonHoanTra);
+        // sua 2
+//        Long tongTienDonHoanTra =
+//                list.stream().filter(bill -> bill.getStatusBill().equals(traHang))
+//                        .map(bill -> bill.getTotalMoney() != null ? bill.getTotalMoney().longValue() : 0)
+//                        .mapToLong(Long::longValue).sum();
+//        billSeachKhoangNgay.setTongTienDonHoanTra(tongTienDonHoanTra);
+
+        Long sum =0l;
+        for (Bill bill : tongTienDonhangHuyKhiTrongKhoangNgay) {
+            List<TonTienBillTraHang> tonTienBillTraHangList = billDetailRepository.tongTienBilldetailTraHang(bill.getId());
+            for (TonTienBillTraHang t : tonTienBillTraHangList) {
+                sum = sum + t.getPrice().longValue();
+            }
+        }
+        billSeachKhoangNgay.setTongTienDonHoanTra(sum);
 
         Long tongTienDonHangHuy =
                 list.stream().filter(bill -> bill.getStatusBill().equals(daHuy))
