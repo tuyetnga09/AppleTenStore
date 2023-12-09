@@ -51,4 +51,6 @@ public interface BillService {
     Bill noAcceptReturn(AcceptReturn AcceptReturn);
 
     BillPayDone findBillPayDoneByCode(String code);
+
+    Bill deliveryFailed(Integer idAccount, Integer idBill, String note);
 }

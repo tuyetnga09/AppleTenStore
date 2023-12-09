@@ -2629,7 +2629,10 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                   >
                                     Giỏ Hàng
                                   </span>
-                                ) : imei.status === 3 ? (
+                                ) : imei.status === 3 ||
+                                  imei.status === 4 ||
+                                  imei.status === 5 ||
+                                  imei.status === 7 ? (
                                   <span
                                     style={{
                                       // paddingLeft: "5px",
@@ -2641,6 +2644,19 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                     }}
                                   >
                                     Đã Bán
+                                  </span>
+                                ) : imei.status === 6 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "yellow",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Máy Lỗi
                                   </span>
                                 ) : (
                                   <span
@@ -2913,7 +2929,10 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                   >
                                     Giỏ Hàng
                                   </span>
-                                ) : imei.status === 3 ? (
+                                ) : imei.status === 3 ||
+                                  imei.status === 4 ||
+                                  imei.status === 5 ||
+                                  imei.status === 7 ? (
                                   <span
                                     style={{
                                       // paddingLeft: "5px",
@@ -2925,6 +2944,19 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                     }}
                                   >
                                     Đã Bán
+                                  </span>
+                                ) : imei.status === 6 ? (
+                                  <span
+                                    style={{
+                                      // paddingLeft: "5px",
+                                      // paddingRight: "5px",
+                                      backgroundColor: "Blue",
+                                      margin: "outo",
+                                      textAlign: "center",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Máy Lỗi
                                   </span>
                                 ) : (
                                   <span
@@ -3358,33 +3390,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                   }}
                 >
                   {isCheckImei != null && isCheckImei.length > 0 ? (
-                    // <div className="table-wrap">
-                    //   <p style={{ color: "red" }}>* Imei Trung Lap</p>
-                    //   <table class="table">
-                    //     <thead class="table-dark">
-                    //       <th>STT</th>
-                    //       <th>PRODUCT</th>
-                    //       <th>COLOR</th>
-                    //       <th>CAPACITY</th>
-                    //       <th>IMEI</th>
-                    //       <th>PRICE</th>
-                    //     </thead>
-                    //     <tbody>
-                    //       {isCheckImei.map((s, index) => {
-                    //         return (
-                    //           <tr className="alert" role="alert" key={s.id}>
-                    //             <td>{index + 1}</td>
-                    //             <td>{s.nameProduct}</td>
-                    //             <td>{s.color}</td>
-                    //             <td>{s.capacity}</td>
-                    //             <td>{s.codeImei}</td>
-                    //             <td>{s.price}</td>
-                    //           </tr>
-                    //         );
-                    //       })}
-                    //     </tbody>
-                    //   </table>
-                    //   </div>
                     <div>
                       <p style={{ color: "red" }}>* Imei Trung Lap</p>
                       <div style={{ backgroundColor: "#FF0000" }}>

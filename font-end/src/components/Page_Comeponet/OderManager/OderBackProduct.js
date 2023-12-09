@@ -278,8 +278,8 @@ const OderDisplay = ({}) => {
               playSound
             ) {
               // Nếu có hóa đơn mới, thì phát âm thanh thông báo
-              const audio = new Audio(AudioTT);
-              audio.play();
+              // const audio = new Audio(AudioTT);
+              // audio.play();
 
               // Cập nhật số hóa đơn chờ xác nhận
               setPendingBills(newPendingBills);

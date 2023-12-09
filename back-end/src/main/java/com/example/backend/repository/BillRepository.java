@@ -3,6 +3,7 @@ package com.example.backend.repository;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
 import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
+import com.example.backend.controller.product_controller.model.respon.IdBillTheoThang;
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import jakarta.transaction.Transactional;
@@ -94,22 +95,22 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 //    @Transactional
 //    @Modifying
     @Query(value = "SELECT\n" +
-            "  MONTH(date_create) AS month,\n" +
-            "  SUM(total_money) AS totalMoney,\n" +
-            "  COUNT(code) AS quantity\n" +
-            "FROM bill\n" +
-            "WHERE YEAR(date_create) = 2023 AND status_bill = 'DA_THANH_TOAN'\n" +
-            "GROUP BY month\n" +
-            "UNION\n" +
-            "SELECT\n" +
-            "  Months.MonthNumber AS month,\n" +
-            "  0 AS totalMoney,\n" +
-            "  0 AS quantity\n" +
-            "FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
-            "      UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
-            "LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) = 2023 AND bill.status_bill = 'DA_THANH_TOAN'\n" +
-            "WHERE bill.code IS NULL\n" +
-            "ORDER BY month", nativeQuery = true)
+            "             MONTH(date_create) AS month,\n" +
+            "              SUM(total_money) AS totalMoney,\n" +
+            "              COUNT(code) AS quantity\n" +
+            "            FROM bill\n" +
+            "            WHERE YEAR(date_create) = YEAR(CURDATE()) AND ( status_bill = 'DA_THANH_TOAN' or status_bill ='YEU_CAU_TRA_HANG' or status_bill = 'KHONG_TRA_HANG' )\n" +
+            "            GROUP BY month\n" +
+            "            UNION\n" +
+            "            SELECT\n" +
+            "              Months.MonthNumber AS month,\n" +
+            "              0 AS totalMoney,\n" +
+            "              0 AS quantity\n" +
+            "            FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            "                  UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "            LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) = YEAR(CURDATE()) AND ( bill.status_bill = 'DA_THANH_TOAN' or bill.status_bill ='YEU_CAU_TRA_HANG' or bill.status_bill = 'KHONG_TRA_HANG' )\n" +
+            "            WHERE bill.code IS NULL\n" +
+            "            ORDER BY month", nativeQuery = true)
     List<AnnualRevenueIon> annualRevenueYear();
 
     //Customers
@@ -198,26 +199,26 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     List<Integer> getListKhachHangDaHuyDonTrongKhoangNgay(LocalDate dateBefore, LocalDate dateAfter);
 
     // list năm
-    @Query(value = "select year(date_create) from bill where status_bill='DA_THANH_TOAN' group by year(date_create)", nativeQuery = true)
+    @Query(value = "select year(date_create) from bill where status_bill = 'DA_THANH_TOAN' or status_bill ='YEU_CAU_TRA_HANG' or status_bill = 'KHONG_TRA_HANG' or status_bill = 'TRA_HANG' group by year(date_create)", nativeQuery = true)
     List<Integer> getListYearOfBill();
 
     @Query(value = "SELECT\n" +
-            "  MONTH(date_create) AS month,\n" +
-            "  SUM(total_money) AS totalMoney,\n" +
-            "  COUNT(code) AS quantity\n" +
-            "FROM bill\n" +
-            "WHERE YEAR(date_create) =?1 AND status_bill = 'DA_THANH_TOAN'\n" +
-            "GROUP BY month\n" +
-            "UNION\n" +
-            "SELECT\n" +
-            "  Months.MonthNumber AS month,\n" +
-            "  0 AS totalMoney,\n" +
-            "  0 AS quantity\n" +
-            "FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
-            "      UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
-            "LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) = 2023 AND bill.status_bill = 'DA_THANH_TOAN'\n" +
-            "WHERE bill.code IS NULL\n" +
-            "ORDER BY month", nativeQuery = true)
+            "              MONTH(date_create) AS month,\n" +
+            "              SUM(total_money) AS totalMoney,\n" +
+            "              COUNT(code) AS quantity\n" +
+            "            FROM bill\n" +
+            "            WHERE YEAR(date_create) =?1 AND ( status_bill = 'DA_THANH_TOAN' or status_bill ='YEU_CAU_TRA_HANG' or status_bill = 'KHONG_TRA_HANG' )\n" +
+            "            GROUP BY month\n" +
+            "            UNION\n" +
+            "            SELECT\n" +
+            "              Months.MonthNumber AS month,\n" +
+            "              0 AS totalMoney,\n" +
+            "              0 AS quantity\n" +
+            "            FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            "                  UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "            LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) =?1 AND ( status_bill = 'DA_THANH_TOAN' or status_bill ='YEU_CAU_TRA_HANG' or status_bill = 'KHONG_TRA_HANG' )\n" +
+            "            WHERE bill.code IS NULL\n" +
+            "            ORDER BY month", nativeQuery = true)
     List<AnnualRevenueIon> seachDoanhSoTheoNam(Integer year);
 
     @Modifying
@@ -258,5 +259,90 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     @Query(value = "SELECT * FROM bill WHERE DATE(date_update) = CURDATE() and status_bill = 'TRA_HANG'", nativeQuery = true)
     List<Bill> listBillTraHangHomNay();
 
+    // lấy ra list bill tra hang trong khoảng ngày a- ngày b
+    @Query(value = "select * from bill where date_update BETWEEN ?1 and ?2 and status_bill ='TRA_HANG'", nativeQuery = true)
+    List<Bill> getBillTraHangSeachKhoangNgay(LocalDate dateBefore, LocalDate dateAfter);
 
+
+    // lấy ra list bill mua hang thanh cong va tra hhang trong ngay
+    @Query(value = "select * from bill where date_create = CURDATE() and date_update = CURDATE() and status_bill ='TRA_HANG'", nativeQuery = true)
+    List<Bill> getBillMuaHangVaTraHangTrongNgay();
+
+    // lấy ra list bill mua hang thanh cong va tra hhang hom sau
+    @Query(value = "select * from bill where date_create != date_update  and date_update = CURDATE() and status_bill ='TRA_HANG'", nativeQuery = true)
+    List<Bill> getBillMuaHangVaTraHangHomSau();
+
+    @Query(value = "SELECT\n" +
+            "             MONTH(date_create) AS month,\n" +
+            "           \n" +
+            "              COUNT(code) AS quantity\n" +
+            "            FROM bill\n" +
+            "            WHERE YEAR(date_create) = YEAR(CURDATE())  and ( status_bill = 'DA_THANH_TOAN' or status_bill ='YEU_CAU_TRA_HANG' or status_bill = 'KHONG_TRA_HANG'  or status_bill='TRA_HANG')\n" +
+            "            GROUP BY month\n" +
+            "            UNION\n" +
+            "            SELECT\n" +
+            "              Months.MonthNumber AS month,\n" +
+            "           \n" +
+            "              0 AS quantity\n" +
+            "            FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            "                  UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "            LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) = YEAR(CURDATE()) \n" +
+            "            WHERE bill.code IS NULL\n" +
+            "            ORDER BY month", nativeQuery = true)
+    List<AnnualRevenueIon> sumDonHangTrongThang();
+
+    @Query(value = "SELECT bill.id as 'idBill',  MONTH(bill.date_create) AS month FROM bill \n" +
+            " WHERE YEAR(bill.date_create) = YEAR(CURDATE()) AND bill.status_bill = 'TRA_HANG'\n" +
+            " UNION\n" +
+            " SELECT bill.id, MONTH(bill.date_create) AS month\n" +
+            " FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            " UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "                       LEFT JOIN bill   ON Months.MonthNumber = MONTH(bill.date_create)  AND YEAR(bill.date_create) = YEAR(CURDATE()) AND bill.status_bill = 'TRA_HANG'\n" +
+            "                      \n" +
+            "                      WHERE bill.code IS NULL\n" +
+            "                        ORDER BY month", nativeQuery = true)
+    List<IdBillTheoThang>  listIdBillTheoThangCuaNamHienTai();
+
+    @Query(value = "SELECT bill.id as 'idBill',  MONTH(bill.date_create) AS month FROM bill \n" +
+            " WHERE YEAR(bill.date_create) = ?1 AND bill.status_bill = 'TRA_HANG'\n" +
+            " UNION\n" +
+            " SELECT bill.id, MONTH(bill.date_create) AS month\n" +
+            " FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            " UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "                       LEFT JOIN bill   ON Months.MonthNumber = MONTH(bill.date_create)  AND YEAR(bill.date_create) = YEAR(CURDATE()) AND bill.status_bill = 'TRA_HANG'\n" +
+            "                      \n" +
+            "                      WHERE bill.code IS NULL\n" +
+            "                        ORDER BY month", nativeQuery = true)
+    List<IdBillTheoThang>  listIdBillTheoThangCuaNamSeach(Integer year);
+
+    @Query(value = "SELECT\n" +
+            "             MONTH(date_create) AS month,\n" +
+            "           \n" +
+            "              COUNT(code) AS quantity\n" +
+            "            FROM bill\n" +
+            "            WHERE YEAR(date_create) = ?1  and ( status_bill = 'DA_THANH_TOAN' or status_bill ='YEU_CAU_TRA_HANG' or status_bill = 'KHONG_TRA_HANG'  or status_bill='TRA_HANG')\n" +
+            "            GROUP BY month\n" +
+            "            UNION\n" +
+            "            SELECT\n" +
+            "              Months.MonthNumber AS month,\n" +
+            "           \n" +
+            "              0 AS quantity\n" +
+            "            FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            "                  UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "            LEFT JOIN bill ON Months.MonthNumber = MONTH(bill.date_create) AND YEAR(bill.date_create) = ?1 \n" +
+            "            WHERE bill.code IS NULL\n" +
+            "            ORDER BY month", nativeQuery = true)
+    List<AnnualRevenueIon> sumDonHangTrongThangSeach(Integer year);
+
+    @Query(value = "SELECT bill.id as 'idBill',  MONTH(bill.date_create) AS month FROM bill \n" +
+            " WHERE YEAR(bill.date_create) = ?1 AND bill.status_bill = 'TRA_HANG'\n" +
+            " UNION\n" +
+            " SELECT bill.id, MONTH(bill.date_create) AS month\n" +
+            " FROM (SELECT 1 AS MonthNumber UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6\n" +
+            " UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) Months\n" +
+            "                       LEFT JOIN bill   ON Months.MonthNumber = MONTH(bill.date_create)  AND YEAR(bill.date_create) = YEAR(CURDATE()) AND bill.status_bill = 'TRA_HANG'\n" +
+            "                      \n" +
+            "                      WHERE bill.code IS NULL\n" +
+            "                        ORDER BY month", nativeQuery = true)
+    List<IdBillTheoThang>  listIdBillTheoThangCuaNamSeachs(Integer year);
 }

@@ -614,6 +614,8 @@ export default function SellSmart() {
     showDistricts,
     showWards,
     transportationFeeDTO,
+    slHoaDonCho,
+    slHoaDonNgay
   ]);
 
   function getBillChoThanhToanOff() {
@@ -1083,7 +1085,7 @@ export default function SellSmart() {
 
   function checkQuantitySubmit() {
     dataBillDetailOffline.map((bd) => {
-      getOneSKU(bd.sku)
+      getOneSKU(bd.idSKU)
         .then((response) => {
           if (response.data.quantity < bd.quantity) {
             setChecked(false);

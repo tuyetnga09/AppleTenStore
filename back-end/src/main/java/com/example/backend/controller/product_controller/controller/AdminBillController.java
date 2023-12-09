@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.controller.product_controller.model.request.DoanhThuTheoNam;
 import com.example.backend.controller.product_controller.model.request.Top8ProductMonthlyTrending;
 import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
 import com.example.backend.controller.product_controller.model.respon.BillSeachKhoangNgay;
@@ -128,7 +129,12 @@ public class AdminBillController {
     @GetMapping("/total-money/already-paid") //sum tổng tiền các bill da thanh toans
     public ResponseEntity<Long> sumToTalMoneyOfBillsForTheDayAlreadyPaid() {
         StatusBill statusBill = StatusBill.DA_THANH_TOAN;
-        Long sum = adminBillService.sumToTalMoneyOfBillswhereStatus(statusBill);
+        Long sumDTT = adminBillService.sumToTalMoneyOfBillswhereStatus(statusBill);
+        StatusBill statusBillYCTH = StatusBill.YEU_CAU_TRA_HANG;
+        Long sumYCTH = adminBillService.sumToTalMoneyOfBillswhereStatus(statusBillYCTH);
+        StatusBill statusBillKTH = StatusBill.KHONG_TRA_HANG;
+        Long sumKTH = adminBillService.sumToTalMoneyOfBillswhereStatus(statusBillKTH);
+        Long sum = sumDTT + sumYCTH + sumKTH;
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
@@ -168,10 +174,10 @@ public class AdminBillController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    //báo cáo daonh thu hiện tại - "DA_THANH_TOAN"
+    //báo cáo daonh thu hiện tại cua nam - "DA_THANH_TOAN"
     @GetMapping("/revenue-year")
-    public ResponseEntity<List<AnnualRevenueIon>> revenue() {
-        List<AnnualRevenueIon> list = adminBillService.annualRevenue();
+    public ResponseEntity<List<DoanhThuTheoNam>> revenue() {
+        List<DoanhThuTheoNam> list = adminBillService.annualRevenue();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
