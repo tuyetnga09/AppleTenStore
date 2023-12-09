@@ -623,8 +623,9 @@ public class BillServiceImpl implements BillService {
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
              ) {
             imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(6, codeImei);
+
             Imei imei = imeiRepository.findByCodeImei(codeImei);
-            imei.setStatus(4);
+            imei.setStatus(6);
             imeiRepository.save(imei);
         }
         return bill;
@@ -637,8 +638,8 @@ public class BillServiceImpl implements BillService {
         bill.setDateUpdate(LocalDate.now());
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
         ) {
-            imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(7, codeImei);
-            imeiRepository.updateStatusImeiByCodeImei(3, codeImei);
+            imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(5, codeImei);
+            imeiRepository.updateStatusImeiByCodeImei(5, codeImei);
         }
         return bill;
     }

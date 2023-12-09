@@ -264,6 +264,8 @@ const Checkout = () => {
   }, [province_id, district_id, transportationFeeDTO, priceShip]);
 
   function giaoTanNoi() {
+    const select0 = document.getElementById("0");
+    select0.selected = true;
     const select = document.getElementById("floatingSelect1");
     select.hidden = true;
     const input = document.getElementById("floatingSelect2");
@@ -272,11 +274,28 @@ const Checkout = () => {
     divDcmd.hidden = true;
     const notDcmd = document.getElementById("notDcmd");
     notDcmd.hidden = false;
+    setTransportationFeeDTO({
+      toDistrictId: null,
+      toWardCode: null,
+      insuranceValue: null,
+      quantity: 1,
+    });
+    setIsChecked1(false);
+    setIsChecked2(true);
+    setIsChecked3(false);
     document.getElementById("htnn_4").checked = false;
     document.getElementById("htnn_6").checked = false;
   }
 
   function nhanTaiCuaHang() {
+    const select0 = document.getElementById("0");
+    select0.selected = true;
+    const select_1 = document.getElementById("-1");
+    select_1.selected = true;
+    const select_2 = document.getElementById("-2");
+    select_2.selected = true;
+    const select_3 = document.getElementById("-3");
+    select_3.selected = true;
     const select = document.getElementById("floatingSelect1");
     select.hidden = false;
     const input = document.getElementById("floatingSelect2");
@@ -297,10 +316,25 @@ const Checkout = () => {
   }
 
   function diaChiMacDinh() {
+    const select_1 = document.getElementById("-1");
+    select_1.selected = true;
+    const select_2 = document.getElementById("-2");
+    select_2.selected = true;
+    const select_3 = document.getElementById("-3");
+    select_3.selected = true;
     const divDcmd = document.getElementById("dcmd2");
     divDcmd.hidden = false;
     const notDcmd = document.getElementById("notDcmd");
     notDcmd.hidden = true;
+    setTransportationFeeDTO({
+      toDistrictId: null,
+      toWardCode: null,
+      insuranceValue: null,
+      quantity: 1,
+    });
+    setIsChecked1(false);
+    setIsChecked2(false);
+    setIsChecked3(true);
     document.getElementById("htnn_4").checked = false;
     document.getElementById("htnn_5").checked = false;
   }
@@ -1345,7 +1379,7 @@ const Checkout = () => {
                         aria-label="Floating label select example"
                         onChange={handleProvince}
                       >
-                        <option selected></option>
+                        <option selected id="-1"></option>
                         {provinces.map((pr) => {
                           return (
                             <option
@@ -1368,7 +1402,7 @@ const Checkout = () => {
                         aria-label="Floating label select example"
                         onChange={handleDistrict}
                       >
-                        <option selected></option>
+                        <option selected id="-2"></option>
                         {districts.map((dt) => {
                           return (
                             <option
@@ -1391,7 +1425,7 @@ const Checkout = () => {
                         aria-label="Floating label select example"
                         onChange={handleWard}
                       >
-                        <option selected></option>
+                        <option selected id="-3"></option>
                         {wards.map((w) => {
                           return (
                             <option

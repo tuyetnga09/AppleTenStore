@@ -2650,7 +2650,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                     style={{
                                       // paddingLeft: "5px",
                                       // paddingRight: "5px",
-                                      backgroundColor: "blue",
+                                      backgroundColor: "yellow",
                                       margin: "outo",
                                       textAlign: "center",
                                       borderRadius: "5px",
