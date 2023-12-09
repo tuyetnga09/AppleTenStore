@@ -576,6 +576,15 @@ const DashboardPage = () => {
         .then((response) => {
           setDataSumToTalMoneyBillUnconfimred(response.data);
           unconfirmedDataDailyRevenue = response.data;
+          fetchDataFromBackendDailyRevenue(
+            unconfirmedDataDailyRevenue,
+            confirmedDataDailyRevenue,
+            areDeliveringDataDailyRevenue,
+            alreadyPaidDataDailyRevenue,
+            noReturnDataDailyRevenue,
+            returnsDataDailyRevenue,
+            cancelOrderDataDailyRevenue
+          );
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -585,6 +594,15 @@ const DashboardPage = () => {
         .then((response) => {
           setDataSumMoneyBillConfirmed(response.data);
           confirmedDataDailyRevenue = response.data;
+          fetchDataFromBackendDailyRevenue(
+            unconfirmedDataDailyRevenue,
+            confirmedDataDailyRevenue,
+            areDeliveringDataDailyRevenue,
+            alreadyPaidDataDailyRevenue,
+            noReturnDataDailyRevenue,
+            returnsDataDailyRevenue,
+            cancelOrderDataDailyRevenue
+          );
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -594,6 +612,15 @@ const DashboardPage = () => {
         .then((response) => {
           setDataSumMoneyBillAreDelivering(response.data);
           areDeliveringDataDailyRevenue = response.data;
+          fetchDataFromBackendDailyRevenue(
+            unconfirmedDataDailyRevenue,
+            confirmedDataDailyRevenue,
+            areDeliveringDataDailyRevenue,
+            alreadyPaidDataDailyRevenue,
+            noReturnDataDailyRevenue,
+            returnsDataDailyRevenue,
+            cancelOrderDataDailyRevenue
+          );
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -603,6 +630,15 @@ const DashboardPage = () => {
         .then((response) => {
           setDataSumMoneyBillAlreadyPaid(response.data);
           alreadyPaidDataDailyRevenue = response.data;
+          fetchDataFromBackendDailyRevenue(
+            unconfirmedDataDailyRevenue,
+            confirmedDataDailyRevenue,
+            areDeliveringDataDailyRevenue,
+            alreadyPaidDataDailyRevenue,
+            noReturnDataDailyRevenue,
+            returnsDataDailyRevenue,
+            cancelOrderDataDailyRevenue
+          );
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -612,6 +648,15 @@ const DashboardPage = () => {
         .then((response) => {
           setDataSumMoneyBillNoReturn(response.data);
           noReturnDataDailyRevenue = response.data;
+          fetchDataFromBackendDailyRevenue(
+            unconfirmedDataDailyRevenue,
+            confirmedDataDailyRevenue,
+            areDeliveringDataDailyRevenue,
+            alreadyPaidDataDailyRevenue,
+            noReturnDataDailyRevenue,
+            returnsDataDailyRevenue,
+            cancelOrderDataDailyRevenue
+          );
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -622,6 +667,15 @@ const DashboardPage = () => {
         .then((response) => {
           setDataSumMoneyBillReturns(response.data);
           returnsDataDailyRevenue = response.data;
+          fetchDataFromBackendDailyRevenue(
+            unconfirmedDataDailyRevenue,
+            confirmedDataDailyRevenue,
+            areDeliveringDataDailyRevenue,
+            alreadyPaidDataDailyRevenue,
+            noReturnDataDailyRevenue,
+            returnsDataDailyRevenue,
+            cancelOrderDataDailyRevenue
+          );
         })
         .catch((error) => {
           console.log(`${error}`);

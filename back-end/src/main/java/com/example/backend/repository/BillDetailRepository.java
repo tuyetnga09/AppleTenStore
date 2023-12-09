@@ -108,4 +108,11 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
             " from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail  " +
             " where id_bill=?1 and imei_da_ban.status = 6", nativeQuery = true)
     List<TonTienBillTraHang> tongTienBilldetailTraHang(Integer  idBill);
+
+    //lay ra tien cua tung ban ghi bill detail tra hang khong thanh cong - da guiw yeu cau tra hang - chua tra hang
+    @Query(value = "select bill_detail.id_bill as 'idBill', bill_detail.id as 'idBillDetail'," +
+            " imei_da_ban.id as 'idImeiDaBan', bill_detail.price as 'price'\n" +
+            " from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail  " +
+            " where id_bill=?1 and imei_da_ban.status != 6", nativeQuery = true)
+    List<TonTienBillTraHang> tongTienBilldetailChuaTraHang(Integer  idBill);
 }

@@ -60,3 +60,9 @@ export const acceptReturn = (acceptReturn) => {
 export const noAcceptReturn = (acceptReturn) => {
   return httpClient.put(`/manager/bill/noAcceptReturn`, acceptReturn);
 };
+
+export const deliveryFailed = (idAccount, idBill, note) => {
+  return httpClient.put(
+    `/customer/bill/deliveryFailed/${idBill}?idAccount=${idAccount}&note=${note}`
+  );
+};

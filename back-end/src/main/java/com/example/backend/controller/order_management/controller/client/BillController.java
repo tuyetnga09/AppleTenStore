@@ -278,4 +278,8 @@ public class BillController {
         this.billService.returnBill(idAccount, id, noteReturn);
     }
 
+    @PutMapping(value = "/deliveryFailed/{id}")
+    public Bill deliveryFailed(@PathVariable Integer id, @RequestParam("idAccount") Integer idAccount, @RequestParam("note") String note){
+        return this.billService.deliveryFailed(idAccount ,id, note);
+    }
 }

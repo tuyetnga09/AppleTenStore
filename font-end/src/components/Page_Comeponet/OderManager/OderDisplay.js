@@ -56,6 +56,7 @@ import {
   getAllBillOFFLINECXN,
   acceptReturn,
   noAcceptReturn,
+  deliveryFailed,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -114,6 +115,8 @@ const OderDisplay = ({}) => {
     useState(false); // Trạng thái hiển thị Modal
   const [isModalVisibleReturnedProducts, setIsModalVisibleReturnedProducts] =
     useState(false); // Trạng thái hiển thị Modal
+  const [isModalVisibleDeliveryFailed, setIsModalVisibleDeliveryFailed] =
+    useState(false); // Trạng thái hiển thị Modal
   const breakpoint = Grid.useBreakpoint();
   const [load, setLoad] = useState(true);
   const [billCXN, setBillCXN] = useState([]);
@@ -138,6 +141,7 @@ const OderDisplay = ({}) => {
       { label: "Trả hàng", value: "TRA_HANG" },
       { label: "Đã hủy", value: "DA_HUY" },
       { label: "Yêu cầu trả hàng", value: "YEU_CAU_TRA_HANG" },
+      { label: "Giao hàng thất bại", value: "GIAO_HANG_THAT_BAI" },
       // Thêm các giá trị khác nếu cần
     ],
   };
@@ -289,8 +293,8 @@ const OderDisplay = ({}) => {
               playSound
             ) {
               // Nếu có hóa đơn mới, thì phát âm thanh thông báo
-              const audio = new Audio(AudioTT);
-              audio.play();
+              // const audio = new Audio(AudioTT);
+              // audio.play();
 
               // Cập nhật số hóa đơn chờ xác nhận
               setPendingBills(newPendingBills);
@@ -518,6 +522,13 @@ const OderDisplay = ({}) => {
         className="site-badge-count-109"
         count={"Yêu cầu trả hàng"}
         style={{ backgroundColor: "pink" }}
+      />
+    ),
+    GIAO_HANG_THAT_BAI: (
+      <Badge
+        className="site-badge-count-109"
+        count={"Giao hàng thất bại"}
+        style={{ backgroundColor: "black" }}
       />
     ),
   };
@@ -810,6 +821,53 @@ const OderDisplay = ({}) => {
       })
       .catch((error) => {
         console.log(error);
+      });
+  }
+
+  const [dataDeliveryFailed, setDataDeliveryFailed] = useState({
+    idAcc: idAccount,
+    idBill: "",
+    note: "",
+  });
+
+  const handleClickDeliveryFailed = (record) => {
+    setIsModalVisibleDeliveryFailed(true);
+    setDataDeliveryFailed({
+      ...dataDeliveryFailed,
+      idBill: record.id,
+    });
+  };
+
+  // Hàm để ẩn Modal
+  const handleCannelDeliveryFailed = () => {
+    setIsModalVisibleDeliveryFailed(false);
+  };
+
+  function handleDeliveryFailed(event) {
+    setDataDeliveryFailed({
+      ...dataDeliveryFailed,
+      note: `Giao hàng thất bại: ${event.target.value}`,
+    });
+  }
+
+  function handleSubmitDeliveryFailed(event) {
+    event.preventDefault();
+    deliveryFailed(
+      dataDeliveryFailed.idAcc,
+      dataDeliveryFailed.idBill,
+      dataDeliveryFailed.note
+    )
+      .then((res) => {
+        if (res.data !== null) {
+          notification.success({
+            message: "Hoàn tất",
+          });
+          setIsModalVisibleDeliveryFailed(false);
+          setLoad(!load);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 
@@ -1294,6 +1352,25 @@ const OderDisplay = ({}) => {
                                   >
                                     Đã thanh toán
                                   </Menu.Item>
+                                  <Menu.Item
+                                    key="2"
+                                    disabled={record.stock <= 0}
+                                    style={{
+                                      fontWeight: 500,
+                                    }}
+                                    icon={
+                                      <CloseCircleOutlined
+                                        style={{
+                                          color: "red",
+                                        }}
+                                      />
+                                    }
+                                    onClick={() =>
+                                      handleClickDeliveryFailed(record)
+                                    }
+                                  >
+                                    Giao hàng thất bại
+                                  </Menu.Item>
                                 </Menu>
                               }
                               trigger={["click"]}
@@ -1774,6 +1851,31 @@ const OderDisplay = ({}) => {
                   }}
                 />
               </Table>
+            </Modal>
+            <Modal
+              visible={isModalVisibleDeliveryFailed}
+              onCancel={handleCannelDeliveryFailed}
+              width={550}
+              footer={null}
+              bodyStyle={{ minHeight: "150px" }}
+            >
+              <form onSubmit={handleSubmitDeliveryFailed}>
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea2" class="form-label">
+                    Lí do giao hàng thất bại:
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="exampleFormControlTextarea2"
+                    rows="3"
+                    required
+                    onChange={handleDeliveryFailed}
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">
+                  Xác nhận
+                </button>
+              </form>
             </Modal>
           </Content>
         </Layout>
