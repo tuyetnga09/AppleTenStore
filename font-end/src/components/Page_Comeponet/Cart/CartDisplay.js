@@ -225,7 +225,7 @@ export default function CartDisplay() {
   const handleRemoveAllFromCart = () => {
     if (idAccount !== null && idAccount !== "") {
       if (products.length !== 0) {
-        setLoaded(!loaded);
+        // setLoaded(!loaded);
         deleteAllCart(idAccount).then(() => {
           notification.success({
             message: "CART",
@@ -238,14 +238,16 @@ export default function CartDisplay() {
             .catch((error) => {
               console.log(`${error}`);
             });
+            setQuantity("");
         });
       }
     } else {
       if (sessionStorage.getItem("cartItems") !== null) {
-        setLoaded(!loaded);
+        // setLoaded(!loaded);
         sessionStorage.removeItem("cartItems");
         setProducts([]);
         setTotalPrice(0);
+        setQuantity("");
         notification.success({
           message: "Giỏ hàng",
           description: "Xóa thành công",
