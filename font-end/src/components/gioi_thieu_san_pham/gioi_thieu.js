@@ -4,6 +4,13 @@ import Footer from "../Page_Comeponet/layout/Footer";
 import { Row } from "antd";
 
 export default function gioiThieu() {
+  function goToTop() {
+    window.scrollTo({
+      top: 0, // Cuộn lên vị trí đầu trang
+      behavior: "smooth", // Hiệu ứng cuộn mượt
+    });
+  }
+
   return (
     <>
       <Header />
@@ -1772,6 +1779,11 @@ export default function gioiThieu() {
           </div>
         </div>
       </div>
+      <i
+        className="fa fa-arrow-up"
+        id="goto-top-page"
+        onClick={() => goToTop()}
+      />
       <Footer />
     </>
   );

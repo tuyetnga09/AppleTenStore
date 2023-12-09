@@ -82,7 +82,6 @@ export default function ProductDetail() {
       top: 0, // Cuộn lên vị trí đầu trang
       behavior: "smooth", // Hiệu ứng cuộn mượt
     });
-    window.location.reload();
   }
 
   const [pagination, setPagination] = useState({
@@ -305,9 +304,6 @@ export default function ProductDetail() {
           <div className="price">
             <PriceProduct product={dl.id}></PriceProduct>
           </div>
-          <label className="giamgia">
-            <i className="fa fa-bolt" /> Giảm 1.000₫
-          </label>
           <div className="tooltip">
             <button
               className="themvaogio"
@@ -762,6 +758,11 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
+      <i
+        className="fa fa-arrow-up"
+        id="goto-top-page"
+        onClick={() => goToTop()}
+      />
       <Footer />
     </React.Fragment>
   );

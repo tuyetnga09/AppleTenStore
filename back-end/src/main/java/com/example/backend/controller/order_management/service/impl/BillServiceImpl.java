@@ -623,6 +623,9 @@ public class BillServiceImpl implements BillService {
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
              ) {
             imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(6, codeImei);
+            Imei imei = imeiRepository.findByCodeImei(codeImei);
+            imei.setStatus(4);
+            imeiRepository.save(imei);
         }
         return bill;
     }
@@ -630,12 +633,12 @@ public class BillServiceImpl implements BillService {
     @Override
     public Bill noAcceptReturn(AcceptReturn acceptReturn) {
         Bill bill = billRepository.findById(acceptReturn.getIdBill()).get();
-        bill.setStatusBill(StatusBill.KHONG_TRA_HANG);
+        bill.setStatusBill(StatusBill.DA_THANH_TOAN);
         bill.setDateUpdate(LocalDate.now());
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
         ) {
-            imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(5, codeImei);
-            imeiRepository.updateStatusImeiByCodeImei(5, codeImei);
+            imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(7, codeImei);
+            imeiRepository.updateStatusImeiByCodeImei(3, codeImei);
         }
         return bill;
     }
@@ -643,6 +646,26 @@ public class BillServiceImpl implements BillService {
     @Override
     public BillPayDone findBillPayDoneByCode(String code) {
         return billRepository.findBillPayDoneByCode(code);
+    }
+
+    @Override
+    public Bill deliveryFailed(Integer idAccount, Integer idBill, String note) {
+        Bill bill = billRepository.findById(idBill).get();
+        bill.setStatusBill(StatusBill.GIAO_HANG_THAT_BAI);
+        bill.setNote(note);
+        Account account = acountRepository.findById(idAccount).get();
+        bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
+        bill.setDateUpdate(LocalDate.now());
+        billRepository.save(bill);
+        imeiRepository.updateStatusImeiWhereIdBillDeliveryFailed(idBill);
+        imeiDaBanRepository.deleteImeiDaBanByIdBill(idBill);
+        for (BillDetails billDetails : billDetailRepository.findByBillDetailOfIdBill(idBill)
+        ) {
+            SKU sku = skuRepositoty.findById(billDetails.getSku().getId()).get();
+            sku.setQuantity(sku.getQuantity() + billDetails.getQuantity());
+            skuRepositoty.save(sku);
+        }
+        return bill;
     }
 
 }

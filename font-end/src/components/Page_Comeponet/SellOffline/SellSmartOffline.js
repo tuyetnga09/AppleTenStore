@@ -614,6 +614,8 @@ export default function SellSmart() {
     showDistricts,
     showWards,
     transportationFeeDTO,
+    slHoaDonCho,
+    slHoaDonNgay
   ]);
 
   function getBillChoThanhToanOff() {
