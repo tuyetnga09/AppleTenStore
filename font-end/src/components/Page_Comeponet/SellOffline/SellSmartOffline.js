@@ -1101,7 +1101,7 @@ export default function SellSmart() {
   const [customBill, setCustomBill] = useState([]);
 
   async function accept() {
-    if (checked) {
+    // if (checked) {
       if (dataDoneBill.idBill === null) {
         toast.current.show({
           severity: "error",
@@ -1187,11 +1187,12 @@ export default function SellSmart() {
           });
         }
       }
-    } else {
-      notification.error({
-        message: "Mặt hàng đã có người mua hết!",
-      });
-    }
+    // }
+    // else {
+    //   notification.error({
+    //     message: "Mặt hàng đã có người mua hết!",
+    //   });
+    // }
   }
 
   const handleGhiChu = (event) => {
@@ -3467,7 +3468,7 @@ export default function SellSmart() {
                               fontSize: "50px",
                             }}
                             onClick={() => confirm2()}
-                            onMouseOver={() => checkQuantitySubmit()}
+                            // onMouseOver={() => checkQuantitySubmit()}
                           >
                             Lưu hóa đơn
                           </button>
