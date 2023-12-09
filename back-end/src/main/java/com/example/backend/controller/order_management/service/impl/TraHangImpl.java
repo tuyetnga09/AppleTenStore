@@ -4,10 +4,12 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.billDetail.response.BillDetailCustomerIon;
 import com.example.backend.controller.order_management.service.TraHangService;
 import com.example.backend.entity.Bill;
+import com.example.backend.entity.Imei;
 import com.example.backend.entity.ImeiDaBan;
 import com.example.backend.repository.BillDetailRepository;
 import com.example.backend.repository.BillRepository;
 import com.example.backend.repository.ImeiDaBanRepository;
+import com.example.backend.repository.ImeiRepository;
 import com.example.backend.untils.StatusBill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,9 @@ public class TraHangImpl implements TraHangService {
     @Autowired
     private BillDetailRepository billDetailRepository;
 
+    @Autowired
+    private ImeiRepository imeiRepository;
+
     @Override
     public List<BillDetailCustomerIon> khachHangTraHang( Integer idBillReturn, String noteBillReturn, List<Long> idImeiDaBans) {
         Boolean check = billRepository.existsById(idBillReturn);
@@ -45,6 +50,10 @@ public class TraHangImpl implements TraHangService {
                 ImeiDaBan imeiDaBan = imeiDaBanRepository.findById(idImeiDaBans.get(i)).get();
                 imeiDaBan.setStatus(4);
                 imeiDaBanRepository.save(imeiDaBan);
+
+                Imei imei = imeiRepository.findByCodeImei(imeiDaBan.getCodeImei());
+                imei.setStatus(4);
+                imeiRepository.save(imei);
                 //imeiDaBanList.add(imeiDaBan);
             }
 
@@ -110,6 +119,10 @@ public class TraHangImpl implements TraHangService {
                 ImeiDaBan imeiDaBan = imeiDaBanRepository.findById(billDetailCustomerIons.get(i).getIdImei()).get();
                 imeiDaBan.setStatus(4);
                 imeiDaBanRepository.save(imeiDaBan);
+
+                Imei imei = imeiRepository.findByCodeImei(imeiDaBan.getCodeImei());
+                imei.setStatus(4);
+                imeiRepository.save(imei);
             }
 
             // Lấy ngày giờ hiện tại
@@ -145,6 +158,10 @@ public class TraHangImpl implements TraHangService {
             if (imeiDaBan.getStatus() == 4){
                 imeiDaBan.setStatus(7);
                 imeiDaBanRepository.save(imeiDaBan);
+
+                Imei imei = imeiRepository.findByCodeImei(imeiDaBan.getCodeImei());
+                imei.setStatus(7);
+                imeiRepository.save(imei);
             }
         }
         // Lấy ngày giờ hiện tại

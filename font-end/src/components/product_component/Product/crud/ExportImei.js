@@ -18,6 +18,7 @@ import {
   faTrash,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { CloseCircleOutlined } from "@ant-design/icons";
 import queryString from "query-string";
 // import Pagination from "../Imei/Paging.js";
 import * as XLSX from "xlsx";
@@ -138,12 +139,12 @@ const Display = ({ productDetail }) => {
           setDisplaySku(responseListSku.data);
           setIsModalVisibleImportImei(false);
           notification.success({
-            message: "Add Imei successfully",
+            message: "Import imei thành công.",
             // description: "Add product successfully",
           });
         } else {
           notification.error({
-            message: "Add Imei failed",
+            message: "Import imei thất bại!",
             // description: "Add product successfully",
           });
         }
@@ -157,18 +158,18 @@ const Display = ({ productDetail }) => {
       <section>
         {/* Đọc danh sách SKU của 1 đối tượng detail cảu product */}
         {/* <h3>Danh Sách {displaySku.product.name}</h3> */}
-        <h3>Danh Sách Product SKU</h3>
+        <h3>Danh Sách Phiên Bản Của Sản Phẩm</h3>
 
         <hr />
         <div className="table-wrap">
           <table class="table">
             <thead class="table-dark">
               <th>STT</th>
-              <th>COLOR</th>
-              <th>CAPACITY</th>
-              <th>QUANTITY</th>
-              <th>PRICE</th>
-              <th>IMPORT IMEI</th>
+              <th>Màu Sắc</th>
+              <th>Dung Lượng</th>
+              <th>Số Lượng</th>
+              <th>Giá</th>
+              <th>Import Imei</th>
             </thead>
             <tbody>
               {displaySku.map((s, index) => {
@@ -179,18 +180,27 @@ const Display = ({ productDetail }) => {
                     <td>{s.capacity}</td>
                     <td>{s.quantity}</td>
                     <td>{s.price}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="imports"
-                        data-dismiss="alert"
-                        aria-label="Import"
-                        onClick={() => openDetailModalImportImei(s)}
-                      >
-                        <span aria-hidden="true">
-                          <FontAwesomeIcon icon={faFileExcel} />
-                        </span>
-                      </button>
+                    <td style={{ textAlign: "center" }}>
+                      {s.status === 0 ? (
+                        <button
+                          type="button"
+                          className="imports"
+                          data-dismiss="alert"
+                          aria-label="Import"
+                          onClick={() => openDetailModalImportImei(s)}
+                        >
+                          <span aria-hidden="true">
+                            <FontAwesomeIcon icon={faFileExcel} />
+                          </span>
+                        </button>
+                      ) : (
+                        <CloseCircleOutlined
+                          value={false}
+                          style={{
+                            color: "red",
+                          }}
+                        />
+                      )}
                     </td>
                   </tr>
                 );
@@ -227,7 +237,7 @@ const Display = ({ productDetail }) => {
                 <div className="input-data textarea">
                   <div className="form-row submit-btn">
                     <button type="submit" class="btn btn-outline-secondary">
-                      Save Import Imei
+                      Lưu File Imei
                     </button>
                   </div>
                 </div>
@@ -235,15 +245,18 @@ const Display = ({ productDetail }) => {
             </form>
             {isCheckImei != null && isCheckImei.length > 0 ? (
               <div className="table-wrap">
-                <h2>Imei Trung Lap</h2>
+                <h2 style={{ color: "red" }}>
+                  * Danh Sách Imei Trùng Lặp Hoặc Lỗi!
+                </h2>
                 <table class="table">
                   <thead class="table-dark">
                     <th>STT</th>
-                    <th>PRODUCT</th>
-                    <th>COLOR</th>
-                    <th>CAPACITY</th>
-                    <th>IMEI</th>
-                    <th>PRICE</th>
+                    <th>Sản Phẩm</th>
+                    <th>Màu Sắc</th>
+                    <th>Dung Lượng</th>
+                    <th>Mã Imei</th>
+                    <th>Giá</th>
+                    <th>Trạng Thái</th>
                   </thead>
                   <tbody>
                     {isCheckImei.map((s, index) => {
@@ -255,6 +268,17 @@ const Display = ({ productDetail }) => {
                           <td>{s.capacity}</td>
                           <td>{s.codeImei}</td>
                           <td>{s.price}</td>
+                          <td>
+                            {s?.check === 1 ? (
+                              <div>Trùng imei</div>
+                            ) : s?.check === 2 ? (
+                              <div>Lỗi giá</div>
+                            ) : s?.check === 3 ? (
+                              <div>Mã imei rỗng</div>
+                            ) : (
+                              ""
+                            )}
+                          </td>
                         </tr>
                       );
                     })}
@@ -267,7 +291,9 @@ const Display = ({ productDetail }) => {
 
             {excelData != null && excelData.length > 0 ? (
               <div className="table-wrap">
-                <h2>Imei Doc Tu File Excel Vui Long Check Lai Truoc Khi Luu</h2>
+                <h2 style={{ color: "green", marginTop: "10px" }}>
+                  * Imei Đọc Từ File Excel Vui Lòng Check Lại Trước Khi Lưu:
+                </h2>
                 <table class="table">
                   <thead>
                     <tr></tr>

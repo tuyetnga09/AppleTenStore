@@ -99,6 +99,11 @@ public class ImeiController {
     public ResponseEntity<List<ImportImei>> importExcel(@RequestParam("file") MultipartFile file,
                                                         @RequestParam("idSku") Long idSku) {
         try {
+            List<ImportImei> checkDuLieuDauVao = service.kiemTraDauVaoFileImei(file);
+            if (checkDuLieuDauVao.size() > 0 ){
+                return new ResponseEntity<>(checkDuLieuDauVao, HttpStatus.OK);
+            }
+
             List<ImportImei> checkedImeiList = service.isCheckImei(file, idSku);
             if (checkedImeiList.isEmpty()) {
                 return new ResponseEntity<>(checkedImeiList, HttpStatus.OK); // import thành công

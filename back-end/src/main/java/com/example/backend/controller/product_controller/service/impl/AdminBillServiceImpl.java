@@ -1,8 +1,12 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.controller.product_controller.model.request.AnnualRevenue;
+import com.example.backend.controller.product_controller.model.request.DoanhThuTheoNam;
 import com.example.backend.controller.product_controller.model.request.Top8ProductMonthlyTrending;
 import com.example.backend.controller.product_controller.model.respon.BillDetailDashboardIon;
 import com.example.backend.controller.product_controller.model.respon.BillSeachKhoangNgay;
+import com.example.backend.controller.product_controller.model.respon.IdBillTheoThang;
+import com.example.backend.controller.product_controller.model.respon.IdBillTheoThangNamHienTai;
 import com.example.backend.controller.product_controller.model.respon.SeachDoanhSoTheoNam;
 import com.example.backend.controller.product_controller.model.respon.TonTienBillTraHang;
 import com.example.backend.controller.product_controller.model.respon.YearOfBill;
@@ -24,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -79,9 +84,19 @@ public class AdminBillServiceImpl {
                 this.getAllBillsForTheDay().stream().filter(bill -> statusBillFind.equals(bill.getStatusBill()))
                         .map(bill -> bill.getTotalMoney() != null ? bill.getTotalMoney().longValue() : 0)
                         .mapToLong(Long::longValue).sum();
+        StatusBill statusYCTH = StatusBill.YEU_CAU_TRA_HANG;
+        Long sumYCTH =
+                this.getAllBillsForTheDay().stream().filter(bill -> statusYCTH.equals(bill.getStatusBill()))
+                        .map(bill -> bill.getTotalMoney() != null ? bill.getTotalMoney().longValue() : 0)
+                        .mapToLong(Long::longValue).sum();
+        StatusBill statusKTH = StatusBill.KHONG_TRA_HANG;
+        Long sumKTH =
+                this.getAllBillsForTheDay().stream().filter(bill -> statusKTH.equals(bill.getStatusBill()))
+                        .map(bill -> bill.getTotalMoney() != null ? bill.getTotalMoney().longValue() : 0)
+                        .mapToLong(Long::longValue).sum();
 
         List<Bill> billListMuaHangVaTraHangTrongNgay = billRepository.getBillMuaHangVaTraHangTrongNgay();
-        if (billListMuaHangVaTraHangTrongNgay.size() >0){
+        if (billListMuaHangVaTraHangTrongNgay.size() > 0) {
             for (Bill bill : billListMuaHangVaTraHangTrongNgay) {
                 List<TonTienBillTraHang> tonTienBillTraHangList = billDetailRepository.tongTienBilldetailChuaTraHang(bill.getId());
                 for (TonTienBillTraHang t : tonTienBillTraHangList) {
@@ -89,10 +104,21 @@ public class AdminBillServiceImpl {
                 }
             }
         }
-        if (sum == null) {
+        //mua hôm tước hôm sau trả hàng.
+        List<Bill> billList = billRepository.getBillMuaHangVaTraHangHomSau();
+        Long sumMuaHomTruocHomNayTraHang = 0l;
+        for (Bill bill : billList) {
+            List<TonTienBillTraHang> tonTienBillTraHangList = billDetailRepository.tongTienBilldetailTraHang(bill.getId());
+            for (TonTienBillTraHang t : tonTienBillTraHangList) {
+                sumMuaHomTruocHomNayTraHang = sumMuaHomTruocHomNayTraHang + t.getPrice().longValue();
+            }
+        }
+
+        Long tong = sum + sumYCTH + sumKTH - sumMuaHomTruocHomNayTraHang;
+        if (tong == null) {
             return sum = Long.valueOf(0);
         }
-        return sum;
+        return tong;
     }
 
     //tổng tiền của mỗi status
@@ -172,9 +198,42 @@ public class AdminBillServiceImpl {
     }
 
     // daonh thu 2023
-    public List<AnnualRevenueIon> annualRevenue() {
+    public List<DoanhThuTheoNam> annualRevenue() {
         List<AnnualRevenueIon> list = billRepository.annualRevenueYear();
-        return billRepository.annualRevenueYear();
+        List<AnnualRevenueIon> listTongDonHangTrongThang = billRepository.sumDonHangTrongThang();
+        List<DoanhThuTheoNam> doanhThuTheoNamList = new ArrayList<>();
+        List<IdBillTheoThang> idBillTheoThangList = billRepository.listIdBillTheoThangCuaNamHienTai();
+        List<IdBillTheoThangNamHienTai> idBillTheoThangNamHienTaiList = new ArrayList<>();
+
+        for (IdBillTheoThang idbill : idBillTheoThangList) {
+            IdBillTheoThangNamHienTai idBillTheoThangNamHienTai = new IdBillTheoThangNamHienTai();
+            idBillTheoThangNamHienTai.setIdBill(idbill.getIdBill());
+            idBillTheoThangNamHienTai.setMonth(idbill.getMonth());
+            idBillTheoThangNamHienTaiList.add(idBillTheoThangNamHienTai);
+        }
+        for (int i = 0; i < 12; i++) {
+            DoanhThuTheoNam doanhThuTheoNam = new DoanhThuTheoNam();
+            doanhThuTheoNam.setMonth(list.get(i).getMonth());
+
+            doanhThuTheoNam.setQuantity(listTongDonHangTrongThang.get(i).getQuantity());
+
+            Long sum = 0l;
+            for (int j = 0; j < idBillTheoThangNamHienTaiList.size(); j++) {
+                if (idBillTheoThangNamHienTaiList.get(j).getMonth() == null || idBillTheoThangNamHienTaiList.get(j).getMonth().equals("")) {
+                    continue;
+                }
+                if (idBillTheoThangNamHienTaiList.get(j).getMonth().equals(i+1)) {
+                    List<TonTienBillTraHang> chuaTraHangList = billDetailRepository.tongTienBilldetailChuaTraHang(idBillTheoThangNamHienTaiList.get(j).getIdBill());
+                    for (TonTienBillTraHang t : chuaTraHangList) {
+                        sum = sum + t.getPrice().longValue();
+                    }
+
+                }
+            }
+            doanhThuTheoNam.setTotalMoney(list.get(i).getTotalMoney().add(BigDecimal.valueOf(sum)));
+            doanhThuTheoNamList.add(doanhThuTheoNam);
+        }
+        return doanhThuTheoNamList;
     }
 
     //Customers
@@ -311,10 +370,22 @@ public class AdminBillServiceImpl {
         billSeachKhoangNgay.setCheck(true);
 
         //Tổng tiền
+
+        //sua
         Long tongTienThucThu =
                 list.stream().filter(bill -> bill.getStatusBill().equals(daThanhToan))
                         .map(bill -> bill.getTotalMoney() != null ? bill.getTotalMoney().longValue() : 0)
                         .mapToLong(Long::longValue).sum();
+//        List<Bill> listBillTraHang = list.stream().filter(bill -> bill.getStatusBill().equals(traHang)).collect(Collectors.toList());
+//
+        if (tongTienDonhangHuyKhiTrongKhoangNgay.size()>0) {
+            for (Bill bill: tongTienDonhangHuyKhiTrongKhoangNgay) {
+                List<TonTienBillTraHang> chuaTraHangList = billDetailRepository.tongTienBilldetailChuaTraHang(bill.getId());
+                for (TonTienBillTraHang t : chuaTraHangList) {
+                    tongTienThucThu = tongTienThucThu + t.getPrice().longValue();
+                }
+            }
+        }
         billSeachKhoangNgay.setTongTienThucThu(tongTienThucThu);
 
         Long tongTienDonChoXacNhan =
@@ -348,7 +419,7 @@ public class AdminBillServiceImpl {
 //                        .mapToLong(Long::longValue).sum();
 //        billSeachKhoangNgay.setTongTienDonHoanTra(tongTienDonHoanTra);
 
-        Long sum =0l;
+        Long sum = 0l;
         for (Bill bill : tongTienDonhangHuyKhiTrongKhoangNgay) {
             List<TonTienBillTraHang> tonTienBillTraHangList = billDetailRepository.tongTienBilldetailTraHang(bill.getId());
             for (TonTienBillTraHang t : tonTienBillTraHangList) {
@@ -447,41 +518,69 @@ public class AdminBillServiceImpl {
         }
     }
 
-    // doan so trong cac nam seach vd: 2023
+
+    // doanh so trong cac nam seach vd: 2023
     public List<SeachDoanhSoTheoNam> seachDoanhSoTheoNam(Integer year) {
+
         List<SeachDoanhSoTheoNam> seachDoanhSoTheoNams = new ArrayList<>();
         List<AnnualRevenueIon> list = billRepository.seachDoanhSoTheoNam(year);
-        for (AnnualRevenueIon seach : list) {
+        List<AnnualRevenueIon> listTongDonHangTrongThang = billRepository.sumDonHangTrongThangSeach(year);
+        List<IdBillTheoThang> idBillTheoThangList = billRepository.listIdBillTheoThangCuaNamSeachs(year);
+        List<IdBillTheoThangNamHienTai> idBillTheoThangNamSeachList = new ArrayList<>();
+
+
+        for (IdBillTheoThang idbill : idBillTheoThangList) {
+            IdBillTheoThangNamHienTai idBillTheoThangNamHienTai = new IdBillTheoThangNamHienTai();
+            idBillTheoThangNamHienTai.setIdBill(idbill.getIdBill());
+            idBillTheoThangNamHienTai.setMonth(idbill.getMonth());
+            idBillTheoThangNamSeachList.add(idBillTheoThangNamHienTai);
+        }
+//        AnnualRevenueIon seach : list
+        for (int i = 0; i < 12; i++) {
             SeachDoanhSoTheoNam seachDoanhSoTheoNam = new SeachDoanhSoTheoNam();
             seachDoanhSoTheoNam.setChechSeach(true);
-            seachDoanhSoTheoNam.setMonth(seach.getMonth());
-            seachDoanhSoTheoNam.setQuantity(seach.getQuantity());
-            seachDoanhSoTheoNam.setTotalMoney(seach.getTotalMoney());
+            seachDoanhSoTheoNam.setMonth(list.get(i).getMonth());
+            seachDoanhSoTheoNam.setQuantity(listTongDonHangTrongThang.get(i).getQuantity());
+
+            Long sum = 0l;
+            for (int j = 0; j < idBillTheoThangNamSeachList.size(); j++) {
+                if (idBillTheoThangNamSeachList.get(j).getMonth() == null || idBillTheoThangNamSeachList.get(j).getMonth().equals("")) {
+                    continue;
+                }
+                if (idBillTheoThangNamSeachList.get(j).getMonth().equals(i+1)) {
+                    List<TonTienBillTraHang> chuaTraHangList = billDetailRepository.tongTienBilldetailChuaTraHang(idBillTheoThangNamSeachList.get(j).getIdBill());
+                    for (TonTienBillTraHang t : chuaTraHangList) {
+                        sum = sum + t.getPrice().longValue();
+                    }
+                }
+            }
+            seachDoanhSoTheoNam.setChechSeach(true);
+            seachDoanhSoTheoNam.setTotalMoney(list.get(i).getTotalMoney().add(BigDecimal.valueOf(sum)));
             seachDoanhSoTheoNams.add(seachDoanhSoTheoNam);
         }
         return seachDoanhSoTheoNams;
     }
 
     // lấy ra account - theo id
-    public  Account getOneAccount(Integer id){
-        if (id == null || id.equals("")){
+    public Account getOneAccount(Integer id) {
+        if (id == null || id.equals("")) {
             return null;
         }
         Boolean check = accountRepository.existsById(id);
-        if (check){
+        if (check) {
             return accountRepository.findById(id).get();
         }
         return null;
     }
 
     // lấy ra bill detail trong dashboard
-    public List<BillDetailDashboardIon> getListBillDetailDashboard(Integer idBill){
+    public List<BillDetailDashboardIon> getListBillDetailDashboard(Integer idBill) {
         Boolean check = billRepository.existsById(idBill);
-        if (check){
+        if (check) {
             List<BillDetailDashboardIon> list = billRepository.getListBillDetail(idBill);
             return list;
         }
-        return  null;
+        return null;
     }
 
 
@@ -493,7 +592,7 @@ public class AdminBillServiceImpl {
     //tong tien bill trar hang hom nay
     public Long tongTienDonHoanTra() {
         List<Bill> billList = listBillTraHanghomNayService();
-        Long sum =0l;
+        Long sum = 0l;
         for (Bill bill : billList) {
             List<TonTienBillTraHang> tonTienBillTraHangList = billDetailRepository.tongTienBilldetailTraHang(bill.getId());
             for (TonTienBillTraHang t : tonTienBillTraHangList) {

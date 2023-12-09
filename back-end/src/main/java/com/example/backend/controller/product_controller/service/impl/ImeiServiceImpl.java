@@ -136,6 +136,12 @@ public class ImeiServiceImpl implements Iservice<Imei> {
             if (cell == null) {
                 continue;
             }
+
+            Cell cell2 = row.getCell(2);
+            if (cell2 == null) {
+                continue;
+            }
+
             String codeImei = row.getCell(1).getStringCellValue();
             BigDecimal price = BigDecimal.valueOf(row.getCell(2).getNumericCellValue());
 
@@ -178,7 +184,7 @@ public class ImeiServiceImpl implements Iservice<Imei> {
         // Sử dụng Set để kiểm tra code trùng nhau
         Set<String> codeSet = new HashSet<>();
 
-        if (!(listImportExcel == null)){
+        if (!(listImportExcel == null)) {
             for (ImportImei imei : listImportExcel) {
                 //Trong đoạn mã trên, chúng ta sử dụng Set<String> để theo dõi các code đã xuất hiện.
                 //Nếu add trả về false, đó có nghĩa là code đã tồn tại và được thêm vào duplicateCodes.
@@ -187,7 +193,7 @@ public class ImeiServiceImpl implements Iservice<Imei> {
                     trungImeiList.add(imei);
                 }
             }
-            if (trungImeiList.size()>0){
+            if (trungImeiList.size() > 0) {
                 return trungImeiList;
             }
         }
@@ -234,7 +240,7 @@ public class ImeiServiceImpl implements Iservice<Imei> {
                     importImeiTrung.setCapacity(imeiTrung.getIdSku().getCapacity());
                     importImeiTrung.setNameProduct(imeiTrung.getIdProduct().getName());
                     importImeiTrung.setPrice(imeiTrung.getIdSku().getPrice());
-
+                    importImeiTrung.setCheck(1);
 
                     //add đối tượng đó vào list trùng
                     trungImeiList.add(importImeiTrung);
@@ -255,13 +261,93 @@ public class ImeiServiceImpl implements Iservice<Imei> {
                 }
                 //set lại price cho SKU
                 skuUpdate.setPrice(listImportExcel.get(0).getPrice());
-                //set lại quantity cho SKU dựa trên tổng số lượng imei đc import vào
-                skuUpdate.setQuantity(listImportExcel.size());
+                //set lại quantity cho SKU dựa trên tổng số lượng imei đc import vào + số imei cũ
+//                skuUpdate.setQuantity(listImportExcel.size());
+                Integer quantity = imeiRepository.getAllImeiWherIdSku(skuUpdate.getId()).size();
+                skuUpdate.setQuantity(quantity);
                 //cập nhật lại price SKU
                 skuRepository.save(skuUpdate);
             }
         }
         return trungImeiList; //nếu list này rỗng là importImei excel thành công - và list có dữ liệu là thất bại
+    }
+
+    // Đọc file excel imei trả về list imei
+    public List<ImportImei> kiemTraDauVaoFileImei(MultipartFile file) throws IOException {
+        InputStream inputStream = file.getInputStream();
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheetAt(0); // Sheet cần đọc
+        List<ImportImei> listCodeImei = new ArrayList<>();
+        Integer checkGiaImei = 0;
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
+                continue; // Bỏ qua hàng tiêu đề
+            }
+            Cell cell = row.getCell(1);
+            String codeImei;
+            if (cell == null) {
+                codeImei = "";
+            } else {
+                codeImei = row.getCell(1).getStringCellValue();
+            }
+
+
+            BigDecimal price = BigDecimal.valueOf(0);
+            Integer check = 0;
+            Cell cell2 = row.getCell(2);
+            if (cell2 == null) {
+                checkGiaImei = checkGiaImei + 1;
+                check = 2;
+            } else {
+                price = BigDecimal.valueOf(row.getCell(2).getNumericCellValue());
+            }
+
+            //tạo đối tượng và sét giá trị
+            ImportImei importImei = new ImportImei();
+            importImei.setCodeImei(codeImei);
+            importImei.setPrice(price);
+            importImei.setCheck(check);
+            //add code imei vaof list
+            listCodeImei.add(importImei);
+
+        }
+        workbook.close();
+
+        Integer checkMaImei = 0;
+        Integer checkGiaLa0 = 0;
+        List<ImportImei> importImeiList = new ArrayList<>();
+        for (int i = 0; i < listCodeImei.size(); i++) {
+            if (listCodeImei.get(i).getCodeImei().trim().equals("")) {
+                checkMaImei = checkMaImei + 1;
+            }
+            if (String.valueOf(listCodeImei.get(i).getPrice()).trim().equals("0")) {
+                checkGiaLa0 = checkGiaLa0 + 1;
+            }
+        }
+        if (checkGiaImei == listCodeImei.size()
+                || checkGiaLa0 == listCodeImei.size() || String.valueOf(listCodeImei.get(0).getPrice()).equals("0")) {
+            return listCodeImei;
+        }
+        if (checkMaImei == listCodeImei.size()) {
+            for (ImportImei imei : listCodeImei) {
+                imei.setCheck(3);
+            }
+            return listCodeImei;
+        }
+        Boolean checkAllGia = false;
+        for (int i = 0; i < listCodeImei.size(); i++) {
+            if (listCodeImei.get(0).getPrice().compareTo(listCodeImei.get(i).getPrice()) != 0) {
+                listCodeImei.get(i).setCheck(2);
+                checkAllGia = true;
+            }
+        }
+        if (checkAllGia){
+            return listCodeImei;
+        }
+
+
+
+        return importImeiList;
     }
 
 }
