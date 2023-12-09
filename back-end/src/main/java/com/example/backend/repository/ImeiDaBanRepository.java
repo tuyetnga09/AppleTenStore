@@ -48,4 +48,9 @@ public interface ImeiDaBanRepository extends JpaRepository<ImeiDaBan, Long> {
     @Transactional
     @Query(value = "update imei_da_ban set status = ?1 where code_imei = ?2", nativeQuery = true)
     void updateStatusImeiDaBanByCodeImei(Integer status, String codeImei);
+
+    @Modifying
+    @Transactional
+    @Query(value = "delete from imei_da_ban where id_bill_detail in (select id from bill_detail where id_bill = ?1)", nativeQuery = true)
+    void deleteImeiDaBanByIdBill(int id);
 }
