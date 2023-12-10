@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -563,12 +564,22 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public void deleteBill(String noteReturn, Integer id) {
+    public void deleteBill(String noteReturn, Integer id, Integer idAccount) {
         this.billDetailRepository.deleteBillDetailsByBill(id);
         this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
         this.billRepository.deleteBill(noteReturn, id);
         Bill bill = billRepository.findById(id).get();
+        if (idAccount != -1){
+            Account account = acountRepository.findById(idAccount).get();
+            bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
+            bill.setDateUpdate(LocalDate.now());
+            billRepository.save(bill);
+        }else {
+            bill.setPersonUpdate("Khách hàng lẻ");
+            bill.setDateUpdate(LocalDate.now());
+            billRepository.save(bill);
+        }
         if (bill.getNumberOfPointsUsed() != null){
             if (bill.getNumberOfPointsUsed() != 0){
                 Account account = acountRepository.findById(bill.getAccount().getId()).get();
@@ -633,9 +644,16 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Bill noAcceptReturn(AcceptReturn acceptReturn) {
+        // Lấy ngày giờ hiện tại
+        java.util.Date date = new java.util.Date();
+        // Định dạng ngày giờ
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        // Chuyển đổi thành chuỗi và hiển thị
+        String formattedDate = dateFormat.format(date);
         Bill bill = billRepository.findById(acceptReturn.getIdBill()).get();
         bill.setStatusBill(StatusBill.DA_THANH_TOAN);
         bill.setDateUpdate(LocalDate.now());
+        bill.setNoteReturn(bill.getNoteReturn() + " - Hủy yêu cầu trả hàng: " + formattedDate + " Không đủ điểu kiện");
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
         ) {
             imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(5, codeImei);

@@ -699,7 +699,7 @@ const OderDisplay = ({}) => {
 
   const handleSubmitCannelOrder = (event) => {
     event.preventDefault();
-    deleteBillById(billReturn.id, billReturn.note).then((response) =>
+    deleteBillById(billReturn.id, billReturn.note, idAccount).then((response) =>
       console.log(response.data)
     );
     setIsModalVisibleCannelOrder(false);
@@ -1238,6 +1238,20 @@ const OderDisplay = ({}) => {
                         />
                       )}
                       sorter={(a, b) => a.dateUpdate > b.dateUpdate}
+                    />
+                    <Table.Column
+                      key="dateUpdate"
+                      dataIndex="dateUpdate"
+                      title={t("Ghi chú")}
+                      render={(text, record) => <span>{record.note}</span>}
+                    />
+                    <Table.Column
+                      key="dateUpdate"
+                      dataIndex="dateUpdate"
+                      title={t("Ghi chú chi tiết")}
+                      render={(text, record) => (
+                        <span>{record.noteReturn}</span>
+                      )}
                     />
 
                     <Table.Column
