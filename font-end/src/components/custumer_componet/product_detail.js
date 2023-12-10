@@ -366,7 +366,7 @@ export default function ProductDetail() {
                 <img src={`/imageUpload/` + imageTemp} alt="" />
               </div>
             )}
-            <div className="slide-container">
+            <div className="slide-container" style={{ marginLeft: "150px" }}>
               <div className="previous">
                 <button onClick={previousValue}>
                   <i className="bi bi-caret-left-fill"></i>

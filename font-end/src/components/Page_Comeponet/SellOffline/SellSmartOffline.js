@@ -761,13 +761,13 @@ export default function SellSmart() {
       });
       return;
     }
-    if (fullNameCodes.has(fullname)) {
-      notification.error({
-        message: "Thêm khách hàng",
-        description: "Trùng tên",
-      });
-      return;
-    }
+    // if (fullNameCodes.has(fullname)) {
+    //   notification.error({
+    //     message: "Thêm khách hàng",
+    //     description: "Trùng tên",
+    //   });
+    //   return;
+    // }
     if (emailCodes.has(email)) {
       notification.error({
         message: "Thêm khách hàng",
@@ -830,8 +830,8 @@ export default function SellSmart() {
     select.hidden = false;
     const input = document.getElementById("floatingSelect3");
     input.hidden = false;
-    const selectTT = document.getElementById("floatingSelect4");
-    selectTT.hidden = false;
+    // const selectTT = document.getElementById("floatingSelect4");
+    // selectTT.hidden = false;
     const select5 = document.getElementById("floatingSelect5");
     select5.hidden = false;
     const select6 = document.getElementById("floatingSelect6");
@@ -852,8 +852,8 @@ export default function SellSmart() {
     select.hidden = true;
     const input = document.getElementById("floatingSelect3");
     input.hidden = true;
-    const selectTT = document.getElementById("floatingSelect4");
-    selectTT.hidden = true;
+    // const selectTT = document.getElementById("floatingSelect4");
+    // selectTT.hidden = true;
     const select5 = document.getElementById("floatingSelect5");
     select5.hidden = true;
     const select6 = document.getElementById("floatingSelect6");
@@ -3286,7 +3286,7 @@ export default function SellSmart() {
                             onChange={handlePhiVanChuyen}
                           /> */}
                         </div>
-                        <div
+                        {/* <div
                           className="form-group  col-md-12"
                           hidden
                           id="floatingSelect4"
@@ -3302,7 +3302,7 @@ export default function SellSmart() {
                             style={{ width: "100%" }}
                             // onChange={handleChangeDate}
                           />
-                        </div>
+                        </div> */}
                       </div>
                       <div className="row">
                         <div className="form-group  col-md-12">

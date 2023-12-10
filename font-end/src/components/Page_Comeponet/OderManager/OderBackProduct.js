@@ -75,6 +75,7 @@ import {
   listImeiDaBanByIdBillDetail,
   seachImeis,
   seachImeisDaBan,
+  xoahoaDonCho,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
@@ -314,6 +315,12 @@ const OderDisplay = ({}) => {
         clearTimeout(timeout);
       };
     }
+    //tu dong xoa hoa don cho
+    xoahoaDonCho()
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err);
+      });
   }, [filtersNoDate, filtersWithDate, load, playSound]);
 
   function handleChangeSearch(event) {
