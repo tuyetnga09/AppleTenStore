@@ -615,7 +615,7 @@ export default function SellSmart() {
     showWards,
     transportationFeeDTO,
     slHoaDonCho,
-    slHoaDonNgay
+    slHoaDonNgay,
   ]);
 
   function getBillChoThanhToanOff() {
@@ -724,42 +724,97 @@ export default function SellSmart() {
   };
   const history = useHistory();
   const handleSave = () => {
+    const items = { ...khachHang };
     const fullname = document.getElementById("fullname").value;
     const email = document.getElementById("email").value;
     const phoneNumber = document.getElementById("phoneNumber").value;
+    const fullNameCodes = new Set();
+    const emailCodes = new Set();
+    const phoneNumberCodes = new Set();
+    const phoneNumberRegex = /^\d{10}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    // Kiểm tra trùng lặp khi thêm mới hoặc chỉnh sửa
+    for (let i = 0; i < khachHang.length; i++) {
+      const { phoneNumber, email, fullName } = khachHang[i];
+      fullNameCodes.add(fullName);
+      emailCodes.add(email);
+      phoneNumberCodes.add(phoneNumber);
+    }
     if (
-      fullname !== null &&
-      fullname !== "" &&
-      email !== null &&
-      email !== "" &&
-      phoneNumber !== null &&
-      phoneNumber !== ""
+      fullname == null &&
+      fullname == "" &&
+      email == null &&
+      email == "" &&
+      phoneNumber == null &&
+      phoneNumber == ""
     ) {
-      addCustomerOffline(customer)
-        .then((response) => {
-          history.push("/sell");
-          setCustomer({
-            fullName: "",
-            email: "",
-            phoneNumber: "",
-          });
-          getCustomer()
-            .then((response) => {
-              setKhachHang(response.data);
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
-          setIsModalVisible(false);
-        })
-        .catch((error) => {
-          alert("Thêm khách hàng thất bại");
-        });
-    } else {
       notification.error({
         message: "Vui lòng nhập thông tin khách hàng!",
       });
+      return;
     }
+    if (fullNameCodes.has(fullname)) {
+      notification.error({
+        message: "Thêm khách hàng",
+        description: "Trùng tên",
+      });
+      return;
+    }
+    if (emailCodes.has(email)) {
+      notification.error({
+        message: "Thêm khách hàng",
+        description: "Trùng email",
+      });
+      return;
+    }
+    if (phoneNumberCodes.has(phoneNumber)) {
+      notification.error({
+        message: "Thêm khách hàng",
+        description: "Trùng số điện thoại",
+      });
+      return;
+    }
+    if (!phoneNumberRegex.test(phoneNumber)) {
+      notification.error({
+        message: "Số điện thoại sai định dạng!",
+      });
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      notification.error({
+        message: "Email sai định dạng!",
+      });
+      return;
+    }
+    addCustomerOffline(customer)
+      .then((response) => {
+        history.push("/sell");
+        setCustomer({
+          fullName: "",
+          email: "",
+          phoneNumber: "",
+        });
+        getCustomer()
+          .then((response) => {
+            setKhachHang(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        setIsModalVisible(false);
+        notification.success({
+          message: "Thêm khách hàng",
+          description: "Thêm thành công",
+        });
+      })
+      .catch((error) => {
+        alert("Thêm khách hàng thất bại");
+      });
+    // } else {
+    //   notification.error({
+    //     message: "Vui lòng nhập thông tin khách hàng!",
+    //   });
+    // }
   };
 
   function giaoTanNoi() {
@@ -874,6 +929,7 @@ export default function SellSmart() {
       currency: "VND",
     }).format(amount);
   };
+
   const [user, setUser] = useState(true);
   async function createBillSusses(
     codeBill,
@@ -1166,6 +1222,11 @@ export default function SellSmart() {
                   getBillChoThanhToanOff();
                   setSelectedVoucher(0);
                   setSelectedVoucherFreeShip(0);
+
+                  const totalQuantity = billInDate.length;
+                  setDlHoaDonChoNgay(totalQuantity);
+                  const totalQuantity1 = hoaDonCho.length;
+                  setDlHoaDonCho(totalQuantity1);
                 }
               })
               .catch((err) => {
@@ -2118,6 +2179,31 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`${error}`);
       });
+    arrIdSku = [];
+    setIsModalVisibleBill(false);
+    getBillChoThanhToanOff();
+    arrCodeImeiDaBan = [];
+  };
+
+  const rejectHDC = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "Thanh Toán",
+      detail: "Xin mời tiếp tục.",
+      life: 3000,
+    });
+    setIsModalVisibleBill(false);
+  };
+
+  const confirmCallUpdateStatusVoucher = (codeBill) => {
+    confirmDialog({
+      message: "Bạn có muốn tiếp tục thanh toán hóa đơn này không?",
+      header: "Thanh Toán",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => clickHoaDonCho(codeBill),
+      rejectHDC,
+    });
   };
 
   //tìm kiếm hóa đơn chờ thanh toán
@@ -4104,23 +4190,23 @@ export default function SellSmart() {
                       marginBottom: "10px",
                     }}
                     onClick={() => {
-                      const shouldContinue = window.confirm(
-                        "Bạn có muốn tiếp tục thanh toán không?"
-                      );
-                      if (shouldContinue) {
-                        arrIdSku = [];
-                        // Thực hiện hành động sau khi xác nhận
-                        clickHoaDonCho(hoadon.code);
-                        setIsModalVisibleBill(false);
-                        getBillChoThanhToanOff();
-                        notification.success({
-                          message: "Tiếp tục thanh toán",
-                        });
-                        arrCodeImeiDaBan = [];
-                      } else {
-                        setIsModalVisibleBill(false);
-                        // Hủy bỏ hành động nếu người dùng không muốn tiếp tục
-                      }
+                      // const shouldContinue = window.confirm(
+                      //   "Bạn có muốn tiếp tục thanh toán không?"
+                      // );
+                      // if (shouldContinue) {
+                      // arrIdSku = [];
+                      // Thực hiện hành động sau khi xác nhận
+                      confirmCallUpdateStatusVoucher(hoadon.code);
+                      // setIsModalVisibleBill(false);
+                      // getBillChoThanhToanOff();
+                      // notification.success({
+                      //   message: "Tiếp tục thanh toán",
+                      // });
+                      // arrCodeImeiDaBan = [];
+                      // } else {
+                      //   setIsModalVisibleBill(false);
+                      //   // Hủy bỏ hành động nếu người dùng không muốn tiếp tục
+                      // }
                     }}
                   >
                     {hoadon.code}
