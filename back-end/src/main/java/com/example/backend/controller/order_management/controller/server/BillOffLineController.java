@@ -4,6 +4,7 @@ import com.example.backend.controller.order_management.model.billOffLine.AddBill
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
 import com.example.backend.controller.order_management.model.billOffLine.DoneBill;
 import com.example.backend.controller.order_management.model.billOffLine.ImeiDaBanOffLineRequest;
+import com.example.backend.controller.order_management.model.billOffLine.XoaHoaDonCho;
 import com.example.backend.controller.order_management.model.billOffLine.ion.*;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
@@ -51,6 +52,7 @@ public class BillOffLineController {
         BillDetails billDetailsList = billOffLineService.addBillDetail(addBillOffLineRequest);
         return new ResponseEntity<>(billDetailsList, HttpStatus.OK);
     }
+
     //lấy ra list bill_detail của 1 bill theo codeBill
     @GetMapping("/get-bill-detail")
     public ResponseEntity<List<BillDetailOffLineIon>> getBillDetailOfBill(@RequestParam("codeBill") String codeBill) {
@@ -123,19 +125,20 @@ public class BillOffLineController {
     }
 
     @PutMapping("/done-bill")
-    public void doneBill(@RequestBody DoneBill doneBill){
+    public void doneBill(@RequestBody DoneBill doneBill) {
         billOffLineService.thanhToan(doneBill);
     }
 
     @GetMapping("/get-code-imei-da-ban")
-    public List<ImeiDaBan> getListImeiDaBanByIdBillDetaill(@RequestParam("idBillDetail") Integer idBillDetail){
+    public List<ImeiDaBan> getListImeiDaBanByIdBillDetaill(@RequestParam("idBillDetail") Integer idBillDetail) {
         return imeiDaBanRepository.findImeiDaBanByBillDetail_Id(idBillDetail);
     }
+
     //seach Imei Da Ban
     @GetMapping("/get-seach-imei-da-ban")
     public ResponseEntity<List<ImeiDaBanOffLineIonRespon>> seachImeisDaBan(@RequestParam("idBillDetail") Integer idBillDetail,
-                                                                  @RequestParam("idSKU") Long idSKU,
-                                                                  @RequestParam("codeImei") String codeImei) {
+                                                                           @RequestParam("idSKU") Long idSKU,
+                                                                           @RequestParam("codeImei") String codeImei) {
         List<ImeiDaBanOffLineIonRespon> list = billOffLineService.seachImeiDaBan(idBillDetail, idSKU, codeImei);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
@@ -143,7 +146,7 @@ public class BillOffLineController {
     //seach imei theo codeImei
     @GetMapping("/get-seach-imeis")
     public ResponseEntity<List<ImeiBillOffLineIonRespon>> seachImeis(@RequestParam("idSKU") Long idSKU,
-                                                                      @RequestParam("codeImei") String codeImei) {
+                                                                     @RequestParam("codeImei") String codeImei) {
         List<ImeiBillOffLineIonRespon> list = billOffLineService.seachImeiFindByCodeImei(idSKU, codeImei);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
@@ -179,7 +182,7 @@ public class BillOffLineController {
 
     @GetMapping("/searchBill-CTT")
     public ResponseEntity<List<Bill>> seachBillChoThanhToan(@RequestParam("idAccount") Integer idAccount,
-                                                                           @RequestParam("codeBill") String codeBill) {
+                                                            @RequestParam("codeBill") String codeBill) {
         List<Bill> list = billOffLineService.searchBillChoThanhToan(idAccount, codeBill);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
@@ -188,6 +191,7 @@ public class BillOffLineController {
     public List<Bill> getBillChoThanhToan() {
         return billOffLineService.getListBillChoThanhToan();
     }
+
     //lấy ra id_bill theo ib_billdetail
     @GetMapping("/get-bill")
     public ResponseEntity<Integer> getIdBill(@RequestParam("idBillDetail") Integer idBillDetail) {
@@ -208,7 +212,7 @@ public class BillOffLineController {
 
     @GetMapping("/searchBill-DTT")
     public ResponseEntity<List<Bill>> seachBillDaThanhToan(@RequestParam("idAccount") Integer idAccount,
-                                                            @RequestParam("codeBill") String codeBill) {
+                                                           @RequestParam("codeBill") String codeBill) {
         List<Bill> list = billOffLineService.searchBillDaThanhToan(idAccount, codeBill);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
@@ -217,5 +221,11 @@ public class BillOffLineController {
     public ResponseEntity<List<Bill>> getThongTinThanhToan(@PathVariable("codeBill") String codeBill) {
         List<Bill> billList = billOffLineService.getThongTinBill(codeBill);
         return new ResponseEntity<>(billList, HttpStatus.OK);
+    }
+
+    @GetMapping("/tu-xoa-hoa-don-cho-cuoi-ngay")
+    public ResponseEntity<List<XoaHoaDonCho>> xoahoaDonCho() {
+        List<XoaHoaDonCho> list =  billOffLineService.xoaHoaDonChoOffLineCuoiNgay();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }

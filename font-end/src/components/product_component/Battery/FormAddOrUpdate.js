@@ -81,7 +81,7 @@ const FormAddOrUpdate = () => {
 
     console.log(items);
 
-    history.push("/battery/getAll");
+    history.push("/battery/display");
   }
   const toast = useRef(null);
   const [collapsed, setCollapsed] = useState(false);

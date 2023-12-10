@@ -10,5 +10,6 @@ public enum StatusBill {
     TRA_HANG,
     DA_HUY,
     YEU_CAU_TRA_HANG,
-    GIAO_HANG_THAT_BAI
+    GIAO_HANG_THAT_BAI,
+    HUY_HOA_DON_CHO
 }

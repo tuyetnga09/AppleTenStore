@@ -70,6 +70,10 @@ public class ProductDetailServiceImpl implements IProductDetailService {
             List<Imei> listImei = imeiRepository.getAllImeiWherIdSku(idSku);
             return listImei;
         }
+        if (status == 3){
+            List<Imei> listImeiStatus = imeiRepository.getAllImeiWherIdSkuDaBan(idSku, status);
+            return listImeiStatus;
+        }
         List<Imei> list = imeiRepository.getAllImeiWherIdSkuAndStatus(idSku, status);
         return list;
     }
@@ -367,4 +371,17 @@ public class ProductDetailServiceImpl implements IProductDetailService {
         return null;
     }
 
+
+    //update sku
+    @Override
+    public Boolean updateSku(SKU sku, Long id) {
+        Boolean idCheck = skuRepositoty.existsById(id);
+        if (idCheck) {
+            SKU skuUpdate = skuRepositoty.findById(id).get();
+            skuUpdate.setPrice(sku.getPrice());
+            skuRepositoty.save(skuUpdate);
+            return true;
+        }
+        return false;
+    }
 }

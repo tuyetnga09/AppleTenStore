@@ -74,6 +74,7 @@ import {
   searchBillCTT,
   searchBillDTT,
   updateQuantitySellOff,
+  xoahoaDonCho,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory, Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
@@ -603,6 +604,13 @@ export default function SellSmart() {
       if (selectedOptions.includes("CHUYEN_KHOAN")) {
         setShowTransferInput(true);
       }
+
+      //tu dong xoa hoa don cho
+      xoahoaDonCho()
+        .then((res) => {})
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }, [
     filters,
@@ -615,7 +623,7 @@ export default function SellSmart() {
     showWards,
     transportationFeeDTO,
     slHoaDonCho,
-    slHoaDonNgay
+    slHoaDonNgay,
   ]);
 
   function getBillChoThanhToanOff() {

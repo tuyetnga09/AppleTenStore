@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.CapacityRepository;
 import com.example.backend.controller.product_controller.service.impl.CapacityServiceImpl;
 import com.example.backend.entity.Capacity;
@@ -101,5 +102,9 @@ public class CapacityController {
         return capacityRepository.getCode();
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<Capacity> detail(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(capacityRepository.findById(id).get(), HttpStatus.OK);
+    }
 
 }

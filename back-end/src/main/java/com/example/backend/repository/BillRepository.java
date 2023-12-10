@@ -345,4 +345,9 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             "                      WHERE bill.code IS NULL\n" +
             "                        ORDER BY month", nativeQuery = true)
     List<IdBillTheoThang>  listIdBillTheoThangCuaNamSeachs(Integer year);
+
+
+    //list bill hoa đơn chờ hom nay
+    @Query(value = "select * from bill where type ='OFFLINE' and status_bill= 'CHO_XAC_NHAN' and date_create != CURDATE()", nativeQuery = true)
+    List<Bill> listBillHoaDonCho();
 }

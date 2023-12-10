@@ -31,7 +31,7 @@ export const deleteCapacity = (id) => {
 };
 
 export const returnCapacity = (id) => {
-  return httpClient.put(`/admin/capacity/return/${id}`);
+  return httpClient.get(`/admin/capacity/return/${id}`);
 };
 
 export const importCapacity = (form) => {
@@ -48,4 +48,4 @@ export const findCapacitisByIdProduct = (id) => {
 
 export const getCodeCapacity = () => {
   return httpClient.get(`admin/capacity/getCode`);
-}
+};

@@ -53,6 +53,7 @@ public class BillDetails{
     @ManyToOne
     @JoinColumn(name = "id_bill")
     private Bill bill;
+
     @Column(name = "person_create")
     private String  personCreate;
 
