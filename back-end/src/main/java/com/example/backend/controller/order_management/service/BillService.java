@@ -36,7 +36,7 @@ public interface BillService {
 
     List<Bill> listBillByIdAccountAndStatus(Integer id, String status);
 
-    void deleteBill(String noteReturn, Integer id);
+    void deleteBill(String noteReturn, Integer id, Integer idAccount);
 
     void updateAllChoThanhToan(String personUpdate);
 

@@ -269,8 +269,8 @@ public class BillController {
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public void deleteBill(@PathVariable Integer id, @RequestParam("noteReturn") String noteReturn){
-        this.billService.deleteBill(noteReturn, id);
+    public void deleteBill(@PathVariable Integer id, @RequestParam("noteReturn") String noteReturn, @RequestParam("idAccount") Integer idAccount){
+        this.billService.deleteBill(noteReturn, id, idAccount);
     }
 
     @DeleteMapping(value = "/return/{id}")

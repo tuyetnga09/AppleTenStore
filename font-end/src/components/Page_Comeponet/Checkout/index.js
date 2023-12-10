@@ -68,7 +68,7 @@ const Checkout = () => {
     userName: "",
     email: "",
     phoneNumber: "",
-    address: "",
+    address: "Nhận tại cửa hàng",
     province: "",
     district: "",
     moneyShip: 0,
@@ -309,6 +309,10 @@ const Checkout = () => {
       toWardCode: null,
       insuranceValue: null,
       quantity: 1,
+    });
+    setBill({
+      ...bill,
+      address: "Nhận tại cửa hàng",
     });
     setIsChecked1(true);
     setIsChecked2(false);
