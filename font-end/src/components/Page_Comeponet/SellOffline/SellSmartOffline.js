@@ -74,7 +74,6 @@ import {
   searchBillCTT,
   searchBillDTT,
   updateQuantitySellOff,
-  xoahoaDonCho,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory, Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
@@ -604,13 +603,6 @@ export default function SellSmart() {
       if (selectedOptions.includes("CHUYEN_KHOAN")) {
         setShowTransferInput(true);
       }
-
-      //tu dong xoa hoa don cho
-      xoahoaDonCho()
-        .then((res) => {})
-        .catch((err) => {
-          console.log(err);
-        });
     }
   }, [
     filters,
@@ -622,8 +614,6 @@ export default function SellSmart() {
     showDistricts,
     showWards,
     transportationFeeDTO,
-    slHoaDonCho,
-    slHoaDonNgay,
   ]);
 
   function getBillChoThanhToanOff() {
@@ -732,97 +722,42 @@ export default function SellSmart() {
   };
   const history = useHistory();
   const handleSave = () => {
-    const items = { ...khachHang };
     const fullname = document.getElementById("fullname").value;
     const email = document.getElementById("email").value;
     const phoneNumber = document.getElementById("phoneNumber").value;
-    const fullNameCodes = new Set();
-    const emailCodes = new Set();
-    const phoneNumberCodes = new Set();
-    const phoneNumberRegex = /^\d{10}$/;
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    // Kiểm tra trùng lặp khi thêm mới hoặc chỉnh sửa
-    for (let i = 0; i < khachHang.length; i++) {
-      const { phoneNumber, email, fullName } = khachHang[i];
-      fullNameCodes.add(fullName);
-      emailCodes.add(email);
-      phoneNumberCodes.add(phoneNumber);
-    }
     if (
-      fullname == null &&
-      fullname == "" &&
-      email == null &&
-      email == "" &&
-      phoneNumber == null &&
-      phoneNumber == ""
+      fullname !== null &&
+      fullname !== "" &&
+      email !== null &&
+      email !== "" &&
+      phoneNumber !== null &&
+      phoneNumber !== ""
     ) {
+      addCustomerOffline(customer)
+        .then((response) => {
+          history.push("/sell");
+          setCustomer({
+            fullName: "",
+            email: "",
+            phoneNumber: "",
+          });
+          getCustomer()
+            .then((response) => {
+              setKhachHang(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+          setIsModalVisible(false);
+        })
+        .catch((error) => {
+          alert("Thêm khách hàng thất bại");
+        });
+    } else {
       notification.error({
         message: "Vui lòng nhập thông tin khách hàng!",
       });
-      return;
     }
-    // if (fullNameCodes.has(fullname)) {
-    //   notification.error({
-    //     message: "Thêm khách hàng",
-    //     description: "Trùng tên",
-    //   });
-    //   return;
-    // }
-    if (emailCodes.has(email)) {
-      notification.error({
-        message: "Thêm khách hàng",
-        description: "Trùng email",
-      });
-      return;
-    }
-    if (phoneNumberCodes.has(phoneNumber)) {
-      notification.error({
-        message: "Thêm khách hàng",
-        description: "Trùng số điện thoại",
-      });
-      return;
-    }
-    if (!phoneNumberRegex.test(phoneNumber)) {
-      notification.error({
-        message: "Số điện thoại sai định dạng!",
-      });
-      return;
-    }
-    if (!emailRegex.test(email)) {
-      notification.error({
-        message: "Email sai định dạng!",
-      });
-      return;
-    }
-    addCustomerOffline(customer)
-      .then((response) => {
-        history.push("/sell");
-        setCustomer({
-          fullName: "",
-          email: "",
-          phoneNumber: "",
-        });
-        getCustomer()
-          .then((response) => {
-            setKhachHang(response.data);
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
-        setIsModalVisible(false);
-        notification.success({
-          message: "Thêm khách hàng",
-          description: "Thêm thành công",
-        });
-      })
-      .catch((error) => {
-        alert("Thêm khách hàng thất bại");
-      });
-    // } else {
-    //   notification.error({
-    //     message: "Vui lòng nhập thông tin khách hàng!",
-    //   });
-    // }
   };
 
   function giaoTanNoi() {
@@ -830,8 +765,8 @@ export default function SellSmart() {
     select.hidden = false;
     const input = document.getElementById("floatingSelect3");
     input.hidden = false;
-    // const selectTT = document.getElementById("floatingSelect4");
-    // selectTT.hidden = false;
+    const selectTT = document.getElementById("floatingSelect4");
+    selectTT.hidden = false;
     const select5 = document.getElementById("floatingSelect5");
     select5.hidden = false;
     const select6 = document.getElementById("floatingSelect6");
@@ -852,8 +787,8 @@ export default function SellSmart() {
     select.hidden = true;
     const input = document.getElementById("floatingSelect3");
     input.hidden = true;
-    // const selectTT = document.getElementById("floatingSelect4");
-    // selectTT.hidden = true;
+    const selectTT = document.getElementById("floatingSelect4");
+    selectTT.hidden = true;
     const select5 = document.getElementById("floatingSelect5");
     select5.hidden = true;
     const select6 = document.getElementById("floatingSelect6");
@@ -937,7 +872,6 @@ export default function SellSmart() {
       currency: "VND",
     }).format(amount);
   };
-
   const [user, setUser] = useState(true);
   async function createBillSusses(
     codeBill,
@@ -1149,7 +1083,7 @@ export default function SellSmart() {
 
   function checkQuantitySubmit() {
     dataBillDetailOffline.map((bd) => {
-      getOneSKU(bd.idSKU)
+      getOneSKU(bd.sku)
         .then((response) => {
           if (response.data.quantity < bd.quantity) {
             setChecked(false);
@@ -1230,11 +1164,6 @@ export default function SellSmart() {
                   getBillChoThanhToanOff();
                   setSelectedVoucher(0);
                   setSelectedVoucherFreeShip(0);
-
-                  const totalQuantity = billInDate.length;
-                  setDlHoaDonChoNgay(totalQuantity);
-                  const totalQuantity1 = hoaDonCho.length;
-                  setDlHoaDonCho(totalQuantity1);
                 }
               })
               .catch((err) => {
@@ -2188,31 +2117,6 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`${error}`);
       });
-    arrIdSku = [];
-    setIsModalVisibleBill(false);
-    getBillChoThanhToanOff();
-    arrCodeImeiDaBan = [];
-  };
-
-  const rejectHDC = () => {
-    toast.current.show({
-      severity: "warn",
-      summary: "Thanh Toán",
-      detail: "Xin mời tiếp tục.",
-      life: 3000,
-    });
-    setIsModalVisibleBill(false);
-  };
-
-  const confirmCallUpdateStatusVoucher = (codeBill) => {
-    confirmDialog({
-      message: "Bạn có muốn tiếp tục thanh toán hóa đơn này không?",
-      header: "Thanh Toán",
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-danger",
-      accept: () => clickHoaDonCho(codeBill),
-      rejectHDC,
-    });
   };
 
   //tìm kiếm hóa đơn chờ thanh toán
@@ -2608,11 +2512,6 @@ export default function SellSmart() {
                       }}
                     >
                       <Table.Column
-                        align="center"
-                        title="STT"
-                        render={(text, record, index) => index + 1}
-                      />
-                      <Table.Column
                         dataIndex="images"
                         title="Ảnh"
                         render={(text, record) => (
@@ -2750,11 +2649,6 @@ export default function SellSmart() {
                       }}
                       rowKey="id"
                     >
-                      <Table.Column
-                        align="center"
-                        title="STT"
-                        render={(text, record, index) => index + 1}
-                      />
                       <Table.Column
                         dataIndex="images"
                         title="Ảnh"
@@ -3261,21 +3155,15 @@ export default function SellSmart() {
                             })}
                           </select>
                         </div>
-                        <div
-                          className="form-group  col-md-12"
-                          // hidden
-                          // id="floatingSelect7"
-                        >
-                          <input
-                            hidden
-                            id="floatingSelect2"
-                            class="form-control"
-                            type="text"
-                            placeholder="Địa chỉ cụ thể"
-                            aria-label="default input example"
-                            onChange={handleDiaChi}
-                          />
-                        </div>
+                        <input
+                          hidden
+                          id="floatingSelect2"
+                          class="form-control"
+                          type="text"
+                          placeholder="Địa chỉ cụ thể"
+                          aria-label="default input example"
+                          onChange={handleDiaChi}
+                        />
                         <div
                           className="form-group  col-md-12"
                           hidden
@@ -3303,7 +3191,7 @@ export default function SellSmart() {
                             onChange={handlePhiVanChuyen}
                           /> */}
                         </div>
-                        {/* <div
+                        <div
                           className="form-group  col-md-12"
                           hidden
                           id="floatingSelect4"
@@ -3319,7 +3207,7 @@ export default function SellSmart() {
                             style={{ width: "100%" }}
                             // onChange={handleChangeDate}
                           />
-                        </div> */}
+                        </div>
                       </div>
                       <div className="row">
                         <div className="form-group  col-md-12">
@@ -3553,6 +3441,23 @@ export default function SellSmart() {
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
+                          {/* <button
+                            className="btn btn-danger luu-san-pham"
+                            type="button"
+                            style={{
+                              marginRight: "10px",
+                              marginBottom: "10px",
+                              backgroundColor: "orange",
+                            }}
+                            onClick={() => {
+                              // console.log(dataDoneBill);
+                              console.log(dataBillDetailOffline);
+                              // console.log(selectedOptions);
+                            }}
+                          >
+                            {" "}
+                            Chờ thanh toán
+                          </button> */}
                           <button
                             className="btn btn-danger btn-block btn-lg"
                             type="button"
@@ -3565,26 +3470,24 @@ export default function SellSmart() {
                             onClick={() => confirm2()}
                             // onMouseOver={() => checkQuantitySubmit()}
                           >
-                            Thanh Toán
+                            Lưu hóa đơn
                           </button>
-                          <div style={{ marginTop: "35px" }}>
-                            <Space size="middle">
-                              <Badge count={slHoaDonCho} overflowCount={10}>
-                                <button
-                                  className="btn btn-success btn-block btn-lg"
-                                  type="button"
-                                  style={{
-                                    marginRight: "10px",
-                                    marginBottom: "10px",
-                                    width: "359px",
-                                  }}
-                                  onClick={() => handleEditClickBill()}
-                                >
-                                  Danh Sách Hóa Đơn Chờ
-                                </button>
-                              </Badge>
-                            </Space>
-                          </div>
+
+                          <Space size="middle">
+                            <Badge count={slHoaDonCho} overflowCount={10}>
+                              <button
+                                className="btn btn-success btn-block btn-lg"
+                                type="button"
+                                style={{
+                                  marginRight: "10px",
+                                  marginBottom: "10px",
+                                }}
+                                onClick={() => handleEditClickBill()}
+                              >
+                                Hóa đơn chờ
+                              </button>
+                            </Badge>
+                          </Space>
                         </div>
                       </div>
                     </div>
@@ -4200,23 +4103,23 @@ export default function SellSmart() {
                       marginBottom: "10px",
                     }}
                     onClick={() => {
-                      // const shouldContinue = window.confirm(
-                      //   "Bạn có muốn tiếp tục thanh toán không?"
-                      // );
-                      // if (shouldContinue) {
-                      // arrIdSku = [];
-                      // Thực hiện hành động sau khi xác nhận
-                      confirmCallUpdateStatusVoucher(hoadon.code);
-                      // setIsModalVisibleBill(false);
-                      // getBillChoThanhToanOff();
-                      // notification.success({
-                      //   message: "Tiếp tục thanh toán",
-                      // });
-                      // arrCodeImeiDaBan = [];
-                      // } else {
-                      //   setIsModalVisibleBill(false);
-                      //   // Hủy bỏ hành động nếu người dùng không muốn tiếp tục
-                      // }
+                      const shouldContinue = window.confirm(
+                        "Bạn có muốn tiếp tục thanh toán không?"
+                      );
+                      if (shouldContinue) {
+                        arrIdSku = [];
+                        // Thực hiện hành động sau khi xác nhận
+                        clickHoaDonCho(hoadon.code);
+                        setIsModalVisibleBill(false);
+                        getBillChoThanhToanOff();
+                        notification.success({
+                          message: "Tiếp tục thanh toán",
+                        });
+                        arrCodeImeiDaBan = [];
+                      } else {
+                        setIsModalVisibleBill(false);
+                        // Hủy bỏ hành động nếu người dùng không muốn tiếp tục
+                      }
                     }}
                   >
                     {hoadon.code}
