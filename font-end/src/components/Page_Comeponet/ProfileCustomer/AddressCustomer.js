@@ -435,26 +435,6 @@ const AddressCustomer = ({ data }) => {
                 onClick={({ domEvent }) => domEvent.stopPropagation()}
               >
                 <Menu.Item
-                  key="edit"
-                  style={{
-                    fontSize: 15,
-                    display: "flex",
-                    alignItems: "center",
-                    fontWeight: 500,
-                  }}
-                  icon={
-                    <FormOutlined
-                      style={{
-                        color: "#52c41a",
-                        fontSize: 17,
-                        fontWeight: 500,
-                      }}
-                    />
-                  }
-                >
-                  Edit
-                </Menu.Item>
-                <Menu.Item
                   key="remove"
                   style={{
                     fontSize: 15,
