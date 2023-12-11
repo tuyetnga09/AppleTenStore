@@ -446,9 +446,12 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             imei.setSaleDate(new Date());
             imeiRepository.save(imei);
         }
-        for (Long idSku : doneBill.getIdSku()
-        ) {
-            skuRepositoty.updateQuantity(idSku, skuRepositoty.quantitySkuInBillDetails(idSku, doneBill.getIdBill()));
+        List<Long> listIdSku = billDetailRepository.listIdSkuOffindByIdBill(doneBill.getIdBill());
+        if (listIdSku.size() > 0) {
+            for (Long idSku : listIdSku
+            ) {
+                skuRepositoty.updateQuantity(idSku, skuRepositoty.quantitySkuInBillDetails(idSku, doneBill.getIdBill()));
+            }
         }
         for (String methodPayment : doneBill.getMethodPayments()
         ) {

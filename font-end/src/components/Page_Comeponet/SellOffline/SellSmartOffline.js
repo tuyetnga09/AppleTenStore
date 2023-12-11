@@ -1224,11 +1224,11 @@ export default function SellSmart() {
     });
   };
   const confirm2 = () => {
-    setDataDoneBill({
-      ...dataDoneBill,
-      totalMoney: totalPrice + dataDoneBill.moneyShip,
-      // methodPayments: selectedOptions,
-    });
+    // setDataDoneBill({
+    //   ...dataDoneBill,
+    //   totalMoney: totalPrice + dataDoneBill.moneyShip,
+    //   // methodPayments: selectedOptions,
+    // });
     confirmDialog({
       message: "Bạn chắc chắn muốn thanh toán?",
       header: "THANH TOÁN",
