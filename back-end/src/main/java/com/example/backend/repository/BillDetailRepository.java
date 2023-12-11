@@ -121,4 +121,9 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
     @Query(value = "select bill_detail.id_bill as 'idBill', bill_detail.id as 'idBillDetail', imei_da_ban.id as 'idImeiDaBan', imei_da_ban.code_imei as 'codeImei'\n" +
             "from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail  where id_bill =?1", nativeQuery = true)
     List<XoaHoaDonChoIon> listSanPhamHoaDonChoCanXoa(Integer  idBill);
+
+
+
+    @Query(value = "select id_sku from bill join bill_detail bd on bill.id = bd.id_bill join sku s on bd.id_sku = s.id where bill.id =?1", nativeQuery = true)
+    List<Long> listIdSkuOffindByIdBill(Integer  idBill);
 }
