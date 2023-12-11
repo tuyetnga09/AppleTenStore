@@ -1,5 +1,7 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.entity.Battery;
+import com.example.backend.entity.Capacity;
 import com.example.backend.repository.CategoryRepository;
 import com.example.backend.controller.product_controller.service.impl.CategoryServiceImpl;
 import com.example.backend.entity.Category;
@@ -33,11 +35,12 @@ public class CategoryController {
     private CategoryRepository categoryRepository;
 
     @GetMapping("display")
-    public Page<Category> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Category>> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Category> listCategory = categoryService.getAll(pageable);
-        return listCategory;
+        Page<Category> listCategory = categoryService.search(pageable, key);
+        return new ResponseEntity<>(listCategory, HttpStatus.OK);
     }
+
 
     @GetMapping("get-all-category")
     public ResponseEntity<List<Category>> getAllCategory() {
@@ -62,10 +65,10 @@ public class CategoryController {
     }
 
     @GetMapping("displayDelete")
-    public Page<Category> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Category>> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Category> listCategory = categoryService.getDelete(pageable);
-        return listCategory;
+        Page<Category> listCategory = categoryService.getDelete(pageable, key);
+        return new ResponseEntity<>(listCategory, HttpStatus.OK);
     }
 
     @GetMapping("return/{id}")
@@ -105,4 +108,8 @@ public class CategoryController {
         return categoryService.getCode();
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<Category> detail(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(categoryRepository.findById(id).get(), HttpStatus.OK);
+    }
 }

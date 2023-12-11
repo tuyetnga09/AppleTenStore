@@ -84,10 +84,10 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
     // lấy ra list imei máy bán ra trong 30 ngày gần đây
     @Query(value = " select code_imei from imei_da_ban join bill_detail on bill_detail.id = imei_da_ban.id_bill_detail join bill on bill_detail.id_bill = bill.id\n" +
-            "where bill.status_bill='DA_THANH_TOAN' and   (\n" +
-            " (bill.date_create IS NULL AND DATEDIFF(CURDATE(), bill.date_create) < 30)\n" +
-            " OR (bill.date_create IS NOT NULL AND DATEDIFF(CURDATE(), bill.date_update) < 30) \n" +
-            " )", nativeQuery = true)
+            "            where (imei_da_ban.status=3 or imei_da_ban.status= 4 or imei_da_ban.status = 5 or imei_da_ban.status = 7) and   (\n" +
+            "             (bill.date_create IS NULL AND DATEDIFF(CURDATE(), bill.date_create) < 30)\n" +
+            "             OR (bill.date_create IS NOT NULL AND DATEDIFF(CURDATE(), bill.date_update) < 30) \n" +
+            "             )", nativeQuery = true)
     List<String> listImeiDaBanTrong30NgayGanDay();
 
 

@@ -42,6 +42,7 @@ const CategoryDisplayReturn = () => {
 
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const history = useHistory();
@@ -66,6 +67,15 @@ const CategoryDisplayReturn = () => {
         });
     }
   }, [filters]);
+
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
 
   //xoa
   async function handleDelete(id) {
@@ -205,8 +215,8 @@ const CategoryDisplayReturn = () => {
               <section class="ftco-section">
                 <div class="container">
                   <div class="row justify-content-center">
-                    <div class="col-md-3 text-center mb-3">
-                      <h2 class="heading-section">Category</h2>
+                    <div class="col-md-6 text-center mb-6">
+                      <h2 class="heading-section">Hãng Sản Phẩm Đã Xoá</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -223,14 +233,16 @@ const CategoryDisplayReturn = () => {
                         </Link>
 
                         <input
-                          class="form-control me-2"
+                          className="form-control me-2"
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -261,49 +273,95 @@ const CategoryDisplayReturn = () => {
 
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {category.map((cat) => (
-                              <tr class="alert" role="alert" key={cat.id}>
-                                <td>{cat.id}</td>
-                                <td>{cat.code}</td>
-                                <td>{cat.name}</td>
-                                <td>{cat.dateCreate}</td>
-                                <td>{cat.dateUpdate}</td>
-                                <td>{cat.personCreate}</td>
-                                <td>{cat.personUpdate}</td>
-                                <td>
-                                  {cat.status === 0
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    onClick={() => handleDelete(cat.id)}
+                            {category.map((cat, index) => {
+                              const dateCreate = new Date(cat.dateCreate);
+                              const dateUpdate = new Date(cat.dateUpdate);
+                              const dateCreateText =
+                                dateCreate.toLocaleDateString();
+                              const dateUpdateText =
+                                dateUpdate.toLocaleDateString();
+                              return (
+                                <tr class="alert" role="alert" key={cat.id}>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
                                   >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon icon={faUndo} />
-                                    </span>
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
+                                    {index + 1}
+                                  </td>
+                                  <td>{cat.code}</td>
+                                  <td>{cat.name}</td>
+                                  <td>{dateCreateText}</td>
+                                  <td>{dateUpdateText}</td>
+                                  {/* <td>{cat.personCreate}</td>
+                                  <td>{cat.personUpdate}</td> */}
+                                  <td>
+                                    {cat.status === 0
+                                      ? "Hoạt động"
+                                      : "Không hoạt động"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    <button
+                                      type="button"
+                                      // class="close"
+                                      data-dismiss="alert"
+                                      aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                      }}
+                                      onClick={() => handleDelete(cat.id)}
+                                    >
+                                      <span aria-hidden="true">
+                                        <FontAwesomeIcon
+                                          icon={faUndo}
+                                          style={{
+                                            color: "green",
+                                          }}
+                                        />
+                                      </span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

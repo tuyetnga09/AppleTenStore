@@ -31,7 +31,7 @@ export const deleteManufacture = (id) => {
 };
 
 export const returnManufacture = (id) => {
-  return httpClient.put(`/admin/manufacture/return/${id}`);
+  return httpClient.get(`/admin/manufacture/return/${id}`);
 };
 
 export const importManufacture = (form) => {
@@ -44,4 +44,4 @@ export const search = (page, search) => {
 
 export const getCodeManufacture = () => {
   return httpClient.get(`admin/manufacture/getCode`);
-}
+};

@@ -39,7 +39,7 @@ const SaveOrUpdateManufacture = () => {
 
   const title = (
     <div className="text">
-      {id !== "new" ? "Edit Manufacture" : "Add Manufacture"}
+      {id !== "new" ? "Cập Nhật Nơi Xuất Xứ" : "Thêm Nơi Xuất Xứ"}
     </div>
   );
 
@@ -226,7 +226,7 @@ const SaveOrUpdateManufacture = () => {
                         name="code"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Code</label>
+                      <label htmlFor="">Mã</label>
                     </div>
                     <br />
                     <div className="input-data">
@@ -239,7 +239,7 @@ const SaveOrUpdateManufacture = () => {
                         name="name"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Name</label>
+                      <label htmlFor="">Tên</label>
                     </div>
                   </div>
                   <div className="form-row">

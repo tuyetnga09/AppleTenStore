@@ -34,7 +34,9 @@ const FormAddOrUpdate = () => {
   const { id } = useParams();
 
   const title = (
-    <div className="text">{id !== "new" ? "Edit Color" : "Add Color"}</div>
+    <div className="text">
+      {id !== "new" ? "Cập Nhật Màu Sắc" : "Thêm Màu Màu Sắc"}
+    </div>
   );
 
   const history = useHistory();
@@ -82,7 +84,7 @@ const FormAddOrUpdate = () => {
 
     console.log(items);
 
-    history.push("/color/getAll");
+    history.push("/color/display");
   }
   const toast = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -220,7 +222,7 @@ const FormAddOrUpdate = () => {
                         name="code"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Code</label>
+                      <label htmlFor="">Mã</label>
                     </div>
                     <br />
                     <div className="input-data">
@@ -233,7 +235,7 @@ const FormAddOrUpdate = () => {
                         name="name"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Name</label>
+                      <label htmlFor="">Tên</label>
                     </div>
                   </div>
                   <div className="form-row">

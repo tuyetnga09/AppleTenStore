@@ -39,6 +39,7 @@ const DisplayScreen = () => {
 
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const history = useHistory();
@@ -64,6 +65,15 @@ const DisplayScreen = () => {
     }
   }, [filters]);
 
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
+
   //xoa
   async function handleDelete(id) {
     returnScreen(id).then(() => {
@@ -75,6 +85,7 @@ const DisplayScreen = () => {
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
+      ...filters,
       page: newPage,
     });
   }
@@ -204,7 +215,7 @@ const DisplayScreen = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-6 text-center mb-4">
-                      <h2 class="heading-section">Screen</h2>
+                      <h2 class="heading-section">Màn Hình Đã Xoá</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -222,14 +233,16 @@ const DisplayScreen = () => {
                         </Link>
 
                         <input
-                          class="form-control me-2"
+                          className="form-control me-2"
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -261,49 +274,100 @@ const DisplayScreen = () => {
 
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {screen.map((screenD) => (
-                              <tr class="alert" role="alert" key={screenD.id}>
-                                <td>{screenD.id}</td>
-                                <td>{screenD.code}</td>
-                                <td>{screenD.name}</td>
-                                <td>{screenD.dateCreate}</td>
-                                <td>{screenD.dateUpdate}</td>
-                                <td>{screenD.personCreate}</td>
-                                <td>{screenD.personUpdate}</td>
-                                <td>
-                                  {screenD.status === 0
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    onClick={() => handleDelete(screenD.id)}
+                            {screen.map((screenD, index) => {
+                              const dateCreate = new Date(screenD.dateCreate);
+                              const dateUpdate = new Date(screenD.dateUpdate);
+                              const dateCreateText =
+                                dateCreate.toLocaleDateString();
+                              const dateUpdateText =
+                                dateUpdate.toLocaleDateString();
+                              return (
+                                <tr
+                                  className="alert"
+                                  role="alert"
+                                  key={screenD.id}
+                                >
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
                                   >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon icon={faUndo} />
-                                    </span>
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
+                                    {index + 1}
+                                  </td>
+
+                                  <td>{screenD.code}</td>
+                                  <td>{screenD.name}</td>
+                                  <td>{dateCreateText}</td>
+                                  <td>{dateUpdateText}</td>
+                                  {/* <td>{screenD.personCreate}</td>
+                                  <td>{screenD.personUpdate}</td> */}
+                                  <td>
+                                    {screenD.status === 0
+                                      ? "Hoạt động"
+                                      : "Không hoạt động"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    <button
+                                      type="button"
+                                      // class="close"
+                                      data-dismiss="alert"
+                                      aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                      }}
+                                      onClick={() => handleDelete(screenD.id)}
+                                    >
+                                      <span aria-hidden="true">
+                                        <FontAwesomeIcon
+                                          icon={faUndo}
+                                          style={{
+                                            color: "green",
+                                          }}
+                                        />
+                                      </span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.ScreenRepository;
 import com.example.backend.controller.product_controller.service.impl.ScreenServiceImpl;
 import com.example.backend.entity.Screen;
@@ -43,17 +44,17 @@ public class ScreenController {
     }
 
     @GetMapping("display")
-    public Page<Screen> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Screen>> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key){
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Screen> listScreen = screenService.getAll(pageable);
-        return listScreen;
+        Page<Screen> listScreen = screenService.searchGetAllDisplay(pageable, key);
+        return new ResponseEntity<>(listScreen, HttpStatus.OK);
     }
 
     @GetMapping("displayDelete")
-    public Page<Screen> viewDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Screen>> viewDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Screen> listScreen = screenService.getDelete(pageable);
-        return listScreen;
+        Page<Screen> listScreen = screenService.getDisplayDelete(pageable, key);
+        return new ResponseEntity<>(listScreen, HttpStatus.OK);
     }
 
     @PostMapping("save")

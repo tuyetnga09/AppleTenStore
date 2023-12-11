@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.ManufactureRepository;
 import com.example.backend.controller.product_controller.service.impl.ManufactureServiceImpl;
 import com.example.backend.entity.Manufacture;
@@ -32,9 +33,10 @@ public class ManufactureController {
     private ManufactureRepository manufactureRepository;
 
     @GetMapping("display")
-    public Page<Manufacture> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Manufacture>> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        return manufactureService.getAll(pageable);
+        Page<Manufacture> manufacturePage = manufactureService.searchGetAll(pageable, key);
+        return new ResponseEntity<>(manufacturePage, HttpStatus.OK);
     }
 
     @GetMapping("get-all-manufacture")
@@ -60,10 +62,10 @@ public class ManufactureController {
     }
 
     @GetMapping("displayDelete")
-    public Page<Manufacture> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Manufacture>>  viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Manufacture> listManufacture = manufactureService.getDelete(pageable);
-        return listManufacture;
+        Page<Manufacture> listManufacture = manufactureService.getDeleteDisplay(pageable, key);
+        return new ResponseEntity<>(listManufacture, HttpStatus.OK);
     }
 
     @GetMapping("return/{id}")
@@ -94,6 +96,11 @@ public class ManufactureController {
     @GetMapping("getCode")
     public List<String> getCode(){
         return this.manufactureService.getCode();
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Manufacture> detail(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(manufactureService.getOne(id), HttpStatus.OK);
     }
 
 }

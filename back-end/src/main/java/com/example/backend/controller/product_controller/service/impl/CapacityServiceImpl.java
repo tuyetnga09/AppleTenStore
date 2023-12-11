@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.CapacityRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Capacity;
@@ -25,6 +26,9 @@ public class CapacityServiceImpl implements Iservice<Capacity> {
     @Override
     public Page<Capacity> getAll(Pageable pageable) {
         return capacityRepository.findAll(pageable);
+    }
+    public Page<Capacity> search(Pageable pageable, String key) {
+        return capacityRepository.search(pageable, key);
     }
 
     public List<Capacity> getAll() {
@@ -65,6 +69,9 @@ public class CapacityServiceImpl implements Iservice<Capacity> {
 
     public Page<Capacity> getDelete(Pageable pageable) {
         return capacityRepository.deleteCapacity(pageable);
+    }
+    public Page<Capacity> getDeletes(Pageable pageable, String key) {
+        return capacityRepository.deleteCapacityDisplay(pageable, key);
     }
 
     public void importDataFromExcel(MultipartFile file) throws Exception {

@@ -231,7 +231,7 @@ const ReturnDeleteBattery = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-6 text-center mb-4">
-                      <h2 class="heading-section">BATTERY DELETE</h2>
+                      <h2 class="heading-section">Dung Lượng Pin Đã Xoá</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -258,7 +258,7 @@ const ReturnDeleteBattery = () => {
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -311,12 +311,12 @@ const ReturnDeleteBattery = () => {
                               <th style={{ color: "black" }}>
                                 <b>Ngày Cập Nhật</b>
                               </th>
-                              <th style={{ color: "black" }}>
+                              {/* <th style={{ color: "black" }}>
                                 <b>Người Tạo</b>
                               </th>
                               <th style={{ color: "black" }}>
                                 <b>Người Cập Nhật</b>
-                              </th>
+                              </th> */}
                               <th style={{ color: "black" }}>
                                 <b>Trạng Thái</b>
                               </th>
@@ -335,13 +335,20 @@ const ReturnDeleteBattery = () => {
                                 dateUpdate.toLocaleDateString();
                               return (
                                 <tr class="alert" role="alert" key={s.id}>
-                                  <td>{index + 1}</td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    {index + 1}
+                                  </td>
                                   <td>{s.code}</td>
                                   <td>{s.name}</td>
                                   <td>{dateCreateText}</td>
                                   <td>{dateUpdateText}</td>
-                                  <td>{s.personCreate}</td>
-                                  <td>{s.personUpdate}</td>
+                                  {/* <td>{s.personCreate}</td>
+                                  <td>{s.personUpdate}</td> */}
                                   <td>
                                     {s.status === 0
                                       ? "Hoạt động"

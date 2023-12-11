@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.RamRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Ram;
@@ -27,6 +28,9 @@ public class RamServiceImpl implements Iservice<Ram> {
     public Page<Ram> getAll(Pageable pageable) {
         return ramRepository.findAll(pageable);
     }
+    public Page<Ram> searchDisplay(Pageable pageable, String key) {
+        return ramRepository.search(pageable, key);
+    }
 
     public List<Ram> getAll() {
         return ramRepository.getAll();
@@ -34,6 +38,9 @@ public class RamServiceImpl implements Iservice<Ram> {
 
     public Page<Ram> getDelete(Pageable pageable) {
         return ramRepository.deleteRam(pageable);
+    }
+    public Page<Ram> getDeleteDisplay(Pageable pageable, String key) {
+        return ramRepository.deleteRamAll(pageable, key);
     }
 
     @Override

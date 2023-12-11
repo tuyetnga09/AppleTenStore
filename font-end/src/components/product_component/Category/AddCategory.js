@@ -39,7 +39,7 @@ const AddCategory = () => {
 
   const title = (
     <div className="text">
-      {id !== "new" ? "Edit Category" : "Add Category"}
+      {id !== "new" ? "Cập Nhật Hãng Sản Phẩm" : "Thêm Hãng Sản Phẩm"}
     </div>
   );
 
@@ -225,7 +225,7 @@ const AddCategory = () => {
                         name="code"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Code</label>
+                      <label htmlFor="">Mã</label>
                     </div>
                     <br />
                     <div className="input-data">
@@ -238,7 +238,7 @@ const AddCategory = () => {
                         name="name"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Name</label>
+                      <label htmlFor="">Tên</label>
                     </div>
                   </div>
                   <div className="form-row">

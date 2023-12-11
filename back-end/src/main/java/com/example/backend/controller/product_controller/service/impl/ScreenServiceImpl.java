@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.ScreenRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Screen;
@@ -27,6 +28,9 @@ public class ScreenServiceImpl implements Iservice<Screen> {
     public Page<Screen> getAll(Pageable pageable) {
         return screenRepository.findAll(pageable);
     }
+    public Page<Screen> searchGetAllDisplay(Pageable pageable, String key) {
+        return screenRepository.searchGetAll(pageable, key);
+    }
 
     public List<Screen> getAll() {
         return screenRepository.getAll();
@@ -34,6 +38,9 @@ public class ScreenServiceImpl implements Iservice<Screen> {
 
     public Page<Screen> getDelete(Pageable pageable) {
         return screenRepository.deleteScreen(pageable);
+    }
+    public Page<Screen> getDisplayDelete(Pageable pageable, String key) {
+        return screenRepository.deleteDisplayScreen(pageable, key);
     }
 
     @Override

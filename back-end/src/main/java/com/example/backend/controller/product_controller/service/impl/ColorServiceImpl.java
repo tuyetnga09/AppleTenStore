@@ -45,7 +45,7 @@ public class ColorServiceImpl implements Iservice<Color> {
     public void update(Color color, Integer id) {
         Color colorUpdate = colorRepository.findById(id).orElse(null);
         colorUpdate.setCode(color.getCode());
-        colorUpdate.setName(colorUpdate.getName());
+        colorUpdate.setName(color.getName());
         colorRepository.save(colorUpdate);
     }
 

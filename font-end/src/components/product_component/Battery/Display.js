@@ -233,7 +233,7 @@ const Display = () => {
                 <div class="container">
                   <div className="row justify-content-center">
                     <div className="col-md-6 text-center mb-4">
-                      <h2 className="heading-section">Battery</h2>
+                      <h2 className="heading-section">Dung Lượng Pin</h2>
                     </div>
                   </div>
                   <div className="row">
@@ -328,12 +328,12 @@ const Display = () => {
                               <th style={{ color: "black" }}>
                                 <b>Ngày Cập Nhật</b>
                               </th>
-                              <th style={{ color: "black" }}>
+                              {/* <th style={{ color: "black" }}>
                                 <b>Người Tạo</b>
                               </th>
                               <th style={{ color: "black" }}>
                                 <b>Người Cập Nhật</b>
-                              </th>
+                              </th> */}
                               <th style={{ color: "black" }}>
                                 <b>Trạng Thái</b>
                               </th>
@@ -364,8 +364,8 @@ const Display = () => {
                                   <td>{s.name}</td>
                                   <td>{dateCreateText}</td>
                                   <td>{dateUpdateText}</td>
-                                  <td>{s.personCreate}</td>
-                                  <td>{s.personUpdate}</td>
+                                  {/* <td>{s.personCreate}</td>
+                                  <td>{s.personUpdate}</td> */}
                                   <td>
                                     {s.status === 0
                                       ? "Hoạt động"

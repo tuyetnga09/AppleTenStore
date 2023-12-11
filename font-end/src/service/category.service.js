@@ -4,6 +4,7 @@ const config = {
     "Content-Type": "multipart/form-data",
   },
 };
+
 export const readAll = (page) => {
   return httpClient.get(`/admin/category/display?${page}`);
 };
@@ -29,7 +30,7 @@ export const deleteCategory = (id) => {
 };
 
 export const returnCategory = (id) => {
-  return httpClient.put(`/admin/category/return/${id}`);
+  return httpClient.get(`/admin/category/return/${id}`);
 };
 export const importCategory = (form) => {
   return httpClient.post("/admin/category/import", form, config);
@@ -45,4 +46,4 @@ export const readAllDashboard = () => {
 
 export const getCodeCategory = () => {
   return httpClient.get(`/admin/category/getCode`);
-}
+};

@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.RamRepository;
 import com.example.backend.controller.product_controller.service.impl.RamServiceImpl;
 import com.example.backend.entity.Ram;
@@ -43,17 +44,17 @@ public class RamController {
     }
 
     @GetMapping("display")
-    public Page<Ram> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Ram>> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Ram> listRam = ramService.getAll(pageable);
-        return listRam;
+        Page<Ram> listRam = ramService.searchDisplay(pageable, key);
+        return new ResponseEntity<>(listRam, HttpStatus.OK);
     }
 
     @GetMapping("displayDelete")
-    public Page<Ram> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Ram>> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Ram> listRam = ramService.getDelete(pageable);
-        return listRam;
+        Page<Ram> listRam = ramService.getDeleteDisplay(pageable, key);
+        return new ResponseEntity<>(listRam, HttpStatus.OK);
     }
 
     @PostMapping("save")

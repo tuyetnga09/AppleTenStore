@@ -7,6 +7,7 @@ import {
   faTimes,
   faPencilAlt,
   faTrash,
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import { FaSearch, FaPlus, FaFileExcel } from "react-icons/fa";
 import { IoMdDownload } from "react-icons/io";
@@ -42,6 +43,7 @@ const DisplayCapacity = () => {
   });
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const history = useHistory();
@@ -67,6 +69,14 @@ const DisplayCapacity = () => {
     }
   }, [filters]);
 
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
   //xoa
   async function handleDelete(id) {
     deleteCapacity(id).then(() => {
@@ -208,7 +218,7 @@ const DisplayCapacity = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-3 text-center mb-3">
-                      <h2 class="heading-section">CAPACITY</h2>
+                      <h2 class="heading-section">Dung Lượng GB</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -228,14 +238,16 @@ const DisplayCapacity = () => {
                         </Link>
 
                         <input
-                          class="form-control me-2"
+                          className="form-control me-2"
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -285,12 +297,12 @@ const DisplayCapacity = () => {
                               <th style={{ color: "black" }}>
                                 <b>Ngày Cập Nhật</b>
                               </th>
-                              <th style={{ color: "black" }}>
+                              {/* <th style={{ color: "black" }}>
                                 <b>Người Tạo</b>
                               </th>
                               <th style={{ color: "black" }}>
                                 <b>Người Cập Nhật</b>
-                              </th>
+                              </th> */}
                               <th style={{ color: "black" }}>
                                 <b>Trạng Thái</b>
                               </th>
@@ -309,15 +321,22 @@ const DisplayCapacity = () => {
                                 dateUpdate.toLocaleDateString();
                               return (
                                 <tr class="alert" role="alert" key={cap.id}>
-                                  <td>{index + 1}</td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    {index + 1}
+                                  </td>
                                   <td>{cap.code}</td>
                                   <td>{cap.name}</td>
                                   <td>{dateCreateText}</td>
                                   <td>{dateUpdateText}</td>
                                   {/* <td>{cap.dateCreate}</td>
                                   <td>{cap.dateUpdate}</td> */}
-                                  <td>{cap.personCreate}</td>
-                                  <td>{cap.personUpdate}</td>
+                                  {/* <td>{cap.personCreate}</td>
+                                  <td>{cap.personUpdate}</td> */}
                                   <td>
                                     {cap.status === 0
                                       ? "Hoạt động"
@@ -342,7 +361,7 @@ const DisplayCapacity = () => {
                                       >
                                         <span aria-hidden="true">
                                           <FontAwesomeIcon
-                                            icon={faPencilAlt}
+                                            icon={faEdit}
                                             style={{
                                               // marginRight: "15px",
                                               color: "green",

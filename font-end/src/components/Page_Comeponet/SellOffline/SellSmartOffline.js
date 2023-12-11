@@ -2607,6 +2607,11 @@ export default function SellSmart() {
                       }}
                     >
                       <Table.Column
+                        align="center"
+                        title="STT"
+                        render={(text, record, index) => index + 1}
+                      />
+                      <Table.Column
                         dataIndex="images"
                         title="Ảnh"
                         render={(text, record) => (
@@ -2744,6 +2749,11 @@ export default function SellSmart() {
                       }}
                       rowKey="id"
                     >
+                      <Table.Column
+                        align="center"
+                        title="STT"
+                        render={(text, record, index) => index + 1}
+                      />
                       <Table.Column
                         dataIndex="images"
                         title="Ảnh"
@@ -3250,15 +3260,21 @@ export default function SellSmart() {
                             })}
                           </select>
                         </div>
-                        <input
-                          hidden
-                          id="floatingSelect2"
-                          class="form-control"
-                          type="text"
-                          placeholder="Địa chỉ cụ thể"
-                          aria-label="default input example"
-                          onChange={handleDiaChi}
-                        />
+                        <div
+                          className="form-group  col-md-12"
+                          // hidden
+                          // id="floatingSelect7"
+                        >
+                          <input
+                            hidden
+                            id="floatingSelect2"
+                            class="form-control"
+                            type="text"
+                            placeholder="Địa chỉ cụ thể"
+                            aria-label="default input example"
+                            onChange={handleDiaChi}
+                          />
+                        </div>
                         <div
                           className="form-group  col-md-12"
                           hidden
@@ -3536,23 +3552,6 @@ export default function SellSmart() {
                           </p>
                         </div>
                         <div className="tile-footer col-md-12">
-                          {/* <button
-                            className="btn btn-danger luu-san-pham"
-                            type="button"
-                            style={{
-                              marginRight: "10px",
-                              marginBottom: "10px",
-                              backgroundColor: "orange",
-                            }}
-                            onClick={() => {
-                              // console.log(dataDoneBill);
-                              console.log(dataBillDetailOffline);
-                              // console.log(selectedOptions);
-                            }}
-                          >
-                            {" "}
-                            Chờ thanh toán
-                          </button> */}
                           <button
                             className="btn btn-danger btn-block btn-lg"
                             type="button"
@@ -3565,24 +3564,26 @@ export default function SellSmart() {
                             onClick={() => confirm2()}
                             onMouseOver={() => checkQuantitySubmit()}
                           >
-                            Lưu hóa đơn
+                            Thanh Toán
                           </button>
-
-                          <Space size="middle">
-                            <Badge count={slHoaDonCho} overflowCount={10}>
-                              <button
-                                className="btn btn-success btn-block btn-lg"
-                                type="button"
-                                style={{
-                                  marginRight: "10px",
-                                  marginBottom: "10px",
-                                }}
-                                onClick={() => handleEditClickBill()}
-                              >
-                                Hóa đơn chờ
-                              </button>
-                            </Badge>
-                          </Space>
+                          <div style={{ marginTop: "35px" }}>
+                            <Space size="middle">
+                              <Badge count={slHoaDonCho} overflowCount={10}>
+                                <button
+                                  className="btn btn-success btn-block btn-lg"
+                                  type="button"
+                                  style={{
+                                    marginRight: "10px",
+                                    marginBottom: "10px",
+                                    width: "359px",
+                                  }}
+                                  onClick={() => handleEditClickBill()}
+                                >
+                                  Danh Sách Hóa Đơn Chờ
+                                </button>
+                              </Badge>
+                            </Space>
+                          </div>
                         </div>
                       </div>
                     </div>
