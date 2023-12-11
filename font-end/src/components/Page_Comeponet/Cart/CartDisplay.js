@@ -228,7 +228,7 @@ export default function CartDisplay() {
         // setLoaded(!loaded);
         deleteAllCart(idAccount).then(() => {
           notification.success({
-            message: "CART",
+            message: "Giỏ hàng",
             description: "Xóa thành công",
           });
           readAll(idAccount)

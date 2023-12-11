@@ -211,12 +211,12 @@ export default function ProductDetail() {
             console.log(response.data);
             if (item2.quantity <= response.data) {
               notification.error({
-                message: "ADD TO CART",
+                message: "Thêm vào giỏ hàng",
                 description: "Số lượng trong kho không đủ",
               });
             } else if (item2.status === 1) {
               notification.error({
-                message: "ADD TO CART",
+                message: "Thêm vào giỏ hàng",
                 description: "Sản phẩm đã ngừng bán",
               });
             } else {
@@ -274,7 +274,7 @@ export default function ProductDetail() {
           existingCartItem.quantity - addToCartData.quantity >= item2.quantity
         ) {
           notification.error({
-            message: "ADD TO CART",
+            message: "Thêm vào giỏ hàng",
             description: "Số lượng trong kho không đủ",
           });
         } else {
@@ -284,7 +284,7 @@ export default function ProductDetail() {
       }
     } else {
       notification.warning({
-        message: "ADD TO CART",
+        message: "Thêm vào giỏ hàng",
         description: "Vui lòng chọn Dung Lương và Màu sắc",
       });
     }
@@ -366,7 +366,7 @@ export default function ProductDetail() {
                 <img src={`/imageUpload/` + imageTemp} alt="" />
               </div>
             )}
-            <div className="slide-container" style={{ marginLeft: "150px" }}>
+            <div className="slide-container" style={{ marginLeft: "85px" }}>
               <div className="previous">
                 <button onClick={previousValue}>
                   <i className="bi bi-caret-left-fill"></i>
