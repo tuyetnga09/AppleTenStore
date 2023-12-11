@@ -82,6 +82,7 @@ const CreateVoucher = ({}) => {
     setVoucher({
       ...voucher,
       valueMinimum: value,
+      valueMaximum: 1000000000000000000000000000,
     });
   }
 
@@ -340,22 +341,22 @@ const CreateVoucher = ({}) => {
                 name="valueMinimum"
               />
             </Form.Item>
-            <Form.Item
-              label={t("Giá trị đơn hàng tối đa")}
-              name="valueMaximum"
-              rules={[{ required: true, type: "number" }]}
-            >
-              <InputNumber
-                style={{ width: "300px" }}
-                type="number"
-                min={0}
-                required
-                value={voucher.valueMaximum || ""}
-                onChange={handleChangeValueMaximum}
-                id="valueMaximum"
-                name="valueMaximum"
-              />
-            </Form.Item>
+            {/*<Form.Item*/}
+            {/*  label={t("Giá trị đơn hàng tối đa")}*/}
+            {/*  name="valueMaximum"*/}
+            {/*  rules={[{ required: true, type: "number" }]}*/}
+            {/*>*/}
+            {/*  <InputNumber*/}
+            {/*    style={{ width: "300px" }}*/}
+            {/*    type="number"*/}
+            {/*    min={0}*/}
+            {/*    required*/}
+            {/*    value={voucher.valueMaximum || ""}*/}
+            {/*    onChange={handleChangeValueMaximum}*/}
+            {/*    id="valueMaximum"*/}
+            {/*    name="valueMaximum"*/}
+            {/*  />*/}
+            {/*</Form.Item>*/}
           </Col>
           <Col xs={24} lg={8}>
             {/* <Form.Item

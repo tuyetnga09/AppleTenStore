@@ -703,22 +703,22 @@ const VoucherDisplay = ({}) => {
                         </span>
                       )}
                     />
-                    <Table.Column
-                      key="valueMaximum"
-                      dataIndex="valueMaximum"
-                      title={t("Giá trị ĐH tối đa")}
-                      render={(text, record) => (
-                        <span>
-                          {parseFloat(record.valueMaximum).toLocaleString(
-                            "vi-VN",
-                            {
-                              style: "currency",
-                              currency: "VND",
-                            }
-                          )}
-                        </span>
-                      )}
-                    />
+                    {/*<Table.Column*/}
+                    {/*  key="valueMaximum"*/}
+                    {/*  dataIndex="valueMaximum"*/}
+                    {/*  title={t("Giá trị ĐH tối đa")}*/}
+                    {/*  render={(text, record) => (*/}
+                    {/*    <span>*/}
+                    {/*      {parseFloat(record.valueMaximum).toLocaleString(*/}
+                    {/*        "vi-VN",*/}
+                    {/*        {*/}
+                    {/*          style: "currency",*/}
+                    {/*          currency: "VND",*/}
+                    {/*        }*/}
+                    {/*      )}*/}
+                    {/*    </span>*/}
+                    {/*  )}*/}
+                    {/*/>*/}
                     {/* <Table.Column
                       key="typeVoucher"
                       dataIndex="typeVoucher"
