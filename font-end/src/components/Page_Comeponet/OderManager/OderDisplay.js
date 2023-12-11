@@ -76,6 +76,7 @@ import {
   listImeiDaBanByIdBillDetail,
   seachImeis,
   seachImeisDaBan,
+  xoahoaDonCho,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
@@ -142,6 +143,7 @@ const OderDisplay = ({}) => {
       { label: "Đã hủy", value: "DA_HUY" },
       { label: "Yêu cầu trả hàng", value: "YEU_CAU_TRA_HANG" },
       { label: "Giao hàng thất bại", value: "GIAO_HANG_THAT_BAI" },
+      { label: "Đã huỷ hoá đơn chờ", value: "HUY_HOA_DON_CHO" },
       // Thêm các giá trị khác nếu cần
     ],
   };
@@ -329,6 +331,12 @@ const OderDisplay = ({}) => {
         clearTimeout(timeout);
       };
     }
+    //tu dong xoa hoa don cho
+    xoahoaDonCho()
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err);
+      });
   }, [filtersNoDate, filtersWithDate, load, playSound]);
 
   function handleChangeSearch(event) {
@@ -531,6 +539,13 @@ const OderDisplay = ({}) => {
         style={{ backgroundColor: "black" }}
       />
     ),
+    HUY_HOA_DON_CHO: (
+      <Badge
+        className="site-badge-count-109"
+        count={"Đã huỷ hoá đơn chờ"}
+        style={{ backgroundColor: "#FF99FF" }}
+      />
+    ),
   };
 
   const confirm2 = async (id) => {
@@ -699,7 +714,7 @@ const OderDisplay = ({}) => {
 
   const handleSubmitCannelOrder = (event) => {
     event.preventDefault();
-    deleteBillById(billReturn.id, billReturn.note).then((response) =>
+    deleteBillById(billReturn.id, billReturn.note, idAccount).then((response) =>
       console.log(response.data)
     );
     setIsModalVisibleCannelOrder(false);
@@ -1238,6 +1253,20 @@ const OderDisplay = ({}) => {
                         />
                       )}
                       sorter={(a, b) => a.dateUpdate > b.dateUpdate}
+                    />
+                    <Table.Column
+                      key="dateUpdate"
+                      dataIndex="dateUpdate"
+                      title={t("Ghi chú")}
+                      render={(text, record) => <span>{record.note}</span>}
+                    />
+                    <Table.Column
+                      key="dateUpdate"
+                      dataIndex="dateUpdate"
+                      title={t("Ghi chú chi tiết")}
+                      render={(text, record) => (
+                        <span>{record.noteReturn}</span>
+                      )}
                     />
 
                     <Table.Column

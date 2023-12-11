@@ -46,6 +46,9 @@ public interface SkuIonAdmin {
 
     @Value("#{target.priceSKU}")
     BigDecimal getPriceSKU();
+
+    @Value("#{target.sumImeiLoi}")
+    Integer getSumImeiLoi();
 }
 
 

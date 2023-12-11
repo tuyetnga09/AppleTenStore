@@ -67,7 +67,7 @@ public class TraHangImpl implements TraHangService {
             StatusBill yeuCau = StatusBill.YEU_CAU_TRA_HANG;
 
             Bill bill = billRepository.findById(idBillReturn).get();
-            bill.setNoteReturn( formattedDate + ": " + noteBillReturn);
+            bill.setNoteReturn("Yêu cầu trả hàng: " +  formattedDate + ": " + noteBillReturn);
             bill.setStatusBill(yeuCau);
             billRepository.save(bill);
 
@@ -135,7 +135,7 @@ public class TraHangImpl implements TraHangService {
             StatusBill yeuCau = StatusBill.YEU_CAU_TRA_HANG;
 
             Bill bill = billRepository.findById(idBillReturn).get();
-            bill.setNoteReturn( formattedDate + ": " + noteBillReturn);
+            bill.setNoteReturn("Yêu cầu trả hàng: " + formattedDate + ": " + noteBillReturn);
             bill.setStatusBill(yeuCau);
             billRepository.save(bill);
 
@@ -174,12 +174,12 @@ public class TraHangImpl implements TraHangService {
         StatusBill yeuCau = StatusBill.DA_THANH_TOAN;
 
         Bill bill = billRepository.findById(idBillReturn).get();
-        String noteBillTraHang = bill.getNoteReturn() + " - Huỷ: " + formattedDate + noteBillReturn;
+        String noteBillTraHang = bill.getNoteReturn() + " - Huỷ yêu cầu trả hàng: " + formattedDate + " " + noteBillReturn;
 
         if (noteBillTraHang.length() < 250){
             bill.setNoteReturn(noteBillTraHang);
         }else {
-            String noteBillHuyTraHang = "Huỷ: " + formattedDate + noteBillReturn;
+            String noteBillHuyTraHang = "Huỷ yêu cầu trả hàng: " + formattedDate + " " + noteBillReturn;
             bill.setNoteReturn(noteBillHuyTraHang);
         }
 

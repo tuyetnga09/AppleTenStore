@@ -7,10 +7,11 @@ import {
   faTimes,
   faPencilAlt,
   faTrash,
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import { FaSearch, FaPlus, FaFileExcel } from "react-icons/fa";
 import { IoMdDownload } from "react-icons/io";
-import Pagination from "../Capacity/PageNext";
+import Pagination from "../Capacity/PageNext.js";
 import queryString from "query-string";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { Button, Layout, Menu, notification, theme } from "antd";
@@ -42,6 +43,7 @@ const DisplayCapacity = () => {
   });
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const history = useHistory();
@@ -67,6 +69,14 @@ const DisplayCapacity = () => {
     }
   }, [filters]);
 
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
   //xoa
   async function handleDelete(id) {
     deleteCapacity(id).then(() => {
@@ -208,7 +218,7 @@ const DisplayCapacity = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-3 text-center mb-3">
-                      <h2 class="heading-section">Capacity</h2>
+                      <h2 class="heading-section">Dung Lượng GB</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -220,19 +230,24 @@ const DisplayCapacity = () => {
                             type="submit"
                             style={{ marginRight: "15px" }}
                           >
-                            <FontAwesomeIcon icon={faTrash} />
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              style={{ width: "20px", height: "20px" }}
+                            />
                           </button>
                         </Link>
 
                         <input
-                          class="form-control me-2"
+                          className="form-control me-2"
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -265,65 +280,120 @@ const DisplayCapacity = () => {
                       <br />
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {capacity.map((cap) => (
-                              <tr class="alert" role="alert" key={cap.id}>
-                                <td>{cap.id}</td>
-                                <td>{cap.code}</td>
-                                <td>{cap.name}</td>
-                                <td>{cap.dateCreate}</td>
-                                <td>{cap.dateUpdate}</td>
-                                <td>{cap.personCreate}</td>
-                                <td>{cap.personUpdate}</td>
-                                <td>
-                                  {cap.status === 0
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    onClick={() => handleDelete(cap.id)}
+                            {capacity.map((cap, index) => {
+                              const dateCreate = new Date(cap.dateCreate);
+                              const dateUpdate = new Date(cap.dateUpdate);
+                              const dateCreateText =
+                                dateCreate.toLocaleDateString();
+                              const dateUpdateText =
+                                dateUpdate.toLocaleDateString();
+                              return (
+                                <tr class="alert" role="alert" key={cap.id}>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
                                   >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon icon={faTimes} />
-                                    </span>
-                                  </button>
-
-                                  <Link to={"/capacity/" + cap.id}>
+                                    {index + 1}
+                                  </td>
+                                  <td>{cap.code}</td>
+                                  <td>{cap.name}</td>
+                                  <td>{dateCreateText}</td>
+                                  <td>{dateUpdateText}</td>
+                                  {/* <td>{cap.dateCreate}</td>
+                                  <td>{cap.dateUpdate}</td> */}
+                                  {/* <td>{cap.personCreate}</td>
+                                  <td>{cap.personUpdate}</td> */}
+                                  <td>
+                                    {cap.status === 0
+                                      ? "Hoạt động"
+                                      : "Không hoạt động"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    <Link to={"/capacity/" + cap.id}>
+                                      <button
+                                        type="button"
+                                        // class="close"
+                                        data-dismiss="alert"
+                                        aria-label="Close"
+                                        style={{
+                                          backgroundColor: "white",
+                                          marginRight: "3px",
+                                        }}
+                                      >
+                                        <span aria-hidden="true">
+                                          <FontAwesomeIcon
+                                            icon={faEdit}
+                                            style={{
+                                              // marginRight: "15px",
+                                              color: "green",
+                                            }}
+                                          />
+                                        </span>
+                                      </button>
+                                    </Link>
                                     <button
                                       type="button"
-                                      class="close"
+                                      // class="close"
                                       data-dismiss="alert"
                                       aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                        marginLeft: "3px",
+                                      }}
+                                      onClick={() => handleDelete(cap.id)}
                                     >
                                       <span aria-hidden="true">
                                         <FontAwesomeIcon
-                                          icon={faPencilAlt}
-                                          style={{ marginRight: "15px" }}
+                                          icon={faTimes}
+                                          style={{
+                                            color: "red",
+                                          }}
                                         />
                                       </span>
                                     </button>
-                                  </Link>
-                                </td>
-                              </tr>
-                            ))}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

@@ -214,6 +214,9 @@ const SignUp = () => {
     const phoneNumberCode = new Set();
     const emailUserCode = new Set();
     const regexPass = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const phoneNumberRegex = /^\d{10}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
     const { user, address, account } = items;
 
     for (let i = 0; i < dataCheck.data.length; i++) {
@@ -245,6 +248,16 @@ const SignUp = () => {
       notification.error({
         message: "ĐĂNG KÍ",
         description: "Mật khẩu phải có ít nhất 8 ký tự bao gồm cả chữ và số",
+      });
+    }else if (!phoneNumberRegex.test(newPhoneNumber)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Số điện thoại sai định dạng",
+      });
+    }else if (!emailRegex.test(newEmail)) {
+      notification.error({
+        message: "ĐĂNG KÍ",
+        description: "Email sai định dạng",
       });
     }else{
       setLoading(true);

@@ -34,7 +34,9 @@ const FormAddOrUpdate = () => {
   const { id } = useParams();
 
   const title = (
-    <div className="text">{id !== "new" ? "Edit Battery" : "Add Battery"}</div>
+    <div className="text">
+      {id !== "new" ? "Cập Nhật Dung Lượng Pin" : "Thêm Dung Lượng Pin"}
+    </div>
   );
 
   const history = useHistory();
@@ -81,7 +83,7 @@ const FormAddOrUpdate = () => {
 
     console.log(items);
 
-    history.push("/battery/getAll");
+    history.push("/battery/display");
   }
   const toast = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -219,7 +221,7 @@ const FormAddOrUpdate = () => {
                         name="code"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Code</label>
+                      <label htmlFor="">Mã</label>
                     </div>
                     <br />
                     <div className="input-data">
@@ -232,7 +234,7 @@ const FormAddOrUpdate = () => {
                         name="name"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Name</label>
+                      <label htmlFor="">Tên</label>
                     </div>
                   </div>
                   <div className="form-row">

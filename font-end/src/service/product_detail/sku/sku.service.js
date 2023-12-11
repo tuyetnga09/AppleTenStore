@@ -132,3 +132,13 @@ export const updateImei = (id, imei) => {
 export const detailImei = (id) => {
   return httpClient.get(`/admin/product-detail/detail-imei?id=${id}`);
 };
+
+//findById sku
+export const getOneSKU = (id) => {
+  return httpClient.get(`/admin/sku/getOneSKU/${id}`);
+};
+
+// update gia sku
+export const updateSku = (id, sku) => {
+  return httpClient.put(`/admin/product-detail/update-price-sku/${id}`, sku);
+};

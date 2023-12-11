@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.CapacityRepository;
 import com.example.backend.controller.product_controller.service.impl.CapacityServiceImpl;
 import com.example.backend.entity.Capacity;
@@ -32,9 +33,10 @@ public class CapacityController {
     private CapacityRepository capacityRepository;
 
     @GetMapping("display")
-    public Page<Capacity> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Capacity>> viewAll(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        return capacityService.getAll(pageable);
+        Page<Capacity> capacityPage = capacityService.search(pageable, key);
+        return new ResponseEntity<>(capacityPage, HttpStatus.OK);
     }
 
     @GetMapping("get-all-capacity")
@@ -60,10 +62,10 @@ public class CapacityController {
     }
 
     @GetMapping("displayDelete")
-    public Page<Capacity> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+    public ResponseEntity<Page<Capacity>> viewAllDelete(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Capacity> listCapacity = capacityService.getDelete(pageable);
-        return listCapacity;
+        Page<Capacity> listCapacity = capacityService.getDeletes(pageable, key);
+        return new ResponseEntity<>(listCapacity, HttpStatus.OK);
     }
 
     @GetMapping("return/{id}")
@@ -101,5 +103,9 @@ public class CapacityController {
         return capacityRepository.getCode();
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<Capacity> detail(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(capacityRepository.findById(id).get(), HttpStatus.OK);
+    }
 
 }

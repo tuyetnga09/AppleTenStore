@@ -4,6 +4,7 @@ import com.example.backend.controller.order_management.model.billOffLine.AddBill
 import com.example.backend.controller.order_management.model.billOffLine.BillOffLineModel;
 import com.example.backend.controller.order_management.model.billOffLine.DoneBill;
 import com.example.backend.controller.order_management.model.billOffLine.ImeiDaBanOffLineRequest;
+import com.example.backend.controller.order_management.model.billOffLine.XoaHoaDonCho;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
@@ -11,6 +12,7 @@ import com.example.backend.controller.order_management.model.billOffLine.ion.Ime
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.XoaHoaDonChoIon;
 import com.example.backend.controller.order_management.service.BillOffLineService;
 import com.example.backend.entity.Account;
 import com.example.backend.entity.Bill;
@@ -418,9 +420,9 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         bill.setUserName(customer.getFullName());
         LocalDate now = LocalDate.now();
         bill.setCompletionDate(now);
-        if (doneBill.getFormOfReceipt().equals("TAI_CUA_HANG")){
+        if (doneBill.getFormOfReceipt().equals("TAI_CUA_HANG")) {
             bill.setStatusBill(StatusBill.DA_THANH_TOAN);
-        }else {
+        } else {
             bill.setStatusBill(StatusBill.CHO_VAN_CHUYEN);
         }
         bill.setCustomer(customer);
@@ -449,14 +451,14 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             skuRepositoty.updateQuantity(idSku, skuRepositoty.quantitySkuInBillDetails(idSku, doneBill.getIdBill()));
         }
         for (String methodPayment : doneBill.getMethodPayments()
-             ) {
+        ) {
             Payments payment = Payments.builder()
                     .bill(bill)
                     .moneyPayment(doneBill.getMoneyPayment())
                     .confirmer(doneBill.getPersonUpdate())
                     .method(TypePayment.valueOf(methodPayment))
                     .note(doneBill.getNotePayment()).build();
-            if (methodPayment.equals("TIEN_MAT")){
+            if (methodPayment.equals("TIEN_MAT")) {
                 payment.setMoneyPayment(doneBill.getCash());
             } else {
                 payment.setMoneyPayment(doneBill.getTransfer());
@@ -464,7 +466,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             paymentsRepository.save(payment);
         }
         //add voucher giảm giá
-        if(doneBill.getIdVoucher() != null){
+        if (doneBill.getIdVoucher() != null) {
             Voucher voucher = voucherRepository.findById(doneBill.getIdVoucher()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -477,7 +479,7 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             voucherDetailRepository.save(voucherDetail);
         }
         //add voucher freeship
-        if(doneBill.getIdVoucherFreeShip() != null){
+        if (doneBill.getIdVoucherFreeShip() != null) {
             Voucher voucher = voucherRepository.findById(doneBill.getIdVoucherFreeShip()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -490,12 +492,12 @@ public class BillOffLineServiceImpl implements BillOffLineService {
             voucherDetailRepository.save(voucherDetail);
         }
         //trừ số lượng
-        if(doneBill.getIdVoucher() != null){
+        if (doneBill.getIdVoucher() != null) {
             Voucher voucher = voucherRepository.getOne(doneBill.getIdVoucher());
             voucher.setQuantity(voucher.getQuantity() - 1);
             voucherRepository.save(voucher);
         }
-        if(doneBill.getIdVoucherFreeShip() != null) {
+        if (doneBill.getIdVoucherFreeShip() != null) {
             Voucher voucherFreeShip = voucherRepository.getOne(doneBill.getIdVoucherFreeShip());
             voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
             voucherRepository.save(voucherFreeShip);
@@ -633,4 +635,49 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     public List<Bill> getThongTinBill(String codeBill) {
         return billRepository.getThongTinThanhToan(codeBill);
     }
+
+    //xoá hoá đơn chờ cuối ngày
+    @Override
+    public List<XoaHoaDonCho> xoaHoaDonChoOffLineCuoiNgay() {
+        List<Bill> billList = billRepository.listBillHoaDonCho();
+
+//        if (billList.size() ==0 || billList == null){
+//            List<XoaHoaDonCho> xoaHoaDonChoList = new ArrayList<>();
+//            return xoaHoaDonChoList;
+//        }
+        for (Bill bill : billList) {
+            List<XoaHoaDonChoIon> xoaHoaDonChoList = billDetailRepository.listSanPhamHoaDonChoCanXoa(bill.getId());
+            if (xoaHoaDonChoList.size() > 0) {
+                for (XoaHoaDonChoIon xoaHoaDonChoIon : xoaHoaDonChoList) {
+//                    ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(xoaHoaDonChoIon.getCodeImei());
+                    //xoá imei trong hoá đơn chờ vào cuối nagyf
+                    imeiDaBanRepository.deleteById(xoaHoaDonChoIon.getIdImeiDaBan());
+
+                    //cập nhật lại trngj thái imei khi xoá hoá đơn chờ là 0 (hoạt động)
+                    Imei imei = imeiRepository.findByCodeImei(xoaHoaDonChoIon.getCodeImei());
+                    imei.setStatus(0);
+                    imeiRepository.save(imei);
+
+                    //Cập nhật lại bill_detail
+                    BillDetails billDetailUpdate = billDetailRepository.findById(xoaHoaDonChoIon.getIdBillDetail()).get();
+                    billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
+//                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
+                    billDetailRepository.save(billDetailUpdate);
+                }
+            }
+            //cập nhật bill
+            Bill billUpdate = billRepository.findById(bill.getId()).get();
+            billUpdate.setDateUpdate(bill.getDateCreate());
+            billUpdate.setNote("Đã tự huỷ hoá đơn chờ! - Lý do: Hoá đơn không thanh toán.");
+            billUpdate.setStatusBill(StatusBill.HUY_HOA_DON_CHO);
+            billUpdate.setTotalMoney(BigDecimal.valueOf(0));
+            billUpdate.setMoneyShip(BigDecimal.valueOf(0));
+            billUpdate.setPersonUpdate(bill.getPersonCreate());
+
+            billRepository.save(billUpdate);
+        }
+        List<XoaHoaDonCho> list = new ArrayList<>();
+        return list;
+    }
+
 }

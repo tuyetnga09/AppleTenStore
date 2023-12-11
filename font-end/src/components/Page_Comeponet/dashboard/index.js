@@ -132,6 +132,7 @@ import {
 } from "./orderTimeline/styled";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { xoahoaDonCho } from "../../../service/SellOffLine/sell_off_line.service";
 dayjs.extend(relativeTime);
 
 // import { useEffect } from "react";
@@ -944,6 +945,12 @@ const DashboardPage = () => {
       })
       .catch((error) => {
         console.log(`${error}`);
+      });
+    //tu dong xoa hoa don cho
+    xoahoaDonCho()
+      .then((res) => {})
+      .catch((err) => {
+        console.log(err);
       });
   }, [searchData, searchDataMap]);
 

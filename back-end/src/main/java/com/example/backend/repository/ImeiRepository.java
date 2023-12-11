@@ -102,4 +102,8 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
             "                                 (select code_imei from imei_da_ban where id_bill_detail in \n" +
             "                                 (select id from bill_detail where id_bill = ?1))", nativeQuery = true)
     void updateStatusImeiWhereIdBillDeliveryFailed(Integer idBill);
+
+    //laays ra lisst imei theo idsku and status = 3 =4 =5 =7 (đã bán)
+    @Query(value = "select * from imei i where i.sku_id=?1 and (i.status =?2 or i.status =4 or i.status =5 or i.status =7)   ORDER BY Id DESC", nativeQuery = true)
+    List<Imei> getAllImeiWherIdSkuDaBan(Long idSku, Integer status);
 }

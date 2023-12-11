@@ -7,6 +7,8 @@ import {
   faTimes,
   faPencilAlt,
   faTrash,
+  faEdit,
+  faClose,
 } from "@fortawesome/free-solid-svg-icons";
 import { FaSearch, FaPlus, FaFileExcel } from "react-icons/fa";
 import { IoMdDownload } from "react-icons/io";
@@ -45,6 +47,7 @@ const DisplayScreen = () => {
 
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
 
   const fileType =
@@ -74,6 +77,15 @@ const DisplayScreen = () => {
     }
   }, [filters]);
 
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
+
   //xoa
   async function handleDelete(id) {
     deleteScreen(id).then(() => {
@@ -85,6 +97,7 @@ const DisplayScreen = () => {
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
+      ...filters,
       page: newPage,
     });
   }
@@ -223,7 +236,7 @@ const DisplayScreen = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-3 text-center mb-3">
-                      <h2 class="heading-section">Screen</h2>
+                      <h2 class="heading-section">Màn Hình</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -236,19 +249,24 @@ const DisplayScreen = () => {
                             type="submit"
                             style={{ marginRight: "15px" }}
                           >
-                            <FontAwesomeIcon icon={faTrash} />
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              style={{ width: "20px", height: "20px" }}
+                            />
                           </button>
                         </Link>
 
                         <input
-                          class="form-control me-2"
+                          className="form-control me-2"
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -286,65 +304,122 @@ const DisplayScreen = () => {
 
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {screen.map((screenD) => (
-                              <tr class="alert" role="alert" key={screenD.id}>
-                                <td>{screenD.id}</td>
-                                <td>{screenD.code}</td>
-                                <td>{screenD.name}</td>
-                                <td>{screenD.dateCreate}</td>
-                                <td>{screenD.dateUpdate}</td>
-                                <td>{screenD.personCreate}</td>
-                                <td>{screenD.personUpdate}</td>
-                                <td>
-                                  {screenD.status === 0
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    onClick={() => handleDelete(screenD.id)}
+                            {screen.map((screenD, index) => {
+                              const dateCreate = new Date(screenD.dateCreate);
+                              const dateUpdate = new Date(screenD.dateUpdate);
+                              const dateCreateText =
+                                dateCreate.toLocaleDateString();
+                              const dateUpdateText =
+                                dateUpdate.toLocaleDateString();
+                              return (
+                                <tr
+                                  className="alert"
+                                  role="alert"
+                                  key={screenD.id}
+                                >
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
                                   >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon icon={faTimes} />
-                                    </span>
-                                  </button>
+                                    {index + 1}
+                                  </td>
 
-                                  <Link to={"/screen/" + screenD.id}>
+                                  <td>{screenD.code}</td>
+                                  <td>{screenD.name}</td>
+                                  <td>{dateCreateText}</td>
+                                  <td>{dateUpdateText}</td>
+                                  {/* <td>{screenD.personCreate}</td>
+                                  <td>{screenD.personUpdate}</td> */}
+                                  <td>
+                                    {screenD.status === 0
+                                      ? "Hoạt động"
+                                      : "Không hoạt động"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    <Link to={"/screen/" + screenD.id}>
+                                      <button
+                                        type="button"
+                                        // class="close"
+                                        data-dismiss="alert"
+                                        aria-label="Close"
+                                        style={{
+                                          backgroundColor: "white",
+                                          marginRight: "3px",
+                                        }}
+                                      >
+                                        <span aria-hidden="true">
+                                          <FontAwesomeIcon
+                                            icon={faEdit}
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        </span>
+                                      </button>
+                                    </Link>
                                     <button
                                       type="button"
-                                      class="close"
+                                      // class="close"
                                       data-dismiss="alert"
                                       aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                        marginLeft: "3px",
+                                      }}
+                                      onClick={() => handleDelete(screenD.id)}
                                     >
                                       <span aria-hidden="true">
                                         <FontAwesomeIcon
-                                          icon={faPencilAlt}
-                                          style={{ marginRight: "15px" }}
+                                          icon={faClose}
+                                          style={{
+                                            color: "red",
+                                          }}
                                         />
                                       </span>
                                     </button>
-                                  </Link>
-                                </td>
-                              </tr>
-                            ))}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

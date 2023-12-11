@@ -39,8 +39,8 @@ const DisplayReturnDelete = () => {
 
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
-
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const history = useHistory();
   //hien thi danh sach
@@ -65,6 +65,14 @@ const DisplayReturnDelete = () => {
     }
   }, [filters]);
 
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
   //xoa
   async function handleDelete(id) {
     returnRam(id).then(() => {
@@ -76,6 +84,7 @@ const DisplayReturnDelete = () => {
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
+      ...filters,
       page: newPage,
     });
   }
@@ -205,7 +214,7 @@ const DisplayReturnDelete = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-6 text-center mb-4">
-                      <h2 class="heading-section">RAM DELETE</h2>
+                      <h2 class="heading-section">Ram Đã Xoá</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -223,14 +232,16 @@ const DisplayReturnDelete = () => {
                         </Link>
 
                         <input
-                          class="form-control me-2"
+                          className="form-control me-2"
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -262,49 +273,99 @@ const DisplayReturnDelete = () => {
 
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {ram.map((ramD) => (
-                              <tr class="alert" role="alert" key={ramD.id}>
-                                <td>{ramD.id}</td>
-                                <td>{ramD.code}</td>
-                                <td>{ramD.name}</td>
-                                <td>{ramD.dateCreate}</td>
-                                <td>{ramD.dateUpdate}</td>
-                                <td>{ramD.personCreate}</td>
-                                <td>{ramD.personUpdate}</td>
-                                <td>
-                                  {ramD.status === 0
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    onClick={() => handleDelete(ramD.id)}
+                            {ram.map((ramD, index) => {
+                              const dateCreate = new Date(ramD.dateCreate);
+                              const dateUpdate = new Date(ramD.dateUpdate);
+                              const dateCreateText =
+                                dateCreate.toLocaleDateString();
+                              const dateUpdateText =
+                                dateUpdate.toLocaleDateString();
+                              return (
+                                <tr
+                                  className="alert"
+                                  role="alert"
+                                  key={ramD.id}
+                                >
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
                                   >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon icon={faUndo} />
-                                    </span>
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
+                                    {index + 1}
+                                  </td>
+                                  <td>{ramD.code}</td>
+                                  <td>{ramD.name}</td>
+                                  <td>{dateCreateText}</td>
+                                  <td>{dateUpdateText}</td>
+                                  {/* <td>{ramD.personCreate}</td>
+                                  <td>{ramD.personUpdate}</td> */}
+                                  <td>
+                                    {ramD.status === 0
+                                      ? "Hoạt động"
+                                      : "Không hoạt động"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    <button
+                                      type="button"
+                                      // class="close"
+                                      data-dismiss="alert"
+                                      aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                      }}
+                                      onClick={() => handleDelete(ramD.id)}
+                                    >
+                                      <span aria-hidden="true">
+                                        <FontAwesomeIcon
+                                          icon={faUndo}
+                                          style={{
+                                            color: "green",
+                                          }}
+                                        />
+                                      </span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

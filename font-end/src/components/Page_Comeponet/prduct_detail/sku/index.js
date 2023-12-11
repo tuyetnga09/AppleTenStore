@@ -20,6 +20,8 @@ import {
   seachImeiThatLac,
   updateImei,
   detailImei,
+  getOneSKU,
+  updateSku,
 } from "../../../../service/product_detail/sku/sku.service";
 import {
   readImportImei,
@@ -678,7 +680,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
   const deleteSkuWhereIdSku = (sku) => {
     deleteSku(sku.idSku, sku.idProduct)
       .then((res) => {
-        console.log(res.data + " deleted118");
+        // console.log(res.data + " deleted118");
         if (res.data === true) {
           toast1.current.show({
             severity: "success",
@@ -704,6 +706,88 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       })
       .catch((err) => {
         console.log(err);
+      });
+  };
+
+  //edit sku
+  const [isModalEditSku, setIsModalEditSku] = useState(false);
+  const [dataSkuEdit, setDataSkuEdit] = useState({});
+  //tạo đối tượng sku
+  const [dataSkuItemEdit, setSkuItemEdit] = useState({});
+
+  const handleOpenEditSku = () => {
+    setIsModalEditSku(true);
+  };
+  // Hàm để ẩn Modal
+  const handleCancelEditSku = () => {
+    setDataSkuEdit();
+    setIsModalEditSku(false);
+  };
+
+  //detail sku
+  const handleEditSku = (sku) => {
+    getSkuIonAdmin(sku.idSku)
+      .then((res) => {
+        setDataSkuEdit(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    getOneSKU(sku.idSku)
+      .then((response) => {
+        setSkuItemEdit(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    handleOpenEditSku();
+  };
+
+  //thoat modal edit sku
+  const thoatEditSku = () => {
+    handleCancelEditSku();
+  };
+  // even nhap
+  function handleChangeEditSku(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { ...dataSkuItemEdit };
+    item[name] = value;
+    setSkuItemEdit(item);
+  }
+
+  const handleSubmitEditSku = () => {
+    const items = { ...dataSkuItemEdit };
+    updateSku(dataSkuItemEdit.id, items)
+      .then((response) => {
+        if (response.data === true) {
+          readAllSku(dataSkuEdit.idProduct)
+            .then((res) => {
+              setDataSkus(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+          toast1.current.show({
+            severity: "success",
+            summary: "CẬP NHẬT THÀNH CÔNG",
+            detail: "Cập nhật giá phiên bản thành công.",
+            life: 3000,
+          });
+          handleCancelEditSku();
+        } else {
+          toast1.current.show({
+            severity: "error",
+            summary: "CẬP NHẬT THẤT BẠI",
+            detail: "Cập nhật giá phiên bản thất bại!.",
+            life: 3000,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
       });
   };
 
@@ -855,8 +939,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
   // Xử lý sự kiện thay đổi lựa chọn lấy list imei lọc thoe idSku and status
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
-    // alert(event.target.value);
-
     if (event.target.value === "99") {
       setDataImeisLoc([]);
     } else {
@@ -1856,6 +1938,31 @@ const UserAccountTable = ({ record, onSomeAction }) => {
           >
             Delete
           </Menu.Item>
+          {sku.sumImei === 0 ? (
+            ""
+          ) : (
+            <Menu.Item
+              key="editSku"
+              style={{
+                fontSize: 15,
+                display: "flex",
+                alignItems: "center",
+                fontWeight: 500,
+              }}
+              icon={
+                <FormOutlined
+                  style={{
+                    color: "#52c41a",
+                    // fontSize: 17,
+                    // fontWeight: 500,
+                  }}
+                />
+              }
+              onClick={() => handleEditSku(sku)}
+            >
+              Edit
+            </Menu.Item>
+          )}
         </Menu>
       ) : sku.statusSku === 1 && sku.statusProduct === 0 ? (
         <Menu
@@ -2064,6 +2171,22 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               );
             }}
           />
+
+          {/*  sumImeiLoi */}
+          <Table.Column
+            key="isActive"
+            dataIndex="isActive"
+            title="Sản Phẩm Lỗi"
+            sorter={(a, b) => a.sumImeiLoi - b.sumImeiLoi}
+            render={(text, record) => {
+              return (
+                <Form.Item name="title" style={{ margin: 0 }}>
+                  <p>{record.sumImeiLoi} - Máy</p>
+                </Form.Item>
+              );
+            }}
+          />
+
           {/*  sumImei */}
           <Table.Column
             key="isActive"
@@ -2157,6 +2280,8 @@ const UserAccountTable = ({ record, onSomeAction }) => {
           <Table.Column
             dataIndex="products_actions"
             title="Actions"
+            fixed="right"
+            align="center"
             render={(_, record) => (
               <Dropdown overlay={moreMenu2(record)} trigger={["click"]}>
                 <MoreOutlined
@@ -2397,6 +2522,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                   <option value="1">Đã Xoá</option>
                   <option value="2">Giỏ Hàng</option>
                   <option value="3">Đã Bán</option>
+                  <option value="6">Máy Lỗi</option>
                 </select>
                 <span className="col-1"></span>
 
@@ -2950,7 +3076,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                                     style={{
                                       // paddingLeft: "5px",
                                       // paddingRight: "5px",
-                                      backgroundColor: "Blue",
+                                      backgroundColor: "yellow",
                                       margin: "outo",
                                       textAlign: "center",
                                       borderRadius: "5px",
@@ -3560,6 +3686,114 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                 className="card-header d-flex justify-content-between align-items-center p-3"
                 style={{ borderTop: "4px solid green" }}
               ></div> */}
+              <div style={{ marginTop: "10px" }}>
+                <div
+                  // className="card-body"
+                  data-mdb-perfect-scrollbar="true"
+                  style={{
+                    position: "relative",
+                    height: 0, // điều chỉnh table dài ra
+                    overflowY: "auto",
+                  }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </Modal>
+        <Modal
+          visible={isModalEditSku}
+          onCancel={handleCancelEditSku}
+          width={500}
+          footer={null}
+          bodyStyle={{ minHeight: "80px" }}
+        >
+          <div className="container py-15">
+            <div className="row d-flex justify-content-center">
+              {/* <div className="card"> */}
+              <div>
+                <h4
+                  className="mb-0"
+                  style={{
+                    textAlign: "center",
+                    margin: "auto",
+                    marginTop: "30px",
+                  }}
+                >
+                  CHỈNH SỬA PHIÊN BẢN
+                </h4>
+              </div>
+              <div
+                className="card-header d-flex justify-content-between align-items-center p-3"
+                style={{ borderTop: "4px solid green", marginTop: "10px" }}
+              ></div>
+              <div style={{ marginBottom: "10px" }}>
+                <h6
+                  className="mb-0"
+                  style={{
+                    textAlign: "center",
+                    margin: "auto",
+                    color: "green",
+                  }}
+                >
+                  Phiên bản: {dataSkuEdit?.nameProduct} -{" "}
+                  {dataSkuEdit?.skuCapacity} - {dataSkuEdit?.skuColor}
+                </h6>
+              </div>
+
+              <div style={{ marginTop: "30px" }}>
+                <form onSubmit={handleSubmitEditSku}>
+                  <div className="form-row" style={{ marginBottom: "60px" }}>
+                    <div className="col-11" style={{ marginLeft: "0px" }}>
+                      <div className="input-data">
+                        <Input
+                          type="number"
+                          required
+                          value={dataSkuItemEdit?.price || ""}
+                          onChange={handleChangeEditSku}
+                          id="price"
+                          name="price"
+                        ></Input>
+                        <div className="underline"></div>
+                        <label htmlFor="">Giá Bán</label>
+                      </div>
+                    </div>
+                    {/* <div className="col-2"></div> */}
+                  </div>
+                  <div
+                    className="form-row"
+                    style={{
+                      marginTop: "40px",
+                      textAlign: "center",
+                      margin: "auto",
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      class="btn btn-outline-success"
+                      style={{
+                        // marginTop: "40px",
+                        margin: "auto",
+                        textAlign: "center",
+                      }}
+                    >
+                      Cập nhật
+                    </button>
+                  </div>
+                </form>
+                <div>
+                  <button
+                    class="btn btn-outline-danger"
+                    style={{
+                      marginTop: "40px",
+                      float: "right",
+                      paddingBottom: "-20px",
+                    }}
+                    onClick={() => thoatEditSku()}
+                  >
+                    Thoát
+                  </button>
+                </div>
+              </div>
               <div style={{ marginTop: "10px" }}>
                 <div
                   // className="card-body"

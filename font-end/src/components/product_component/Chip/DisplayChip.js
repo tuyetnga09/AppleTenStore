@@ -245,7 +245,10 @@ const Display = () => {
                             type="submit"
                             style={{ marginRight: "15px" }}
                           >
-                            <FontAwesomeIcon icon={faTrash} />
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              style={{ width: "20px", height: "20px" }}
+                            />
                           </button>
                         </Link>
 
@@ -257,17 +260,18 @@ const Display = () => {
                           name="key"
                           onChange={handleChange}
                         />
-                        <Link to="/chip/scan">
-                          <button
-                            className="btn btn-outline-success"
-                            style={{ marginLeft: "15px" }}
-                          >
-                            <FontAwesomeIcon
-                              icon={faQrcode}
-                              className="search-icon"
-                            />
-                          </button>
-                        </Link>
+                        {/* <Link to="/chip/scan"> */}
+                        <button
+                          className="btn btn-outline-success"
+                          style={{ marginLeft: "15px" }}
+                          type="button"
+                        >
+                          <FontAwesomeIcon
+                            icon={faQrcode}
+                            className="search-icon"
+                          />
+                        </button>
+                        {/* </Link> */}
                         <Link to="/chip/new">
                           <button
                             type="button"
@@ -308,20 +312,39 @@ const Display = () => {
                       <br />
                       <div className="table-wrap">
                         <table className="table">
-                          <thead className="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>Code</th>
-                              <th>Name</th>
-                              <th>Date Create</th>
-                              <th>Date Update</th>
-                              <th>Person Create</th>
-                              <th>Person Update</th>
-                              <th>Status</th>
-                              <th>Actions</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {display.map((s) => {
+                            {display.map((s, index) => {
                               const dateCreate = new Date(s.dateCreate);
                               const dateUpdate = new Date(s.dateUpdate);
                               const dateCreateText =
@@ -330,27 +353,49 @@ const Display = () => {
                                 dateUpdate.toLocaleDateString();
                               return (
                                 <tr className="alert" role="alert" key={s.id}>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    {index + 1}
+                                  </td>
                                   <td>{s.code}</td>
                                   <td>{s.name}</td>
                                   <td>{dateCreateText}</td>
                                   <td>{dateUpdateText}</td>
-                                  <td>{s.personCreate}</td>
-                                  <td>{s.personUpdate}</td>
+                                  {/* <td>{s.personCreate}</td>
+                                  <td>{s.personUpdate}</td> */}
                                   <td>
                                     {s.status === 0
                                       ? "Hoạt động"
                                       : "Không hoạt động"}
                                   </td>
-                                  <td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
                                     <button
                                       type="button"
-                                      className="close"
+                                      // className="close"
                                       data-dismiss="alert"
                                       aria-label="Edit"
+                                      style={{
+                                        backgroundColor: "white",
+                                        marginRight: "3px",
+                                      }}
                                     >
                                       <Link to={"/chip/" + s.id}>
                                         <span aria-hidden="true">
-                                          <FontAwesomeIcon icon={faEdit} />
+                                          <FontAwesomeIcon
+                                            icon={faEdit}
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
                                         </span>
                                       </Link>
                                     </button>
@@ -359,10 +404,19 @@ const Display = () => {
                                       className="close"
                                       data-dismiss="alert"
                                       aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                        marginLeft: "3px",
+                                      }}
                                       onClick={() => remove(s.id)}
                                     >
                                       <span aria-hidden="true">
-                                        <FontAwesomeIcon icon={faClose} />
+                                        <FontAwesomeIcon
+                                          icon={faClose}
+                                          style={{
+                                            color: "red",
+                                          }}
+                                        />
                                       </span>
                                     </button>
                                   </td>

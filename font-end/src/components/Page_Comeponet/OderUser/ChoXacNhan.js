@@ -151,7 +151,7 @@ const OderUserChoThanhToan = () => {
 
   const handleSubmitReturns = (event) => {
     event.preventDefault();
-    deleteBillById(billReturn.id, billReturn.note).then((response) =>
+    deleteBillById(billReturn.id, billReturn.note, -1).then((response) =>
       console.log(response.data)
     );
     setIsModalVisibleCannelOrder(false);

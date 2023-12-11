@@ -28,7 +28,7 @@ function Pagination(props) {
       <nav className="pagination-outer" aria-label="Page navigation">
         <ul className="pagination">
           <li className="page-item">
-            <a
+            <button
               href="#"
               className="page-link"
               aria-label="Previous"
@@ -36,22 +36,22 @@ function Pagination(props) {
               onClick={() => handlePageChange(number - 1)}
             >
               <span aria-hidden="true">«</span>
-            </a>
+            </button>
           </li>
           {Array.from({ length: totalPages }).map((item, index) => (
             <li className="page-item">
-              <a
+              <button
                 className="page-link"
                 href="#"
                 key={index}
                 onClick={() => handlePageChange(index)}
               >
                 {index + 1}
-              </a>
+              </button>
             </li>
           ))}
           <li className="page-item">
-            <a
+            <button
               href="#"
               className="page-link"
               aria-label="Next"
@@ -59,7 +59,7 @@ function Pagination(props) {
               onClick={() => handlePageChange(number + 1)}
             >
               <span aria-hidden="true">»</span>
-            </a>
+            </button>
           </li>
         </ul>
       </nav>

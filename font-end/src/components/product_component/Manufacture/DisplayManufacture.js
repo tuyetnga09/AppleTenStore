@@ -10,6 +10,8 @@ import {
   faTimes,
   faPencilAlt,
   faTrash,
+  faEdit,
+  faClose,
 } from "@fortawesome/free-solid-svg-icons";
 import { FaSearch, FaPlus, FaFileExcel } from "react-icons/fa";
 import { IoMdDownload } from "react-icons/io";
@@ -30,6 +32,7 @@ import {
   UnorderedListOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import HeaderDashBoard from "../../Page_Comeponet/header/index.js";
 const { Header, Sider, Content } = Layout;
@@ -44,6 +47,7 @@ const DisplayManufacture = () => {
   });
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
 
   const storedUser = JSON.parse(localStorage.getItem("account"));
@@ -60,7 +64,6 @@ const DisplayManufacture = () => {
       readAll(paramsString)
         .then((response) => {
           console.log(response.data);
-
           setManufacture(response.data.content);
           setPagination(response.data);
         })
@@ -69,6 +72,14 @@ const DisplayManufacture = () => {
         });
     }
   }, [filters]);
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
 
   async function handleDelete(id) {
     deleteManufacture(id).then(() => {
@@ -80,7 +91,11 @@ const DisplayManufacture = () => {
   //import
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
+    // setFilters({
+    //   page: newPage,
+    // });
     setFilters({
+      ...filters,
       page: newPage,
     });
   }
@@ -210,7 +225,7 @@ const DisplayManufacture = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-3 text-center mb-3">
-                      <h2 class="heading-section">Manufacture</h2>
+                      <h2 class="heading-section">Xuất Xứ</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -223,19 +238,24 @@ const DisplayManufacture = () => {
                             type="submit"
                             style={{ marginRight: "15px" }}
                           >
-                            <FontAwesomeIcon icon={faTrash} />
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              style={{ width: "20px", height: "20px" }}
+                            />
                           </button>
                         </Link>
 
                         <input
-                          class="form-control me-2"
+                          className="form-control me-2"
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -268,65 +288,121 @@ const DisplayManufacture = () => {
 
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {manufacture.map((manu) => (
-                              <tr class="alert" role="alert" key={manu.id}>
-                                <td>{manu.id}</td>
-                                <td>{manu.code}</td>
-                                <td>{manu.name}</td>
-                                <td>{manu.dateCreate}</td>
-                                <td>{manu.dateUpdate}</td>
-                                <td>{manu.personCreate}</td>
-                                <td>{manu.personUpdate}</td>
-                                <td>
-                                  {manu.status === 0
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    NP={() => handleDelete(manu.id)}
+                            {manufacture.map((manu, index) => {
+                              const dateCreate = new Date(manu.dateCreate);
+                              const dateUpdate = new Date(manu.dateUpdate);
+                              const dateCreateText =
+                                dateCreate.toLocaleDateString();
+                              const dateUpdateText =
+                                dateUpdate.toLocaleDateString();
+                              return (
+                                <tr
+                                  className="alert"
+                                  role="alert"
+                                  key={manu.id}
+                                >
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
                                   >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon icon={faTimes} />
-                                    </span>
-                                  </button>
-
-                                  <Link to={"/manufacture/" + manu.id}>
+                                    {index + 1}
+                                  </td>
+                                  <td>{manu.code}</td>
+                                  <td>{manu.name}</td>
+                                  <td>{dateCreateText}</td>
+                                  <td>{dateUpdateText}</td>
+                                  {/* <td>{manu.personCreate}</td>
+                                  <td>{manu.personUpdate}</td> */}
+                                  <td>
+                                    {manu.status === 0
+                                      ? "Hoạt động"
+                                      : "Không hoạt động"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    <Link to={"/manufacture/" + manu.id}>
+                                      <button
+                                        type="button"
+                                        // class="close"
+                                        data-dismiss="alert"
+                                        aria-label="Close"
+                                        style={{
+                                          backgroundColor: "white",
+                                          marginRight: "3px",
+                                        }}
+                                      >
+                                        <span aria-hidden="true">
+                                          <FontAwesomeIcon
+                                            icon={faEdit}
+                                            style={{
+                                              color: "green",
+                                            }}
+                                          />
+                                        </span>
+                                      </button>
+                                    </Link>
                                     <button
                                       type="button"
-                                      class="close"
+                                      // class="close"
                                       data-dismiss="alert"
                                       aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                        marginLeft: "3px",
+                                      }}
+                                      onClick={() => handleDelete(manu.id)}
                                     >
                                       <span aria-hidden="true">
                                         <FontAwesomeIcon
-                                          icon={faPencilAlt}
-                                          style={{ marginRight: "15px" }}
+                                          icon={faClose}
+                                          style={{
+                                            color: "red",
+                                          }}
                                         />
                                       </span>
                                     </button>
-                                  </Link>
-                                </td>
-                              </tr>
-                            ))}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

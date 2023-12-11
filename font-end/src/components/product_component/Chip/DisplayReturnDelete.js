@@ -230,7 +230,7 @@ const ReturnDeleteChip = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-6 text-center mb-4">
-                      <h2 class="heading-section">CHIP DELETE</h2>
+                      <h2 class="heading-section">Chip Đã Xoá</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -257,7 +257,7 @@ const ReturnDeleteChip = () => {
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -293,21 +293,39 @@ const ReturnDeleteChip = () => {
 
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {chip.map((s) => {
+                            {chip.map((s, index) => {
                               const dateCreate = new Date(s.dateCreate);
                               const dateUpdate = new Date(s.dateUpdate);
                               const dateCreateText =
@@ -316,28 +334,48 @@ const ReturnDeleteChip = () => {
                                 dateUpdate.toLocaleDateString();
                               return (
                                 <tr class="alert" role="alert" key={s.id}>
-                                  <td>{s.id}</td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    {index + 1}
+                                  </td>
                                   <td>{s.code}</td>
                                   <td>{s.name}</td>
                                   <td>{dateCreateText}</td>
                                   <td>{dateUpdateText}</td>
-                                  <td>{s.personCreate}</td>
-                                  <td>{s.personUpdate}</td>
+                                  {/* <td>{s.personCreate}</td>
+                                  <td>{s.personUpdate}</td> */}
                                   <td>
                                     {s.status === 0
                                       ? "Hoạt động"
                                       : "Không hoạt động"}
                                   </td>
-                                  <td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
                                     <button
                                       type="button"
-                                      class="close"
+                                      // class="close"
                                       data-dismiss="alert"
                                       aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                      }}
                                       onClick={() => handleDelete(s.id)}
                                     >
                                       <span aria-hidden="true">
-                                        <FontAwesomeIcon icon={faUndo} />
+                                        <FontAwesomeIcon
+                                          icon={faUndo}
+                                          style={{
+                                            color: "green",
+                                          }}
+                                        />
                                       </span>
                                     </button>
                                   </td>

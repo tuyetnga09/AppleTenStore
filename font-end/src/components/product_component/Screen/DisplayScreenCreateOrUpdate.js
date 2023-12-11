@@ -34,7 +34,9 @@ const DisplayScreenCreateOrUpdate = () => {
   const { id } = useParams();
 
   const title = (
-    <div className="text">{id !== "new" ? "Edit Screen" : "Add Screen"}</div>
+    <div className="text">
+      {id !== "new" ? "Cập Nhật Màn Hình" : "Thêm Màn Hình"}
+    </div>
   );
 
   const history = useHistory();
@@ -220,7 +222,7 @@ const DisplayScreenCreateOrUpdate = () => {
                         name="code"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Code</label>
+                      <label htmlFor="">Mã</label>
                     </div>
                     <br />
                     <div className="input-data">
@@ -233,7 +235,7 @@ const DisplayScreenCreateOrUpdate = () => {
                         name="name"
                       ></Input>
                       <div className="underline"></div>
-                      <label htmlFor="">Name</label>
+                      <label htmlFor="">Tên</label>
                     </div>
                   </div>
                   <div className="form-row">

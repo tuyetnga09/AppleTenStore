@@ -42,6 +42,7 @@ const ReturnManufacture = () => {
 
   const [filters, setFilters] = useState({
     page: 0,
+    key: "",
   });
   const storedUser = JSON.parse(localStorage.getItem("account"));
   const history = useHistory();
@@ -67,6 +68,14 @@ const ReturnManufacture = () => {
     }
   }, [filters]);
 
+  function handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let item = { page: 0, key: "" };
+    item[name] = value;
+    setFilters(item);
+  }
   //xoa
   async function handleDelete(id) {
     returnManufacture(id).then(() => {
@@ -206,7 +215,7 @@ const ReturnManufacture = () => {
                 <div class="container">
                   <div class="row justify-content-center">
                     <div class="col-md-3 text-center mb-3">
-                      <h2 class="heading-section">Manufacture Delete</h2>
+                      <h2 class="heading-section">Xuất Xứ Đã Xoá</h2>
                     </div>
                   </div>
                   <div class="row">
@@ -227,10 +236,12 @@ const ReturnManufacture = () => {
                           type="search"
                           placeholder="Search"
                           aria-label="Search"
+                          name="key"
+                          onChange={handleChange}
                         />
                         <button
                           class="btn btn-outline-success"
-                          type="submit"
+                          type="button"
                           style={{ marginLeft: "15px" }}
                         >
                           <FaSearch className="search-icon" />
@@ -261,49 +272,99 @@ const ReturnManufacture = () => {
 
                       <div class="table-wrap">
                         <table class="table">
-                          <thead class="thead-primary">
+                          <thead class="table-light">
                             <tr>
-                              <th>ID</th>
-                              <th>CODE</th>
-                              <th>NAME</th>
-                              <th>DATE-CREATE</th>
-                              <th>DATE-UPDATE</th>
-                              <th>PERSON-CREATE</th>
-                              <th>PERSON-UPDATE</th>
-                              <th>STATUS</th>
-                              <th>ACTION</th>
+                              <th style={{ color: "black" }}>
+                                <b>STT</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Mã</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Tên</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Ngày Cập Nhật</b>
+                              </th>
+                              {/* <th style={{ color: "black" }}>
+                                <b>Người Tạo</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Người Cập Nhật</b>
+                              </th> */}
+                              <th style={{ color: "black" }}>
+                                <b>Trạng Thái</b>
+                              </th>
+                              <th style={{ color: "black" }}>
+                                <b>Actions</b>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
-                            {manufacture.map((manu) => (
-                              <tr class="alert" role="alert" key={manu.id}>
-                                <td>{manu.id}</td>
-                                <td>{manu.code}</td>
-                                <td>{manu.name}</td>
-                                <td>{manu.dateCreate}</td>
-                                <td>{manu.dateUpdate}</td>
-                                <td>{manu.personCreate}</td>
-                                <td>{manu.personUpdate}</td>
-                                <td>
-                                  {manu.status === 0
-                                    ? "Hoạt động"
-                                    : "Không hoạt động"}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="close"
-                                    data-dismiss="alert"
-                                    aria-label="Close"
-                                    onClick={() => handleDelete(manu.id)}
+                            {manufacture.map((manu, index) => {
+                              const dateCreate = new Date(manu.dateCreate);
+                              const dateUpdate = new Date(manu.dateUpdate);
+                              const dateCreateText =
+                                dateCreate.toLocaleDateString();
+                              const dateUpdateText =
+                                dateUpdate.toLocaleDateString();
+                              return (
+                                <tr
+                                  className="alert"
+                                  role="alert"
+                                  key={manu.id}
+                                >
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
                                   >
-                                    <span aria-hidden="true">
-                                      <FontAwesomeIcon icon={faUndo} />
-                                    </span>
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
+                                    {index + 1}
+                                  </td>
+                                  <td>{manu.code}</td>
+                                  <td>{manu.name}</td>
+                                  <td>{dateCreateText}</td>
+                                  <td>{dateUpdateText}</td>
+                                  {/* <td>{manu.personCreate}</td>
+                                  <td>{manu.personUpdate}</td> */}
+                                  <td>
+                                    {manu.status === 0
+                                      ? "Hoạt động"
+                                      : "Không hoạt động"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      margin: "auto",
+                                    }}
+                                  >
+                                    <button
+                                      type="button"
+                                      // class="close"
+                                      data-dismiss="alert"
+                                      aria-label="Close"
+                                      style={{
+                                        backgroundColor: "white",
+                                      }}
+                                      onClick={() => handleDelete(manu.id)}
+                                    >
+                                      <span aria-hidden="true">
+                                        <FontAwesomeIcon
+                                          icon={faUndo}
+                                          style={{
+                                            color: "green",
+                                          }}
+                                        />
+                                      </span>
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>

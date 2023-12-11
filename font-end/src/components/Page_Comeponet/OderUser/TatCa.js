@@ -132,6 +132,8 @@ const OderUserAll = () => {
                   ? "Trả hàng"
                   : b.statusBill === "YEU_CAU_TRA_HANG"
                   ? "Yêu cầu trả hàng"
+                  : b.statusBill === "GIAO_HANG_THAT_BAI"
+                  ? "Giao hàng thất bại"
                   : "Đã hủy"}
               </span>
             </div>
@@ -259,7 +261,7 @@ const OderUserAll = () => {
 
   const handleSubmitReturns = (event) => {
     event.preventDefault();
-    deleteBillById(billReturn.id, billReturn.note).then((response) =>
+    deleteBillById(billReturn.id, billReturn.note, -1).then((response) =>
       console.log(response.data)
     );
     setIsModalVisibleCannelOrder(false);

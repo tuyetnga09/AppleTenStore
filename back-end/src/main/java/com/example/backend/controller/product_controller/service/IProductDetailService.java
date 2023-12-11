@@ -6,6 +6,7 @@ import com.example.backend.controller.product_controller.model.request.ImeiCreat
 import com.example.backend.controller.product_controller.model.respon.ImeiThatLac;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
+import com.example.backend.entity.SKU;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -66,4 +67,7 @@ public interface IProductDetailService {
      Boolean update(Imei imei, Integer id);
 
     Imei getOneImei(Integer idImei);
+
+    //update sku
+    Boolean updateSku(SKU sku, Long id);
 }

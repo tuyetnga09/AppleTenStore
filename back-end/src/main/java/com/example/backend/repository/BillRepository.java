@@ -84,10 +84,10 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
 
     // lấy ra list imei máy bán ra trong 30 ngày gần đây
     @Query(value = " select code_imei from imei_da_ban join bill_detail on bill_detail.id = imei_da_ban.id_bill_detail join bill on bill_detail.id_bill = bill.id\n" +
-            "where bill.status_bill='DA_THANH_TOAN' and   (\n" +
-            " (bill.date_create IS NULL AND DATEDIFF(CURDATE(), bill.date_create) < 30)\n" +
-            " OR (bill.date_create IS NOT NULL AND DATEDIFF(CURDATE(), bill.date_update) < 30) \n" +
-            " )", nativeQuery = true)
+            "            where (imei_da_ban.status=3 or imei_da_ban.status= 4 or imei_da_ban.status = 5 or imei_da_ban.status = 7) and   (\n" +
+            "             (bill.date_create IS NULL AND DATEDIFF(CURDATE(), bill.date_create) < 30)\n" +
+            "             OR (bill.date_create IS NOT NULL AND DATEDIFF(CURDATE(), bill.date_update) < 30) \n" +
+            "             )", nativeQuery = true)
     List<String> listImeiDaBanTrong30NgayGanDay();
 
 
@@ -159,7 +159,7 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
     List<Bill> searchBillChoThanhToan(Integer id, String codeBill);
 
     @Query(value = "SELECT * FROM bill\n" +
-            "WHERE status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURRENT_DATE ORDER BY id DESC", nativeQuery = true)
+            "WHERE status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURRENT_DATE or date_update = CURRENT_DATE() ORDER BY id DESC", nativeQuery = true)
     List<Bill> billInDate();
 
     @Query(value = "select * from bill where status_bill = 'DA_THANH_TOAN' and type = 'OFFLINE' and date_create = CURDATE() and id_account = ?1 and code like %?2%  ORDER BY id DESC", nativeQuery = true)
@@ -345,4 +345,9 @@ List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalD
             "                      WHERE bill.code IS NULL\n" +
             "                        ORDER BY month", nativeQuery = true)
     List<IdBillTheoThang>  listIdBillTheoThangCuaNamSeachs(Integer year);
+
+
+    //list bill hoa đơn chờ hom nay
+    @Query(value = "select * from bill where type ='OFFLINE' and status_bill= 'CHO_XAC_NHAN' and date_create != CURDATE()", nativeQuery = true)
+    List<Bill> listBillHoaDonCho();
 }

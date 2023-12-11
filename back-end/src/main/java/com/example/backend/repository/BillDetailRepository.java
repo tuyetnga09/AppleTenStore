@@ -6,6 +6,7 @@ import com.example.backend.controller.order_management.model.billDetail.response
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
+import com.example.backend.controller.order_management.model.billOffLine.ion.XoaHoaDonChoIon;
 import com.example.backend.controller.product_controller.model.respon.TonTienBillTraHang;
 import com.example.backend.entity.BillDetails;
 import jakarta.transaction.Transactional;
@@ -115,4 +116,9 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
             " from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail  " +
             " where id_bill=?1 and imei_da_ban.status != 6", nativeQuery = true)
     List<TonTienBillTraHang> tongTienBilldetailChuaTraHang(Integer  idBill);
+
+    //cuoi ngay lay ra list bill detail cua hoa don cho cuoi ngay de xoa
+    @Query(value = "select bill_detail.id_bill as 'idBill', bill_detail.id as 'idBillDetail', imei_da_ban.id as 'idImeiDaBan', imei_da_ban.code_imei as 'codeImei'\n" +
+            "from bill_detail join imei_da_ban on bill_detail.id = imei_da_ban.id_bill_detail  where id_bill =?1", nativeQuery = true)
+    List<XoaHoaDonChoIon> listSanPhamHoaDonChoCanXoa(Integer  idBill);
 }

@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.repository.ManufactureRepository;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Manufacture;
@@ -27,6 +28,9 @@ public class ManufactureServiceImpl implements Iservice<Manufacture> {
     public Page<Manufacture> getAll(Pageable pageable) {
         return manufactureRepository.findAll(pageable);
     }
+    public Page<Manufacture> searchGetAll(Pageable pageable, String key) {
+        return manufactureRepository.searchAll(pageable, key);
+    }
 
     public List<Manufacture> getAll() {
         return manufactureRepository.getAll();
@@ -34,6 +38,9 @@ public class ManufactureServiceImpl implements Iservice<Manufacture> {
 
     public Page<Manufacture> getDelete(Pageable pageable) {
         return manufactureRepository.deleteManufacture(pageable);
+    }
+    public Page<Manufacture> getDeleteDisplay(Pageable pageable, String key) {
+        return manufactureRepository.deleteManufactureDisplay(pageable, key);
     }
 
     @Override

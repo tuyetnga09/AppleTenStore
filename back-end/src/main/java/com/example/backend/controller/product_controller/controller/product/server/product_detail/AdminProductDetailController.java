@@ -8,6 +8,7 @@ import com.example.backend.controller.product_controller.service.impl.ImeiServic
 import com.example.backend.controller.product_controller.service.impl.product_detail.ProductDetailServiceImpl;
 import com.example.backend.entity.Imei;
 import com.example.backend.entity.Product;
+import com.example.backend.entity.SKU;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -187,6 +188,13 @@ public class AdminProductDetailController {
     @PutMapping("/update-imei/{id}")
     public ResponseEntity<Boolean> updateImei(@RequestBody Imei imei, @PathVariable("id") Integer id) {
         Boolean update = productDetailService.update(imei, id);
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    // update gia sku
+    @PutMapping("/update-price-sku/{id}")
+    public ResponseEntity<Boolean> updateSku(@RequestBody SKU sku, @PathVariable("id") Long id) {
+        Boolean update = productDetailService.updateSku(sku, id);
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 

@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.entity.Battery;
 import com.example.backend.entity.Capacity;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -35,5 +36,11 @@ public interface CapacityRepository extends JpaRepository<Capacity, Integer> {
 
     @Query(value = "select code from capacity",  nativeQuery = true)
     List<String> getCode();
+
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status FROM Capacity WHERE (code like %?1% or name like %?1% or date_create like %?1% or date_update like %?1% or person_create like %?1% or person_update like %?1%) and Status = 0 ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+    Page<Capacity> search(Pageable pageable, String key);
+
+    @Query(value = "SELECT Id, Code, Name, date_create, date_update, person_create, person_update, Status FROM Capacity WHERE (code like %?1% or name like %?1% or date_create like %?1% or date_update like %?1% or person_create like %?1% or person_update like %?1%) and Status = 1", nativeQuery = true)
+    Page<Capacity> deleteCapacityDisplay(Pageable pageable, String key);
 
 }
