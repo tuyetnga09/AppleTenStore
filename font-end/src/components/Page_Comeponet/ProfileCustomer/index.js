@@ -98,33 +98,47 @@ const ProfileCustomer = () => {
 
   const handleUpdate = (event) => {
     event.preventDefault();
-    update(storedUser?.user?.id, editCustomer)
-      .then((res) => {
-        if (res.data === true) {
-          notification.success({
-            message: "CẬP NHẬT",
-            description: "Cập nhật thông tin thành công",
-          });
-          storedUser.user.fullName = editCustomer.fullName;
-          storedUser.email = editCustomer.email;
-          storedUser.user.email = editCustomer.email;
-          storedUser.user.phoneNumber = editCustomer.phoneNumber;
-          storedUser.user.dateOfBirth = editCustomer.dateOfBirth;
-          localStorage.setItem("account", JSON.stringify(storedUser));
-        } else {
+    const phoneNumberRegex = /^\d{10}$/;
+    const phoneNumber = document.getElementById("inputPhone");
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const email = document.getElementById("inputEmailAddress");
+    if (!phoneNumberRegex.test(phoneNumber?.value)) {
+      notification.error({
+        message: "Số điện thoại sai định dạng!",
+      });
+    } else if (!emailRegex.test(email?.value)) {
+      notification.error({
+        message: "Email sai định dạng!",
+      });
+    } else {
+      update(storedUser?.user?.id, editCustomer)
+        .then((res) => {
+          if (res.data === true) {
+            notification.success({
+              message: "CẬP NHẬT",
+              description: "Cập nhật thông tin thành công",
+            });
+            storedUser.user.fullName = editCustomer.fullName;
+            storedUser.email = editCustomer.email;
+            storedUser.user.email = editCustomer.email;
+            storedUser.user.phoneNumber = editCustomer.phoneNumber;
+            storedUser.user.dateOfBirth = editCustomer.dateOfBirth;
+            localStorage.setItem("account", JSON.stringify(storedUser));
+          } else {
+            notification.error({
+              message: "CẬP NHẬT",
+              description: "Cập nhật thông tin thất bại",
+            });
+          }
+        })
+        .catch((err) => {
           notification.error({
             message: "CẬP NHẬT",
             description: "Cập nhật thông tin thất bại",
           });
-        }
-      })
-      .catch((err) => {
-        notification.error({
-          message: "CẬP NHẬT",
-          description: "Cập nhật thông tin thất bại",
+          console.log(err);
         });
-        console.log(err);
-      });
+    }
   };
   const history = useHistory();
   useEffect(() => {
@@ -205,9 +219,9 @@ const ProfileCustomer = () => {
                     ? "Hạng vàng - Điểm: " + storedUser?.user?.points
                     : "Hạng kim cương - Điểm: " + storedUser?.user?.points}
                 </div>
-                <button class="btn btn-primary" type="button">
+                {/* <button class="btn btn-primary" type="button">
                   Upload new image
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

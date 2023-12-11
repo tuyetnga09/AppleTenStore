@@ -132,6 +132,8 @@ const OderUserAll = () => {
                   ? "Trả hàng"
                   : b.statusBill === "YEU_CAU_TRA_HANG"
                   ? "Yêu cầu trả hàng"
+                  : b.statusBill === "GIAO_HANG_THAT_BAI"
+                  ? "Giao hàng thất bại"
                   : "Đã hủy"}
               </span>
             </div>
