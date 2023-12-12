@@ -107,6 +107,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
     setVoucher({
       ...voucher,
       valueMinimum: value,
+      valueMaximum: 0,
     });
   }
 
@@ -153,13 +154,14 @@ const UpdateVoucher = ({ editedVoucher }) => {
     const startDate1 = dayjs(renDateStart);
     const endDate2 = dayjs(document.getElementById('dateEnd').value);
     const startDate2 = dayjs(renDateStart);
-    if (valueMinimum > valueMaximum) {
-      notification.error({
-        message: "SAVE VOUCHER",
-        description: "Giá trị nhỏ nhất không được lớn hơn giá trị lớn nhất",
-      });
-      return;
-    }else if(startDate1 >= endDate1){
+    // if (valueMinimum > valueMaximum) {
+    //   notification.error({
+    //     message: "SAVE VOUCHER",
+    //     description: "Giá trị nhỏ nhất không được lớn hơn giá trị lớn nhất",
+    //   });
+    //   return;
+    // }else 
+    if(startDate1 >= endDate1){
       notification.error({
         message: "SAVE VOUCHER",
         description: "Vui lòng kiểm tra lại ngày bắt đầu",
@@ -400,23 +402,7 @@ const UpdateVoucher = ({ editedVoucher }) => {
               name="valueMinimum"
             />
 
-            <label
-              style={{
-                paddingTop: "20px",
-              }}
-            >
-              Giá trị đơn hàng tối đa
-            </label>
-            <InputNumber
-              style={{ width: "300px" }}
-              type="number"
-              min={0}
-              required
-              value={voucher.valueMaximum || ""}
-              onChange={handleChangeValueMaximum}
-              id="valueMaximum"
-              name="valueMaximum"
-            />
+            
 
             {/* <label
               style={{
