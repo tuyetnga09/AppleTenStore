@@ -87,6 +87,7 @@ const CapacityReturn = () => {
   function handlePageChange(newPage) {
     console.log("New Page: " + newPage);
     setFilters({
+      ...filters,
       page: newPage,
     });
   }
