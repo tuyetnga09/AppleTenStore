@@ -16,6 +16,7 @@ import {
   readProductCheap,
   readProductNew,
   readAll,
+  readAll2,
 } from "../../../service/product.service";
 import { priceMinAndMaxBySKU } from "../../../service/sku.service";
 import Pagination from "../../product_component/Size/Paging";
@@ -92,7 +93,7 @@ export default function TrangChu() {
       queryString.stringify(filtersAcendingPrice);
     const paramsStringDecreasePrice =
       queryString.stringify(filtersDecreasePrice);
-    readAll(paramsString)
+    readAll2(paramsString)
       .then((response) => {
         setDisplay(response.data.content);
         setProductFilter(

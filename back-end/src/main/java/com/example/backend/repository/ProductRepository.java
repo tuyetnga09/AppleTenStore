@@ -31,6 +31,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             " ORDER BY date_create DESC, Id DESC", nativeQuery = true)
     Page<Product> search(Pageable pageable, String key);
 
+    @Query(value = "select * from product where (name like %?1%) and status = 0 " +
+            " ORDER BY date_create ASC, Id ASC", nativeQuery = true)
+    Page<Product> search2(Pageable pageable, String key);
+
     @Query(value = "select * from product where (id like %?1% or name like %?1% or description like %?1% or price like %?1%) and status = 1 " +
             " ORDER BY date_update DESC", nativeQuery = true)
     Page<Product> deleteProduct(Pageable pageable, String key);

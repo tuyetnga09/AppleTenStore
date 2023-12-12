@@ -200,6 +200,11 @@ public class ProductServiceImpl {
         return productRepository.search(pageable, key);
     }
 
+    public Page<Product> search2(Pageable pageable, String key) {
+        return productRepository.search2(pageable, key);
+    }
+
+
     public Page<Product> deleteProduct(Pageable pageable, String key) {
         return productRepository.deleteProduct(pageable, key);
     }

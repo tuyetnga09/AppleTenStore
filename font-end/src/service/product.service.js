@@ -10,6 +10,10 @@ export const readAll = (page) => {
   return httpClient.get(`/public/product/display?${page}`);
 };
 
+export const readAll2 = (page) => {
+  return httpClient.get(`/public/product/display2?${page}`);
+};
+
 // hiển thị comboobox
 export const readAllColor = () => {
   return httpClient.get(`/admin/color/get-all-color`);
