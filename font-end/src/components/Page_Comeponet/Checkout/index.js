@@ -431,8 +431,7 @@ const Checkout = () => {
   //click Voucher
   const handleVoucherClick = (voucher) => {
     if (
-      totalPrice < voucher.valueMinimum ||
-      totalPrice > voucher.valueMaximum
+      totalPrice < voucher.valueMinimum
     ) {
       notification.error({
         message: "VOUCHER",
@@ -487,8 +486,7 @@ const Checkout = () => {
   //click Voucher freeship
   const handleVoucherFreeShipClick = (voucher) => {
     if (
-      totalPrice < voucher.valueMinimum ||
-      totalPrice > voucher.valueMaximum
+      totalPrice < voucher.valueMinimum 
     ) {
       notification.error({
         message: "VOUCHER",

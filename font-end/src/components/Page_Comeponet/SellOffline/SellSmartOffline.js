@@ -2017,8 +2017,7 @@ export default function SellSmart() {
   //click Voucher
   const handleVoucherClick = (voucher) => {
     if (
-        totalPrice < voucher.valueMinimum ||
-        totalPrice > voucher.valueMaximum
+        totalPrice < voucher.valueMinimum 
     ) {
       notification.error({
         message: "VOUCHER",
@@ -2063,8 +2062,7 @@ export default function SellSmart() {
   //click Voucher freeship
   const handleVoucherFreeShipClick = (voucher) => {
     if (
-        totalPrice < voucher.valueMinimum ||
-        totalPrice > voucher.valueMaximum
+        totalPrice < voucher.valueMinimum
     ) {
       notification.error({
         message: "VOUCHER",

@@ -82,7 +82,7 @@ const CreateVoucher = ({}) => {
     setVoucher({
       ...voucher,
       valueMinimum: value,
-      valueMaximum: 1000000000000000000000000000,
+      valueMaximum: 0,
     });
   }
 
@@ -108,8 +108,7 @@ const CreateVoucher = ({}) => {
       voucherNames.add(name);
     }
     if(items.code == null || items.name == null || items.dateStart == null
-    || items.valueVoucher == null || items.valueMinimum == null
-    || items.valueMaximum == null){
+    || items.valueVoucher == null || items.valueMinimum == null){
       notification.error({
         message: "SAVE VOUCHER",
         description: "Vui lòng không để trống dữ liệu",
@@ -123,13 +122,13 @@ const CreateVoucher = ({}) => {
       });
       return;
     }
-    if (valueMinimum > valueMaximum) {
-      notification.error({
-        message: "SAVE VOUCHER",
-        description: "Giá trị nhỏ nhất không được lớn hơn giá trị lớn nhất",
-      });
-      return;
-    }
+    // if (valueMinimum > valueMaximum) {
+    //   notification.error({
+    //     message: "SAVE VOUCHER",
+    //     description: "Giá trị nhỏ nhất không được lớn hơn giá trị lớn nhất",
+    //   });
+    //   return;
+    // }
 
       // Kiểm tra và thiết lập ngày kết thúc nếu không được cung cấp
     if (!dateEnd) {
