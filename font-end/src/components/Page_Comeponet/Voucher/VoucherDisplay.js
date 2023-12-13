@@ -624,6 +624,28 @@ const VoucherDisplay = ({}) => {
                       render={(text, record) => <span>{record.code}</span>}
                     />
                     <Table.Column
+                      key="status"
+                      dataIndex="status"
+                      title={t("Loại Voucher")}
+                      render={(text, record) => (
+                        <span>
+                          {record.valueVoucher > 100000 ? (
+                            <Badge
+                            className="site-badge-count-109"
+                            count={"Giảm giá"}
+                            style={{ backgroundColor: "orangered" }}
+                          />
+                          ) : (
+                            <Badge
+                              className="site-badge-count-109"
+                              count={"FreeShip"}
+                              style={{ backgroundColor: "orange" }}
+                            />
+                          )}
+                        </span>
+                      )}
+                    />
+                    <Table.Column
                       key="name"
                       dataIndex="name"
                       title={t("Tên")}

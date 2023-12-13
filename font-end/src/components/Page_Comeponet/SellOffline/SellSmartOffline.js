@@ -962,6 +962,8 @@ export default function SellSmart() {
     const dateCreateText = formattedDate.toLocaleDateString();
     const totalPriceCode = unidecode(formatCurrency(totalPrice));
     const totalSoTienThanhToan = unidecode(formatCurrency(soTienThanhToan));
+    const totalSoTienThua = unidecode(formatCurrency(tienThua));
+
     const nameCustomer = unidecode(user.fullName);
     const phoneNumber = user.phoneNumber;
 
@@ -1116,9 +1118,16 @@ export default function SellSmart() {
       font: customFont,
       color: rgb(0, 0, 0),
     });
+    drawText(`Tong cong tien thua: ${totalSoTienThua}`, {
+      x: 50,
+      y: height - 500,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
     drawText(`Nhan vien ban hang` + "                Nguoi mua", {
       x: 250,
-      y: height - 500,
+      y: height - 530,
       size: 15,
       font: font,
       color: rgb(0, 0, 0),
@@ -1128,7 +1137,7 @@ export default function SellSmart() {
         "                                             (Ky ro ho ten)",
       {
         x: 270,
-        y: height - 520,
+        y: height - 550,
         size: 10,
         font: font,
         color: rgb(0, 0, 0),
@@ -1136,7 +1145,7 @@ export default function SellSmart() {
     );
     drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
       x: 100,
-      y: height - 700,
+      y: height - 730,
       size: 18,
       color: rgb(0, 0, 0),
     });
