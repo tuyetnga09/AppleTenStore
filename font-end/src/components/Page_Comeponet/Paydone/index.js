@@ -128,13 +128,13 @@ const Paydone = () => {
         </div>
       )}
       <div class="ctn2">
-        <h1>Thanh toán thành công!</h1>
+        <h1>Đặt hàng thành công!</h1>
         <img
           src="https://static.vecteezy.com/system/resources/previews/010/152/358/non_2x/tick-icon-sign-symbol-design-free-png.png"
           alt="Dấu tích"
           width="100px"
         />
-        <p>Cảm ơn bạn đã thực hiện thanh toán.</p>
+        <p>Cảm ơn bạn đã đặt hàng.</p>
         <div class="row">
           <div class="col-6">
             <p>Hình thức thanh toán:</p>

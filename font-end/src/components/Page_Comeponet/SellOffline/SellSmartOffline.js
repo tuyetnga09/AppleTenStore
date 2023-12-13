@@ -1240,7 +1240,23 @@ export default function SellSmart() {
               .catch((err) => {
                 console.log(err);
               });
-            console.log("ok");
+            // console.log("ok");
+            const ghiChu = document.getElementById("ghiChu");
+            ghiChu.value = "";
+            const dcct = document.getElementById("floatingSelect2");
+            dcct.value = "";
+            const select_1 = document.getElementById("-1");
+            select_1.selected = true;
+            const select_2 = document.getElementById("-2");
+            select_2.selected = true;
+            const select_3 = document.getElementById("-3");
+            select_3.selected = true;
+            setTransportationFeeDTO({
+              toDistrictId: null,
+              toWardCode: null,
+              insuranceValue: null,
+              quantity: 1,
+            });
           } else {
             toast.current.show({
               severity: "error",
@@ -2040,12 +2056,16 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Áp dụng voucher thành công",
+      });
     }
   };
 
   //clear voucher
   const handleClearVoucher = (id) => {
-    if (selecteVoucher.id === id) {
+    if (selecteVoucher?.id === id) {
       setSelectedVoucher(null);
       readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
@@ -2054,6 +2074,10 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thành công",
+      });
     }
   };
 
@@ -2088,12 +2112,16 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Áp dụng voucher thành công",
+      });
     }
   };
 
   //clear voucher freeship
   const handleClearVoucherFreeShip = (id) => {
-    if (selecteVoucherFreeShip.id === id) {
+    if (selecteVoucherFreeShip?.id === id) {
       setSelectedVoucherFreeShip(null);
       readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
@@ -2102,6 +2130,10 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thành công",
+      });
     }
   };
 
@@ -3178,7 +3210,11 @@ export default function SellSmart() {
                             aria-label="Floating label select example"
                             onChange={handleProvince}
                           >
-                            <option value={"undefined"} selected></option>
+                            <option
+                              value={"undefined"}
+                              selected
+                              id="-1"
+                            ></option>
                             {provinces.map((pr) => {
                               return (
                                 <option
@@ -3209,7 +3245,7 @@ export default function SellSmart() {
                             aria-label="Floating label select example"
                             onChange={handleDistrict}
                           >
-                            <option selected></option>
+                            <option selected id="-2"></option>
                             {districts.map((dt) => {
                               return (
                                 <option
@@ -3240,7 +3276,7 @@ export default function SellSmart() {
                             aria-label="Floating label select example"
                             onChange={handleWard}
                           >
-                            <option selected></option>
+                            <option selected id="-3"></option>
                             {wards.map((w) => {
                               return (
                                 <option

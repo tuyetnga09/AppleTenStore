@@ -300,6 +300,7 @@ const Checkout = () => {
     select.hidden = false;
     const input = document.getElementById("floatingSelect2");
     input.hidden = true;
+    input.value = "";
     const divDcmd = document.getElementById("dcmd2");
     divDcmd.hidden = true;
     const notDcmd = document.getElementById("notDcmd");
@@ -320,6 +321,8 @@ const Checkout = () => {
   }
 
   function diaChiMacDinh() {
+    const input = document.getElementById("floatingSelect2");
+    input.value = "";
     const select_1 = document.getElementById("-1");
     select_1.selected = true;
     const select_2 = document.getElementById("-2");
@@ -430,9 +433,7 @@ const Checkout = () => {
   };
   //click Voucher
   const handleVoucherClick = (voucher) => {
-    if (
-      totalPrice < voucher.valueMinimum
-    ) {
+    if (totalPrice < voucher.valueMinimum) {
       notification.error({
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
@@ -466,7 +467,7 @@ const Checkout = () => {
 
   //clear voucher
   const handleClearVoucher = (id) => {
-    if (selecteVoucher.id === id) {
+    if (selecteVoucher?.id === id) {
       setSelectedVoucher(null);
       if (storedUser !== null) {
         readAll(idAccount)
@@ -480,14 +481,16 @@ const Checkout = () => {
       } else {
         setProducts(cartItems);
       }
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thành công",
+      });
     }
   };
 
   //click Voucher freeship
   const handleVoucherFreeShipClick = (voucher) => {
-    if (
-      totalPrice < voucher.valueMinimum 
-    ) {
+    if (totalPrice < voucher.valueMinimum) {
       notification.error({
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
@@ -521,12 +524,16 @@ const Checkout = () => {
       } else {
         setProducts(cartItems);
       }
+      notification.success({
+        message: "VOUCHER",
+        description: "Áp dụng voucher thành công",
+      });
     }
   };
 
   //clear voucher freeship
   const handleClearVoucherFreeShip = (id) => {
-    if (selecteVoucherFreeShip.id === id) {
+    if (selecteVoucherFreeShip?.id === id) {
       setSelectedVoucherFreeShip(null);
       if (storedUser !== null) {
         readAll(idAccount)
@@ -540,6 +547,10 @@ const Checkout = () => {
       } else {
         setProducts(cartItems);
       }
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thành công",
+      });
     }
   };
 
@@ -738,7 +749,6 @@ const Checkout = () => {
 
   function doneOrder() {
     const buttonDatHang = document.getElementById("buttonDatHang");
-    buttonDatHang.disabled = true;
     const phoneNumberRegex = /^\d{10}$/;
     const phoneNumber = document.getElementById("phoneNumber");
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -759,6 +769,7 @@ const Checkout = () => {
             message: "Email sai định dạng!",
           });
         } else {
+          buttonDatHang.disabled = true;
           createBillAccount(bill)
             .then((response) => {
               console.log(response.data);
@@ -785,6 +796,7 @@ const Checkout = () => {
             message: "Email sai định dạng!",
           });
         } else {
+          buttonDatHang.disabled = true;
           createBill(bill)
             .then((response) => {
               console.log(response.data);
@@ -803,15 +815,28 @@ const Checkout = () => {
     }
     const vnpay = document.getElementById("httt-2");
     if (vnpay.checked == true) {
-      localStorage.setItem("bill", JSON.stringify(bill));
-      getPay(soTienThanhToan)
-        .then((res) => {
-          setLoading(false);
-          window.location.replace(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
+      if (!phoneNumberRegex.test(phoneNumber?.value)) {
+        setLoading(false);
+        notification.error({
+          message: "Số điện thoại sai định dạng!",
         });
+      } else if (!emailRegex.test(email?.value)) {
+        setLoading(false);
+        notification.error({
+          message: "Email sai định dạng!",
+        });
+      } else {
+        buttonDatHang.disabled = true;
+        localStorage.setItem("bill", JSON.stringify(bill));
+        getPay(soTienThanhToan)
+          .then((res) => {
+            setLoading(false);
+            window.location.replace(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   }
 
