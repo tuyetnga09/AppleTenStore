@@ -462,6 +462,10 @@ const Checkout = () => {
       } else {
         setProducts(cartItems);
       }
+      notification.success({
+        message: "VOUCHER",
+        description: "Áp dụng voucher thành công",
+      });
     }
   };
 
