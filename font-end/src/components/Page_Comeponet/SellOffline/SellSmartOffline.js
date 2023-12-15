@@ -962,6 +962,8 @@ export default function SellSmart() {
     const dateCreateText = formattedDate.toLocaleDateString();
     const totalPriceCode = unidecode(formatCurrency(totalPrice));
     const totalSoTienThanhToan = unidecode(formatCurrency(soTienThanhToan));
+    const totalSoTienThua = unidecode(formatCurrency(tienThua));
+
     const nameCustomer = unidecode(user.fullName);
     const phoneNumber = user.phoneNumber;
 
@@ -1116,9 +1118,16 @@ export default function SellSmart() {
       font: customFont,
       color: rgb(0, 0, 0),
     });
+    drawText(`Tong cong tien thua: ${totalSoTienThua}`, {
+      x: 50,
+      y: height - 500,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
     drawText(`Nhan vien ban hang` + "                Nguoi mua", {
       x: 250,
-      y: height - 500,
+      y: height - 530,
       size: 15,
       font: font,
       color: rgb(0, 0, 0),
@@ -1128,7 +1137,7 @@ export default function SellSmart() {
         "                                             (Ky ro ho ten)",
       {
         x: 270,
-        y: height - 520,
+        y: height - 550,
         size: 10,
         font: font,
         color: rgb(0, 0, 0),
@@ -1136,7 +1145,7 @@ export default function SellSmart() {
     );
     drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
       x: 100,
-      y: height - 700,
+      y: height - 730,
       size: 18,
       color: rgb(0, 0, 0),
     });
@@ -1167,101 +1176,219 @@ export default function SellSmart() {
   const [customBill, setCustomBill] = useState([]);
 
   async function accept() {
-    if (checked) {
-      if (dataDoneBill.idBill === null) {
-        toast.current.show({
-          severity: "error",
-          summary: "THANH TOÁN",
-          detail: "Thanh toán thất bại, hãy tạo/chọn hóa đơn",
-          life: 3000,
-        });
-      } else if (dataBillDetailOffline.length === 0) {
-        toast.current.show({
-          severity: "error",
-          summary: "THANH TOÁN",
-          detail: "Thanh toán thất bại, hãy thêm sản phẩm để thanh toán",
-          life: 3000,
-        });
-      } else if (dataDoneBill.idCustomer === null) {
-        toast.current.show({
-          severity: "error",
-          summary: "THANH TOÁN",
-          detail: "Thanh toán thất bại, chưa chọn khách hàng?",
-          life: 3000,
-        });
-      } else {
-        const pdfBytes = await createBillSusses(
-          dataBillOffLine.codeBill,
-          dataBillOffLine.codeAccount,
-          dataBillDetailOffline,
-          selectedValues,
-          selectedOptions
-        );
-        if (checkSoluongImei() === true) {
-          if (tienThua <= 0) {
-            doneBill(dataDoneBill)
-              .then((res) => {
-                if (res.status === 200) {
-                  toast.current.show({
-                    severity: "success",
-                    summary: "THANH TOÁN",
-                    detail: "Thanh toán thành công",
-                    life: 3000,
-                  });
-                  // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
-                  //   (response) => {
-                  //     setProductList(response.data);
-                  //   }
-                  // );
-                  // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
-                  //   setCustomBill(response.data);
-                  // });
-                  const blob = new Blob([pdfBytes], {
-                    type: "application/pdf",
-                  });
-                  const url = URL.createObjectURL(blob);
-                  window.open(url);
+    if (dataDoneBill.idBill === null) {
+      toast.current.show({
+        severity: "error",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, hãy tạo/chọn hóa đơn",
+        life: 3000,
+      });
+    } else if (dataBillDetailOffline.length === 0) {
+      toast.current.show({
+        severity: "error",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, hãy thêm sản phẩm để thanh toán",
+        life: 3000,
+      });
+    } else if (dataDoneBill.idCustomer === null) {
+      toast.current.show({
+        severity: "error",
+        summary: "THANH TOÁN",
+        detail: "Thanh toán thất bại, chưa chọn khách hàng?",
+        life: 3000,
+      });
+    } else {
+      if (checked) {
+        const shipHang = document.getElementById("inlineRadio2");
+        const dcct = document.getElementById("floatingSelect2");
+        const select_1 = document.getElementById("-1");
+        const select_2 = document.getElementById("-2");
+        const select_3 = document.getElementById("-3");
+        if (shipHang.checked) {
+          if (
+            dcct.value == "" ||
+            select_1.selected ||
+            select_2.selected ||
+            select_3.selected
+          ) {
+            notification.error({
+              message: "Hãy điền đầy đủ địa chỉ!",
+            });
+          } else {
+            const pdfBytes = await createBillSusses(
+              dataBillOffLine.codeBill,
+              dataBillOffLine.codeAccount,
+              dataBillDetailOffline,
+              selectedValues,
+              selectedOptions
+            );
+            if (checkSoluongImei() === true) {
+              if (tienThua <= 0) {
+                doneBill(dataDoneBill)
+                  .then((res) => {
+                    if (res.status === 200) {
+                      toast.current.show({
+                        severity: "success",
+                        summary: "THANH TOÁN",
+                        detail: "Thanh toán thành công",
+                        life: 3000,
+                      });
+                      // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
+                      //   (response) => {
+                      //     setProductList(response.data);
+                      //   }
+                      // );
+                      // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
+                      //   setCustomBill(response.data);
+                      // });
+                      const blob = new Blob([pdfBytes], {
+                        type: "application/pdf",
+                      });
+                      const url = URL.createObjectURL(blob);
+                      window.open(url);
 
-                  setDataBillDetailOffline([]);
-                  setDataTest(!dataTest);
-                  setDataBillOffline([]);
-                  document.getElementById("amountGiven").value = 0;
-                  document.getElementById("transferAmount").value = 0;
-                  getBillChoThanhToanOff();
-                  setSelectedVoucher(0);
-                  setSelectedVoucherFreeShip(0);
+                      setDataBillDetailOffline([]);
+                      setDataTest(!dataTest);
+                      setDataBillOffline([]);
+                      document.getElementById("amountGiven").value = 0;
+                      document.getElementById("transferAmount").value = 0;
+                      getBillChoThanhToanOff();
+                      setSelectedVoucher(0);
+                      setSelectedVoucherFreeShip(0);
 
-                  const totalQuantity = billInDate.length;
-                  setDlHoaDonChoNgay(totalQuantity);
-                  const totalQuantity1 = hoaDonCho.length;
-                  setDlHoaDonCho(totalQuantity1);
-                }
-              })
-              .catch((err) => {
-                console.log(err);
+                      const totalQuantity = billInDate.length;
+                      setDlHoaDonChoNgay(totalQuantity);
+                      const totalQuantity1 = hoaDonCho.length;
+                      setDlHoaDonCho(totalQuantity1);
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                // console.log("ok");
+                const ghiChu = document.getElementById("ghiChu");
+                ghiChu.value = "";
+                const dcct = document.getElementById("floatingSelect2");
+                dcct.value = "";
+                const select_1 = document.getElementById("-1");
+                select_1.selected = true;
+                const select_2 = document.getElementById("-2");
+                select_2.selected = true;
+                const select_3 = document.getElementById("-3");
+                select_3.selected = true;
+                setTransportationFeeDTO({
+                  toDistrictId: null,
+                  toWardCode: null,
+                  insuranceValue: null,
+                  quantity: 1,
+                });
+              } else {
+                toast.current.show({
+                  severity: "error",
+                  summary: "THANH TOÁN",
+                  detail: "Chưa thanh toán đủ tiền",
+                  life: 3000,
+                });
+              }
+            } else {
+              toast.current.show({
+                severity: "error",
+                summary: "KIỂM TRA IMEI",
+                detail: "Vui lòng kiểm tra lại imei",
+                life: 3000,
               });
-            console.log("ok");
+            }
+          }
+        } else {
+          const pdfBytes = await createBillSusses(
+            dataBillOffLine.codeBill,
+            dataBillOffLine.codeAccount,
+            dataBillDetailOffline,
+            selectedValues,
+            selectedOptions
+          );
+          if (checkSoluongImei() === true) {
+            if (tienThua <= 0) {
+              doneBill(dataDoneBill)
+                .then((res) => {
+                  if (res.status === 200) {
+                    toast.current.show({
+                      severity: "success",
+                      summary: "THANH TOÁN",
+                      detail: "Thanh toán thành công",
+                      life: 3000,
+                    });
+                    // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
+                    //   (response) => {
+                    //     setProductList(response.data);
+                    //   }
+                    // );
+                    // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
+                    //   setCustomBill(response.data);
+                    // });
+                    const blob = new Blob([pdfBytes], {
+                      type: "application/pdf",
+                    });
+                    const url = URL.createObjectURL(blob);
+                    window.open(url);
+
+                    setDataBillDetailOffline([]);
+                    setDataTest(!dataTest);
+                    setDataBillOffline([]);
+                    document.getElementById("amountGiven").value = 0;
+                    document.getElementById("transferAmount").value = 0;
+                    getBillChoThanhToanOff();
+                    setSelectedVoucher(0);
+                    setSelectedVoucherFreeShip(0);
+
+                    const totalQuantity = billInDate.length;
+                    setDlHoaDonChoNgay(totalQuantity);
+                    const totalQuantity1 = hoaDonCho.length;
+                    setDlHoaDonCho(totalQuantity1);
+                  }
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+              // console.log("ok");
+              const ghiChu = document.getElementById("ghiChu");
+              ghiChu.value = "";
+              const dcct = document.getElementById("floatingSelect2");
+              dcct.value = "";
+              const select_1 = document.getElementById("-1");
+              select_1.selected = true;
+              const select_2 = document.getElementById("-2");
+              select_2.selected = true;
+              const select_3 = document.getElementById("-3");
+              select_3.selected = true;
+              setTransportationFeeDTO({
+                toDistrictId: null,
+                toWardCode: null,
+                insuranceValue: null,
+                quantity: 1,
+              });
+            } else {
+              toast.current.show({
+                severity: "error",
+                summary: "THANH TOÁN",
+                detail: "Chưa thanh toán đủ tiền",
+                life: 3000,
+              });
+            }
           } else {
             toast.current.show({
               severity: "error",
-              summary: "THANH TOÁN",
-              detail: "Chưa thanh toán đủ tiền",
+              summary: "KIỂM TRA IMEI",
+              detail: "Vui lòng kiểm tra lại imei",
               life: 3000,
             });
           }
-        } else {
-          toast.current.show({
-            severity: "error",
-            summary: "KIỂM TRA IMEI",
-            detail: "Vui lòng kiểm tra lại imei",
-            life: 3000,
-          });
         }
+      } else {
+        notification.error({
+          message: "Mặt hàng đã có người mua hết!",
+        });
       }
-    } else {
-      notification.error({
-        message: "Mặt hàng đã có người mua hết!",
-      });
     }
   }
 
@@ -2040,12 +2167,16 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Áp dụng voucher thành công",
+      });
     }
   };
 
   //clear voucher
   const handleClearVoucher = (id) => {
-    if (selecteVoucher.id === id) {
+    if (selecteVoucher?.id === id) {
       setSelectedVoucher(null);
       readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
@@ -2054,6 +2185,10 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thành công",
+      });
     }
   };
 
@@ -2088,12 +2223,16 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Áp dụng voucher thành công",
+      });
     }
   };
 
   //clear voucher freeship
   const handleClearVoucherFreeShip = (id) => {
-    if (selecteVoucherFreeShip.id === id) {
+    if (selecteVoucherFreeShip?.id === id) {
       setSelectedVoucherFreeShip(null);
       readAllCartOff(idNhanVien) //sau truyền id nhân viên vào đây
         .then((response) => {
@@ -2102,6 +2241,10 @@ export default function SellSmart() {
         .catch((error) => {
           console.log(`${error}`);
         });
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thành công",
+      });
     }
   };
 
@@ -3178,7 +3321,11 @@ export default function SellSmart() {
                             aria-label="Floating label select example"
                             onChange={handleProvince}
                           >
-                            <option value={"undefined"} selected></option>
+                            <option
+                              value={"undefined"}
+                              selected
+                              id="-1"
+                            ></option>
                             {provinces.map((pr) => {
                               return (
                                 <option
@@ -3209,7 +3356,7 @@ export default function SellSmart() {
                             aria-label="Floating label select example"
                             onChange={handleDistrict}
                           >
-                            <option selected></option>
+                            <option selected id="-2"></option>
                             {districts.map((dt) => {
                               return (
                                 <option
@@ -3240,7 +3387,7 @@ export default function SellSmart() {
                             aria-label="Floating label select example"
                             onChange={handleWard}
                           >
-                            <option selected></option>
+                            <option selected id="-3"></option>
                             {wards.map((w) => {
                               return (
                                 <option
@@ -4227,7 +4374,9 @@ export default function SellSmart() {
           footer={null}
           bodyStyle={{ minHeight: "800px" }}
         >
-          <h3 className="tile-title">Danh sách hóa đơn</h3>
+          <h3 className="tile-title">
+            Danh sách hóa đơn đã thanh toán trong hôm nay
+          </h3>
           <input
             id="id-bill-ctt"
             className="form-control"

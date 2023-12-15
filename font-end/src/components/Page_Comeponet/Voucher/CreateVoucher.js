@@ -19,6 +19,7 @@ import {
   notification,
   Modal,
   InputNumber,
+  Select,
 } from "antd";
 // import {
 //     SaveOutlined
@@ -36,6 +37,9 @@ const CreateVoucher = ({}) => {
 
   const [voucher, setVoucher] = useState([]);
   const [voucherCreate, setVoucherCreate] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [showCashInput, setShowCashInput] = useState(false);
+  const [showTransferInput, setShowTransferInput] = useState(false);
 
   useEffect(() => {
     readAll()
@@ -93,12 +97,30 @@ const CreateVoucher = ({}) => {
     });
   }
 
+  const handleSelectChange = (selectedValues) => {
+    setSelectedOptions(selectedValues); // Cập nhật state khi có sự thay đổi trong việc chọn option
+
+    // Kiểm tra nếu "cash" nằm trong danh sách lựa chọn
+    if (selectedValues.includes("0")) {
+      setShowCashInput(true);
+    } else {
+      setShowCashInput(false);
+    }
+
+    // Kiểm tra nếu "transfer" nằm trong danh sách lựa chọn
+    if (selectedValues.includes("1")) {
+      setShowTransferInput(true);
+    } else {
+      setShowTransferInput(false);
+    }
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const items = { ...voucher };
     const newCode = items.code;
     const newName = items.name;
-    const { valueMinimum, valueMaximum, dateStart, dateEnd } = items;
+    const { valueMinimum, valueMaximum, dateStart, dateEnd,valueVoucher } = items;
     const voucherCodes = new Set();
     const voucherNames = new Set();
     // Kiểm tra trùng lặp khi thêm mới hoặc chỉnh sửa
@@ -107,8 +129,13 @@ const CreateVoucher = ({}) => {
       voucherCodes.add(code);
       voucherNames.add(name);
     }
-    if(items.code == null || items.name == null || items.dateStart == null
-    || items.valueVoucher == null || items.valueMinimum == null){
+    if (
+      items.code == null ||
+      items.name == null ||
+      items.dateStart == null ||
+      items.valueVoucher == null ||
+      items.valueMinimum == null
+    ) {
       notification.error({
         message: "SAVE VOUCHER",
         description: "Vui lòng không để trống dữ liệu",
@@ -129,8 +156,35 @@ const CreateVoucher = ({}) => {
     //   });
     //   return;
     // }
+    if(selectedOptions == null || selectedOptions == "" ){
+        notification.error({
+          message: "SAVE VOUCHER",
+          description: "Vui lòng chọn loại Voucher",
+        });
+        return;
+    }
+    if(selectedOptions == 0){
+      //freeship
+      if(valueVoucher >= 100000){
+        notification.error({
+          message: "SAVE VOUCHER",
+          description: "Giá trị Voucher FreeShip không được vượt quá 100.000 vnđ",
+        });
+        return;
+      }
+    }
+    if(selectedOptions == 1){
+      //giảm giá
+      if(valueVoucher < 100000){
+        notification.error({
+          message: "SAVE VOUCHER",
+          description: "Giá trị Voucher Giảm giá không được nhỏ hơn 100.000 vnđ",
+        });
+        return;
+      }
+    }
 
-      // Kiểm tra và thiết lập ngày kết thúc nếu không được cung cấp
+    // Kiểm tra và thiết lập ngày kết thúc nếu không được cung cấp
     if (!dateEnd) {
       const oneYearLater = new Date(dateStart);
       oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
@@ -340,6 +394,21 @@ const CreateVoucher = ({}) => {
                 name="valueMinimum"
               />
             </Form.Item>
+            <Form.Item
+              label={t("* Loại Voucher	")}
+              name="Loại Voucher"
+            >
+              <Select
+                mode="single"
+                style={{ width: "300px" }}
+                value={selectedOptions} // Đặt giá trị được chọn dựa trên state
+                onChange={handleSelectChange} // Sử dụng hàm xử lý sự kiện
+              >
+                <Select.Option value="0">FreeShip</Select.Option>
+                <Select.Option value="1">Giảm giá</Select.Option>
+              </Select>
+            </Form.Item>
+            {/* <p>{selectedOptions}</p> */}
             {/*<Form.Item*/}
             {/*  label={t("Giá trị đơn hàng tối đa")}*/}
             {/*  name="valueMaximum"*/}

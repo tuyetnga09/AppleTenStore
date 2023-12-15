@@ -33,6 +33,14 @@ public class PublicController {
         return listProduct;
     }
 
+    @GetMapping("display2")
+    public Page<Product> viewAll2(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
+        Pageable pageable = PageRequest.of(page, 10);
+//        Page<Product> listProduct = productService.getAll(pageable);
+        Page<Product> listProduct = productService.search2(pageable, key);
+        return listProduct;
+    }
+
     @GetMapping("display/productNew")
     public Page<Product> productNew(@RequestParam(value = "page", defaultValue = "0") Integer page, @RequestParam("key") String key) {
         Pageable pageable = PageRequest.of(page, 10);
