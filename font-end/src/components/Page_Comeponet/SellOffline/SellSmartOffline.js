@@ -962,7 +962,7 @@ export default function SellSmart() {
     const dateCreateText = formattedDate.toLocaleDateString();
     const totalPriceCode = unidecode(formatCurrency(totalPrice));
     const totalSoTienThanhToan = unidecode(formatCurrency(soTienThanhToan));
-    const totalSoTienThua = unidecode(formatCurrency(tienThua));
+    const totalSoTienThua = unidecode(formatCurrency(Math.abs(tienThua)));
 
     const nameCustomer = unidecode(user.fullName);
     const phoneNumber = user.phoneNumber;
@@ -1093,9 +1093,9 @@ export default function SellSmart() {
       "Thanh Tien",
     ];
     const data = productList.map((product) => [
-      product.nameProduct,
-      product.skuCapacity,
-      product.skuColor,
+      unidecode(product.nameProduct),
+      unidecode(product.skuCapacity),
+      unidecode(product.skuColor),
       unidecode(formatCurrency(product.price)),
       product.quantity,
       unidecode(formatCurrency(product.totalManyOneBillDetail)),

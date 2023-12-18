@@ -5,7 +5,7 @@ import Footer from "./layout/Footer";
 const postData = [
   {
     tilte1:
-      "1. Khách hàng sẽ được trả hàng trong vòng 3 ngày kể từ ngày mua.\n",
+      "1. Khách hàng sẽ được trả hàng trong vòng 3 ngày kể từ ngày thanh toán.\n",
     tilte2:
       "2. Khách hàng thanh toán trước khi kiểm tra hàng, quay video quá trình bóc sản phẩm. \n",
     tilte3: "3. Điều kiện trả hàng: \n",
