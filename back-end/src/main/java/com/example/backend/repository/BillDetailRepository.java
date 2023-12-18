@@ -126,4 +126,6 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
 
     @Query(value = "select id_sku from bill join bill_detail bd on bill.id = bd.id_bill join sku s on bd.id_sku = s.id where bill.id =?1", nativeQuery = true)
     List<Long> listIdSkuOffindByIdBill(Integer  idBill);
+
+    List<BillDetails> findByBill_Id(Integer idBill);
 }
