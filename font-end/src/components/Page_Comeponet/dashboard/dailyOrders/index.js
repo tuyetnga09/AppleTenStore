@@ -326,7 +326,7 @@ const DailyOrders = (props) => {
       {/* 6 */}
       <TitleArea>
         <Title level={5} style={{ color: "white" }}>
-          5R - Đơn hàng hoàn trả
+          5R - Đơn hàng trả
         </Title>
         <TitleAreNumber>
           <Title level={5} style={{ color: "white" }}>

@@ -85,6 +85,7 @@ import Policy from "./components/Page_Comeponet/Policy";
 import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 import OderPayBackProduct from "./components/Page_Comeponet/OderManager/OderBackProduct";
 import GioiThieu from "./components/gioi_thieu_san_pham/gioi_thieu";
+import { xoahoaDonCho } from "./service/SellOffLine/sell_off_line.service";
 
 const storedUser = JSON.parse(localStorage.getItem("account"));
 const fetchData = async () => {
@@ -107,7 +108,14 @@ function App() {
   const [show, setShow] = useState(false);
   useEffect(() => {
     // Gọi hàm gọi API khi component được mount
-
+    //tu dong xoa hoa don cho
+    xoahoaDonCho()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     if (storedUser !== null) {
       fetchData();
     }

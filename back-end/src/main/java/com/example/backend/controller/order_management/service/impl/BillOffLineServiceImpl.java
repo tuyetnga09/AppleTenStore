@@ -665,8 +665,20 @@ public class BillOffLineServiceImpl implements BillOffLineService {
                     BillDetails billDetailUpdate = billDetailRepository.findById(xoaHoaDonChoIon.getIdBillDetail()).get();
                     billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
 //                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
+                    StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
+                    billDetailUpdate.setStatusBill(statusBill);
                     billDetailRepository.save(billDetailUpdate);
                 }
+            }
+            List<BillDetails> billDetailsList = billDetailRepository.findByBill_Id(bill.getId());
+            for (BillDetails details : billDetailsList
+                 ) {
+                BillDetails billDetailUpdate = billDetailRepository.findById(details.getId()).get();
+                billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
+//                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
+                StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
+                billDetailUpdate.setStatusBill(statusBill);
+                billDetailRepository.save(billDetailUpdate);
             }
             //cập nhật bill
             Bill billUpdate = billRepository.findById(bill.getId()).get();
