@@ -156,8 +156,8 @@ public class BillController {
 //    }
 
     @GetMapping(value = "/search/{code}")
-    public BillPayDone paydone(@PathVariable String code){
-        return this.billService.findBillPayDoneByCode(code);
+    public BillPayDone paydone(@PathVariable String code, @RequestParam("phoneNumber") String phoneNumber){
+        return this.billService.findBillPayDoneByCode(code, phoneNumber);
     }
 
     @PostMapping("/account")

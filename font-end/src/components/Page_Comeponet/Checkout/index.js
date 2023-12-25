@@ -372,7 +372,7 @@ const Checkout = () => {
         storedEmail !== null
           ? storedEmail
           : storedUser !== null
-          ? storedUser.user.email
+          ? storedUser.email
           : "",
     });
   }, [products, fee, soTienThanhToan, ponit]);

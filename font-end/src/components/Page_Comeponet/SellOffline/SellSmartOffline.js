@@ -1276,6 +1276,8 @@ export default function SellSmart() {
                 select_2.selected = true;
                 const select_3 = document.getElementById("-3");
                 select_3.selected = true;
+                setSelectedVoucher(null);
+                setSelectedVoucherFreeShip(null);
                 setTransportationFeeDTO({
                   toDistrictId: null,
                   toWardCode: null,
@@ -1361,6 +1363,8 @@ export default function SellSmart() {
               select_2.selected = true;
               const select_3 = document.getElementById("-3");
               select_3.selected = true;
+              setSelectedVoucher(null);
+              setSelectedVoucherFreeShip(null);
               setTransportationFeeDTO({
                 toDistrictId: null,
                 toWardCode: null,
@@ -1410,7 +1414,7 @@ export default function SellSmart() {
         ", " +
         address.province,
       moneyShip: fee?.total,
-      totalMoney: fee?.total + totalPrice,
+      // totalMoney: fee?.total + totalPrice,
     });
   };
   const handlePhiVanChuyen = (event) => {

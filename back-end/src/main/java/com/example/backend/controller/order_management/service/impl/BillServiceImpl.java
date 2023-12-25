@@ -663,8 +663,8 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public BillPayDone findBillPayDoneByCode(String code) {
-        return billRepository.findBillPayDoneByCode(code);
+    public BillPayDone findBillPayDoneByCode(String code, String phoneNumber) {
+        return billRepository.findBillPayDoneByCode(code, phoneNumber);
     }
 
     @Override

@@ -1366,7 +1366,7 @@ const DashboardPage = () => {
                         {/* 7 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            5 - Đơn hàng hoàn trả
+                            5 - Đơn hàng trả
                           </Title>
 
                           <NumberField
@@ -1517,7 +1517,7 @@ const DashboardPage = () => {
                         {/* 6 */}
                         <TitleArea>
                           <Title level={5} style={{ color: "white" }}>
-                            5 - Đơn hàng hoàn trả
+                            5 - Đơn hàng trả
                           </Title>
                           <TitleAreNumber>
                             <Title level={5} style={{ color: "white" }}>
