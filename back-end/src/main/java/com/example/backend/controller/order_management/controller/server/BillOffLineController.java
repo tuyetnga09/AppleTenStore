@@ -228,4 +228,11 @@ public class BillOffLineController {
         List<XoaHoaDonCho> list =  billOffLineService.xoaHoaDonChoOffLineCuoiNgay();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
+    //lấy danh sách imei để in hóa đơn
+    @GetMapping("/get-imeis-to-PDF")
+    public ResponseEntity<List<ImeiBillOfflinePDF>> seachImeis(@RequestParam("idBill") String idBill) {
+        List<ImeiBillOfflinePDF> list = billOffLineService.getImeiToPDF(idBill);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
 }

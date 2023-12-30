@@ -8,6 +8,7 @@ import com.example.backend.controller.order_management.model.billOffLine.XoaHoaD
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOfflinePDF;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
@@ -693,6 +694,11 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         }
         List<XoaHoaDonCho> list = new ArrayList<>();
         return list;
+    }
+
+    @Override
+    public List<ImeiBillOfflinePDF> getImeiToPDF(String idBill) {
+        return imeiRepository.getImeiBillDetailPDF(idBill);
     }
 
 }
