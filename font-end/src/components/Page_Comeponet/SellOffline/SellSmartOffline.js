@@ -883,7 +883,7 @@ export default function SellSmart() {
         address: "",
         moneyShip: 0,
         formOfReceipt: "TAI_CUA_HANG",
-        totalMoney: totalPrice,
+        totalMoney: soTienThanhToan,
       });
     } else {
       setDataDoneBill({
@@ -1574,7 +1574,7 @@ export default function SellSmart() {
         note: document.getElementById("ghiChu").value,
         personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
         dateUpdate: null,
-        totalMoney: totalPrice,
+        totalMoney: soTienThanhToan,
       });
     } else {
       setDataDoneBill({
@@ -1583,7 +1583,7 @@ export default function SellSmart() {
         note: document.getElementById("ghiChu").value,
         personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
         dateUpdate: null,
-        totalMoney: fee?.total + totalPrice,
+        totalMoney: soTienThanhToan,
       });
     }
     // setDataDoneBill({
@@ -2364,7 +2364,7 @@ export default function SellSmart() {
           idBill: response.data.idBill,
           idSku: arrIdSku,
           codeImeiDaBan: arrCodeImeiDaBan,
-          totalMoney: totalMoney,
+          totalMoney: soTienThanhToan,
           personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
         });
       })
