@@ -150,6 +150,11 @@ public class BillController {
         this.billService.updateStatusBill(idAccount ,id);
     }
 
+    @PutMapping(value = "/return-status/{id}")
+    public void returnStatusBill(@PathVariable Integer id){
+        this.billService.returnStatusBill(id);
+    }
+
 //    @GetMapping(value = "/search/{code}")
 //    public Bill paydone(@PathVariable String code){
 //        return this.billService.findByCode(code);
@@ -282,4 +287,7 @@ public class BillController {
     public Bill deliveryFailed(@PathVariable Integer id, @RequestParam("idAccount") Integer idAccount, @RequestParam("note") String note){
         return this.billService.deliveryFailed(idAccount ,id, note);
     }
+
+
+
 }
