@@ -86,6 +86,11 @@ public interface BillDetailRepository extends JpaRepository<BillDetails, Integer
     @Query(value = "update bill_detail set status_bill = 'XAC_NHAN' where id_bill = ?1", nativeQuery = true)
     void updateStatusBillDetailWhereIdBill(int id);
 
+    @Modifying
+    @Transactional
+    @Query(value = "update bill_detail set status_bill = 'CHO_XAC_NHAN' where id_bill = ?1", nativeQuery = true)
+    void returnStatusBillDetailWhereIdBill(int id);
+
     @Query(value = "select product.id as 'idProduct', category.name as 'category',  product.name as 'nameProduct', " +
             " sku.capacity as 'capacity', sku.color as 'color', \n" +
             " sku.price  as 'price', sku.id  as 'idSku', imei_da_ban.code_imei  as 'imei'," +

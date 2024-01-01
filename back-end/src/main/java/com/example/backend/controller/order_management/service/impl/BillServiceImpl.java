@@ -453,6 +453,11 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public Optional<Bill> searchBillByCode(String code) {
+        return billRepository.findByCode(code);
+    }
+
+    @Override
     public List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd) {
         return billRepository.searchWithDate(key, status, dateStart, dateEnd);
     }
@@ -492,6 +497,22 @@ public class BillServiceImpl implements BillService {
         userRepository.save(user);
         }
 //        this.billRepository.updateBillStatus(id);
+    }
+
+    @Override
+    public void returnStatusBill(Integer id) {
+        Bill bill = billRepository.findById(id).get();
+        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
+            bill.setStatusBill(StatusBill.CHO_VAN_CHUYEN);
+            bill.setDateUpdate(LocalDate.now());
+        } else if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)){
+            imeiRepository.returnStatusImeiWhereIdBill(id);
+            imeiDaBanRepository.returnStatusImeiWhereIdBill(id);
+            billDetailRepository.returnStatusBillDetailWhereIdBill(id);
+            bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
+            bill.setDateUpdate(LocalDate.now());
+        }
+        billRepository.save(bill);
     }
 
     @Override
