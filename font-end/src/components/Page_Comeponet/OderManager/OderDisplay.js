@@ -558,8 +558,8 @@ const OderDisplay = ({}) => {
         } else {
             if ((await checkImeiSelectInBillDetail(id)) === true) {
                 confirmDialog({
-                    message: "Do you want to confirm this action?",
-                    header: "Confirm",
+                    message: "Bạn có muốn xác nhận không? ",
+                    header: "Xác nhận",
                     icon: "pi pi-info-circle",
                     acceptClassName: "p-button-danger",
                     accept: () => updateStatusBill(idAccount, id)
