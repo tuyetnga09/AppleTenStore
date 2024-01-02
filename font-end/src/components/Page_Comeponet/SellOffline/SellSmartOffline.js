@@ -75,6 +75,7 @@ import {
   searchBillDTT,
   updateQuantitySellOff,
   xoahoaDonCho,
+  getImeiToPDF,
 } from "../../../service/SellOffLine/sell_off_line.service";
 import { useHistory, Link } from "react-router-dom";
 import { Toast } from "primereact/toast";
@@ -838,6 +839,8 @@ export default function SellSmart() {
     select6.hidden = false;
     const select7 = document.getElementById("floatingSelect7");
     select7.hidden = false;
+    const select8 = document.getElementById("voucherShip");
+    select8.hidden = false;
     setShowProvinces(true);
     setIsChecked1(false);
     setIsChecked2(true);
@@ -860,6 +863,8 @@ export default function SellSmart() {
     select6.hidden = true;
     const select7 = document.getElementById("floatingSelect7");
     select7.hidden = true;
+    const select8 = document.getElementById("voucherShip");
+    select8.hidden = true;
     setTransportationFeeDTO({
       toDistrictId: null,
       toWardCode: null,
@@ -878,7 +883,7 @@ export default function SellSmart() {
         address: "",
         moneyShip: 0,
         formOfReceipt: "TAI_CUA_HANG",
-        totalMoney: totalPrice,
+        totalMoney: soTienThanhToan,
       });
     } else {
       setDataDoneBill({
@@ -938,13 +943,17 @@ export default function SellSmart() {
     }).format(amount);
   };
 
+  const [productList, setProductList] = useState([]);
   const [user, setUser] = useState(true);
+
   async function createBillSusses(
     codeBill,
     codeAccount,
-    productList,
+    dataBillDetailOffline,
     selectedValues,
-    selectedOptions
+    selectedOptions,
+    dataDoneBill,
+    dataProduct
   ) {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 800]);
@@ -955,6 +964,7 @@ export default function SellSmart() {
       StandardFonts.TimesRomanBoldItalic
     );
     const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+
     //dữ liệu
     const unaccentedCodeBill = unidecode(codeBill);
     const unaccentedCodeAccount = unidecode(codeAccount);
@@ -963,6 +973,13 @@ export default function SellSmart() {
     const totalPriceCode = unidecode(formatCurrency(totalPrice));
     const totalSoTienThanhToan = unidecode(formatCurrency(soTienThanhToan));
     const totalSoTienThua = unidecode(formatCurrency(Math.abs(tienThua)));
+    const totalVoucher = unidecode(
+      formatCurrency(selecteVoucher ? selecteVoucher.valueVoucher : 0)
+    );
+    const totalVoucherFreeShip = unidecode(
+      formatCurrency(selecteVoucherFreeShip ? selecteVoucherFreeShip.valueVoucher : 0)
+    );
+    const totalShip = unidecode(formatCurrency(fee == null ? 0 : fee?.total));
 
     const nameCustomer = unidecode(user.fullName);
     const phoneNumber = user.phoneNumber;
@@ -1086,19 +1103,19 @@ export default function SellSmart() {
 
     const columns = [
       "Ten SP",
-      "Dung luong",
-      "Mau sac",
+      "Phan Loai",
       "Gia SP",
       "So luong",
       "Thanh Tien",
+      "Imei",
     ];
-    const data = productList.map((product) => [
+    const data = dataProduct.map((product) => [
       unidecode(product.nameProduct),
-      unidecode(product.skuCapacity),
-      unidecode(product.skuColor),
+      unidecode(product.capacity + " - " + product.color),
       unidecode(formatCurrency(product.price)),
-      product.quantity,
-      unidecode(formatCurrency(product.totalManyOneBillDetail)),
+      1,
+      unidecode(formatCurrency(product.price)),
+      unidecode(product.codeImei),
     ]);
 
     drawTable(50, height - 260, 500, 150, columns, data);
@@ -1111,23 +1128,47 @@ export default function SellSmart() {
       color: rgb(0, 0, 0),
     });
 
-    drawText(`Tong cong tien thanh toan: ${totalSoTienThanhToan}`, {
+    drawText(`So tien van chuyen: ${totalShip}`, {
       x: 50,
       y: height - 470,
       size: 15,
       font: customFont,
       color: rgb(0, 0, 0),
     });
-    drawText(`Tong cong tien thua: ${totalSoTienThua}`, {
+
+    drawText(`So tien giam gia: ${totalVoucher}`, {
       x: 50,
       y: height - 500,
       size: 15,
       font: customFont,
       color: rgb(0, 0, 0),
     });
+
+    drawText(`So tien giam gia van chuyen: ${totalVoucherFreeShip}`, {
+      x: 50,
+      y: height - 530,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
+
+    drawText(`Tong cong tien thanh toan: ${totalSoTienThanhToan}`, {
+      x: 50,
+      y: height - 560,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
+    drawText(`Tong cong tien thua: ${totalSoTienThua}`, {
+      x: 50,
+      y: height - 590,
+      size: 15,
+      font: customFont,
+      color: rgb(0, 0, 0),
+    });
     drawText(`Nhan vien ban hang` + "                Nguoi mua", {
       x: 250,
-      y: height - 530,
+      y: height - 620,
       size: 15,
       font: font,
       color: rgb(0, 0, 0),
@@ -1137,7 +1178,7 @@ export default function SellSmart() {
         "                                             (Ky ro ho ten)",
       {
         x: 270,
-        y: height - 550,
+        y: height - 650,
         size: 10,
         font: font,
         color: rgb(0, 0, 0),
@@ -1145,7 +1186,7 @@ export default function SellSmart() {
     );
     drawText(`Cam on quy khach da tin tuong APPLETENSTORE`, {
       x: 100,
-      y: height - 730,
+      y: height - 750,
       size: 18,
       color: rgb(0, 0, 0),
     });
@@ -1171,9 +1212,6 @@ export default function SellSmart() {
         });
     });
   }
-
-  // const [productList, setProductList] = useState([]);
-  const [customBill, setCustomBill] = useState([]);
 
   async function accept() {
     if (dataDoneBill.idBill === null) {
@@ -1215,13 +1253,6 @@ export default function SellSmart() {
               message: "Hãy điền đầy đủ địa chỉ!",
             });
           } else {
-            const pdfBytes = await createBillSusses(
-              dataBillOffLine.codeBill,
-              dataBillOffLine.codeAccount,
-              dataBillDetailOffline,
-              selectedValues,
-              selectedOptions
-            );
             if (checkSoluongImei() === true) {
               if (tienThua <= 0) {
                 doneBill(dataDoneBill)
@@ -1233,38 +1264,37 @@ export default function SellSmart() {
                         detail: "Thanh toán thành công",
                         life: 3000,
                       });
-                      // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
-                      //   (response) => {
-                      //     setProductList(response.data);
-                      //   }
-                      // );
-                      // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
-                      //   setCustomBill(response.data);
-                      // });
-                      const blob = new Blob([pdfBytes], {
-                        type: "application/pdf",
-                      });
-                      const url = URL.createObjectURL(blob);
-                      window.open(url);
-
-                      setDataBillDetailOffline([]);
-                      setDataTest(!dataTest);
-                      setDataBillOffline([]);
-                      document.getElementById("amountGiven").value = 0;
-                      document.getElementById("transferAmount").value = 0;
-                      getBillChoThanhToanOff();
-                      setSelectedVoucher(0);
-                      setSelectedVoucherFreeShip(0);
-
-                      const totalQuantity = billInDate.length;
-                      setDlHoaDonChoNgay(totalQuantity);
-                      const totalQuantity1 = hoaDonCho.length;
-                      setDlHoaDonCho(totalQuantity1);
                     }
                   })
                   .catch((err) => {
                     console.log(err);
                   });
+                  try {
+                    const response = await getImeiToPDF(dataBillOffLine.codeBill);
+                    // setProductList(response.data);
+                    // console.log(productList);
+                    // console.log(response.data);
+                    const dataProduct = response.data;
+                    
+                    const pdfBytes = await createBillSusses(
+                      dataBillOffLine.codeBill,
+                      dataBillOffLine.codeAccount,
+                      dataBillDetailOffline,
+                      selectedValues,
+                      selectedOptions,
+                      dataDoneBill,
+                      dataProduct
+                    );
+                    
+                    const blob = new Blob([pdfBytes], {
+                      type: "application/pdf",
+                    });
+                    
+                    const url = URL.createObjectURL(blob);
+                    window.open(url);
+                  } catch (err) {
+                    console.log(err);
+                  }
                 // console.log("ok");
                 const ghiChu = document.getElementById("ghiChu");
                 ghiChu.value = "";
@@ -1276,12 +1306,24 @@ export default function SellSmart() {
                 select_2.selected = true;
                 const select_3 = document.getElementById("-3");
                 select_3.selected = true;
+                setSelectedVoucher(null);
+                setSelectedVoucherFreeShip(null);
                 setTransportationFeeDTO({
                   toDistrictId: null,
                   toWardCode: null,
                   insuranceValue: null,
                   quantity: 1,
                 });
+                setDataBillDetailOffline([]);
+                setDataTest(!dataTest);
+                setDataBillOffline([]);
+                document.getElementById("amountGiven").value = 0;
+                // document.getElementById("transferAmount").value = 0;
+                getBillChoThanhToanOff();
+                const totalQuantity = billInDate.length;
+                setDlHoaDonChoNgay(totalQuantity);
+                const totalQuantity1 = hoaDonCho.length;
+                setDlHoaDonCho(totalQuantity1);
               } else {
                 toast.current.show({
                   severity: "error",
@@ -1300,13 +1342,6 @@ export default function SellSmart() {
             }
           }
         } else {
-          const pdfBytes = await createBillSusses(
-            dataBillOffLine.codeBill,
-            dataBillOffLine.codeAccount,
-            dataBillDetailOffline,
-            selectedValues,
-            selectedOptions
-          );
           if (checkSoluongImei() === true) {
             if (tienThua <= 0) {
               doneBill(dataDoneBill)
@@ -1318,38 +1353,38 @@ export default function SellSmart() {
                       detail: "Thanh toán thành công",
                       life: 3000,
                     });
-                    // getBillCTTByCodeBill(dataBillOffLine.codeBill).then(
-                    //   (response) => {
-                    //     setProductList(response.data);
-                    //   }
-                    // );
-                    // getThongTinTT(dataBillOffLine.codeBill).then((response) => {
-                    //   setCustomBill(response.data);
-                    // });
-                    const blob = new Blob([pdfBytes], {
-                      type: "application/pdf",
-                    });
-                    const url = URL.createObjectURL(blob);
-                    window.open(url);
-
-                    setDataBillDetailOffline([]);
-                    setDataTest(!dataTest);
-                    setDataBillOffline([]);
-                    document.getElementById("amountGiven").value = 0;
-                    document.getElementById("transferAmount").value = 0;
-                    getBillChoThanhToanOff();
-                    setSelectedVoucher(0);
-                    setSelectedVoucherFreeShip(0);
-
-                    const totalQuantity = billInDate.length;
-                    setDlHoaDonChoNgay(totalQuantity);
-                    const totalQuantity1 = hoaDonCho.length;
-                    setDlHoaDonCho(totalQuantity1);
                   }
                 })
                 .catch((err) => {
                   console.log(err);
                 });
+                try {
+                  const response = await getImeiToPDF(dataBillOffLine.codeBill);
+                  // setProductList(response.data);
+                  // console.log(productList);
+                  // console.log(response.data);
+                  const dataProduct = response.data;
+                  
+                  const pdfBytes = await createBillSusses(
+                    dataBillOffLine.codeBill,
+                    dataBillOffLine.codeAccount,
+                    dataBillDetailOffline,
+                    selectedValues,
+                    selectedOptions,
+                    dataDoneBill,
+                    dataProduct
+                  );
+                  
+                  const blob = new Blob([pdfBytes], {
+                    type: "application/pdf",
+                  });
+                  
+                  const url = URL.createObjectURL(blob);
+                  window.open(url);
+                } catch (err) {
+                  console.log(err);
+                }
+              
               // console.log("ok");
               const ghiChu = document.getElementById("ghiChu");
               ghiChu.value = "";
@@ -1361,12 +1396,24 @@ export default function SellSmart() {
               select_2.selected = true;
               const select_3 = document.getElementById("-3");
               select_3.selected = true;
+              setSelectedVoucher(null);
+              setSelectedVoucherFreeShip(null);
               setTransportationFeeDTO({
                 toDistrictId: null,
                 toWardCode: null,
                 insuranceValue: null,
                 quantity: 1,
               });
+              setDataBillDetailOffline([]);
+              setDataTest(!dataTest);
+              setDataBillOffline([]);
+              document.getElementById("amountGiven").value = 0;
+              // document.getElementById("transferAmount").value = 0;
+              getBillChoThanhToanOff();
+              const totalQuantity = billInDate.length;
+              setDlHoaDonChoNgay(totalQuantity);
+              const totalQuantity1 = hoaDonCho.length;
+              setDlHoaDonCho(totalQuantity1);
             } else {
               toast.current.show({
                 severity: "error",
@@ -1410,7 +1457,7 @@ export default function SellSmart() {
         ", " +
         address.province,
       moneyShip: fee?.total,
-      totalMoney: fee?.total + totalPrice,
+      // totalMoney: fee?.total + totalPrice,
     });
   };
   const handlePhiVanChuyen = (event) => {
@@ -1527,7 +1574,7 @@ export default function SellSmart() {
         note: document.getElementById("ghiChu").value,
         personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
         dateUpdate: null,
-        totalMoney: totalPrice,
+        totalMoney: soTienThanhToan,
       });
     } else {
       setDataDoneBill({
@@ -1536,7 +1583,7 @@ export default function SellSmart() {
         note: document.getElementById("ghiChu").value,
         personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
         dateUpdate: null,
-        totalMoney: fee?.total + totalPrice,
+        totalMoney: soTienThanhToan,
       });
     }
     // setDataDoneBill({
@@ -2317,7 +2364,7 @@ export default function SellSmart() {
           idBill: response.data.idBill,
           idSku: arrIdSku,
           codeImeiDaBan: arrCodeImeiDaBan,
-          totalMoney: totalMoney,
+          totalMoney: soTienThanhToan,
           personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
         });
       })
@@ -3589,6 +3636,35 @@ export default function SellSmart() {
                             />
                           </div>
                         )}
+                        <div
+                          id="voucherShip"
+                          className="form-group  col-md-6"
+                          style={{ color: "red", fontWeight: "bold" }}
+                          hidden
+                        >
+                          <label className="control-label">
+                            Giảm giá Ship:{" "}
+                          </label>
+                          <p
+                            className="control-all-money-total"
+                            style={{ fontWeight: "bold" }}
+                          >
+                            ={" "}
+                            {selecteVoucherFreeShip &&
+                            selecteVoucherFreeShip.valueVoucher
+                              ? selecteVoucherFreeShip?.valueVoucher?.toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )
+                              : 0?.toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
+                          </p>
+                        </div>
 
                         <div
                           className="form-group  col-md-6"

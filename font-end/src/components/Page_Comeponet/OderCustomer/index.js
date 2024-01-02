@@ -39,6 +39,7 @@ const OderCustomerAll = () => {
   const toast = useRef(null);
   const [bill, setBill] = useState([]);
   const [code, setCode] = useState();
+  const [phoneNumber, setPhoneNumber] = useState();
   const [billDetails, setBillDetails] = useState([]);
   const [isShowContent, setIsShowContent] = useState(true);
 
@@ -46,35 +47,46 @@ const OderCustomerAll = () => {
     setCode(event.target.value);
   };
 
+  const handleChangePhoneNumber = (event) => {
+    setPhoneNumber(event.target.value);
+  };
+
   useEffect(() => {}, [code]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    readByCodeBill(code)
-      .then((res) => {
-        setBill(res.data);
-        console.log(res.data);
-        readAllByCustomer(res.data.idBill)
-          .then((res) => {
-            setBillDetails(res.data);
-            console.log(res.data);
-            setIsShowContent(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            toast.current.show({
-              severity: "error",
-              summary: "TÌM HÓA ĐƠN",
-              detail: "Không tìm thấy hóa đơn",
-              life: 3000,
-            });
-            setIsShowContent(true);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
+    const phoneNumberRegex = /^\d{10}$/;
+    const phone = document.getElementById("phone");
+    if (!phoneNumberRegex.test(phone?.value)) {
+      notification.error({
+        message: "Số điện thoại sai định dạng!",
       });
-    console.log(bill);
+    } else {
+      readByCodeBill(code, phoneNumber)
+        .then((res) => {
+          setBill(res.data);
+          console.log(res.data);
+          readAllByCustomer(res.data.idBill)
+            .then((res) => {
+              setBillDetails(res.data);
+              console.log(res.data);
+              setIsShowContent(false);
+            })
+            .catch((err) => {
+              console.log(err);
+              toast.current.show({
+                severity: "error",
+                summary: "TÌM HÓA ĐƠN",
+                detail: "Không tìm thấy hóa đơn",
+                life: 3000,
+              });
+              setIsShowContent(true);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const [billReturn, setBillReturn] = useState({
@@ -563,6 +575,15 @@ const OderCustomerAll = () => {
             aria-label="Search"
             required
             onChange={handleChange}
+          />
+          <input
+            id="phone"
+            class="form-control me-2"
+            type="search"
+            placeholder="Nhập số điện thoại"
+            aria-label="Search"
+            required
+            onChange={handleChangePhoneNumber}
           />
           <button class="btn btn-outline-success" type="submit">
             Search
