@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOfflinePDF;
 import com.example.backend.entity.Imei;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -113,4 +114,10 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
     //laays ra lisst imei theo idsku and status = 3 =4 =5 =7 (đã bán)
     @Query(value = "select * from imei i where i.sku_id=?1 and (i.status =?2 or i.status =4 or i.status =5 or i.status =7)   ORDER BY Id DESC", nativeQuery = true)
     List<Imei> getAllImeiWherIdSkuDaBan(Long idSku, Integer status);
+
+    //lấy thông tin để in hóa đơn
+    @Query(value = "select p.name as 'nameProduct', s.capacity as 'capacity', s.color as 'color', s.price as 'price', i.code_imei as 'codeImei'\n" +
+            "from imei_da_ban i join bill_detail bd on bd.id = i.id_bill_detail join sku s on s.id = bd.id_sku\n" +
+            "join product p on p.id = s.product_id join bill b on b.id = bd.id_bill where b.code = ?1", nativeQuery = true)
+    List<ImeiBillOfflinePDF> getImeiBillDetailPDF(String idBill );
 }

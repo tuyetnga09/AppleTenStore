@@ -8,6 +8,7 @@ import com.example.backend.controller.order_management.model.billOffLine.XoaHoaD
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOfflinePDF;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
@@ -665,8 +666,20 @@ public class BillOffLineServiceImpl implements BillOffLineService {
                     BillDetails billDetailUpdate = billDetailRepository.findById(xoaHoaDonChoIon.getIdBillDetail()).get();
                     billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
 //                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
+                    StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
+                    billDetailUpdate.setStatusBill(statusBill);
                     billDetailRepository.save(billDetailUpdate);
                 }
+            }
+            List<BillDetails> billDetailsList = billDetailRepository.findByBill_Id(bill.getId());
+            for (BillDetails details : billDetailsList
+                 ) {
+                BillDetails billDetailUpdate = billDetailRepository.findById(details.getId()).get();
+                billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
+//                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
+                StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
+                billDetailUpdate.setStatusBill(statusBill);
+                billDetailRepository.save(billDetailUpdate);
             }
             //cập nhật bill
             Bill billUpdate = billRepository.findById(bill.getId()).get();
@@ -681,6 +694,11 @@ public class BillOffLineServiceImpl implements BillOffLineService {
         }
         List<XoaHoaDonCho> list = new ArrayList<>();
         return list;
+    }
+
+    @Override
+    public List<ImeiBillOfflinePDF> getImeiToPDF(String idBill) {
+        return imeiRepository.getImeiBillDetailPDF(idBill);
     }
 
 }

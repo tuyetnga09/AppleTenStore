@@ -8,6 +8,7 @@ import com.example.backend.controller.order_management.model.billOffLine.XoaHoaD
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.CheckImeiDaBanIonSellOffLine;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOfflinePDF;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiDaBanOffLineIonRespon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToan;
 import com.example.backend.controller.order_management.model.billOffLine.ion.ListBillChoThanhToanS2;
@@ -95,4 +96,7 @@ public interface BillOffLineService {
     List<Bill> getThongTinBill(String codeBill);
 
     List<XoaHoaDonCho> xoaHoaDonChoOffLineCuoiNgay();
+
+    List<ImeiBillOfflinePDF> getImeiToPDF(String idBill);
+
 }

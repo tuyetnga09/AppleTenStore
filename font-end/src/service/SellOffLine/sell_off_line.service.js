@@ -193,3 +193,7 @@ export const getThongTinTT = (codeBill) => {
 export const xoahoaDonCho = () => {
   return httpClient.get(`/admin/bill-offline/tu-xoa-hoa-don-cho-cuoi-ngay`);
 };
+
+export const getImeiToPDF = (idBill) => {
+  return httpClient.get(`/admin/bill-offline/get-imeis-to-PDF?idBill=${idBill}`);
+};

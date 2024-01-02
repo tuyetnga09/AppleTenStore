@@ -76,12 +76,13 @@ export default function ProductDetail() {
   const [productFilter, setProductFilter] = useState([]);
 
   const [quantityNoiBat, setQuantityNoiBat] = useState([]);
-
+  const [loaded, setLoaded] = useState(false);
   function goToTop() {
     window.scrollTo({
       top: 0, // Cuộn lên vị trí đầu trang
       behavior: "smooth", // Hiệu ứng cuộn mượt
     });
+    setLoaded(!loaded);
   }
 
   const [pagination, setPagination] = useState({
@@ -157,7 +158,7 @@ export default function ProductDetail() {
       .catch((error) => {
         console.log(`${error}`);
       });
-  }, [filtersSKU]);
+  }, [filtersSKU, loaded]);
 
   const [selectedDungLuong, setSelectedDungLuong] = useState(null);
 
@@ -740,7 +741,7 @@ export default function ProductDetail() {
             <div className="listSpTrongKhung flexContain">
               {outstandingProducts}
             </div>
-            {quantityNoiBat > 10 ? (
+            {/* {quantityNoiBat > 10 ? (
               <Link
                 className="xemTatCa"
                 to="/"
@@ -754,7 +755,7 @@ export default function ProductDetail() {
               </Link>
             ) : (
               ""
-            )}
+            )} */}
           </div>
         </div>
       </section>
