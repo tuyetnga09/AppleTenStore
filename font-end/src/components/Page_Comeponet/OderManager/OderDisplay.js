@@ -931,9 +931,42 @@ const OderDisplay = ({}) => {
         })
     }
 
-    function searchBill(code) {
-        searchBillByCode(code).then((response) => {
-            console.log(response.data)
+    // Tạo biến bill sau khi tìm đc
+    const [billUpdate, setBillUpdate] = useState({});
+    const [hideForm, setHideForm] = useState(false)
+
+    function searchBill(id) {
+        searchBillByCode(id).then((response) => {
+            setBillUpdate(response.data);
+        }).catch((error) => {
+            console.log(error)
+        });
+
+        findBillDetails(id).then((response) => {
+            setDataBillDetails(response.data);
+            setHideForm(true);
+        }).catch((error) => {
+            console.log(error);
+        });
+
+
+    }
+
+    function handleCancelHideForm() {
+        setHideForm(false);
+    }
+
+    function hanldeName(event) {
+        setBillUpdate({
+            ...billUpdate,
+            userName: event.target.value
+        })
+    }
+
+    function hanldPhone(event) {
+        setBillUpdate({
+            ...billUpdate,
+            phoneNumber: event.target.value
         })
     }
 
@@ -1200,7 +1233,9 @@ const OderDisplay = ({}) => {
                                                     style={{
                                                         color: "orange",
                                                     }}
-                                                    onClick={() => { searchBill(record.code) }}
+                                                    onClick={() => {
+                                                        searchBill(record.id)
+                                                    }}
                                                 />
                                             }
                                         />
@@ -1723,6 +1758,7 @@ const OderDisplay = ({}) => {
                                     onChange={handleChangeSearchYCTH}
                                 />
                             </Row>
+                            <br/>
                             <Table
                                 rowKey="oop"
                                 dataSource={dataBillDetails}
@@ -1740,7 +1776,7 @@ const OderDisplay = ({}) => {
                                     title="Ảnh"
                                     render={(text, record) => (
                                         <div style={{textAlign: "center"}}>
-                                            <AvtProduct product={record.productId}/>
+                                            <AvtProduct product={record.idProduct}/>
                                         </div>
                                     )}
                                     width={150}
@@ -1770,7 +1806,7 @@ const OderDisplay = ({}) => {
                                         return (
                                             <Form.Item name="title" style={{margin: 0}}>
                                                 <p>
-                                                    {record.capacity} - {record.color}
+                                                    {record.skuColor} - {record.skuCapacity}
                                                 </p>
                                             </Form.Item>
                                         );
@@ -1985,6 +2021,321 @@ const OderDisplay = ({}) => {
                                     Xác nhận
                                 </button>
                             </form>
+                        </Modal>
+
+                        /*
+                        Modal hiển thị form edit
+                        */
+                        <Modal
+                            visible={hideForm}
+                            onCancel={handleCancelHideForm}
+                            width={800}
+                            footer={null}
+                            bodyStyle={{minHeight: "150px"}}
+                        >
+                            <form onSubmit={handleSubmitDeliveryFailed}>
+                                <div className="col-md-12">
+                                    <div className="col-md-8 order-md-1">
+                                        <h4 className="mb-3">Thông tin khách hàng</h4>
+                                        <div className="row">
+                                            <div className="col-md-5">
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Tên"
+                                                    name="name"
+                                                    value={billUpdate.userName}
+                                                    onChange={hanldeName}
+                                                    required
+                                                ></input>
+                                                <br/>
+                                            </div>
+                                            <div className="col-md-5">
+                                                <input
+                                                    id="phoneNumber"
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Số điện thoại"
+                                                    name="phoneNumber"
+                                                    value={billUpdate.phoneNumber}
+                                                    onChange={hanldPhone}
+                                                    required
+                                                ></input>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <b htmlFor="kh_ngaysinh">Hình thức nhận hàng</b>
+                                                <div className="custom-control custom-radio">
+                                                    <input
+                                                        id="htnn_5"
+                                                        type="radio"
+                                                        className="custom-control-input"
+                                                        required=""
+                                                        value="2"
+                                                        // onClick={() => giaoTanNoi()}
+                                                    ></input>
+                                                    <label className="custom-control-label" htmlFor="htnn_5">
+                                                        Giao tận nơi
+                                                    </label>
+                                                </div>
+                                                <div
+                                                    className="custom-control custom-radio"
+                                                    id="dcmd"
+                                                    // hidden={storedUser !== null ? false : true}
+                                                >
+                                                    <input
+                                                        id="htnn_6"
+                                                        type="radio"
+                                                        className="custom-control-input"
+                                                        required=""
+                                                        value="3"
+                                                        // onClick={() => diaChiMacDinh()}
+                                                        hidden
+                                                    ></input>
+                                                    <label className="custom-control-label" htmlFor="htnn_6">
+                                                        Địa chỉ mặc định
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div hidden className="row" id="notDcmd">
+                                                <div className="col-md-4">
+                                                    <br/>
+                                                    <label htmlFor="kh_cmnd">Tỉnh, thành phố:</label>
+                                                    <select
+                                                        className="form-select"
+                                                        id="provinces"
+                                                        aria-label="Floating label select example"
+                                                        // onChange={handleProvince}
+                                                    >
+                                                        <option selected id="-1"></option>
+                                                        {/*{provinces.map((pr) => {*/}
+                                                        {/*    return (*/}
+                                                        {/*        <option*/}
+                                                        {/*            id={pr.ProvinceID}*/}
+                                                        {/*            key={pr.ProvinceID}*/}
+                                                        {/*            value={pr.ProvinceID}*/}
+                                                        {/*        >*/}
+                                                        {/*            {pr.ProvinceName}*/}
+                                                        {/*        </option>*/}
+                                                        {/*    );*/}
+                                                        {/*})}*/}
+                                                    </select>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <br/>
+                                                    <label htmlFor="kh_cmnd">Quận, huyện:</label>
+                                                    <select
+                                                        className="form-select"
+                                                        id="districts"
+                                                        aria-label="Floating label select example"
+                                                        // onChange={handleDistrict}
+                                                    >
+                                                        <option selected id="-2"></option>
+                                                        {/*{districts.map((dt) => {*/}
+                                                        {/*    return (*/}
+                                                        {/*        <option*/}
+                                                        {/*            id={dt.DistrictID}*/}
+                                                        {/*            key={dt.DistrictID}*/}
+                                                        {/*            value={dt.DistrictID}*/}
+                                                        {/*        >*/}
+                                                        {/*            {dt.DistrictName}*/}
+                                                        {/*        </option>*/}
+                                                        {/*    );*/}
+                                                        {/*})}*/}
+                                                    </select>
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <br/>
+                                                    <label htmlFor="kh_cmnd">Phường, xã:</label>
+                                                    <select
+                                                        className="form-select"
+                                                        id="wards"
+                                                        aria-label="Floating label select example"
+                                                        // onChange={handleWard}
+                                                    >
+                                                        <option selected id="-3"></option>
+                                                        {/*{wards.map((w) => {*/}
+                                                        {/*    return (*/}
+                                                        {/*        <option*/}
+                                                        {/*            id={w.WardCode}*/}
+                                                        {/*            key={w.WardID}*/}
+                                                        {/*            value={w.WardCode}*/}
+                                                        {/*        >*/}
+                                                        {/*            {w.WardName}*/}
+                                                        {/*        </option>*/}
+                                                        {/*    );*/}
+                                                        {/*})}*/}
+                                                    </select>
+                                                </div>
+                                                <div className="col-md-12">
+                                                    <input
+                                                        hidden
+                                                        id="floatingSelect2"
+                                                        className="form-control"
+                                                        type="text"
+                                                        placeholder="Địa chỉ cụ thể"
+                                                        aria-label="default input example"
+                                                        // onChange={handleAddress}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div id="dcmd2" hidden>
+                                                <br/>
+                                                <label htmlFor="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
+                                                <select
+                                                    className="form-select"
+                                                    id="floatingSelect"
+                                                    aria-label="Floating label select example"
+                                                    // onChange={handleDefaultAddress}
+                                                >
+                                                    <option selected id="0" value={0}></option>
+                                                    {/*{defaultAddress.map((da) => {*/}
+                                                    {/*    return (*/}
+                                                    {/*        <option id={da.id} key={da.id} value={da.id}>*/}
+                                                    {/*            {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}*/}
+                                                    {/*            {da.tinhThanhPho}*/}
+                                                    {/*        </option>*/}
+                                                    {/*    );*/}
+                                                    {/*})}*/}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div className="row col-md-3">
+                                            <button type="button" class="btn btn-warning">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div className="row col-md-2">
+                                    <button type="submit" className="btn btn-success">
+                                        Xác nhận
+                                    </button>
+                                </div>
+                            </form>
+                            <div className="row col-md-12">
+                                <br/>
+                                <Table
+                                    rowKey="oop"
+                                    dataSource={dataBillDetails}
+                                    pagination={{
+                                        pageSize: 5,
+                                        showSizeChanger: false,
+                                        showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                                    }}
+                                >
+                                    {/* tên sp */}
+                                    <Table.Column
+                                        align="center"
+                                        dataIndex="images"
+                                        title="Ảnh"
+                                        render={(text, record) => (
+                                            <div style={{textAlign: "center"}}>
+                                                <AvtProduct product={record.idProduct}/>
+                                            </div>
+                                        )}
+                                        width={150}
+                                    />
+
+                                    {/* tên sp */}
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Tên Sản Phẩm"
+                                        render={(text, record) => {
+                                            return (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    <p>{record.nameProduct}</p>
+                                                </Form.Item>
+                                            );
+                                        }}
+                                    />
+                                    {/* sumSKU */}
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Phiên Bản"
+                                        render={(text, record) => {
+                                            return (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    <p>
+                                                        {record.skuColor} - {record.skuCapacity}
+                                                    </p>
+                                                </Form.Item>
+                                            );
+                                        }}
+                                    />
+                                    {/* priceSKU  */}
+                                    <Table.Column
+                                        align="center"
+                                        key="price"
+                                        dataIndex="price"
+                                        title="Giá Bán"
+                                        sorter={(a, b) => a.price - b.price}
+                                        render={(text, record) => {
+                                            return record.price === null ? (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    <WarningFilled
+                                                        value={false}
+                                                        style={{
+                                                            color: "#FFCC00",
+                                                        }}
+                                                    />
+                                                    {parseFloat(0).toLocaleString("vi-VN", {
+                                                        style: "currency",
+                                                        currency: "VND",
+                                                    })}
+                                                </Form.Item>
+                                            ) : (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    {parseFloat(record.price).toLocaleString("vi-VN", {
+                                                        style: "currency",
+                                                        currency: "VND",
+                                                    })}
+                                                </Form.Item>
+                                            );
+                                        }}
+                                    />
+
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Số lượng"
+                                        render={(text, record) => {
+                                            return (
+                                                <input type="number" value={record.quantity} min="1" className="form-control"/>
+                                            );
+                                        }}
+                                    />
+
+                                    {/* sumImeiTrongKho */}
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Xóa"
+                                        render={(text, record) => {
+                                            return (
+                                                <Menu mode="vertical">
+                                                    <Menu.Item
+                                                    icon={
+                                                        <CloseCircleOutlined
+                                                            style={{
+                                                                color: "red",
+                                                            }}
+                                                        />
+                                                    }
+                                                    >
+                                                    </Menu.Item>
+                                                </Menu>
+                                            );
+                                        }}
+                                    />
+                                </Table>
+                            </div>
                         </Modal>
                     </Content>
                 </Layout>
