@@ -88,6 +88,7 @@ import {
 import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import HeaderDashBoard from "../header/index";
+import {getSKUForBillDetail, searchSKUForBillDetail} from "../../../service/sku.service";
 
 const {RangePicker} = DatePicker;
 const {SubMenu} = Menu;
@@ -938,6 +939,7 @@ const OderDisplay = ({}) => {
     function searchBill(id) {
         searchBillByCode(id).then((response) => {
             setBillUpdate(response.data);
+            console.log(response.data)
         }).catch((error) => {
             console.log(error)
         });
@@ -968,6 +970,31 @@ const OderDisplay = ({}) => {
             ...billUpdate,
             phoneNumber: event.target.value
         })
+    }
+
+    const [hideFormSearchSku, setHideFormSearchSku] = useState(false);
+    const [listSku, setListSku] = useState([]);
+
+
+    function handleCancelHideFormSearchSku() {
+        getSKUForBillDetail().then((response) => {
+            setListSku(response.data)
+        }).catch((error) => {
+            console.log(error)
+        })
+        setHideFormSearchSku(!hideFormSearchSku);
+    }
+
+    const handleSearchSku = (event) => {
+        searchSKUForBillDetail(event.target.value).then((response) => {
+            setListSku(response.data)
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    const handleAddSkuToBill = (id) => {
+
     }
 
     return (
@@ -2200,19 +2227,21 @@ const OderDisplay = ({}) => {
                                             </div>
                                         </div>
                                         <br/>
-                                        <div className="row col-md-3">
-                                            <button type="button" class="btn btn-warning">+</button>
+                                        <div className="row col-md-5">
+                                            <button type="submit" className="btn btn-success">
+                                                Xác nhận
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <br/>
-                                <div className="row col-md-2">
-                                    <button type="submit" className="btn btn-success">
-                                        Xác nhận
+                            </form>
+                            <br/>
+                            <div className="row col-md-12">
+                                <div className="row col-md-3">
+                                    <button type="button" onClick={handleCancelHideFormSearchSku}
+                                            className="btn btn-warning">+
                                     </button>
                                 </div>
-                            </form>
-                            <div className="row col-md-12">
                                 <br/>
                                 <Table
                                     rowKey="oop"
@@ -2306,7 +2335,8 @@ const OderDisplay = ({}) => {
                                         title="Số lượng"
                                         render={(text, record) => {
                                             return (
-                                                <input type="number" value={record.quantity} min="1" className="form-control"/>
+                                                <input type="number" value={record.quantity} min="1"
+                                                       className="form-control"/>
                                             );
                                         }}
                                     />
@@ -2319,18 +2349,154 @@ const OderDisplay = ({}) => {
                                         title="Xóa"
                                         render={(text, record) => {
                                             return (
-                                                <Menu mode="vertical">
-                                                    <Menu.Item
-                                                    icon={
-                                                        <CloseCircleOutlined
-                                                            style={{
-                                                                color: "red",
-                                                            }}
-                                                        />
-                                                    }
-                                                    >
-                                                    </Menu.Item>
-                                                </Menu>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-danger"
+                                                    onClick={function () {
+                                                        console.log(record)
+                                                    }}
+                                                >
+                                                    Xóa
+                                                </button>
+                                            );
+                                        }}
+                                    />
+                                </Table>
+                            </div>
+                        </Modal>
+                        <Modal
+                            visible={hideFormSearchSku}
+                            onCancel={handleCancelHideFormSearchSku}
+                            width={800}
+                            footer={null}
+                            bodyStyle={{minHeight: "150px"}}
+                        >
+                            <div className="form-search">
+                                <h3 className="align-content-center">TÌM KIẾM SẢN PHẨM</h3>
+                                <Form.Item name="name" noStyle>
+                                    <Input
+                                        style={{width: "300px"}}
+                                        placeholder={"Product Search"}
+                                        suffix={<SearchOutlined/>}
+                                        onChange={handleSearchSku}
+                                        name="key"
+                                    />
+                                </Form.Item>
+                            </div>
+                            <div className="table-sku">
+                                <Table
+                                    rowKey="oop"
+                                    dataSource={listSku}
+                                    pagination={{
+                                        pageSize: 5,
+                                        showSizeChanger: false,
+                                        showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                                    }}
+                                >
+                                    {/* tên sp */}
+                                    <Table.Column
+                                        align="center"
+                                        dataIndex="images"
+                                        title="Ảnh"
+                                        render={(text, record) => (
+                                            <div style={{textAlign: "center"}}>
+                                                <AvtProduct product={record.productId}/>
+                                            </div>
+                                        )}
+                                        width={150}
+                                    />
+
+                                    {/* tên sp */}
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Tên Sản Phẩm"
+                                        render={(text, record) => {
+                                            return (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    <p>{record.name}</p>
+                                                </Form.Item>
+                                            );
+                                        }}
+                                    />
+                                    {/* sumSKU */}
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Phiên Bản"
+                                        render={(text, record) => {
+                                            return (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    <p>
+                                                        {record.color} - {record.capacity}
+                                                    </p>
+                                                </Form.Item>
+                                            );
+                                        }}
+                                    />
+                                    {/* priceSKU  */}
+                                    <Table.Column
+                                        align="center"
+                                        key="price"
+                                        dataIndex="price"
+                                        title="Giá Bán"
+                                        sorter={(a, b) => a.price - b.price}
+                                        render={(text, record) => {
+                                            return record.price === null ? (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    <WarningFilled
+                                                        value={false}
+                                                        style={{
+                                                            color: "#FFCC00",
+                                                        }}
+                                                    />
+                                                    {parseFloat(0).toLocaleString("vi-VN", {
+                                                        style: "currency",
+                                                        currency: "VND",
+                                                    })}
+                                                </Form.Item>
+                                            ) : (
+                                                <Form.Item name="title" style={{margin: 0}}>
+                                                    {parseFloat(record.price).toLocaleString("vi-VN", {
+                                                        style: "currency",
+                                                        currency: "VND",
+                                                    })}
+                                                </Form.Item>
+                                            );
+                                        }}
+                                    />
+
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Số lượng"
+                                        render={(text, record) => {
+                                            return (
+                                                <input type="number" value={record.quantity} readOnly
+                                                       className="form-control"/>
+                                            );
+                                        }}
+                                    />
+
+                                    {/* sumImeiTrongKho */}
+                                    <Table.Column
+                                        align="center"
+                                        key="isActive"
+                                        dataIndex="isActive"
+                                        title="Xóa"
+                                        render={(text, record) => {
+                                            return (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-success"
+                                                    onClick={() => handleAddSkuToBill(record.id)}
+                                                >
+                                                    Thêm
+                                                </button>
                                             );
                                         }}
                                     />
