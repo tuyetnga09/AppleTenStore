@@ -997,6 +997,10 @@ const OderDisplay = ({}) => {
 
     }
 
+    function handleChangeQuantity(event) {
+        
+    }
+
     return (
         <>
             <Layout>
@@ -2335,8 +2339,12 @@ const OderDisplay = ({}) => {
                                         title="Số lượng"
                                         render={(text, record) => {
                                             return (
-                                                <input type="number" value={record.quantity} min="1"
-                                                       className="form-control"/>
+                                                <input type="number"
+                                                       value={record.quantity}
+                                                       min="1"
+                                                       className="form-control"
+                                                       onChange={handleChangeQuantity}
+                                                />
                                             );
                                         }}
                                     />
