@@ -81,9 +81,9 @@ public class BillServerController {
         return billService.noAcceptReturn(acceptReturn);
     }
 
-    @GetMapping(value = "/searchBillByCode/{code}")
-    public Optional<Bill> searchBillByCode(@PathVariable String code){
-        return billService.searchBillByCode(code);
+    @GetMapping(value = "/searchBillByCode/{id}")
+    public Optional<Bill> searchBillByCode(@PathVariable Integer id){
+        return billService.searchBillById(id);
     }
 
 }

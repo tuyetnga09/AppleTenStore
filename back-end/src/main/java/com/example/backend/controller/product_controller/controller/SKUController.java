@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.controller;
 
+import com.example.backend.controller.product_controller.model.product_detail.ion.SkuOfBillDetails;
 import com.example.backend.controller.product_controller.service.impl.ProductServiceImpl;
 import com.example.backend.controller.product_controller.model.request.ListSkuProduct;
 import com.example.backend.controller.product_controller.service.impl.SKUServiceImpl;
@@ -78,4 +79,15 @@ public class SKUController {
     public List<BigDecimal> priceMinAndMaxBySKU(@RequestParam("idProduct") Integer idProduct){
         return skuService.priceMinAndMaxBySKU(idProduct);
     }
+
+    @GetMapping(value = "getSkuForAddBill")
+    public List<SkuOfBillDetails> getSKUForAddBill(){
+        return skuService.getSKUForAddBill();
+    }
+
+    @GetMapping(value = "searchSkuForAddBill/{name}")
+    public List<SkuOfBillDetails> getSKUForAddBill(@PathVariable String name){
+        return skuService.searchSKUForAddBill(name);
+    }
+
 }

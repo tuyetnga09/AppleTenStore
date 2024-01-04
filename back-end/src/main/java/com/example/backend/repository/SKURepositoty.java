@@ -2,6 +2,7 @@ package com.example.backend.repository;
 
 import com.example.backend.controller.order_management.model.billOffLine.ion.SkuBillOffLineIonRespon;
 import com.example.backend.controller.product_controller.model.product_detail.ion.SkuIonAdmin;
+import com.example.backend.controller.product_controller.model.product_detail.ion.SkuOfBillDetails;
 import com.example.backend.controller.product_controller.model.request.ListSkuProduct;
 import com.example.backend.entity.Product;
 import com.example.backend.entity.SKU;
@@ -85,7 +86,6 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
     List<SkuIonAdmin> getAllSkuIonWhereIdProduct(Integer idProduct);
 
 
-
     //lấy ra đối tượng sku theo idproduct- phongnh
     @Query(value = "select p.id as 'idProduct', p.name as 'nameProduct', s.id as 'idSku' ,\n" +
             "               s.capacity as 'skuCapacity', s.color as 'skuColor',count(DISTINCT s.id) as 'sumSKU',\n" +
@@ -112,4 +112,13 @@ public interface SKURepositoty extends JpaRepository<SKU, Long> {
 
     @Query(value = "select * from sku where product_id = ?1 and price is not null order by price desc limit 1", nativeQuery = true)
     SKU findSKUPriceMax(Integer idProduct);
+
+    @Query(value = "select sku.id, product.name, sku.product_id, sku.color, sku.capacity, sku.quantity, sku.price\n " +
+            "from product right join sku on product.id = sku.product_id where sku.quantity > 0 and sku.status = 0", nativeQuery = true)
+    List<SkuOfBillDetails> getSKUForAddBill();
+
+    @Query(value = "select sku.id, product.name, sku.product_id, sku.color, sku.capacity, sku.quantity, sku.price\n " +
+            "from product right join sku on product.id = sku.product_id where sku.quantity > 0 and sku.status = 0 and name like %?1%", nativeQuery = true)
+    List<SkuOfBillDetails> searcgSKUForAddBill(String name);
+
 }
