@@ -109,8 +109,8 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    const checked1 = document.getElementById("htnn_4");
-    checked1.checked = isChecked1;
+    // const checked1 = document.getElementById("htnn_4");
+    // checked1.checked = isChecked1;
     const checked2 = document.getElementById("htnn_5");
     checked2.checked = isChecked2;
     const checked3 = document.getElementById("htnn_6");
@@ -283,7 +283,7 @@ const Checkout = () => {
     setIsChecked1(false);
     setIsChecked2(true);
     setIsChecked3(false);
-    document.getElementById("htnn_4").checked = false;
+    // document.getElementById("htnn_4").checked = false;
     document.getElementById("htnn_6").checked = false;
   }
 
@@ -309,7 +309,7 @@ const Checkout = () => {
     setIsChecked1(false);
     setIsChecked2(false);
     setIsChecked3(true);
-    document.getElementById("htnn_4").checked = false;
+    // document.getElementById("htnn_4").checked = false;
     document.getElementById("htnn_5").checked = false;
   }
 

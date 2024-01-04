@@ -18,7 +18,7 @@ const AvtProduct = (props) => {
   return (
     <>
       <div className="picture">
-        <img src={`/imageUpload/` + image} />
+        <img src={`/imageUpload/` + image}  alt="Can't find image!"/>
       </div>
     </>
   );

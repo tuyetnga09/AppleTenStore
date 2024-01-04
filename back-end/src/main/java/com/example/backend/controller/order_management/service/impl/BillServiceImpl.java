@@ -453,8 +453,8 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public Optional<Bill> searchBillByCode(String code) {
-        return billRepository.findByCode(code);
+    public Optional<Bill> searchBillById(Integer id) {
+        return billRepository.findById(id);
     }
 
     @Override

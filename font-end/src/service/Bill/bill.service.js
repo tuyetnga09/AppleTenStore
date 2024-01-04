@@ -73,6 +73,6 @@ export const deliveryFailed = (idAccount, idBill, note) => {
   );
 };
 
-export const searchBillByCode = (code) => {
-  return httpClient.get(`manager/bill/searchBillByCode/${code}`);
+export const searchBillByCode = (id) => {
+  return httpClient.get(`manager/bill/searchBillByCode/${id}`);
 }

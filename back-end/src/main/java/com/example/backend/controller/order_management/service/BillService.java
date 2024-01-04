@@ -25,7 +25,7 @@ public interface BillService {
 
     List<Bill> searchNoDate(String key, String status);
 
-    Optional<Bill> searchBillByCode(String code);
+    Optional<Bill> searchBillById(Integer id);
 
     List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
