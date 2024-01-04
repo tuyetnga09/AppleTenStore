@@ -13,6 +13,8 @@ import java.util.List;
 
 public interface BillDetailService {
 
+    void save(BillDetails billDetails);
+
     Page<BillDetails> getAll(FindBillDetailRequest request, Pageable pageable);
 
     List<BillDetailCustomerResponse> getAll(Integer id);

@@ -28,6 +28,11 @@ public class BillDetailServiceImpl implements BillDetailService {
     private BillDetailRepository billDetailRepository;
 
     @Override
+    public void save(BillDetails billDetails) {
+        this.billDetailRepository.save(billDetails);
+    }
+
+    @Override
     public Page<BillDetails> getAll(FindBillDetailRequest request, Pageable pageable) {
         return billDetailRepository.findAll(pageable);
     }
