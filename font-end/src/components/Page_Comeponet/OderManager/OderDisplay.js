@@ -2,9 +2,10 @@ import React, {useEffect, useRef, useState} from "react";
 import {useTranslate} from "@refinedev/core";
 import {
     AppstoreAddOutlined,
-    CheckCircleOutlined,
+    BellOutlined,
     CloseCircleOutlined,
     DashboardOutlined,
+    FileDoneOutlined,
     FormOutlined,
     GiftOutlined,
     LogoutOutlined,
@@ -12,13 +13,11 @@ import {
     MenuUnfoldOutlined,
     MoreOutlined,
     SearchOutlined,
+    SettingOutlined,
     ShopOutlined,
+    UnorderedListOutlined,
     UserOutlined,
     WarningFilled,
-    BellOutlined,
-    SettingOutlined,
-    UnorderedListOutlined,
-    FileDoneOutlined,
 } from "@ant-design/icons";
 import {
     Badge,
@@ -36,30 +35,29 @@ import {
     notification,
     Row,
     Select,
+    Space,
+    Switch,
     Table,
     theme,
     Typography,
-    Space,
-    Switch,
 } from "antd";
 import {DateField, List, NumberField} from "@refinedev/antd";
 import {Link, useHistory} from "react-router-dom/cjs/react-router-dom.min";
 import {
+    acceptReturn,
     deleteBillById,
+    deliveryFailed,
+    getAllBillCXN,
+    getAllBillOFFLINECXN,
+    getCountBillChoXacNhan,
+    noAcceptReturn,
+    returnBillById,
+    returnStatusBill,
+    searchBillByCode,
     searchNoDate,
     searchWithDate,
-    updateStatusBill,
     updateAllCVC,
-    getAllBillCXN,
-    getCountBillChoXacNhan,
-    returnBillById,
-    getAllBillOFFLINECXN,
-    acceptReturn,
-    noAcceptReturn,
-    deliveryFailed,
-    returnStatusBill,
-    searchBllByCode,
-    searchBillByCode,
+    updateStatusBill,
 } from "../../../service/Bill/bill.service";
 import {readAllUser} from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -84,10 +82,7 @@ import {
 import {ConfirmDialog, confirmDialog} from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
 import {Toast} from "primereact/toast";
-import {
-    findBillDetails, getAllBillDetailReturn, saveBillDetail,
-} from "../../../service/BillDetail/billDetail.service";
-import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
+import {findBillDetails, getAllBillDetailReturn,} from "../../../service/BillDetail/billDetail.service";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import HeaderDashBoard from "../header/index";
 import {getSKUForBillDetail, searchSKUForBillDetail} from "../../../service/sku.service";
@@ -853,9 +848,9 @@ const OderDisplay = ({}) => {
     const [billUpdate, setBillUpdate] = useState({});
     const [hideForm, setHideForm] = useState(false);
 
-    const [newBillDetails, setNewBillDetails] = useState([]);
+    let [newBillDetails, setNewBillDetails] = useState([]);
     const [idBillTemp, setIdBillTemp] = useState(null);
-    const temp = [];
+    let temp = [];
 
     function searchBill(id) {
         setIdBillTemp(id);
@@ -880,12 +875,10 @@ const OderDisplay = ({}) => {
         }).catch((error) => {
             console.log(error);
         });
-
-
     }
 
     function handleCancelHideForm() {
-        newBillDetails.length = 0;
+        temp.length = 0;
         setIdBillTemp(null);
         setHideForm(false);
     }
@@ -941,7 +934,18 @@ const OderDisplay = ({}) => {
     }
 
     const handleChangeQuantity = (record) => {
-        console.log(record)
+        newBillDetails.map((item) => {
+                if (item.sku === record.idSKU) {
+                    newBillDetails[newBillDetails.indexOf(item)] = {
+                        ...item,
+                        quantity: Number(document.getElementById('quantitySKU').value)
+                    };
+                }
+            }
+        )
+        setNewBillDetails(newBillDetails => [
+            ...newBillDetails
+        ]);
     }
 
     return (<>
@@ -1190,14 +1194,22 @@ const OderDisplay = ({}) => {
                                     <Table.Column
                                         key="edit"
                                         dataIndex="edit"
-                                        render={(text, record) => <FormOutlined
-                                            style={{
-                                                color: "orange",
-                                            }}
-                                            onClick={() => {
-                                                searchBill(record.id)
-                                            }}
-                                        />}
+                                        render={(text, record) => (
+                                            <span>
+                                                {
+                                                    record.statusBill === 'CHO_XAC_NHAN' ? (
+                                                        <FormOutlined
+                                                            style={{
+                                                                color: "orange",
+                                                            }}
+                                                            onClick={() => {
+                                                                searchBill(record.id)
+                                                            }}
+                                                        />
+                                                    ) : ("")
+                                                }
+                                            </span>
+                                        )}
                                     />
                                     <Table.Column
                                         key="code"
@@ -2131,10 +2143,11 @@ const OderDisplay = ({}) => {
                                     title="Số lượng"
                                     render={(text, record) => {
                                         return (<input type="number"
-                                                       value={record.quantity}
+                                                       defaultValue={record.quantity}
                                                        min="1"
+                                                       id="quantitySKU"
                                                        className="form-control"
-                                                       onChange={handleChangeQuantity}
+                                                       onChange={() => handleChangeQuantity(record)}
                                         />);
                                     }}
                                 />
@@ -2150,7 +2163,7 @@ const OderDisplay = ({}) => {
                                             type="button"
                                             className="btn btn-danger"
                                             onClick={function () {
-                                                console.log(record)
+                                                console.log(newBillDetails)
                                             }}
                                         >
                                             Xóa
