@@ -2,9 +2,10 @@ import React, {useEffect, useRef, useState} from "react";
 import {useTranslate} from "@refinedev/core";
 import {
     AppstoreAddOutlined,
-    CheckCircleOutlined,
+    BellOutlined,
     CloseCircleOutlined,
     DashboardOutlined,
+    FileDoneOutlined,
     FormOutlined,
     GiftOutlined,
     LogoutOutlined,
@@ -12,13 +13,11 @@ import {
     MenuUnfoldOutlined,
     MoreOutlined,
     SearchOutlined,
+    SettingOutlined,
     ShopOutlined,
+    UnorderedListOutlined,
     UserOutlined,
     WarningFilled,
-    BellOutlined,
-    SettingOutlined,
-    UnorderedListOutlined,
-    FileDoneOutlined,
 } from "@ant-design/icons";
 import {
     Badge,
@@ -36,27 +35,29 @@ import {
     notification,
     Row,
     Select,
+    Space,
+    Switch,
     Table,
     theme,
     Typography,
-    Space,
-    Switch,
 } from "antd";
 import {DateField, List, NumberField} from "@refinedev/antd";
 import {Link, useHistory} from "react-router-dom/cjs/react-router-dom.min";
 import {
+    acceptReturn,
     deleteBillById,
+    deliveryFailed,
+    getAllBillCXN,
+    getAllBillOFFLINECXN,
+    getCountBillChoXacNhan,
+    noAcceptReturn,
+    returnBillById,
+    returnStatusBill,
+    searchBillByCode,
     searchNoDate,
     searchWithDate,
-    updateStatusBill,
     updateAllCVC,
-    getAllBillCXN,
-    getCountBillChoXacNhan,
-    returnBillById,
-    getAllBillOFFLINECXN,
-    acceptReturn,
-    noAcceptReturn,
-    deliveryFailed, returnStatusBill, searchBllByCode, searchBillByCode,
+    updateStatusBill,
 } from "../../../service/Bill/bill.service";
 import {readAllUser} from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -81,11 +82,7 @@ import {
 import {ConfirmDialog, confirmDialog} from "primereact/confirmdialog";
 import AvatarProduct from "../../product_component/Product/AvatarProduct";
 import {Toast} from "primereact/toast";
-import {
-    findBillDetails,
-    getAllBillDetailReturn,
-} from "../../../service/BillDetail/billDetail.service";
-import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
+import {findBillDetails, getAllBillDetailReturn,} from "../../../service/BillDetail/billDetail.service";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import HeaderDashBoard from "../header/index";
 import {getSKUForBillDetail, searchSKUForBillDetail} from "../../../service/sku.service";
@@ -109,16 +106,11 @@ const OderDisplay = ({}) => {
     const [oder, setOder] = useState([]);
     const [user, setUser] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị Modal
-    const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] =
-        useState(false); // Trạng thái hiển thị Modal
-    const [isModalVisibleCannelOrder, setIsModalVisibleCannelOrder] =
-        useState(false); // Trạng thái hiển thị Modal
-    const [isModalVisibleReturnDetails, setIsModalVisibleReturnDetails] =
-        useState(false); // Trạng thái hiển thị Modal
-    const [isModalVisibleReturnedProducts, setIsModalVisibleReturnedProducts] =
-        useState(false); // Trạng thái hiển thị Modal
-    const [isModalVisibleDeliveryFailed, setIsModalVisibleDeliveryFailed] =
-        useState(false); // Trạng thái hiển thị Modal
+    const [isModalVisibleNoteReturns, setIsModalVisibleNoteReturns] = useState(false); // Trạng thái hiển thị Modal
+    const [isModalVisibleCannelOrder, setIsModalVisibleCannelOrder] = useState(false); // Trạng thái hiển thị Modal
+    const [isModalVisibleReturnDetails, setIsModalVisibleReturnDetails] = useState(false); // Trạng thái hiển thị Modal
+    const [isModalVisibleReturnedProducts, setIsModalVisibleReturnedProducts] = useState(false); // Trạng thái hiển thị Modal
+    const [isModalVisibleDeliveryFailed, setIsModalVisibleDeliveryFailed] = useState(false); // Trạng thái hiển thị Modal
     const breakpoint = Grid.useBreakpoint();
     const [load, setLoad] = useState(true);
     const [billCXN, setBillCXN] = useState([]);
@@ -126,27 +118,29 @@ const OderDisplay = ({}) => {
     const [playSound, setPlaySound] = useState(true);
     const [show, setShow] = useState(true);
     const [billReturn, setBillReturn] = useState({
-        id: null,
-        note: null,
+        id: null, note: null,
     });
     const [billOFFCXN, setBillOFFCXN] = useState([]);
     const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
     const [returnStatus, setReturnStatus] = useState(1);
 
     const orderSelectProps = {
-        options: [
-            {label: "Tạo hóa đơn", value: "TAO_HOA_DON"},
-            {label: "Chờ xác nhận", value: "CHO_XAC_NHAN"},
-            {label: "Chờ vận chuyển", value: "CHO_VAN_CHUYEN"},
-            {label: "Vận chuyển", value: "VAN_CHUYEN"},
-            {label: "Đã thanh toán", value: "DA_THANH_TOAN"},
-            {label: "Không trả hàng", value: "KHONG_TRA_HANG"},
-            {label: "Trả hàng", value: "TRA_HANG"},
-            {label: "Đã hủy", value: "DA_HUY"},
-            {label: "Yêu cầu trả hàng", value: "YEU_CAU_TRA_HANG"},
-            {label: "Giao hàng thất bại", value: "GIAO_HANG_THAT_BAI"},
-            {label: "Đã huỷ hoá đơn chờ", value: "HUY_HOA_DON_CHO"},
-            // Thêm các giá trị khác nếu cần
+        options: [{label: "Tạo hóa đơn", value: "TAO_HOA_DON"}, {
+            label: "Chờ xác nhận",
+            value: "CHO_XAC_NHAN"
+        }, {label: "Chờ vận chuyển", value: "CHO_VAN_CHUYEN"}, {
+            label: "Vận chuyển",
+            value: "VAN_CHUYEN"
+        }, {label: "Đã thanh toán", value: "DA_THANH_TOAN"}, {
+            label: "Không trả hàng",
+            value: "KHONG_TRA_HANG"
+        }, {label: "Trả hàng", value: "TRA_HANG"}, {label: "Đã hủy", value: "DA_HUY"}, {
+            label: "Yêu cầu trả hàng",
+            value: "YEU_CAU_TRA_HANG"
+        }, {label: "Giao hàng thất bại", value: "GIAO_HANG_THAT_BAI"}, {
+            label: "Đã huỷ hoá đơn chờ",
+            value: "HUY_HOA_DON_CHO"
+        }, // Thêm các giá trị khác nếu cần
         ],
     };
 
@@ -162,8 +156,7 @@ const OderDisplay = ({}) => {
 
     const handleNoteReturnsClick = (record) => {
         setBillReturn({
-            ...billReturn,
-            id: record.id,
+            ...billReturn, id: record.id,
         });
         setIsModalVisibleNoteReturns(true);
     };
@@ -172,16 +165,13 @@ const OderDisplay = ({}) => {
     const handleNoteReturnsCancel = () => {
         setIsModalVisibleNoteReturns(false);
         console.log(billReturn);
-        const textNoteReturn = document.getElementById(
-            "exampleFormControlTextarea1"
-        );
+        const textNoteReturn = document.getElementById("exampleFormControlTextarea1");
         textNoteReturn.value = "";
     };
 
     const handleCannelOrderClick = (record) => {
         setBillReturn({
-            ...billReturn,
-            id: record.id,
+            ...billReturn, id: record.id,
         });
         setIsModalVisibleCannelOrder(true);
     };
@@ -190,24 +180,17 @@ const OderDisplay = ({}) => {
     const handleCannelOrderCancel = () => {
         setIsModalVisibleCannelOrder(false);
         console.log(billReturn);
-        const textNoteReturn = document.getElementById(
-            "exampleFormControlTextarea2"
-        );
+        const textNoteReturn = document.getElementById("exampleFormControlTextarea2");
         textNoteReturn.value = "";
     };
 
     const [filtersNoDate, setFiltersNoDate] = useState({
-        key: "",
-        status: "",
-        // user: "",
+        key: "", status: "", // user: "",
     });
 
     const [filtersWithDate, setFiltersWithDate] = useState({
-        key: "",
-        status: "",
-        // user: "",
-        dateStart: "",
-        dateEnd: "",
+        key: "", status: "", // user: "",
+        dateStart: "", dateEnd: "",
     });
 
     const toggleSound = () => {
@@ -215,11 +198,7 @@ const OderDisplay = ({}) => {
     };
 
     useEffect(() => {
-        if (
-            storedUser?.roles === "CUSTOMER" ||
-            storedUser === null ||
-            storedUser?.roles === "NHAN_VIEN_BAN_HANG"
-        ) {
+        if (storedUser?.roles === "CUSTOMER" || storedUser === null || storedUser?.roles === "NHAN_VIEN_BAN_HANG") {
             notification.error({
                 message: "Bạn không có quyền!",
             });
@@ -291,11 +270,7 @@ const OderDisplay = ({}) => {
                     .then((response) => {
                         const newPendingBills = response.data;
 
-                        if (
-                            lastPendingBills !== null &&
-                            newPendingBills > lastPendingBills &&
-                            playSound
-                        ) {
+                        if (lastPendingBills !== null && newPendingBills > lastPendingBills && playSound) {
                             // Nếu có hóa đơn mới, thì phát âm thanh thông báo
                             // const audio = new Audio(AudioTT);
                             // audio.play();
@@ -472,83 +447,51 @@ const OderDisplay = ({}) => {
     }
 
     const statusBadgeMapping = {
-        TAO_HOA_DON: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Tạo hóa đơn"}
-                style={{backgroundColor: "#52c41a"}}
-            />
-        ),
-        CHO_XAC_NHAN: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Chờ xác nhận"}
-                style={{backgroundColor: "orange"}}
-            />
-        ),
-        CHO_VAN_CHUYEN: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Chờ vận chuyển"}
-                style={{backgroundColor: "orangered"}}
-            />
-        ),
-        VAN_CHUYEN: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Vận chuyển"}
-                style={{backgroundColor: "aqua"}}
-            />
-        ),
-        DA_THANH_TOAN: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Đã thanh toán"}
-                style={{backgroundColor: "#52c41a"}}
-            />
-        ),
-        KHONG_TRA_HANG: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Không trả hàng"}
-                style={{backgroundColor: "grey"}}
-            />
-        ),
-        TRA_HANG: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Trả hàng"}
-                style={{backgroundColor: "khaki"}}
-            />
-        ),
-        DA_HUY: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Đã hủy"}
-                style={{backgroundColor: "red"}}
-            />
-        ),
-        YEU_CAU_TRA_HANG: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Yêu cầu trả hàng"}
-                style={{backgroundColor: "pink"}}
-            />
-        ),
-        GIAO_HANG_THAT_BAI: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Giao hàng thất bại"}
-                style={{backgroundColor: "black"}}
-            />
-        ),
-        HUY_HOA_DON_CHO: (
-            <Badge
-                className="site-badge-count-109"
-                count={"Đã huỷ hoá đơn chờ"}
-                style={{backgroundColor: "#FF99FF"}}
-            />
-        ),
+        TAO_HOA_DON: (<Badge
+            className="site-badge-count-109"
+            count={"Tạo hóa đơn"}
+            style={{backgroundColor: "#52c41a"}}
+        />), CHO_XAC_NHAN: (<Badge
+            className="site-badge-count-109"
+            count={"Chờ xác nhận"}
+            style={{backgroundColor: "orange"}}
+        />), CHO_VAN_CHUYEN: (<Badge
+            className="site-badge-count-109"
+            count={"Chờ vận chuyển"}
+            style={{backgroundColor: "orangered"}}
+        />), VAN_CHUYEN: (<Badge
+            className="site-badge-count-109"
+            count={"Vận chuyển"}
+            style={{backgroundColor: "aqua"}}
+        />), DA_THANH_TOAN: (<Badge
+            className="site-badge-count-109"
+            count={"Đã thanh toán"}
+            style={{backgroundColor: "#52c41a"}}
+        />), KHONG_TRA_HANG: (<Badge
+            className="site-badge-count-109"
+            count={"Không trả hàng"}
+            style={{backgroundColor: "grey"}}
+        />), TRA_HANG: (<Badge
+            className="site-badge-count-109"
+            count={"Trả hàng"}
+            style={{backgroundColor: "khaki"}}
+        />), DA_HUY: (<Badge
+            className="site-badge-count-109"
+            count={"Đã hủy"}
+            style={{backgroundColor: "red"}}
+        />), YEU_CAU_TRA_HANG: (<Badge
+            className="site-badge-count-109"
+            count={"Yêu cầu trả hàng"}
+            style={{backgroundColor: "pink"}}
+        />), GIAO_HANG_THAT_BAI: (<Badge
+            className="site-badge-count-109"
+            count={"Giao hàng thất bại"}
+            style={{backgroundColor: "black"}}
+        />), HUY_HOA_DON_CHO: (<Badge
+            className="site-badge-count-109"
+            count={"Đã huỷ hoá đơn chờ"}
+            style={{backgroundColor: "#FF99FF"}}
+        />),
     };
 
     const confirm2 = async (id) => {
@@ -585,9 +528,7 @@ const OderDisplay = ({}) => {
     };
 
     function returnBill(id, noteReturn) {
-        returnBillById(id, idAccount, noteReturn).then((response) =>
-            console.log(response.data)
-        );
+        returnBillById(id, idAccount, noteReturn).then((response) => console.log(response.data));
         setLoad(!load);
     }
 
@@ -623,10 +564,7 @@ const OderDisplay = ({}) => {
         for (let index = 0; index < billOFFCXN.length; index++) {
             if (billOFFCXN[index]?.id === id) {
                 if (billOFFCXN[index]?.typeBill === "OFFLINE") {
-                    if (
-                        billOFFCXN[index]?.totalMoney === null ||
-                        billOFFCXN[index]?.totalMoney === 0
-                    ) {
+                    if (billOFFCXN[index]?.totalMoney === null || billOFFCXN[index]?.totalMoney === 0) {
                         return false;
                     }
                 }
@@ -638,8 +576,7 @@ const OderDisplay = ({}) => {
     function handUpdateTrangThai() {
         if (pendingBills === 0 || pendingBills === null || pendingBills === "") {
             notification.success({
-                message: "Accept",
-                description: "Tất cả đơn hàng đã được xác nhận thanh công",
+                message: "Accept", description: "Tất cả đơn hàng đã được xác nhận thanh công",
             });
             loadDisplay = !loadDisplay;
         } else {
@@ -650,8 +587,7 @@ const OderDisplay = ({}) => {
                         setLoad(!load);
                         loadDisplay = !loadDisplay;
                         notification.success({
-                            message: "Accept",
-                            description: "Xác nhận thành công",
+                            message: "Accept", description: "Xác nhận thành công",
                         });
                     })
                     .catch((error) => {
@@ -659,8 +595,7 @@ const OderDisplay = ({}) => {
                     });
             } else {
                 notification.error({
-                    message: "KIỂM TRA IMEI",
-                    description: "Vui lòng kiểm tra lại imei của các đơn hàng ",
+                    message: "KIỂM TRA IMEI", description: "Vui lòng kiểm tra lại imei của các đơn hàng ",
                 });
             }
         }
@@ -687,15 +622,13 @@ const OderDisplay = ({}) => {
 
     const handleNoteReturns = (event) => {
         setBillReturn({
-            ...billReturn,
-            note: event.target.value,
+            ...billReturn, note: event.target.value,
         });
     };
 
     const handleCannelOrder = (event) => {
         setBillReturn({
-            ...billReturn,
-            note: event.target.value,
+            ...billReturn, note: event.target.value,
         });
     };
 
@@ -704,38 +637,28 @@ const OderDisplay = ({}) => {
         returnBill(billReturn.id, billReturn.note);
         setIsModalVisibleNoteReturns(false);
         setLoad(!load);
-        const textNoteReturn = document.getElementById(
-            "exampleFormControlTextarea1"
-        );
+        const textNoteReturn = document.getElementById("exampleFormControlTextarea1");
         textNoteReturn.value = "";
         notification.success({
-            message: "Trả hàng",
-            description: "Xác nhận trả hàng",
+            message: "Trả hàng", description: "Xác nhận trả hàng",
         });
     };
 
     const handleSubmitCannelOrder = (event) => {
         event.preventDefault();
-        deleteBillById(billReturn.id, billReturn.note, idAccount).then((response) =>
-            console.log(response.data)
-        );
+        deleteBillById(billReturn.id, billReturn.note, idAccount).then((response) => console.log(response.data));
         setIsModalVisibleCannelOrder(false);
         setLoad(!load);
         loadDisplay = !loadDisplay;
-        const textNoteReturn = document.getElementById(
-            "exampleFormControlTextarea2"
-        );
+        const textNoteReturn = document.getElementById("exampleFormControlTextarea2");
         textNoteReturn.value = "";
         notification.success({
-            message: "Hủy đơn",
-            description: "Hủy đơn thành công",
+            message: "Hủy đơn", description: "Hủy đơn thành công",
         });
     };
     const [noteReturnDetail, setNoteReturnDetail] = useState(null);
     const [acceptReturnBill, setAcceptReturnBill] = useState({
-        idBill: null,
-        codeImeiDaBan: [],
-        personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
+        idBill: null, codeImeiDaBan: [], personUpdate: storedUser?.code + " - " + storedUser?.user?.fullName,
     });
     const handleClickReturnDetails = (record) => {
         let arrCodeImeiDaBan = [];
@@ -756,9 +679,7 @@ const OderDisplay = ({}) => {
                 console.log(error);
             });
         setAcceptReturnBill({
-            ...acceptReturnBill,
-            idBill: record.id,
-            codeImeiDaBan: arrCodeImeiDaBan,
+            ...acceptReturnBill, idBill: record.id, codeImeiDaBan: arrCodeImeiDaBan,
         });
     };
 
@@ -766,10 +687,7 @@ const OderDisplay = ({}) => {
 
     const reject = () => {
         toast.current.show({
-            severity: "warn",
-            summary: "Hủy thao tác",
-            detail: "Bạn đã huy thao tác",
-            life: 3000,
+            severity: "warn", summary: "Hủy thao tác", detail: "Bạn đã huy thao tác", life: 3000,
         });
     }
 
@@ -777,9 +695,7 @@ const OderDisplay = ({}) => {
     const handleCannelReturnDetails = () => {
         setIsModalVisibleReturnDetails(false);
         setAcceptReturnBill({
-            ...acceptReturnBill,
-            idBill: null,
-            codeImeiDaBan: [],
+            ...acceptReturnBill, idBill: null, codeImeiDaBan: [],
         });
     };
 
@@ -787,8 +703,7 @@ const OderDisplay = ({}) => {
         acceptReturn(acceptReturnBill)
             .then((res) => {
                 notification.success({
-                    message: "Trả hàng!",
-                    description: "Trả hàng thành công",
+                    message: "Trả hàng!", description: "Trả hàng thành công",
                 });
             })
             .catch((error) => {
@@ -802,8 +717,7 @@ const OderDisplay = ({}) => {
         noAcceptReturn(acceptReturnBill)
             .then((res) => {
                 notification.success({
-                    message: "Trả hàng!",
-                    description: "Đã hủy yêu cầu",
+                    message: "Trả hàng!", description: "Đã hủy yêu cầu",
                 });
             })
             .catch((error) => {
@@ -854,16 +768,13 @@ const OderDisplay = ({}) => {
     }
 
     const [dataDeliveryFailed, setDataDeliveryFailed] = useState({
-        idAcc: idAccount,
-        idBill: "",
-        note: "",
+        idAcc: idAccount, idBill: "", note: "",
     });
 
     const handleClickDeliveryFailed = (record) => {
         setIsModalVisibleDeliveryFailed(true);
         setDataDeliveryFailed({
-            ...dataDeliveryFailed,
-            idBill: record.id,
+            ...dataDeliveryFailed, idBill: record.id,
         });
     };
 
@@ -874,18 +785,13 @@ const OderDisplay = ({}) => {
 
     function handleDeliveryFailed(event) {
         setDataDeliveryFailed({
-            ...dataDeliveryFailed,
-            note: `Giao hàng thất bại: ${event.target.value}`,
+            ...dataDeliveryFailed, note: `Giao hàng thất bại: ${event.target.value}`,
         });
     }
 
     function handleSubmitDeliveryFailed(event) {
         event.preventDefault();
-        deliveryFailed(
-            dataDeliveryFailed.idAcc,
-            dataDeliveryFailed.idBill,
-            dataDeliveryFailed.note
-        )
+        deliveryFailed(dataDeliveryFailed.idAcc, dataDeliveryFailed.idBill, dataDeliveryFailed.note)
             .then((res) => {
                 if (res.data !== null) {
                     notification.success({
@@ -901,74 +807,91 @@ const OderDisplay = ({}) => {
     }
 
     const expandedRowRender = (record) => {
-        return (
-            <UserAccountTable record={record} onSomeAction={receiveDataFromChild}/>
-        );
+        return (<UserAccountTable record={record} onSomeAction={receiveDataFromChild}/>);
     };
 
-    const menu = (
-        <Menu>
-            <Menu.Item key="1">
-                Thông báo:{" "}
-                <Switch
-                    checked={show}
-                    onChange={() => {
-                        setShow(!show);
-                        toggleSound();
-                    }}
-                />
-            </Menu.Item>
-        </Menu>
-    );
+    const menu = (<Menu>
+        <Menu.Item key="1">
+            Thông báo:{" "}
+            <Switch
+                checked={show}
+                onChange={() => {
+                    setShow(!show);
+                    toggleSound();
+                }}
+            />
+        </Menu.Item>
+    </Menu>);
 
     const returnStatusBillPrev = async (id) => {
-        returnStatusBill(id).then((response) => {
-            notification.success({
-                message: "Hoàn trả trạng thái thành công!",
-                description: "Đã xác nhận hoàn trả",
-            });
-            setLoad(!load);
-            loadDisplay = !loadDisplay;
-        })
+        confirmDialog({
+            message: "Xác nhận thao tác?",
+            header: "Xác nhận",
+            icon: "pi pi-info-circle",
+            acceptClassName: "p-button-danger",
+            accept: () => returnStatusBill(id).then((response) => {
+                notification.success({
+                    message: "Hoàn trả trạng thái thành công!", description: "Đã xác nhận hoàn trả",
+                });
+                setLoad(!load);
+                loadDisplay = !loadDisplay;
+            })
+                .catch((error) => {
+                    console.error("Error updating status:", error);
+                }),
+            reject,
+        });
+
     }
 
     // Tạo biến bill sau khi tìm đc
     const [billUpdate, setBillUpdate] = useState({});
-    const [hideForm, setHideForm] = useState(false)
+    const [hideForm, setHideForm] = useState(false);
+
+    let [newBillDetails, setNewBillDetails] = useState([]);
+    const [idBillTemp, setIdBillTemp] = useState(null);
+    let temp = [];
 
     function searchBill(id) {
+        setIdBillTemp(id);
         searchBillByCode(id).then((response) => {
             setBillUpdate(response.data);
-            console.log(response.data)
         }).catch((error) => {
             console.log(error)
         });
 
         findBillDetails(id).then((response) => {
             setDataBillDetails(response.data);
+            response.data.map(item => temp.push({
+                id: item.id,
+                bill: item.bill,
+                sku: item.idSKU,
+                price: item.price,
+                quantity: item.quantity,
+                status: 'CHO_XAC_NHAN'
+            }))
+            setNewBillDetails(temp);
             setHideForm(true);
         }).catch((error) => {
             console.log(error);
         });
-
-
     }
 
     function handleCancelHideForm() {
+        temp.length = 0;
+        setIdBillTemp(null);
         setHideForm(false);
     }
 
     function hanldeName(event) {
         setBillUpdate({
-            ...billUpdate,
-            userName: event.target.value
+            ...billUpdate, userName: event.target.value
         })
     }
 
     function hanldPhone(event) {
         setBillUpdate({
-            ...billUpdate,
-            phoneNumber: event.target.value
+            ...billUpdate, phoneNumber: event.target.value
         })
     }
 
@@ -993,210 +916,224 @@ const OderDisplay = ({}) => {
         })
     }
 
-    const handleAddSkuToBill = (id) => {
-
+    const handleAddSkuToBill = (record) => {
+        const billTemp = {
+            id: null,
+            bill: idBillTemp,
+            sku: record.id,
+            price: record.price,
+            quantity: 1,
+            status: 'CHO_XAC_NHAN'
+        }
+        setNewBillDetails(newBillDetails => [
+            ...newBillDetails,
+            billTemp
+        ])
+        setLoad(!load);
+        loadDisplay = !loadDisplay;
     }
 
-    function handleChangeQuantity(event) {
-        
+    const handleChangeQuantity = (record) => {
+        newBillDetails.map((item) => {
+                if (item.sku === record.idSKU) {
+                    newBillDetails[newBillDetails.indexOf(item)] = {
+                        ...item,
+                        quantity: Number(document.getElementById('quantitySKU').value)
+                    };
+                }
+            }
+        )
+        setNewBillDetails(newBillDetails => [
+            ...newBillDetails
+        ]);
     }
 
-    return (
-        <>
-            <Layout>
-                <Sider trigger={null} collapsible collapsed={collapsed}>
-                    <div className="demo-logo-vertical"/>
-                    <Menu theme="dark" mode="inline" defaultSelectedKeys={["2"]}>
-                        <Menu.Item key="0">
-                            <img
-                                src="/img/logo.jpg"
-                                alt="Trang chủ Smartphone Store"
-                                title="Trang chủ Smartphone Store"
-                                style={{width: "150px"}}
-                            />
-                        </Menu.Item>
-                        <Menu.Item key="0" icon={<FileDoneOutlined/>}>
-                            <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
-                        </Menu.Item>
-                        <Menu.Item key="1" icon={<DashboardOutlined/>}>
-                            <Link to="/dashboard">Thống kê</Link>
-                        </Menu.Item>
-                        <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined/>}>
-                            <Menu.Item key="2" icon={<ShopOutlined/>}>
-                                <Link to="/orders">Quản lý đơn hàng</Link>
-                            </Menu.Item>
-                            <Menu.Item key="11" icon={<ShopOutlined/>}>
-                                <Link to="/orderBackProduct">Quản lý trả hàng</Link>
-                            </Menu.Item>
-                        </SubMenu>
-                        <Menu.Item key="3" icon={<UserOutlined/>}>
-                            <Link to="/users">Quản lý người dùng</Link>
-                        </Menu.Item>
-                        <Menu.Item key="4" icon={<AppstoreAddOutlined/>}>
-                            <Link to="/product">Quản lý sản phẩm</Link>
-                        </Menu.Item>
-                        <Menu.Item key="5" icon={<GiftOutlined/>}>
-                            <Link to="/voucher">Quản lý Voucher</Link>
-                        </Menu.Item>
-                        <Menu.Item key="6" icon={<UnorderedListOutlined/>}>
-                            <Link to="/categories">Thể loại</Link>
-                        </Menu.Item>
-                        <SubMenu
-                            key="8"
-                            title="Chi tiết sản phẩm"
-                            icon={<AppstoreAddOutlined/>}
-                        >
-                            <Menu.Item key="sku">
-                                <Link to="/admin/product-detail">SKU</Link>
-                            </Menu.Item>
-                            <Menu.Item key="color">
-                                <Link to="/color/display">Color</Link>
-                            </Menu.Item>
-                            <Menu.Item key="capacity">
-                                <Link to="/capacity/display">Capacity</Link>
-                            </Menu.Item>
-                            <Menu.Item key="ram">
-                                <Link to="/ram/display">Ram</Link>
-                            </Menu.Item>
-                            <Menu.Item key="chip">
-                                <Link to="/chip/display">Chip</Link>
-                            </Menu.Item>
-                            <Menu.Item key="size">
-                                <Link to="/size/display">Size</Link>
-                            </Menu.Item>
-                            <Menu.Item key="screen">
-                                <Link to="/screen/display">Screen</Link>
-                            </Menu.Item>
-                            <Menu.Item key="manufacture">
-                                <Link to="/manufacture/display">Manufacture</Link>
-                            </Menu.Item>
-                            <Menu.Item key="category">
-                                <Link to="/category/display">Category</Link>
-                            </Menu.Item>
-                            <Menu.Item key="battery">
-                                <Link to="/battery/display">Battery</Link>
-                            </Menu.Item>
-                        </SubMenu>
-                        <Menu.Item
-                            key="8"
-                            icon={<LogoutOutlined/>}
-                            onClick={() => {
-                                localStorage.removeItem("account");
-                                window.location.replace("/login");
-                            }}
-                        >
-                            Đăng xuất
-                        </Menu.Item>
-                    </Menu>
-                </Sider>
-                <Layout>
-                    <Header style={{padding: 0, background: "#F5F5F5"}}>
-                        <Button
-                            type="text"
-                            icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
-                            onClick={() => setCollapsed(!collapsed)}
-                            style={{
-                                fontSize: "16px",
-                                width: 64,
-                                height: 64,
-                            }}
+    return (<>
+        <Layout>
+            <Sider trigger={null} collapsible collapsed={collapsed}>
+                <div className="demo-logo-vertical"/>
+                <Menu theme="dark" mode="inline" defaultSelectedKeys={["2"]}>
+                    <Menu.Item key="0">
+                        <img
+                            src="/img/logo.jpg"
+                            alt="Trang chủ Smartphone Store"
+                            title="Trang chủ Smartphone Store"
+                            style={{width: "150px"}}
                         />
-                        <Dropdown overlay={menu} placement="bottomLeft">
-                            <Button
-                                type="text"
-                                icon={<SettingOutlined/>}
-                                style={{
-                                    fontSize: "16px",
-                                    width: 64,
-                                    height: 64,
-                                }}
-                            />
-                        </Dropdown>
-                        <Space
-                            size="middle"
-                            style={{float: "right", marginRight: "40px"}}
-                        >
-                            <Badge count={pendingBills} overflowCount={100}>
-                                <Button
-                                    type="text"
-                                    icon={<BellOutlined/>}
-                                    style={{
-                                        fontSize: "16px",
-                                    }}
-                                />
-                            </Badge>
-                        </Space>
-                        <HeaderDashBoard/>
-                    </Header>
-                    <br/> <br/> <br/>
-                    <Content
-                        style={{
-                            margin: "24px 16px",
-                            padding: 24,
-                            minHeight: 600,
-                            background: colorBgContainer,
+                    </Menu.Item>
+                    <Menu.Item key="0" icon={<FileDoneOutlined/>}>
+                        <Link to="/sell">BÁN HÀNG TẠI QUẦY</Link>
+                    </Menu.Item>
+                    <Menu.Item key="1" icon={<DashboardOutlined/>}>
+                        <Link to="/dashboard">Thống kê</Link>
+                    </Menu.Item>
+                    <SubMenu key="2" title="Quản lý đơn hàng" icon={<ShopOutlined/>}>
+                        <Menu.Item key="2" icon={<ShopOutlined/>}>
+                            <Link to="/orders">Quản lý đơn hàng</Link>
+                        </Menu.Item>
+                        <Menu.Item key="11" icon={<ShopOutlined/>}>
+                            <Link to="/orderBackProduct">Quản lý trả hàng</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <Menu.Item key="3" icon={<UserOutlined/>}>
+                        <Link to="/users">Quản lý người dùng</Link>
+                    </Menu.Item>
+                    <Menu.Item key="4" icon={<AppstoreAddOutlined/>}>
+                        <Link to="/product">Quản lý sản phẩm</Link>
+                    </Menu.Item>
+                    <Menu.Item key="5" icon={<GiftOutlined/>}>
+                        <Link to="/voucher">Quản lý Voucher</Link>
+                    </Menu.Item>
+                    <Menu.Item key="6" icon={<UnorderedListOutlined/>}>
+                        <Link to="/categories">Thể loại</Link>
+                    </Menu.Item>
+                    <SubMenu
+                        key="8"
+                        title="Chi tiết sản phẩm"
+                        icon={<AppstoreAddOutlined/>}
+                    >
+                        <Menu.Item key="sku">
+                            <Link to="/admin/product-detail">SKU</Link>
+                        </Menu.Item>
+                        <Menu.Item key="color">
+                            <Link to="/color/display">Color</Link>
+                        </Menu.Item>
+                        <Menu.Item key="capacity">
+                            <Link to="/capacity/display">Capacity</Link>
+                        </Menu.Item>
+                        <Menu.Item key="ram">
+                            <Link to="/ram/display">Ram</Link>
+                        </Menu.Item>
+                        <Menu.Item key="chip">
+                            <Link to="/chip/display">Chip</Link>
+                        </Menu.Item>
+                        <Menu.Item key="size">
+                            <Link to="/size/display">Size</Link>
+                        </Menu.Item>
+                        <Menu.Item key="screen">
+                            <Link to="/screen/display">Screen</Link>
+                        </Menu.Item>
+                        <Menu.Item key="manufacture">
+                            <Link to="/manufacture/display">Manufacture</Link>
+                        </Menu.Item>
+                        <Menu.Item key="category">
+                            <Link to="/category/display">Category</Link>
+                        </Menu.Item>
+                        <Menu.Item key="battery">
+                            <Link to="/battery/display">Battery</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <Menu.Item
+                        key="8"
+                        icon={<LogoutOutlined/>}
+                        onClick={() => {
+                            localStorage.removeItem("account");
+                            window.location.replace("/login");
                         }}
                     >
-                        <Text style={{fontSize: "24px", color: "blue"}} strong>
-                            QUẢN LÝ ĐƠN HÀNG
-                        </Text>
-                        <div
-                            class="d-grid gap-2 d-md-flex justify-content-md-end"
-                            style={{marginTop: "10px"}}
-                        >
-                            <button
-                                class="btn btn-success"
-                                type="button"
-                                onClick={() => handUpdateTrangThai()}
-                            >
-                                XÁC NHẬN TẤT CẢ HÓA ĐƠN ONLINE
-                            </button>
-                        </div>
-                        <Row gutter={[16, 16]}>
-                            <Col
-                                xl={6}
-                                lg={24}
-                                xs={24}
+                        Đăng xuất
+                    </Menu.Item>
+                </Menu>
+            </Sider>
+            <Layout>
+                <Header style={{padding: 0, background: "#F5F5F5"}}>
+                    <Button
+                        type="text"
+                        icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
+                        onClick={() => setCollapsed(!collapsed)}
+                        style={{
+                            fontSize: "16px", width: 64, height: 64,
+                        }}
+                    />
+                    <Dropdown overlay={menu} placement="bottomLeft">
+                        <Button
+                            type="text"
+                            icon={<SettingOutlined/>}
+                            style={{
+                                fontSize: "16px", width: 64, height: 64,
+                            }}
+                        />
+                    </Dropdown>
+                    <Space
+                        size="middle"
+                        style={{float: "right", marginRight: "40px"}}
+                    >
+                        <Badge count={pendingBills} overflowCount={100}>
+                            <Button
+                                type="text"
+                                icon={<BellOutlined/>}
                                 style={{
-                                    marginTop: "52px",
+                                    fontSize: "16px",
                                 }}
-                            >
-                                <Card title={t("Tìm kiếm")}>
-                                    <Form>
-                                        <Row gutter={[10, 0]} align="bottom">
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item label={t("Tìm kiếm")}>
-                                                    <Input
-                                                        name="key"
-                                                        placeholder={t("Code, Người tạo")}
-                                                        prefix={<SearchOutlined/>}
-                                                        onChange={handleChangeSearch}
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item label={t("Trạng thái")}>
-                                                    <Select
-                                                        name="status"
-                                                        onChange={handleChangeStatus}
-                                                        allowClear
-                                                        placeholder={"Trạng thái"}
-                                                    >
-                                                        {orderSelectProps.options.map((st) => {
-                                                            return (
-                                                                <Option value={st.value}>{st.label}</Option>
-                                                            );
-                                                        })}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                            {/* <Col xl={24} md={8} sm={12} xs={24}>
+                            />
+                        </Badge>
+                    </Space>
+                    <HeaderDashBoard/>
+                </Header>
+                <br/> <br/> <br/>
+                <Content
+                    style={{
+                        margin: "24px 16px", padding: 24, minHeight: 600, background: colorBgContainer,
+                    }}
+                >
+                    <Text style={{fontSize: "24px", color: "blue"}} strong>
+                        QUẢN LÝ ĐƠN HÀNG
+                    </Text>
+                    <div
+                        class="d-grid gap-2 d-md-flex justify-content-md-end"
+                        style={{marginTop: "10px"}}
+                    >
+                        <button
+                            class="btn btn-success"
+                            type="button"
+                            onClick={() => handUpdateTrangThai()}
+                        >
+                            XÁC NHẬN TẤT CẢ HÓA ĐƠN ONLINE
+                        </button>
+                    </div>
+                    <Row gutter={[16, 16]}>
+                        <Col
+                            xl={6}
+                            lg={24}
+                            xs={24}
+                            style={{
+                                marginTop: "52px",
+                            }}
+                        >
+                            <Card title={t("Tìm kiếm")}>
+                                <Form>
+                                    <Row gutter={[10, 0]} align="bottom">
+                                        <Col xl={24} md={8} sm={12} xs={24}>
+                                            <Form.Item label={t("Tìm kiếm")}>
+                                                <Input
+                                                    name="key"
+                                                    placeholder={t("Code, Người tạo")}
+                                                    prefix={<SearchOutlined/>}
+                                                    onChange={handleChangeSearch}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col xl={24} md={8} sm={12} xs={24}>
+                                            <Form.Item label={t("Trạng thái")}>
+                                                <Select
+                                                    name="status"
+                                                    onChange={handleChangeStatus}
+                                                    allowClear
+                                                    placeholder={"Trạng thái"}
+                                                >
+                                                    {orderSelectProps.options.map((st) => {
+                                                        return (<Option value={st.value}>{st.label}</Option>);
+                                                    })}
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                        {/* <Col xl={24} md={8} sm={12} xs={24}>
                         <Form.Item label={t("Store")} name="store">
                           <Select allowClear />
                         </Form.Item>
                       </Col> */}
 
-                                            {/* <Col xl={24} md={8} sm={12} xs={24}>
+                                        {/* <Col xl={24} md={8} sm={12} xs={24}>
                         <Form.Item label={t("User")} name="user">
                           <Select
                             name="user"
@@ -1212,392 +1149,319 @@ const OderDisplay = ({}) => {
                           </Select>
                         </Form.Item>
                       </Col> */}
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item label={t("Ngày tạo")} name="createdAt">
-                                                    <RangePicker
-                                                        id="dateFilter"
-                                                        style={{width: "100%"}}
-                                                        onChange={handleChangeDate}
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={24} md={8} sm={12} xs={24}>
-                                                <Form.Item>
-                                                    <Button
-                                                        htmlType="submit"
-                                                        type="primary"
-                                                        size="large"
-                                                        block
-                                                        onClick={() => search()}
-                                                    >
-                                                        {t("TÌM KIẾM")}
-                                                    </Button>
-                                                </Form.Item>
-                                            </Col>
-                                        </Row>
-                                    </Form>
-                                </Card>
-                            </Col>
-                            <Col xl={18} xs={24}>
-                                <List>
-                                    <Table
-                                        rowKey="id"
-                                        dataSource={oder}
-                                        scroll={{x: "max-content"}}
-                                        pagination={{
-                                            pageSize: 5,
-                                            showSizeChanger: false,
-                                            showTotal: (total) => `Tổng số ${total} mục`,
-                                            showLessItems: true,
-                                        }}
-                                        expandable={{
-                                            expandedRowRender: !breakpoint.xs
-                                                ? expandedRowRender
-                                                : undefined,
-                                        }}
-                                    >
-                                        <Table.Column
-                                            key="edit"
-                                            dataIndex="edit"
-                                            render={(text, record) =>
-                                                <FormOutlined
-                                                    style={{
-                                                        color: "orange",
-                                                    }}
-                                                    onClick={() => {
-                                                        searchBill(record.id)
-                                                    }}
+                                        <Col xl={24} md={8} sm={12} xs={24}>
+                                            <Form.Item label={t("Ngày tạo")} name="createdAt">
+                                                <RangePicker
+                                                    id="dateFilter"
+                                                    style={{width: "100%"}}
+                                                    onChange={handleChangeDate}
                                                 />
-                                            }
-                                        />
-                                        <Table.Column
-                                            key="code"
-                                            dataIndex="code"
-                                            title={t("Mã hóa đơn")}
-                                            render={(text, record) => <span>{record.code}</span>}
-                                        />
-                                        <Table.Column
-                                            key="status"
-                                            dataIndex="status"
-                                            title={t("Trạng thái")}
-                                            render={(text, record) => (
-                                                <span>{statusBadgeMapping[record.statusBill]}</span>
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="total"
-                                            dataIndex="total"
-                                            title={t("Tổng tiền")}
-                                            render={(text, record) => {
-                                                return (
-                                                    <NumberField
-                                                        options={{
-                                                            currency: "VND",
-                                                            style: "currency",
-                                                        }}
-                                                        value={record.totalMoney}
-                                                    />
-                                                );
-                                            }}
-                                            sorter={(a, b) => a.totalMoney - b.totalMoney}
-                                        />
-                                        <Table.Column
-                                            key="user"
-                                            dataIndex="user"
-                                            title={t("Tên khách hàng")}
-                                            render={(text, record) => <span>{record?.userName}</span>}
-                                        />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col xl={24} md={8} sm={12} xs={24}>
+                                            <Form.Item>
+                                                <Button
+                                                    htmlType="submit"
+                                                    type="primary"
+                                                    size="large"
+                                                    block
+                                                    onClick={() => search()}
+                                                >
+                                                    {t("TÌM KIẾM")}
+                                                </Button>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            </Card>
+                        </Col>
+                        <Col xl={18} xs={24}>
+                            <List>
+                                <Table
+                                    rowKey="id"
+                                    dataSource={oder}
+                                    scroll={{x: "max-content"}}
+                                    pagination={{
+                                        pageSize: 5,
+                                        showSizeChanger: false,
+                                        showTotal: (total) => `Tổng số ${total} mục`,
+                                        showLessItems: true,
+                                    }}
+                                    expandable={{
+                                        expandedRowRender: !breakpoint.xs ? expandedRowRender : undefined,
+                                    }}
+                                >
+                                    <Table.Column
+                                        key="edit"
+                                        dataIndex="edit"
+                                        render={(text, record) => (
+                                            <span>
+                                                {
+                                                    record.statusBill === 'CHO_XAC_NHAN' ? (
+                                                        <FormOutlined
+                                                            style={{
+                                                                color: "orange",
+                                                            }}
+                                                            onClick={() => {
+                                                                searchBill(record.id)
+                                                            }}
+                                                        />
+                                                    ) : ("")
+                                                }
+                                            </span>
+                                        )}
+                                    />
+                                    <Table.Column
+                                        key="code"
+                                        dataIndex="code"
+                                        title={t("Mã hóa đơn")}
+                                        render={(text, record) => <span>{record.code}</span>}
+                                    />
+                                    <Table.Column
+                                        key="status"
+                                        dataIndex="status"
+                                        title={t("Trạng thái")}
+                                        render={(text, record) => (
+                                            <span>{statusBadgeMapping[record.statusBill]}</span>)}
+                                    />
+                                    <Table.Column
+                                        key="total"
+                                        dataIndex="total"
+                                        title={t("Tổng tiền")}
+                                        render={(text, record) => {
+                                            return (<NumberField
+                                                options={{
+                                                    currency: "VND", style: "currency",
+                                                }}
+                                                value={record.totalMoney}
+                                            />);
+                                        }}
+                                        sorter={(a, b) => a.totalMoney - b.totalMoney}
+                                    />
+                                    <Table.Column
+                                        key="user"
+                                        dataIndex="user"
+                                        title={t("Tên khách hàng")}
+                                        render={(text, record) => <span>{record?.userName}</span>}
+                                    />
 
-                                        {/* <Table.Column
+                                    {/* <Table.Column
                       key="product"
                       dataIndex="product"
                       title={t("Products")}
                       render={(text, record) => <span>{record.price}</span>}
                     /> */}
-                                        <Table.Column
-                                            key="address"
-                                            dataIndex="address"
-                                            title={t("Địa chỉ")}
-                                            render={(text, record) => <span>{record.address}</span>}
-                                        />
-                                        <Table.Column
-                                            key="personCreate"
-                                            dataIndex="personCreate"
-                                            title={t("Người tạo HĐ")}
-                                            render={(text, record) => (
-                                                <span>{record.personCreate}</span>
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="personUpdate"
-                                            dataIndex="personUpdate"
-                                            title={t("Người cập nhật HĐ")}
-                                            render={(text, record) => (
-                                                <span>{record.personUpdate}</span>
-                                            )}
-                                        />
-                                        <Table.Column
-                                            key="dateCreate"
-                                            dataIndex="dateCreate"
-                                            title={t("Ngày tạo")}
-                                            render={(text, record) => (
-                                                // <span>{record.dateCreate}</span>
-                                                <DateField
-                                                    value={record.dateCreate}
-                                                    format="DD/MM/YYYY"
-                                                />
-                                            )}
-                                            sorter={(a, b) => a.dateCreate > b.dateCreate}
-                                        />
-                                        <Table.Column
-                                            key="dateUpdate"
-                                            dataIndex="dateUpdate"
-                                            title={t("Ngày cập nhật")}
-                                            render={(text, record) => (
-                                                // <span>{record.dateUpdate}</span>
-                                                <DateField
-                                                    value={record.dateUpdate}
-                                                    format="DD/MM/YYYY"
-                                                />
-                                            )}
-                                            sorter={(a, b) => a.dateUpdate > b.dateUpdate}
-                                        />
-                                        <Table.Column
-                                            key="dateUpdate"
-                                            dataIndex="dateUpdate"
-                                            title={t("Ghi chú")}
-                                            render={(text, record) => <span>{record.note}</span>}
-                                        />
-                                        <Table.Column
-                                            key="dateUpdate"
-                                            dataIndex="dateUpdate"
-                                            title={t("Ghi chú chi tiết")}
-                                            render={(text, record) => (
-                                                <span>{record.noteReturn}</span>
-                                            )}
-                                        />
+                                    <Table.Column
+                                        key="address"
+                                        dataIndex="address"
+                                        title={t("Địa chỉ")}
+                                        render={(text, record) => <span>{record.address}</span>}
+                                    />
+                                    <Table.Column
+                                        key="personCreate"
+                                        dataIndex="personCreate"
+                                        title={t("Người tạo HĐ")}
+                                        render={(text, record) => (<span>{record.personCreate}</span>)}
+                                    />
+                                    <Table.Column
+                                        key="personUpdate"
+                                        dataIndex="personUpdate"
+                                        title={t("Người cập nhật HĐ")}
+                                        render={(text, record) => (<span>{record.personUpdate}</span>)}
+                                    />
+                                    <Table.Column
+                                        key="dateCreate"
+                                        dataIndex="dateCreate"
+                                        title={t("Ngày tạo")}
+                                        render={(text, record) => (// <span>{record.dateCreate}</span>
+                                            <DateField
+                                                value={record.dateCreate}
+                                                format="DD/MM/YYYY"
+                                            />)}
+                                        sorter={(a, b) => a.dateCreate > b.dateCreate}
+                                    />
+                                    <Table.Column
+                                        key="dateUpdate"
+                                        dataIndex="dateUpdate"
+                                        title={t("Ngày cập nhật")}
+                                        render={(text, record) => (// <span>{record.dateUpdate}</span>
+                                            <DateField
+                                                value={record.dateUpdate}
+                                                format="DD/MM/YYYY"
+                                            />)}
+                                        sorter={(a, b) => a.dateUpdate > b.dateUpdate}
+                                    />
+                                    <Table.Column
+                                        key="dateUpdate"
+                                        dataIndex="dateUpdate"
+                                        title={t("Ghi chú")}
+                                        render={(text, record) => <span>{record.note}</span>}
+                                    />
+                                    <Table.Column
+                                        key="dateUpdate"
+                                        dataIndex="dateUpdate"
+                                        title={t("Ghi chú chi tiết")}
+                                        render={(text, record) => (<span>{record.noteReturn}</span>)}
+                                    />
 
-                                        <Table.Column
-                                            key="actions"
-                                            dataIndex="actions"
-                                            title={t("Sự kiện")}
-                                            fixed="right"
-                                            align="center"
-                                            render={(text, record) => (
-                                                <span>
-                          {record.statusBill === "CHO_XAC_NHAN" ? (
-                              <Dropdown
-                                  overlay={
-                                      <Menu mode="vertical">
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <FormOutlined
-                                                      style={{
-                                                          color: "green",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => {
-                                                  confirm2(record.id);
-                                              }}
-                                          >
-                                              Xác nhận
-                                          </Menu.Item>
-                                          <Menu.Item
-                                              key="2"
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "red",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() =>
-                                                  handleCannelOrderClick(record)
-                                              }
-                                          >
-                                              Hủy đơn
-                                          </Menu.Item>
-                                      </Menu>
-                                  }
-                                  trigger={["click"]}
-                              >
-                                  <MoreOutlined
+                                    <Table.Column
+                                        key="actions"
+                                        dataIndex="actions"
+                                        title={t("Sự kiện")}
+                                        fixed="right"
+                                        align="center"
+                                        render={(text, record) => (<span>
+                          {record.statusBill === "CHO_XAC_NHAN" ? (<Dropdown
+                              overlay={<Menu mode="vertical">
+                                  <Menu.Item
+                                      key="1"
+                                      disabled={record.stock <= 0}
                                       style={{
-                                          fontSize: 24,
+                                          fontWeight: 500,
                                       }}
-                                  />
-                              </Dropdown>
-                          ) : record.statusBill === "CHO_VAN_CHUYEN" ? (
-                              <Dropdown
-                                  overlay={
-                                      <Menu mode="vertical">
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "green",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => confirm2(record.id)}
-                                          >
-                                              Đã lấy hàng
-                                          </Menu.Item>
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <FormOutlined
-                                                      style={{
-                                                          color: "orange",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => {
-                                                  returnStatusBillPrev(record.id);
-                                              }}
-                                          >
-                                              Trở lại
-                                          </Menu.Item>
-                                      </Menu>
-                                  }
-                                  trigger={["click"]}
-                              >
-                                  <MoreOutlined
+                                      icon={<FormOutlined
+                                          style={{
+                                              color: "green",
+                                          }}
+                                      />}
+                                      onClick={() => {
+                                          confirm2(record.id);
+                                      }}
+                                  >
+                                      Xác nhận
+                                  </Menu.Item>
+                                  <Menu.Item
+                                      key="2"
                                       style={{
-                                          fontSize: 24,
+                                          fontWeight: 500,
                                       }}
-                                  />
-                              </Dropdown>
-                          ) : record.statusBill === "VAN_CHUYEN" ? (
-                              <Dropdown
-                                  overlay={
-                                      <Menu mode="vertical">
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "green",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => confirm2(record.id)}
-                                          >
-                                              Đã thanh toán
-                                          </Menu.Item>
-                                          <Menu.Item
-                                              key="2"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "red",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() =>
-                                                  handleClickDeliveryFailed(record)
-                                              }
-                                          >
-                                              Giao hàng thất bại
-                                          </Menu.Item>
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <FormOutlined
-                                                      style={{
-                                                          color: "orange",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => {
-                                                  returnStatusBillPrev(record.id);
-                                              }}
-                                          >
-                                              Trở lại
-                                          </Menu.Item>
-                                      </Menu>
-                                  }
-                                  trigger={["click"]}
-                              >
-                                  <MoreOutlined
+                                      icon={<CloseCircleOutlined
+                                          style={{
+                                              color: "red",
+                                          }}
+                                      />}
+                                      onClick={() => handleCannelOrderClick(record)}
+                                  >
+                                      Hủy đơn
+                                  </Menu.Item>
+                              </Menu>}
+                              trigger={["click"]}
+                          >
+                              <MoreOutlined
+                                  style={{
+                                      fontSize: 24,
+                                  }}
+                              />
+                          </Dropdown>) : record.statusBill === "CHO_VAN_CHUYEN" ? (<Dropdown
+                              overlay={<Menu mode="vertical">
+                                  <Menu.Item
+                                      key="1"
+                                      disabled={record.stock <= 0}
                                       style={{
-                                          fontSize: 24,
+                                          fontWeight: 500,
                                       }}
-                                  />
-                              </Dropdown>
-                          ) : record.statusBill === "DA_THANH_TOAN" &&
-                          Math.floor(
-                              (new Date(
-                                      new Date().getFullYear() +
-                                      "-" +
-                                      (new Date().getMonth() + 1)
-                                          .toString()
-                                          .padStart(2, "0") +
-                                      "-" +
-                                      new Date()
-                                          .getDate()
-                                          .toString()
-                                          .padStart(2, "0")
-                                  ) -
-                                  new Date(
-                                      new Date(
-                                          record.completionDate[0],
-                                          record.completionDate[1] - 1,
-                                          record.completionDate[2]
-                                      ).getFullYear() +
-                                      "-" +
-                                      (
-                                          new Date(
-                                              record.completionDate[0],
-                                              record.completionDate[1] - 1,
-                                              record.completionDate[2]
-                                          ).getMonth() + 1
-                                      )
-                                          .toString()
-                                          .padStart(2, "0") +
-                                      "-" +
-                                      new Date(
-                                          record.completionDate[0],
-                                          record.completionDate[1] - 1,
-                                          record.completionDate[2]
-                                      )
-                                          .getDate()
-                                          .toString()
-                                          .padStart(2, "0")
-                                  )) /
-                              (1000 * 60 * 60 * 24)
-                          ) <= 3 ? (
-                              // <Dropdown
+                                      icon={<CloseCircleOutlined
+                                          style={{
+                                              color: "green",
+                                          }}
+                                      />}
+                                      onClick={() => confirm2(record.id)}
+                                  >
+                                      Đã lấy hàng
+                                  </Menu.Item>
+                                  <Menu.Item
+                                      key="1"
+                                      disabled={record.stock <= 0}
+                                      style={{
+                                          fontWeight: 500,
+                                      }}
+                                      icon={<FormOutlined
+                                          style={{
+                                              color: "orange",
+                                          }}
+                                      />}
+                                      onClick={() => {
+                                          returnStatusBillPrev(record.id);
+                                      }}
+                                  >
+                                      Trở lại
+                                  </Menu.Item>
+                              </Menu>}
+                              trigger={["click"]}
+                          >
+                              <MoreOutlined
+                                  style={{
+                                      fontSize: 24,
+                                  }}
+                              />
+                          </Dropdown>) : record.statusBill === "VAN_CHUYEN" ? (<Dropdown
+                              overlay={<Menu mode="vertical">
+                                  <Menu.Item
+                                      key="1"
+                                      disabled={record.stock <= 0}
+                                      style={{
+                                          fontWeight: 500,
+                                      }}
+                                      icon={<CloseCircleOutlined
+                                          style={{
+                                              color: "green",
+                                          }}
+                                      />}
+                                      onClick={() => confirm2(record.id)}
+                                  >
+                                      Đã thanh toán
+                                  </Menu.Item>
+                                  <Menu.Item
+                                      key="2"
+                                      disabled={record.stock <= 0}
+                                      style={{
+                                          fontWeight: 500,
+                                      }}
+                                      icon={<CloseCircleOutlined
+                                          style={{
+                                              color: "red",
+                                          }}
+                                      />}
+                                      onClick={() => handleClickDeliveryFailed(record)}
+                                  >
+                                      Giao hàng thất bại
+                                  </Menu.Item>
+                                  <Menu.Item
+                                      key="1"
+                                      disabled={record.stock <= 0}
+                                      style={{
+                                          fontWeight: 500,
+                                      }}
+                                      icon={<FormOutlined
+                                          style={{
+                                              color: "orange",
+                                          }}
+                                      />}
+                                      onClick={() => {
+                                          returnStatusBillPrev(record.id);
+                                      }}
+                                  >
+                                      Trở lại
+                                  </Menu.Item>
+                              </Menu>}
+                              trigger={["click"]}
+                          >
+                              <MoreOutlined
+                                  style={{
+                                      fontSize: 24,
+                                  }}
+                              />
+                          </Dropdown>) : record.statusBill === "DA_THANH_TOAN" && Math.floor((new Date(new Date().getFullYear() + "-" + (new Date().getMonth() + 1)
+                              .toString()
+                              .padStart(2, "0") + "-" + new Date()
+                              .getDate()
+                              .toString()
+                              .padStart(2, "0")) - new Date(new Date(record.completionDate[0], record.completionDate[1] - 1, record.completionDate[2]).getFullYear() + "-" + (new Date(record.completionDate[0], record.completionDate[1] - 1, record.completionDate[2]).getMonth() + 1)
+                              .toString()
+                              .padStart(2, "0") + "-" + new Date(record.completionDate[0], record.completionDate[1] - 1, record.completionDate[2])
+                              .getDate()
+                              .toString()
+                              .padStart(2, "0"))) / (1000 * 60 * 60 * 24)) <= 3 ? (// <Dropdown
                               //   overlay={
                               //     <Menu mode="vertical">
                               //       <Menu.Item
@@ -1629,893 +1493,813 @@ const OderDisplay = ({}) => {
                               //     }}
                               //   />
                               // </Dropdown>
-                              ""
-                          ) : record.statusBill === "YEU_CAU_TRA_HANG" ? (
-                              <Dropdown
-                                  overlay={
-                                      <Menu mode="vertical">
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "green",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() =>
-                                                  handleClickReturnDetails(record)
-                                              }
-                                          >
-                                              Xem chi tiết
-                                          </Menu.Item>
-                                      </Menu>
-                                  }
-                                  trigger={["click"]}
-                              >
-                                  <MoreOutlined
+                              "") : record.statusBill === "YEU_CAU_TRA_HANG" ? (<Dropdown
+                              overlay={<Menu mode="vertical">
+                                  <Menu.Item
+                                      key="1"
+                                      disabled={record.stock <= 0}
                                       style={{
-                                          fontSize: 24,
+                                          fontWeight: 500,
                                       }}
-                                  />
-                              </Dropdown>
-                          ) : record.statusBill === "TRA_HANG" ? (
-                              <Dropdown
-                                  overlay={
-                                      <Menu mode="vertical">
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "green",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() =>
-                                                  handleClickReturnedProducts(record)
-                                              }
-                                          >
-                                              Xem chi tiết
-                                          </Menu.Item>
-                                      </Menu>
-                                  }
-                                  trigger={["click"]}
-                              >
-                                  <MoreOutlined
+                                      icon={<CloseCircleOutlined
+                                          style={{
+                                              color: "green",
+                                          }}
+                                      />}
+                                      onClick={() => handleClickReturnDetails(record)}
+                                  >
+                                      Xem chi tiết
+                                  </Menu.Item>
+                              </Menu>}
+                              trigger={["click"]}
+                          >
+                              <MoreOutlined
+                                  style={{
+                                      fontSize: 24,
+                                  }}
+                              />
+                          </Dropdown>) : record.statusBill === "TRA_HANG" ? (<Dropdown
+                              overlay={<Menu mode="vertical">
+                                  <Menu.Item
+                                      key="1"
+                                      disabled={record.stock <= 0}
                                       style={{
-                                          fontSize: 24,
+                                          fontWeight: 500,
                                       }}
-                                  />
-                              </Dropdown>
-                          ) : (
-                              ""
-                          )}
-                        </span>
-                                            )}
-                                        />
-                                    </Table>
-                                </List>
-                            </Col>
-                        </Row>
-                        <Modal
-                            visible={isModalVisibleNoteReturns}
-                            onCancel={handleNoteReturnsCancel}
-                            width={550}
-                            footer={null}
-                            bodyStyle={{minHeight: "150px"}}
-                        >
-                            <form onSubmit={handleSubmitReturns}>
-                                <div class="mb-3">
-                                    <label for="exampleFormControlTextarea1" class="form-label">
-                                        Lí do trả hàng:
-                                    </label>
-                                    <textarea
-                                        class="form-control"
-                                        id="exampleFormControlTextarea1"
-                                        rows="3"
-                                        required
-                                        onChange={handleNoteReturns}
-                                    ></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-success">
-                                    Xác nhận
-                                </button>
-                            </form>
-                        </Modal>
-                        <Modal
-                            visible={isModalVisibleCannelOrder}
-                            onCancel={handleCannelOrderCancel}
-                            width={550}
-                            footer={null}
-                            bodyStyle={{minHeight: "150px"}}
-                        >
-                            <form onSubmit={handleSubmitCannelOrder}>
-                                <div class="mb-3">
-                                    <label for="exampleFormControlTextarea2" class="form-label">
-                                        Lí do hủy đơn:
-                                    </label>
-                                    <textarea
-                                        class="form-control"
-                                        id="exampleFormControlTextarea2"
-                                        rows="3"
-                                        required
-                                        onChange={handleCannelOrder}
-                                    ></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-success">
-                                    Xác nhận
-                                </button>
-                            </form>
-                        </Modal>
-                        <Modal
-                            visible={isModalVisibleReturnDetails}
-                            onCancel={handleCannelReturnDetails}
-                            width={900}
-                            footer={null}
-                            bodyStyle={{minHeight: "150px"}}
-                        >
-                            <form>
-                                <div class="mb-3">
-                                    <label for="exampleFormControlTextarea2" class="form-label">
-                                        Lí do trả hàng:
-                                    </label>
-                                    <textarea
-                                        class="form-control"
-                                        id="exampleFormControlTextarea3"
-                                        rows="3"
-                                        required
-                                        disabled
-                                        value={noteReturnDetail}
-                                    ></textarea>
-                                </div>
-                            </form>
-                            <Row style={{marginTop: "28px", marginBottom: "10px"}}>
-                                <input
-                                    // id="id-imeis"
-                                    className="form-control me-2"
-                                    type="search"
-                                    placeholder="Tìm theo imei"
-                                    aria-label="Search"
-                                    name="key"
-                                    onChange={handleChangeSearchYCTH}
-                                />
-                            </Row>
-                            <br/>
-                            <Table
-                                rowKey="oop"
-                                dataSource={dataBillDetails}
-                                pagination={{
-                                    pageSize: 5,
-                                    showSizeChanger: false,
-                                    showTotal: (total) => `Tổng số ${total} sản phẩm`,
-                                    showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
-                                }}
-                            >
-                                {/* tên sp */}
-                                <Table.Column
-                                    align="center"
-                                    dataIndex="images"
-                                    title="Ảnh"
-                                    render={(text, record) => (
-                                        <div style={{textAlign: "center"}}>
-                                            <AvtProduct product={record.idProduct}/>
-                                        </div>
-                                    )}
-                                    width={150}
-                                />
-
-                                {/* tên sp */}
-                                <Table.Column
-                                    align="center"
-                                    key="isActive"
-                                    dataIndex="isActive"
-                                    title="Tên Sản Phẩm"
-                                    render={(text, record) => {
-                                        return (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <p>{record.nameProduct}</p>
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-                                {/* sumSKU */}
-                                <Table.Column
-                                    align="center"
-                                    key="isActive"
-                                    dataIndex="isActive"
-                                    title="Phiên Bản"
-                                    render={(text, record) => {
-                                        return (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <p>
-                                                    {record.skuColor} - {record.skuCapacity}
-                                                </p>
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-                                {/* priceSKU  */}
-                                <Table.Column
-                                    align="center"
-                                    key="price"
-                                    dataIndex="price"
-                                    title="Giá Bán"
-                                    sorter={(a, b) => a.price - b.price}
-                                    render={(text, record) => {
-                                        return record.price === null ? (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <WarningFilled
-                                                    value={false}
-                                                    style={{
-                                                        color: "#FFCC00",
-                                                    }}
-                                                />
-                                                {parseFloat(0).toLocaleString("vi-VN", {
-                                                    style: "currency",
-                                                    currency: "VND",
-                                                })}
-                                            </Form.Item>
-                                        ) : (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                {parseFloat(record.price).toLocaleString("vi-VN", {
-                                                    style: "currency",
-                                                    currency: "VND",
-                                                })}
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-
-                                {/* sumImeiTrongKho */}
-                                <Table.Column
-                                    align="center"
-                                    key="isActive"
-                                    dataIndex="isActive"
-                                    title="Mã Imei"
-                                    render={(text, record) => {
-                                        return (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <p>{record.codeImei}</p>
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-                            </Table>
-                            <button
-                                type="submit"
-                                class="btn btn-success"
-                                onClick={() => returnConfirmation()}
-                            >
+                                      icon={<CloseCircleOutlined
+                                          style={{
+                                              color: "green",
+                                          }}
+                                      />}
+                                      onClick={() => handleClickReturnedProducts(record)}
+                                  >
+                                      Xem chi tiết
+                                  </Menu.Item>
+                              </Menu>}
+                              trigger={["click"]}
+                          >
+                              <MoreOutlined
+                                  style={{
+                                      fontSize: 24,
+                                  }}
+                              />
+                          </Dropdown>) : ("")}
+                        </span>)}
+                                    />
+                                </Table>
+                            </List>
+                        </Col>
+                    </Row>
+                    <Modal
+                        visible={isModalVisibleNoteReturns}
+                        onCancel={handleNoteReturnsCancel}
+                        width={550}
+                        footer={null}
+                        bodyStyle={{minHeight: "150px"}}
+                    >
+                        <form onSubmit={handleSubmitReturns}>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">
+                                    Lí do trả hàng:
+                                </label>
+                                <textarea
+                                    class="form-control"
+                                    id="exampleFormControlTextarea1"
+                                    rows="3"
+                                    required
+                                    onChange={handleNoteReturns}
+                                ></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">
                                 Xác nhận
                             </button>
-                            {" "}
-                            <button
-                                type="submit"
-                                class="btn btn-warning"
-                                onClick={() => noReturnConfirmation()}
-                            >
-                                Hủy yêu cầu
+                        </form>
+                    </Modal>
+                    <Modal
+                        visible={isModalVisibleCannelOrder}
+                        onCancel={handleCannelOrderCancel}
+                        width={550}
+                        footer={null}
+                        bodyStyle={{minHeight: "150px"}}
+                    >
+                        <form onSubmit={handleSubmitCannelOrder}>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea2" class="form-label">
+                                    Lí do hủy đơn:
+                                </label>
+                                <textarea
+                                    class="form-control"
+                                    id="exampleFormControlTextarea2"
+                                    rows="3"
+                                    required
+                                    onChange={handleCannelOrder}
+                                ></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                Xác nhận
                             </button>
-                        </Modal>
-                        <Modal
-                            visible={isModalVisibleReturnedProducts}
-                            onCancel={handleCannelReturnedProducts}
-                            width={900}
-                            footer={null}
-                            bodyStyle={{minHeight: "150px"}}
+                        </form>
+                    </Modal>
+                    <Modal
+                        visible={isModalVisibleReturnDetails}
+                        onCancel={handleCannelReturnDetails}
+                        width={900}
+                        footer={null}
+                        bodyStyle={{minHeight: "150px"}}
+                    >
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea2" class="form-label">
+                                    Lí do trả hàng:
+                                </label>
+                                <textarea
+                                    class="form-control"
+                                    id="exampleFormControlTextarea3"
+                                    rows="3"
+                                    required
+                                    disabled
+                                    value={noteReturnDetail}
+                                ></textarea>
+                            </div>
+                        </form>
+                        <Row style={{marginTop: "28px", marginBottom: "10px"}}>
+                            <input
+                                // id="id-imeis"
+                                className="form-control me-2"
+                                type="search"
+                                placeholder="Tìm theo imei"
+                                aria-label="Search"
+                                name="key"
+                                onChange={handleChangeSearchYCTH}
+                            />
+                        </Row>
+                        <br/>
+                        <Table
+                            rowKey="oop"
+                            dataSource={dataBillDetails}
+                            pagination={{
+                                pageSize: 5,
+                                showSizeChanger: false,
+                                showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                            }}
                         >
-                            <label for="exampleFormControlTextarea2" class="form-label">
-                                Sản phẩm đã trả:
-                            </label>
-                            <Row style={{marginTop: "28px", marginBottom: "10px"}}>
-                                <input
-                                    // id="id-imeis"
-                                    className="form-control me-2"
-                                    type="search"
-                                    placeholder="Tìm theo imei"
-                                    aria-label="Search"
-                                    name="key"
-                                    onChange={handleChangeSearchDaTra}
-                                />
-                            </Row>
-                            <Table
-                                rowKey="oop"
-                                dataSource={dataBillDetails}
-                                pagination={{
-                                    pageSize: 5,
-                                    showSizeChanger: false,
-                                    showTotal: (total) => `Tổng số ${total} sản phẩm`,
-                                    showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                            {/* tên sp */}
+                            <Table.Column
+                                align="center"
+                                dataIndex="images"
+                                title="Ảnh"
+                                render={(text, record) => (<div style={{textAlign: "center"}}>
+                                    <AvtProduct product={record.idProduct}/>
+                                </div>)}
+                                width={150}
+                            />
+
+                            {/* tên sp */}
+                            <Table.Column
+                                align="center"
+                                key="isActive"
+                                dataIndex="isActive"
+                                title="Tên Sản Phẩm"
+                                render={(text, record) => {
+                                    return (<Form.Item name="title" style={{margin: 0}}>
+                                        <p>{record.nameProduct}</p>
+                                    </Form.Item>);
                                 }}
-                            >
-                                {/* tên sp */}
-                                <Table.Column
-                                    align="center"
-                                    dataIndex="images"
-                                    title="Ảnh"
-                                    render={(text, record) => (
-                                        <div style={{textAlign: "center"}}>
-                                            <AvtProduct product={record.productId}/>
+                            />
+                            {/* sumSKU */}
+                            <Table.Column
+                                align="center"
+                                key="isActive"
+                                dataIndex="isActive"
+                                title="Phiên Bản"
+                                render={(text, record) => {
+                                    return (<Form.Item name="title" style={{margin: 0}}>
+                                        <p>
+                                            {record.skuColor} - {record.skuCapacity}
+                                        </p>
+                                    </Form.Item>);
+                                }}
+                            />
+                            {/* priceSKU  */}
+                            <Table.Column
+                                align="center"
+                                key="price"
+                                dataIndex="price"
+                                title="Giá Bán"
+                                sorter={(a, b) => a.price - b.price}
+                                render={(text, record) => {
+                                    return record.price === null ? (<Form.Item name="title" style={{margin: 0}}>
+                                        <WarningFilled
+                                            value={false}
+                                            style={{
+                                                color: "#FFCC00",
+                                            }}
+                                        />
+                                        {parseFloat(0).toLocaleString("vi-VN", {
+                                            style: "currency", currency: "VND",
+                                        })}
+                                    </Form.Item>) : (<Form.Item name="title" style={{margin: 0}}>
+                                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                                            style: "currency", currency: "VND",
+                                        })}
+                                    </Form.Item>);
+                                }}
+                            />
+
+                            {/* sumImeiTrongKho */}
+                            <Table.Column
+                                align="center"
+                                key="isActive"
+                                dataIndex="isActive"
+                                title="Mã Imei"
+                                render={(text, record) => {
+                                    return (<Form.Item name="title" style={{margin: 0}}>
+                                        <p>{record.codeImei}</p>
+                                    </Form.Item>);
+                                }}
+                            />
+                        </Table>
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                            onClick={() => returnConfirmation()}
+                        >
+                            Xác nhận
+                        </button>
+                        {" "}
+                        <button
+                            type="submit"
+                            class="btn btn-warning"
+                            onClick={() => noReturnConfirmation()}
+                        >
+                            Hủy yêu cầu
+                        </button>
+                    </Modal>
+                    <Modal
+                        visible={isModalVisibleReturnedProducts}
+                        onCancel={handleCannelReturnedProducts}
+                        width={900}
+                        footer={null}
+                        bodyStyle={{minHeight: "150px"}}
+                    >
+                        <label for="exampleFormControlTextarea2" class="form-label">
+                            Sản phẩm đã trả:
+                        </label>
+                        <Row style={{marginTop: "28px", marginBottom: "10px"}}>
+                            <input
+                                // id="id-imeis"
+                                className="form-control me-2"
+                                type="search"
+                                placeholder="Tìm theo imei"
+                                aria-label="Search"
+                                name="key"
+                                onChange={handleChangeSearchDaTra}
+                            />
+                        </Row>
+                        <Table
+                            rowKey="oop"
+                            dataSource={dataBillDetails}
+                            pagination={{
+                                pageSize: 5,
+                                showSizeChanger: false,
+                                showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                            }}
+                        >
+                            {/* tên sp */}
+                            <Table.Column
+                                align="center"
+                                dataIndex="images"
+                                title="Ảnh"
+                                render={(text, record) => (<div style={{textAlign: "center"}}>
+                                    <AvtProduct product={record.productId}/>
+                                </div>)}
+                                width={150}
+                            />
+
+                            {/* tên sp */}
+                            <Table.Column
+                                align="center"
+                                key="isActive"
+                                dataIndex="isActive"
+                                title="Tên Sản Phẩm"
+                                render={(text, record) => {
+                                    return (<Form.Item name="title" style={{margin: 0}}>
+                                        <p>{record.nameProduct}</p>
+                                    </Form.Item>);
+                                }}
+                            />
+                            {/* sumSKU */}
+                            <Table.Column
+                                align="center"
+                                key="isActive"
+                                dataIndex="isActive"
+                                title="Phiên Bản"
+                                render={(text, record) => {
+                                    return (<Form.Item name="title" style={{margin: 0}}>
+                                        <p>
+                                            {record.capacity} - {record.color}
+                                        </p>
+                                    </Form.Item>);
+                                }}
+                            />
+                            {/* priceSKU  */}
+                            <Table.Column
+                                align="center"
+                                key="price"
+                                dataIndex="price"
+                                title="Giá Bán"
+                                sorter={(a, b) => a.price - b.price}
+                                render={(text, record) => {
+                                    return record.price === null ? (<Form.Item name="title" style={{margin: 0}}>
+                                        <WarningFilled
+                                            value={false}
+                                            style={{
+                                                color: "#FFCC00",
+                                            }}
+                                        />
+                                        {parseFloat(0).toLocaleString("vi-VN", {
+                                            style: "currency", currency: "VND",
+                                        })}
+                                    </Form.Item>) : (<Form.Item name="title" style={{margin: 0}}>
+                                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                                            style: "currency", currency: "VND",
+                                        })}
+                                    </Form.Item>);
+                                }}
+                            />
+
+                            {/* sumImeiTrongKho */}
+                            <Table.Column
+                                align="center"
+                                key="isActive"
+                                dataIndex="isActive"
+                                title="Mã Imei"
+                                render={(text, record) => {
+                                    return (<Form.Item name="title" style={{margin: 0}}>
+                                        <p>{record.codeImei}</p>
+                                    </Form.Item>);
+                                }}
+                            />
+                        </Table>
+                    </Modal>
+                    <Modal
+                        visible={isModalVisibleDeliveryFailed}
+                        onCancel={handleCannelDeliveryFailed}
+                        width={550}
+                        footer={null}
+                        bodyStyle={{minHeight: "150px"}}
+                    >
+                        <form onSubmit={handleSubmitDeliveryFailed}>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea2" class="form-label">
+                                    Lí do giao hàng thất bại:
+                                </label>
+                                <textarea
+                                    class="form-control"
+                                    id="exampleFormControlTextarea2"
+                                    rows="3"
+                                    required
+                                    onChange={handleDeliveryFailed}
+                                ></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                Xác nhận
+                            </button>
+                        </form>
+                    </Modal>
+
+                    /*
+                    Modal hiển thị form edit
+                    */
+                    <Modal
+                        visible={hideForm}
+                        onCancel={handleCancelHideForm}
+                        width={800}
+                        footer={null}
+                        bodyStyle={{minHeight: "150px"}}
+                    >
+                        <form onSubmit={handleSubmitDeliveryFailed}>
+                            <div className="col-md-12">
+                                <div className="col-md-8 order-md-1">
+                                    <h4 className="mb-3">Thông tin khách hàng</h4>
+                                    <div className="row">
+                                        <div className="col-md-5">
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Tên"
+                                                name="name"
+                                                value={billUpdate.userName}
+                                                onChange={hanldeName}
+                                                required
+                                            ></input>
+                                            <br/>
                                         </div>
-                                    )}
-                                    width={150}
-                                />
-
-                                {/* tên sp */}
-                                <Table.Column
-                                    align="center"
-                                    key="isActive"
-                                    dataIndex="isActive"
-                                    title="Tên Sản Phẩm"
-                                    render={(text, record) => {
-                                        return (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <p>{record.nameProduct}</p>
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-                                {/* sumSKU */}
-                                <Table.Column
-                                    align="center"
-                                    key="isActive"
-                                    dataIndex="isActive"
-                                    title="Phiên Bản"
-                                    render={(text, record) => {
-                                        return (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <p>
-                                                    {record.capacity} - {record.color}
-                                                </p>
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-                                {/* priceSKU  */}
-                                <Table.Column
-                                    align="center"
-                                    key="price"
-                                    dataIndex="price"
-                                    title="Giá Bán"
-                                    sorter={(a, b) => a.price - b.price}
-                                    render={(text, record) => {
-                                        return record.price === null ? (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <WarningFilled
-                                                    value={false}
-                                                    style={{
-                                                        color: "#FFCC00",
-                                                    }}
-                                                />
-                                                {parseFloat(0).toLocaleString("vi-VN", {
-                                                    style: "currency",
-                                                    currency: "VND",
-                                                })}
-                                            </Form.Item>
-                                        ) : (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                {parseFloat(record.price).toLocaleString("vi-VN", {
-                                                    style: "currency",
-                                                    currency: "VND",
-                                                })}
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-
-                                {/* sumImeiTrongKho */}
-                                <Table.Column
-                                    align="center"
-                                    key="isActive"
-                                    dataIndex="isActive"
-                                    title="Mã Imei"
-                                    render={(text, record) => {
-                                        return (
-                                            <Form.Item name="title" style={{margin: 0}}>
-                                                <p>{record.codeImei}</p>
-                                            </Form.Item>
-                                        );
-                                    }}
-                                />
-                            </Table>
-                        </Modal>
-                        <Modal
-                            visible={isModalVisibleDeliveryFailed}
-                            onCancel={handleCannelDeliveryFailed}
-                            width={550}
-                            footer={null}
-                            bodyStyle={{minHeight: "150px"}}
-                        >
-                            <form onSubmit={handleSubmitDeliveryFailed}>
-                                <div class="mb-3">
-                                    <label for="exampleFormControlTextarea2" class="form-label">
-                                        Lí do giao hàng thất bại:
-                                    </label>
-                                    <textarea
-                                        class="form-control"
-                                        id="exampleFormControlTextarea2"
-                                        rows="3"
-                                        required
-                                        onChange={handleDeliveryFailed}
-                                    ></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-success">
-                                    Xác nhận
-                                </button>
-                            </form>
-                        </Modal>
-
-                        /*
-                        Modal hiển thị form edit
-                        */
-                        <Modal
-                            visible={hideForm}
-                            onCancel={handleCancelHideForm}
-                            width={800}
-                            footer={null}
-                            bodyStyle={{minHeight: "150px"}}
-                        >
-                            <form onSubmit={handleSubmitDeliveryFailed}>
-                                <div className="col-md-12">
-                                    <div className="col-md-8 order-md-1">
-                                        <h4 className="mb-3">Thông tin khách hàng</h4>
-                                        <div className="row">
-                                            <div className="col-md-5">
+                                        <div className="col-md-5">
+                                            <input
+                                                id="phoneNumber"
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Số điện thoại"
+                                                name="phoneNumber"
+                                                value={billUpdate.phoneNumber}
+                                                onChange={hanldPhone}
+                                                required
+                                            ></input>
+                                        </div>
+                                        <div className="col-md-12">
+                                            <b htmlFor="kh_ngaysinh">Hình thức nhận hàng</b>
+                                            <div className="custom-control custom-radio">
                                                 <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Tên"
-                                                    name="name"
-                                                    value={billUpdate.userName}
-                                                    onChange={hanldeName}
-                                                    required
+                                                    id="htnn_5"
+                                                    type="radio"
+                                                    className="custom-control-input"
+                                                    required=""
+                                                    value="2"
+                                                    // onClick={() => giaoTanNoi()}
                                                 ></input>
-                                                <br/>
+                                                <label className="custom-control-label" htmlFor="htnn_5">
+                                                    Giao tận nơi
+                                                </label>
                                             </div>
-                                            <div className="col-md-5">
+                                            <div
+                                                className="custom-control custom-radio"
+                                                id="dcmd"
+                                                // hidden={storedUser !== null ? false : true}
+                                            >
                                                 <input
-                                                    id="phoneNumber"
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Số điện thoại"
-                                                    name="phoneNumber"
-                                                    value={billUpdate.phoneNumber}
-                                                    onChange={hanldPhone}
-                                                    required
+                                                    id="htnn_6"
+                                                    type="radio"
+                                                    className="custom-control-input"
+                                                    required=""
+                                                    value="3"
+                                                    // onClick={() => diaChiMacDinh()}
+                                                    hidden
                                                 ></input>
+                                                <label className="custom-control-label" htmlFor="htnn_6">
+                                                    Địa chỉ mặc định
+                                                </label>
                                             </div>
-                                            <div className="col-md-12">
-                                                <b htmlFor="kh_ngaysinh">Hình thức nhận hàng</b>
-                                                <div className="custom-control custom-radio">
-                                                    <input
-                                                        id="htnn_5"
-                                                        type="radio"
-                                                        className="custom-control-input"
-                                                        required=""
-                                                        value="2"
-                                                        // onClick={() => giaoTanNoi()}
-                                                    ></input>
-                                                    <label className="custom-control-label" htmlFor="htnn_5">
-                                                        Giao tận nơi
-                                                    </label>
-                                                </div>
-                                                <div
-                                                    className="custom-control custom-radio"
-                                                    id="dcmd"
-                                                    // hidden={storedUser !== null ? false : true}
-                                                >
-                                                    <input
-                                                        id="htnn_6"
-                                                        type="radio"
-                                                        className="custom-control-input"
-                                                        required=""
-                                                        value="3"
-                                                        // onClick={() => diaChiMacDinh()}
-                                                        hidden
-                                                    ></input>
-                                                    <label className="custom-control-label" htmlFor="htnn_6">
-                                                        Địa chỉ mặc định
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div hidden className="row" id="notDcmd">
-                                                <div className="col-md-4">
-                                                    <br/>
-                                                    <label htmlFor="kh_cmnd">Tỉnh, thành phố:</label>
-                                                    <select
-                                                        className="form-select"
-                                                        id="provinces"
-                                                        aria-label="Floating label select example"
-                                                        // onChange={handleProvince}
-                                                    >
-                                                        <option selected id="-1"></option>
-                                                        {/*{provinces.map((pr) => {*/}
-                                                        {/*    return (*/}
-                                                        {/*        <option*/}
-                                                        {/*            id={pr.ProvinceID}*/}
-                                                        {/*            key={pr.ProvinceID}*/}
-                                                        {/*            value={pr.ProvinceID}*/}
-                                                        {/*        >*/}
-                                                        {/*            {pr.ProvinceName}*/}
-                                                        {/*        </option>*/}
-                                                        {/*    );*/}
-                                                        {/*})}*/}
-                                                    </select>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <br/>
-                                                    <label htmlFor="kh_cmnd">Quận, huyện:</label>
-                                                    <select
-                                                        className="form-select"
-                                                        id="districts"
-                                                        aria-label="Floating label select example"
-                                                        // onChange={handleDistrict}
-                                                    >
-                                                        <option selected id="-2"></option>
-                                                        {/*{districts.map((dt) => {*/}
-                                                        {/*    return (*/}
-                                                        {/*        <option*/}
-                                                        {/*            id={dt.DistrictID}*/}
-                                                        {/*            key={dt.DistrictID}*/}
-                                                        {/*            value={dt.DistrictID}*/}
-                                                        {/*        >*/}
-                                                        {/*            {dt.DistrictName}*/}
-                                                        {/*        </option>*/}
-                                                        {/*    );*/}
-                                                        {/*})}*/}
-                                                    </select>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <br/>
-                                                    <label htmlFor="kh_cmnd">Phường, xã:</label>
-                                                    <select
-                                                        className="form-select"
-                                                        id="wards"
-                                                        aria-label="Floating label select example"
-                                                        // onChange={handleWard}
-                                                    >
-                                                        <option selected id="-3"></option>
-                                                        {/*{wards.map((w) => {*/}
-                                                        {/*    return (*/}
-                                                        {/*        <option*/}
-                                                        {/*            id={w.WardCode}*/}
-                                                        {/*            key={w.WardID}*/}
-                                                        {/*            value={w.WardCode}*/}
-                                                        {/*        >*/}
-                                                        {/*            {w.WardName}*/}
-                                                        {/*        </option>*/}
-                                                        {/*    );*/}
-                                                        {/*})}*/}
-                                                    </select>
-                                                </div>
-                                                <div className="col-md-12">
-                                                    <input
-                                                        hidden
-                                                        id="floatingSelect2"
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder="Địa chỉ cụ thể"
-                                                        aria-label="default input example"
-                                                        // onChange={handleAddress}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div id="dcmd2" hidden>
+                                        </div>
+                                        <div hidden className="row" id="notDcmd">
+                                            <div className="col-md-4">
                                                 <br/>
-                                                <label htmlFor="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
+                                                <label htmlFor="kh_cmnd">Tỉnh, thành phố:</label>
                                                 <select
                                                     className="form-select"
-                                                    id="floatingSelect"
+                                                    id="provinces"
                                                     aria-label="Floating label select example"
-                                                    // onChange={handleDefaultAddress}
+                                                    // onChange={handleProvince}
                                                 >
-                                                    <option selected id="0" value={0}></option>
-                                                    {/*{defaultAddress.map((da) => {*/}
+                                                    <option selected id="-1"></option>
+                                                    {/*{provinces.map((pr) => {*/}
                                                     {/*    return (*/}
-                                                    {/*        <option id={da.id} key={da.id} value={da.id}>*/}
-                                                    {/*            {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}*/}
-                                                    {/*            {da.tinhThanhPho}*/}
+                                                    {/*        <option*/}
+                                                    {/*            id={pr.ProvinceID}*/}
+                                                    {/*            key={pr.ProvinceID}*/}
+                                                    {/*            value={pr.ProvinceID}*/}
+                                                    {/*        >*/}
+                                                    {/*            {pr.ProvinceName}*/}
                                                     {/*        </option>*/}
                                                     {/*    );*/}
                                                     {/*})}*/}
                                                 </select>
                                             </div>
+                                            <div className="col-md-4">
+                                                <br/>
+                                                <label htmlFor="kh_cmnd">Quận, huyện:</label>
+                                                <select
+                                                    className="form-select"
+                                                    id="districts"
+                                                    aria-label="Floating label select example"
+                                                    // onChange={handleDistrict}
+                                                >
+                                                    <option selected id="-2"></option>
+                                                    {/*{districts.map((dt) => {*/}
+                                                    {/*    return (*/}
+                                                    {/*        <option*/}
+                                                    {/*            id={dt.DistrictID}*/}
+                                                    {/*            key={dt.DistrictID}*/}
+                                                    {/*            value={dt.DistrictID}*/}
+                                                    {/*        >*/}
+                                                    {/*            {dt.DistrictName}*/}
+                                                    {/*        </option>*/}
+                                                    {/*    );*/}
+                                                    {/*})}*/}
+                                                </select>
+                                            </div>
+                                            <div className="col-md-4">
+                                                <br/>
+                                                <label htmlFor="kh_cmnd">Phường, xã:</label>
+                                                <select
+                                                    className="form-select"
+                                                    id="wards"
+                                                    aria-label="Floating label select example"
+                                                    // onChange={handleWard}
+                                                >
+                                                    <option selected id="-3"></option>
+                                                    {/*{wards.map((w) => {*/}
+                                                    {/*    return (*/}
+                                                    {/*        <option*/}
+                                                    {/*            id={w.WardCode}*/}
+                                                    {/*            key={w.WardID}*/}
+                                                    {/*            value={w.WardCode}*/}
+                                                    {/*        >*/}
+                                                    {/*            {w.WardName}*/}
+                                                    {/*        </option>*/}
+                                                    {/*    );*/}
+                                                    {/*})}*/}
+                                                </select>
+                                            </div>
+                                            <div className="col-md-12">
+                                                <input
+                                                    hidden
+                                                    id="floatingSelect2"
+                                                    className="form-control"
+                                                    type="text"
+                                                    placeholder="Địa chỉ cụ thể"
+                                                    aria-label="default input example"
+                                                    // onChange={handleAddress}
+                                                />
+                                            </div>
                                         </div>
-                                        <br/>
-                                        <div className="row col-md-5">
-                                            <button type="submit" className="btn btn-success">
-                                                Xác nhận
-                                            </button>
+                                        <div id="dcmd2" hidden>
+                                            <br/>
+                                            <label htmlFor="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
+                                            <select
+                                                className="form-select"
+                                                id="floatingSelect"
+                                                aria-label="Floating label select example"
+                                                // onChange={handleDefaultAddress}
+                                            >
+                                                <option selected id="0" value={0}></option>
+                                                {/*{defaultAddress.map((da) => {*/}
+                                                {/*    return (*/}
+                                                {/*        <option id={da.id} key={da.id} value={da.id}>*/}
+                                                {/*            {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}*/}
+                                                {/*            {da.tinhThanhPho}*/}
+                                                {/*        </option>*/}
+                                                {/*    );*/}
+                                                {/*})}*/}
+                                            </select>
                                         </div>
                                     </div>
+                                    <br/>
+                                    <div className="row col-md-5">
+                                        <button type="submit" className="btn btn-success">
+                                            Xác nhận
+                                        </button>
+                                    </div>
                                 </div>
-                            </form>
+                            </div>
+                        </form>
+                        <br/>
+                        <div className="row col-md-12">
+                            <div className="row col-md-3">
+                                <button type="button" onClick={handleCancelHideFormSearchSku}
+                                        className="btn btn-warning">+
+                                </button>
+                            </div>
                             <br/>
-                            <div className="row col-md-12">
-                                <div className="row col-md-3">
-                                    <button type="button" onClick={handleCancelHideFormSearchSku}
-                                            className="btn btn-warning">+
-                                    </button>
-                                </div>
-                                <br/>
-                                <Table
-                                    rowKey="oop"
-                                    dataSource={dataBillDetails}
-                                    pagination={{
-                                        pageSize: 5,
-                                        showSizeChanger: false,
-                                        showTotal: (total) => `Tổng số ${total} sản phẩm`,
-                                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                            <Table
+                                rowKey="oop"
+                                dataSource={dataBillDetails}
+                                pagination={{
+                                    pageSize: 5,
+                                    showSizeChanger: false,
+                                    showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                    showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                                }}
+                            >
+                                {/* tên sp */}
+                                <Table.Column
+                                    align="center"
+                                    dataIndex="images"
+                                    title="Ảnh"
+                                    render={(text, record) => (<div style={{textAlign: "center"}}>
+                                        <AvtProduct product={record.idProduct}/>
+                                    </div>)}
+                                    width={150}
+                                />
+
+                                {/* tên sp */}
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Tên Sản Phẩm"
+                                    render={(text, record) => {
+                                        return (<Form.Item name="title" style={{margin: 0}}>
+                                            <p>{record.nameProduct}</p>
+                                        </Form.Item>);
                                     }}
-                                >
-                                    {/* tên sp */}
-                                    <Table.Column
-                                        align="center"
-                                        dataIndex="images"
-                                        title="Ảnh"
-                                        render={(text, record) => (
-                                            <div style={{textAlign: "center"}}>
-                                                <AvtProduct product={record.idProduct}/>
-                                            </div>
-                                        )}
-                                        width={150}
-                                    />
+                                />
+                                {/* sumSKU */}
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Phiên Bản"
+                                    render={(text, record) => {
+                                        return (<Form.Item name="title" style={{margin: 0}}>
+                                            <p>
+                                                {record.skuColor} - {record.skuCapacity}
+                                            </p>
+                                        </Form.Item>);
+                                    }}
+                                />
+                                {/* priceSKU  */}
+                                <Table.Column
+                                    align="center"
+                                    key="price"
+                                    dataIndex="price"
+                                    title="Giá Bán"
+                                    sorter={(a, b) => a.price - b.price}
+                                    render={(text, record) => {
+                                        return record.price === null ? (<Form.Item name="title" style={{margin: 0}}>
+                                            <WarningFilled
+                                                value={false}
+                                                style={{
+                                                    color: "#FFCC00",
+                                                }}
+                                            />
+                                            {parseFloat(0).toLocaleString("vi-VN", {
+                                                style: "currency", currency: "VND",
+                                            })}
+                                        </Form.Item>) : (<Form.Item name="title" style={{margin: 0}}>
+                                            {parseFloat(record.price).toLocaleString("vi-VN", {
+                                                style: "currency", currency: "VND",
+                                            })}
+                                        </Form.Item>);
+                                    }}
+                                />
 
-                                    {/* tên sp */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Tên Sản Phẩm"
-                                        render={(text, record) => {
-                                            return (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <p>{record.nameProduct}</p>
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-                                    {/* sumSKU */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Phiên Bản"
-                                        render={(text, record) => {
-                                            return (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <p>
-                                                        {record.skuColor} - {record.skuCapacity}
-                                                    </p>
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-                                    {/* priceSKU  */}
-                                    <Table.Column
-                                        align="center"
-                                        key="price"
-                                        dataIndex="price"
-                                        title="Giá Bán"
-                                        sorter={(a, b) => a.price - b.price}
-                                        render={(text, record) => {
-                                            return record.price === null ? (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <WarningFilled
-                                                        value={false}
-                                                        style={{
-                                                            color: "#FFCC00",
-                                                        }}
-                                                    />
-                                                    {parseFloat(0).toLocaleString("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    })}
-                                                </Form.Item>
-                                            ) : (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    {parseFloat(record.price).toLocaleString("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    })}
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Số lượng"
-                                        render={(text, record) => {
-                                            return (
-                                                <input type="number"
-                                                       value={record.quantity}
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Số lượng"
+                                    render={(text, record) => {
+                                        return (<input type="number"
+                                                       defaultValue={record.quantity}
                                                        min="1"
+                                                       id="quantitySKU"
                                                        className="form-control"
-                                                       onChange={handleChangeQuantity}
-                                                />
-                                            );
-                                        }}
-                                    />
-
-                                    {/* sumImeiTrongKho */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Xóa"
-                                        render={(text, record) => {
-                                            return (
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-danger"
-                                                    onClick={function () {
-                                                        console.log(record)
-                                                    }}
-                                                >
-                                                    Xóa
-                                                </button>
-                                            );
-                                        }}
-                                    />
-                                </Table>
-                            </div>
-                        </Modal>
-                        <Modal
-                            visible={hideFormSearchSku}
-                            onCancel={handleCancelHideFormSearchSku}
-                            width={800}
-                            footer={null}
-                            bodyStyle={{minHeight: "150px"}}
-                        >
-                            <div className="form-search">
-                                <h3 className="align-content-center">TÌM KIẾM SẢN PHẨM</h3>
-                                <Form.Item name="name" noStyle>
-                                    <Input
-                                        style={{width: "300px"}}
-                                        placeholder={"Product Search"}
-                                        suffix={<SearchOutlined/>}
-                                        onChange={handleSearchSku}
-                                        name="key"
-                                    />
-                                </Form.Item>
-                            </div>
-                            <div className="table-sku">
-                                <Table
-                                    rowKey="oop"
-                                    dataSource={listSku}
-                                    pagination={{
-                                        pageSize: 5,
-                                        showSizeChanger: false,
-                                        showTotal: (total) => `Tổng số ${total} sản phẩm`,
-                                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                                                       onChange={() => handleChangeQuantity(record)}
+                                        />);
                                     }}
-                                >
-                                    {/* tên sp */}
-                                    <Table.Column
-                                        align="center"
-                                        dataIndex="images"
-                                        title="Ảnh"
-                                        render={(text, record) => (
-                                            <div style={{textAlign: "center"}}>
-                                                <AvtProduct product={record.productId}/>
-                                            </div>
-                                        )}
-                                        width={150}
-                                    />
+                                />
 
-                                    {/* tên sp */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Tên Sản Phẩm"
-                                        render={(text, record) => {
-                                            return (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <p>{record.name}</p>
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-                                    {/* sumSKU */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Phiên Bản"
-                                        render={(text, record) => {
-                                            return (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <p>
-                                                        {record.color} - {record.capacity}
-                                                    </p>
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-                                    {/* priceSKU  */}
-                                    <Table.Column
-                                        align="center"
-                                        key="price"
-                                        dataIndex="price"
-                                        title="Giá Bán"
-                                        sorter={(a, b) => a.price - b.price}
-                                        render={(text, record) => {
-                                            return record.price === null ? (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <WarningFilled
-                                                        value={false}
-                                                        style={{
-                                                            color: "#FFCC00",
-                                                        }}
-                                                    />
-                                                    {parseFloat(0).toLocaleString("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    })}
-                                                </Form.Item>
-                                            ) : (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    {parseFloat(record.price).toLocaleString("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    })}
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
+                                {/* sumImeiTrongKho */}
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Xóa"
+                                    render={(text, record) => {
+                                        return (<button
+                                            type="button"
+                                            className="btn btn-danger"
+                                            onClick={function () {
+                                                console.log(newBillDetails)
+                                            }}
+                                        >
+                                            Xóa
+                                        </button>);
+                                    }}
+                                />
+                            </Table>
+                        </div>
+                    </Modal>
+                    <Modal
+                        visible={hideFormSearchSku}
+                        onCancel={handleCancelHideFormSearchSku}
+                        width={800}
+                        footer={null}
+                        bodyStyle={{minHeight: "150px"}}
+                    >
+                        <div className="form-search">
+                            <h3 className="align-content-center">TÌM KIẾM SẢN PHẨM</h3>
+                            <Form.Item name="name" noStyle>
+                                <Input
+                                    style={{width: "300px"}}
+                                    placeholder={"Product Search"}
+                                    suffix={<SearchOutlined/>}
+                                    onChange={handleSearchSku}
+                                    name="key"
+                                />
+                            </Form.Item>
+                        </div>
+                        <div className="table-sku">
+                            <Table
+                                rowKey="oop"
+                                dataSource={listSku}
+                                pagination={{
+                                    pageSize: 5,
+                                    showSizeChanger: false,
+                                    showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                    showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                                }}
+                            >
+                                {/* tên sp */}
+                                <Table.Column
+                                    align="center"
+                                    dataIndex="images"
+                                    title="Ảnh"
+                                    render={(text, record) => (<div style={{textAlign: "center"}}>
+                                        <AvtProduct product={record.productId}/>
+                                    </div>)}
+                                    width={150}
+                                />
 
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Số lượng"
-                                        render={(text, record) => {
-                                            return (
-                                                <input type="number" value={record.quantity} readOnly
-                                                       className="form-control"/>
-                                            );
-                                        }}
-                                    />
+                                {/* tên sp */}
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Tên Sản Phẩm"
+                                    render={(text, record) => {
+                                        return (<Form.Item name="title" style={{margin: 0}}>
+                                            <p>{record.name}</p>
+                                        </Form.Item>);
+                                    }}
+                                />
+                                {/* sumSKU */}
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Phiên Bản"
+                                    render={(text, record) => {
+                                        return (<Form.Item name="title" style={{margin: 0}}>
+                                            <p>
+                                                {record.color} - {record.capacity}
+                                            </p>
+                                        </Form.Item>);
+                                    }}
+                                />
+                                {/* priceSKU  */}
+                                <Table.Column
+                                    align="center"
+                                    key="price"
+                                    dataIndex="price"
+                                    title="Giá Bán"
+                                    sorter={(a, b) => a.price - b.price}
+                                    render={(text, record) => {
+                                        return record.price === null ? (<Form.Item name="title" style={{margin: 0}}>
+                                            <WarningFilled
+                                                value={false}
+                                                style={{
+                                                    color: "#FFCC00",
+                                                }}
+                                            />
+                                            {parseFloat(0).toLocaleString("vi-VN", {
+                                                style: "currency", currency: "VND",
+                                            })}
+                                        </Form.Item>) : (<Form.Item name="title" style={{margin: 0}}>
+                                            {parseFloat(record.price).toLocaleString("vi-VN", {
+                                                style: "currency", currency: "VND",
+                                            })}
+                                        </Form.Item>);
+                                    }}
+                                />
 
-                                    {/* sumImeiTrongKho */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Xóa"
-                                        render={(text, record) => {
-                                            return (
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-success"
-                                                    onClick={() => handleAddSkuToBill(record.id)}
-                                                >
-                                                    Thêm
-                                                </button>
-                                            );
-                                        }}
-                                    />
-                                </Table>
-                            </div>
-                        </Modal>
-                    </Content>
-                </Layout>
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Số lượng"
+                                    render={(text, record) => {
+                                        return (<input type="number" value={record.quantity} readOnly
+                                                       className="form-control"/>);
+                                    }}
+                                />
+
+                                {/* sumImeiTrongKho */}
+                                <Table.Column
+                                    align="center"
+                                    key="isActive"
+                                    dataIndex="isActive"
+                                    title="Thêm"
+                                    render={(text, record) => {
+                                        return (<button
+                                            type="button"
+                                            className="btn btn-success"
+                                            onClick={() => handleAddSkuToBill(record)}
+                                        >
+                                            Thêm
+                                        </button>);
+                                    }}
+                                />
+                            </Table>
+                        </div>
+                    </Modal>
+                </Content>
             </Layout>
-        </>
-    );
+        </Layout>
+    </>);
 };
 const UserAccountTable = ({record, onSomeAction}) => {
     const [users, setUsers] = useState([]);
@@ -2665,10 +2449,7 @@ const UserAccountTable = ({record, onSomeAction}) => {
     const toast = useRef(null); //dòng này chỉ cần khai báo 1 cái
     const rejectDeleteImeiCheckBoxBillDetail = () => {
         toast.current.show({
-            severity: "warn",
-            summary: "THÔNG BÁO",
-            detail: "Tiếp tục bán hàng.",
-            life: 3000,
+            severity: "warn", summary: "THÔNG BÁO", detail: "Tiếp tục bán hàng.", life: 3000,
         });
     };
     const confirmDeleteImeiCheckBoxBillDetail = (idBillDetail, codeBill) => {
@@ -2730,8 +2511,7 @@ const UserAccountTable = ({record, onSomeAction}) => {
                 });
         } else {
             notification.error({
-                message: "Xoá Thất Bại!",
-                description: "Hãy Chọn Danh Sách Imei.",
+                message: "Xoá Thất Bại!", description: "Hãy Chọn Danh Sách Imei.",
             });
         }
     };
@@ -2786,8 +2566,7 @@ const UserAccountTable = ({record, onSomeAction}) => {
                         });
                 } else {
                     notification.error({
-                        message: "Xoá Thất Bại!",
-                        description: "Danh Sách Imei Rỗng.",
+                        message: "Xoá Thất Bại!", description: "Danh Sách Imei Rỗng.",
                     });
                 }
             })
@@ -2798,10 +2577,7 @@ const UserAccountTable = ({record, onSomeAction}) => {
     //config khi xoá all imei của bill_detail - phongnh
     const rejectDeleteAllImeiBillDetail = () => {
         toast.current.show({
-            severity: "warn",
-            summary: "THÔNG BÁO",
-            detail: "Tiếp tục bán hàng.",
-            life: 3000,
+            severity: "warn", summary: "THÔNG BÁO", detail: "Tiếp tục bán hàng.", life: 3000,
         });
     };
     const confirmDeleteAllImeiBillDetail = (idBillDetail, codeBill) => {
@@ -2910,16 +2686,13 @@ const UserAccountTable = ({record, onSomeAction}) => {
         //comment vì chưa có dữ liệu
         // Tạo một đối tượng AddCart để gửi lên API
         const item = {
-            codeImei: codeImei,
-            idBillDetail: idBillDetail,
-            codeAccount: idAccount,
+            codeImei: codeImei, idBillDetail: idBillDetail, codeAccount: idAccount,
         };
         addImeiDaBan(item)
             .then((response) => {
                 if (response.data === "") {
                     notification.error({
-                        message: "Thêm Imei Thất Bại!",
-                        description: "imei đã có trong giỏ hàng hoặc đã bán!",
+                        message: "Thêm Imei Thất Bại!", description: "imei đã có trong giỏ hàng hoặc đã bán!",
                     });
                 } else {
                     getListImeiDaBanOfSku(idBillDetail, dataIdSKU)
@@ -2972,28 +2745,19 @@ const UserAccountTable = ({record, onSomeAction}) => {
     function checkSoluongImei() {
         let check = true;
         for (let index = 0; index < dataBillDetailOffline.length; index++) {
-            if (
-                dataBillDetailOffline[index]?.quantity !==
-                dataBillDetailOffline[index]?.soLuongImeiDaChon
-            ) {
+            if (dataBillDetailOffline[index]?.quantity !== dataBillDetailOffline[index]?.soLuongImeiDaChon) {
                 check = false;
                 break;
             }
         }
         if (check) {
             toast.current.show({
-                severity: "success",
-                summary: "Thành công!",
-                detail: "Xác nhận thành công",
-                life: 3000,
+                severity: "success", summary: "Thành công!", detail: "Xác nhận thành công", life: 3000,
             });
             setTempStatus(true);
         } else {
             toast.current.show({
-                severity: "error",
-                summary: "KIỂM TRA IMEI",
-                detail: "Vui lòng kiểm tra lại imei",
-                life: 3000,
+                severity: "error", summary: "KIỂM TRA IMEI", detail: "Vui lòng kiểm tra lại imei", life: 3000,
             });
             setTempStatus(false);
         }
@@ -3021,135 +2785,118 @@ const UserAccountTable = ({record, onSomeAction}) => {
         setIsModelShowImei(false);
     };
 
-    return (
-        <>
-            {" "}
-            <Toast ref={toast}/>
-            <ConfirmDialog/>
-            <List title="Sản phẩm" createButtonProps={undefined}>
-                <Col>
-                    <List>
-                        <Table
-                            rowKey="id"
-                            dataSource={users}
-                            scroll={{x: "max-content"}}
-                            pagination={{
-                                pageSize: 5,
-                                showSizeChanger: false,
-                                showTotal: (total) => `Tổng số ${total} mục`,
-                                showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+    return (<>
+        {" "}
+        <Toast ref={toast}/>
+        <ConfirmDialog/>
+        <List title="Sản phẩm" createButtonProps={undefined}>
+            <Col>
+                <List>
+                    <Table
+                        rowKey="id"
+                        dataSource={users}
+                        scroll={{x: "max-content"}}
+                        pagination={{
+                            pageSize: 5,
+                            showSizeChanger: false,
+                            showTotal: (total) => `Tổng số ${total} mục`,
+                            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                        }}
+                    >
+                        <Table.Column
+                            key="code"
+                            dataIndex="code"
+                            title={"Ảnh sản phẩm"}
+                            render={(text, record) => (<div style={{width: "150px"}}>
+                                {<AvatarProduct product={record.idProduct}/>}
+                            </div>)}
+                        />
+                        <Table.Column
+                            key="code"
+                            dataIndex="code"
+                            title={"Tên sản phẩm"}
+                            render={(text, record) => <span>{record.nameProduct}</span>}
+                        />
+                        <Table.Column
+                            key="code"
+                            dataIndex="code"
+                            title={"Phiên bản"}
+                            render={(text, record) => (<span>{record.skuColor + "-" + record.skuCapacity}</span>)}
+                        />
+                        <Table.Column
+                            key="code"
+                            dataIndex="code"
+                            title={"Số lượng"}
+                            render={(text, record) => <span>{record.quantity}</span>}
+                        />
+                        <Table.Column
+                            key="code"
+                            dataIndex="code"
+                            title={"Giá"}
+                            render={(text, record) => {
+                                return (<NumberField
+                                    options={{
+                                        currency: "VND", style: "currency",
+                                    }}
+                                    value={record.price}
+                                />);
                             }}
-                        >
-                            <Table.Column
-                                key="code"
-                                dataIndex="code"
-                                title={"Ảnh sản phẩm"}
-                                render={(text, record) => (
-                                    <div style={{width: "150px"}}>
-                                        {<AvatarProduct product={record.idProduct}/>}
-                                    </div>
-                                )}
-                            />
-                            <Table.Column
-                                key="code"
-                                dataIndex="code"
-                                title={"Tên sản phẩm"}
-                                render={(text, record) => <span>{record.nameProduct}</span>}
-                            />
-                            <Table.Column
-                                key="code"
-                                dataIndex="code"
-                                title={"Phiên bản"}
-                                render={(text, record) => (
-                                    <span>{record.skuColor + "-" + record.skuCapacity}</span>
-                                )}
-                            />
-                            <Table.Column
-                                key="code"
-                                dataIndex="code"
-                                title={"Số lượng"}
-                                render={(text, record) => <span>{record.quantity}</span>}
-                            />
-                            <Table.Column
-                                key="code"
-                                dataIndex="code"
-                                title={"Giá"}
-                                render={(text, record) => {
-                                    return (
-                                        <NumberField
-                                            options={{
-                                                currency: "VND",
-                                                style: "currency",
-                                            }}
-                                            value={record.price}
-                                        />
-                                    );
-                                }}
-                            />
+                        />
 
-                            <Table.Column
-                                key="code"
-                                dataIndex="code"
-                                title={"Imei"}
-                                render={(text, record) => (
-                                    <Form.Item name="title" style={{margin: 0}}>
-                                        {record.statusBill === "CHO_XAC_NHAN" ? (
-                                            <p>
-                                                <button
-                                                    type="button"
-                                                    // className="btn btn-secondary"
-                                                    className="btn btn-primary btn-sm trash"
-                                                    style={{
-                                                        backgroundColor: "green",
-                                                    }}
-                                                    onClick={() => {
-                                                        handleAddImei(record.idSKU, record.id);
-                                                        openModalAddImei(record.idSKU);
-                                                    }}
-                                                >
-                                                    Thêm Imei
-                                                </button>
-                                            </p>
-                                        ) : (
-                                            <p>
-                                                <button
-                                                    type="button"
-                                                    // className="btn btn-secondary"
-                                                    className="btn btn-primary btn-sm trash"
-                                                    style={{
-                                                        backgroundColor: "orange",
-                                                    }}
-                                                    onClick={() => {
-                                                        showImeiSold(record.id);
-                                                    }}
-                                                >
-                                                    Xem Imei
-                                                </button>
-                                            </p>
-                                        )}
-                                    </Form.Item>
-                                )}
-                            />
+                        <Table.Column
+                            key="code"
+                            dataIndex="code"
+                            title={"Imei"}
+                            render={(text, record) => (<Form.Item name="title" style={{margin: 0}}>
+                                {record.statusBill === "CHO_XAC_NHAN" ? (<p>
+                                    <button
+                                        type="button"
+                                        // className="btn btn-secondary"
+                                        className="btn btn-primary btn-sm trash"
+                                        style={{
+                                            backgroundColor: "green",
+                                        }}
+                                        onClick={() => {
+                                            handleAddImei(record.idSKU, record.id);
+                                            openModalAddImei(record.idSKU);
+                                        }}
+                                    >
+                                        Thêm Imei
+                                    </button>
+                                </p>) : (<p>
+                                    <button
+                                        type="button"
+                                        // className="btn btn-secondary"
+                                        className="btn btn-primary btn-sm trash"
+                                        style={{
+                                            backgroundColor: "orange",
+                                        }}
+                                        onClick={() => {
+                                            showImeiSold(record.id);
+                                        }}
+                                    >
+                                        Xem Imei
+                                    </button>
+                                </p>)}
+                            </Form.Item>)}
+                        />
 
-                            <Table.Column
-                                key="total"
-                                dataIndex="total"
-                                title={"Thành tiền"}
-                                render={(text, record) => {
-                                    return (
-                                        <NumberField
-                                            options={{
-                                                currency: "VND",
-                                                style: "currency",
-                                            }}
-                                            value={record.totalManyOneBillDetail}
-                                        />
-                                    );
-                                }}
-                                sorter={(a, b) => a.totalMoney - b.totalMoney}
-                            />
+                        <Table.Column
+                            key="total"
+                            dataIndex="total"
+                            title={"Thành tiền"}
+                            render={(text, record) => {
+                                return (<NumberField
+                                    options={{
+                                        currency: "VND", style: "currency",
+                                    }}
+                                    value={record.totalManyOneBillDetail}
+                                />);
+                            }}
+                            sorter={(a, b) => a.totalMoney - b.totalMoney}
+                        />
 
-                            {/* <Table.Column
+                        {/* <Table.Column
                 key="actions"
                 dataIndex="actions"
                 title={"Action"}
@@ -3160,89 +2907,85 @@ const UserAccountTable = ({record, onSomeAction}) => {
                 render={(_, record) => (
                   <Dropdown overlay={moreMenu2(record)} trigger={["click"]}>
                     {/* các nút delete accept ... nằm trong moreMenu2 */}
-                            {/* <MoreOutlined
+                        {/* <MoreOutlined
                       onClick={(e) => e.stopPropagation()}
                       style={{
                         fontSize: 24,
                       }}
                     />
                   </Dropdown> */}
-                            {/* )}
+                        {/* )}
               /> */}
-                        </Table>
-                    </List>
-                </Col>
+                    </Table>
+                </List>
+            </Col>
 
-                {/* modal imei - phongnh */}
-                <Modal
-                    visible={isModalVisibleAddImei}
-                    onCancel={handleCancelAddImei}
-                    width={550}
-                    footer={null}
-                    bodyStyle={{minHeight: "800px"}}
-                >
-                    <div className="container py-5">
-                        <div className="row d-flex justify-content-center">
-                            {/* <div className="card"> */}
-                            <div>
-                                <h4
-                                    className="mb-0"
-                                    style={{textAlign: "center", margin: "auto"}}
-                                >
-                                    DANH SÁCH IMEI
-                                </h4>
-                            </div>
-                            <div
-                                className="card-header d-flex justify-content-between align-items-center p-3"
-                                style={{borderTop: "4px solid #ffa900"}}
-                            ></div>
-                            <p
-                                style={{
-                                    marginTop: "10px",
-                                    fontWeight: "bold",
-                                    backgroundColor: "orange",
-                                }}
+            {/* modal imei - phongnh */}
+            <Modal
+                visible={isModalVisibleAddImei}
+                onCancel={handleCancelAddImei}
+                width={550}
+                footer={null}
+                bodyStyle={{minHeight: "800px"}}
+            >
+                <div className="container py-5">
+                    <div className="row d-flex justify-content-center">
+                        {/* <div className="card"> */}
+                        <div>
+                            <h4
+                                className="mb-0"
+                                style={{textAlign: "center", margin: "auto"}}
                             >
-                                Imei Thất Lạc
-                            </p>
-                            <input
-                                id="id-imeithatlac"
-                                className="form-control me-2"
-                                type="search"
-                                placeholder="Search"
-                                aria-label="Search"
-                                name="key"
-                                onChange={handleChangeImeiThatLac}
-                            />
-                            <p></p>
-                            {dataImeiThatLac.length > 0 ? (
-                                <ul class="list-group mb-3">
-                                    <li
-                                        class="list-group-item d-flex justify-content-between"
-                                        style={{backgroundColor: "yellowgreen"}}
-                                    >
-                                        <span>STT</span>
-                                        <span style={{paddingLeft: "10px"}}>Mã Hoá Đơn</span>
-                                        <span style={{paddingLeft: "10px"}}>Tên Sản Phẩm</span>
-                                        <span style={{paddingLeft: "10px"}}>Dung Lượng</span>
-                                        <span style={{paddingLeft: "10px"}}>Màu Sắc</span>
-                                        <span style={{paddingLeft: "10px"}}>Giá</span>
-                                        <span style={{paddingLeft: "10px"}}>Trạng Thái HĐ</span>
-                                    </li>
-                                    {dataImeiThatLac.map((imei, index) => (
-                                        <ul class="list-group mb-3">
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span>{index + 1}:</span>
-                                                <span>{imei.codeBill}</span>
-                                                <span style={{paddingLeft: "10px"}}>{""}</span>
-                                                <span style={{paddingLeft: "10px"}}>{""}</span>
-                                                <span style={{paddingLeft: "10px"}}>{""}</span>
-                                                <span style={{paddingLeft: "10px"}}>{""}</span>
-                                                <span style={{paddingLeft: "10px"}}>{""}</span>
-                                                <span style={{paddingLeft: "10px"}}>{""}</span>
-                                                <span style={{paddingLeft: "10px"}}>{""}</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between">
+                                DANH SÁCH IMEI
+                            </h4>
+                        </div>
+                        <div
+                            className="card-header d-flex justify-content-between align-items-center p-3"
+                            style={{borderTop: "4px solid #ffa900"}}
+                        ></div>
+                        <p
+                            style={{
+                                marginTop: "10px", fontWeight: "bold", backgroundColor: "orange",
+                            }}
+                        >
+                            Imei Thất Lạc
+                        </p>
+                        <input
+                            id="id-imeithatlac"
+                            className="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                            name="key"
+                            onChange={handleChangeImeiThatLac}
+                        />
+                        <p></p>
+                        {dataImeiThatLac.length > 0 ? (<ul class="list-group mb-3">
+                            <li
+                                class="list-group-item d-flex justify-content-between"
+                                style={{backgroundColor: "yellowgreen"}}
+                            >
+                                <span>STT</span>
+                                <span style={{paddingLeft: "10px"}}>Mã Hoá Đơn</span>
+                                <span style={{paddingLeft: "10px"}}>Tên Sản Phẩm</span>
+                                <span style={{paddingLeft: "10px"}}>Dung Lượng</span>
+                                <span style={{paddingLeft: "10px"}}>Màu Sắc</span>
+                                <span style={{paddingLeft: "10px"}}>Giá</span>
+                                <span style={{paddingLeft: "10px"}}>Trạng Thái HĐ</span>
+                            </li>
+                            {dataImeiThatLac.map((imei, index) => (<ul class="list-group mb-3">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>{index + 1}:</span>
+                                    <span>{imei.codeBill}</span>
+                                    <span style={{paddingLeft: "10px"}}>{""}</span>
+                                    <span style={{paddingLeft: "10px"}}>{""}</span>
+                                    <span style={{paddingLeft: "10px"}}>{""}</span>
+                                    <span style={{paddingLeft: "10px"}}>{""}</span>
+                                    <span style={{paddingLeft: "10px"}}>{""}</span>
+                                    <span style={{paddingLeft: "10px"}}>{""}</span>
+                                    <span style={{paddingLeft: "10px"}}>{""}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
                         <span style={{paddingLeft: "25px"}}>
                           {" - "} {imei.nameProduct}
                             {" - "}
@@ -3252,283 +2995,234 @@ const UserAccountTable = ({record, onSomeAction}) => {
                             {" - "}
                             {imei.statusBill}
                         </span>
-                                            </li>
-                                        </ul>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p style={{color: "red"}}>* Không có dữ liệu!</p>
-                            )}
-                            <div
-                                className="card-header d-flex justify-content-between align-items-center"
-                                style={{borderTop: "4px solid #ffa900"}}
-                            ></div>
-                            <p
+                                </li>
+                            </ul>))}
+                        </ul>) : (<p style={{color: "red"}}>* Không có dữ liệu!</p>)}
+                        <div
+                            className="card-header d-flex justify-content-between align-items-center"
+                            style={{borderTop: "4px solid #ffa900"}}
+                        ></div>
+                        <p
+                            style={{
+                                marginTop: "10px", fontWeight: "bold", backgroundColor: "orange",
+                            }}
+                        >
+                            Danh Sách Imei Đã Chọn Của {dataSkuSelected.nameProduct}{" "}
+                            {dataSkuSelected.capacitySKU} - {dataSkuSelected.colorSKU}
+                        </p>
+
+                        <input
+                            id="id-imei-da-ban"
+                            className="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                            name="key"
+                            onChange={handleChangeImeisDaBan}
+                        />
+                        <p></p>
+                        <p style={{textAlign: "right"}}>
+                            <Button
+                                type="text"
                                 style={{
-                                    marginTop: "10px",
-                                    fontWeight: "bold",
-                                    backgroundColor: "orange",
+                                    border: "2px solid black", backgroundColor: "#ff7700", color: "white",
                                 }}
+                                className="col-3 btn-xoa"
+                                danger
+                                onClick={() => confirmDeleteImeiCheckBoxBillDetail()}
                             >
-                                Danh Sách Imei Đã Chọn Của {dataSkuSelected.nameProduct}{" "}
-                                {dataSkuSelected.capacitySKU} - {dataSkuSelected.colorSKU}
-                            </p>
-
-                            <input
-                                id="id-imei-da-ban"
-                                className="form-control me-2"
-                                type="search"
-                                placeholder="Search"
-                                aria-label="Search"
-                                name="key"
-                                onChange={handleChangeImeisDaBan}
-                            />
-                            <p></p>
-                            <p style={{textAlign: "right"}}>
-                                <Button
-                                    type="text"
-                                    style={{
-                                        border: "2px solid black",
-                                        backgroundColor: "#ff7700",
-                                        color: "white",
-                                    }}
-                                    className="col-3 btn-xoa"
-                                    danger
-                                    onClick={() => confirmDeleteImeiCheckBoxBillDetail()}
-                                >
-                                    Xoá Checkbox
-                                </Button>
-                                <span className="col-1"></span>
-                                <Button
-                                    type="text"
-                                    danger
-                                    style={{
-                                        border: "2px solid black",
-                                        backgroundColor: "red",
-                                        color: "white",
-                                    }}
-                                    className="col-3 btn-xoa"
-                                    onClick={() => confirmDeleteAllImeiBillDetail()}
-                                >
-                                    Xoá All Imei
-                                </Button>
-                            </p>
-                            <div
-                                className="card-body"
-                                data-mdb-perfect-scrollbar="true"
-                                style={{position: "relative", height: 250, overflowY: "auto"}}
+                                Xoá Checkbox
+                            </Button>
+                            <span className="col-1"></span>
+                            <Button
+                                type="text"
+                                danger
+                                style={{
+                                    border: "2px solid black", backgroundColor: "red", color: "white",
+                                }}
+                                className="col-3 btn-xoa"
+                                onClick={() => confirmDeleteAllImeiBillDetail()}
                             >
-                                {/* dataSeachImeiDaBan */}
-                                {dataSeachImeiDaBan.length === 0 ? (
-                                    <ul class="list-group mb-3">
-                                        {dataImeiSelected.map((imei, index) => (
-                                            <ul class="list-group mb-3">
-                                                <li class="list-group-item d-flex justify-content-between">
-                                                    <span>{index + 1}</span>
+                                Xoá All Imei
+                            </Button>
+                        </p>
+                        <div
+                            className="card-body"
+                            data-mdb-perfect-scrollbar="true"
+                            style={{position: "relative", height: 250, overflowY: "auto"}}
+                        >
+                            {/* dataSeachImeiDaBan */}
+                            {dataSeachImeiDaBan.length === 0 ? (<ul class="list-group mb-3">
+                                {dataImeiSelected.map((imei, index) => (<ul class="list-group mb-3">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>{index + 1}</span>
 
-                                                    <input
-                                                        type="checkbox"
-                                                        value={imei.codeImeiDaBan}
-                                                        checked={selectedCheckboxes.includes(
-                                                            imei.codeImeiDaBan
-                                                        )}
-                                                        onChange={handleCheckboxChange}
-                                                    />
-                                                    <span style={{paddingLeft: "10px"}}>
+                                        <input
+                                            type="checkbox"
+                                            value={imei.codeImeiDaBan}
+                                            checked={selectedCheckboxes.includes(imei.codeImeiDaBan)}
+                                            onChange={handleCheckboxChange}
+                                        />
+                                        <span style={{paddingLeft: "10px"}}>
                             {imei.codeImeiDaBan}
                           </span>
-                                                    <strong>
-                                                        <Button
-                                                            type="text"
-                                                            danger
-                                                            onClick={() =>
-                                                                handleClearImeiDaBan(
-                                                                    imei.idImeiDaBan,
-                                                                    imei.codeImeiDaBan
-                                                                )
-                                                            }
-                                                        >
-                                                            Hủy
-                                                        </Button>
-                                                    </strong>
-                                                </li>
-                                            </ul>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <ul class="list-group mb-3">
-                                        {dataSeachImeiDaBan.map((imei, index) => (
-                                            <ul class="list-group mb-3">
-                                                <li class="list-group-item d-flex justify-content-between">
-                                                    <span>{index + 1}</span>
-                                                    <span style={{paddingLeft: "10px"}}>
+                                        <strong>
+                                            <Button
+                                                type="text"
+                                                danger
+                                                onClick={() => handleClearImeiDaBan(imei.idImeiDaBan, imei.codeImeiDaBan)}
+                                            >
+                                                Hủy
+                                            </Button>
+                                        </strong>
+                                    </li>
+                                </ul>))}
+                            </ul>) : (<ul class="list-group mb-3">
+                                {dataSeachImeiDaBan.map((imei, index) => (<ul class="list-group mb-3">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>{index + 1}</span>
+                                        <span style={{paddingLeft: "10px"}}>
                             {imei.codeImeiDaBan}
                           </span>
-                                                    <strong>
-                                                        <Button
-                                                            type="text"
-                                                            danger
-                                                            onClick={() =>
-                                                                handleClearImeiDaBan(
-                                                                    imei.idImeiDaBan,
-                                                                    imei.codeImeiDaBan
-                                                                )
-                                                            }
-                                                        >
-                                                            Hủy
-                                                        </Button>
-                                                    </strong>
-                                                </li>
-                                            </ul>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
-                            <div
-                                className="card-header d-flex justify-content-between align-items-center"
-                                style={{borderTop: "4px solid #ffa900"}}
-                            ></div>
-                            <p
-                                style={{
-                                    marginTop: "10px",
-                                    fontWeight: "bold",
-                                    backgroundColor: "orange",
-                                }}
-                            >
-                                Danh Sách Imei Của {dataSkuSelected.nameProduct}{" "}
-                                {dataSkuSelected.capacitySKU} - {dataSkuSelected.colorSKU}
-                            </p>
-                            <input
-                                id="id-imeis"
-                                className="form-control me-2"
-                                type="search"
-                                placeholder="Search"
-                                aria-label="Search"
-                                name="key"
-                                onChange={handleChangeImeis}
-                            />
-                            <p></p>
-                            <div
-                                className="card-body"
-                                data-mdb-perfect-scrollbar="true"
-                                style={{position: "relative", height: 330, overflowY: "auto"}}
-                            >
-                                {/* dataSeachImeis */}
-                                {dataSeachImeis.length === 0 ? (
-                                    <ul class="list-group mb-3">
-                                        {dataImeiClick.map((imei, index) => (
-                                            <ul class="list-group mb-3">
-                                                <li class="list-group-item d-flex justify-content-between">
-                                                    <span>{index + 1}</span>
-                                                    <span style={{paddingLeft: "10px"}}>
+                                        <strong>
+                                            <Button
+                                                type="text"
+                                                danger
+                                                onClick={() => handleClearImeiDaBan(imei.idImeiDaBan, imei.codeImeiDaBan)}
+                                            >
+                                                Hủy
+                                            </Button>
+                                        </strong>
+                                    </li>
+                                </ul>))}
+                            </ul>)}
+                        </div>
+                        <div
+                            className="card-header d-flex justify-content-between align-items-center"
+                            style={{borderTop: "4px solid #ffa900"}}
+                        ></div>
+                        <p
+                            style={{
+                                marginTop: "10px", fontWeight: "bold", backgroundColor: "orange",
+                            }}
+                        >
+                            Danh Sách Imei Của {dataSkuSelected.nameProduct}{" "}
+                            {dataSkuSelected.capacitySKU} - {dataSkuSelected.colorSKU}
+                        </p>
+                        <input
+                            id="id-imeis"
+                            className="form-control me-2"
+                            type="search"
+                            placeholder="Search"
+                            aria-label="Search"
+                            name="key"
+                            onChange={handleChangeImeis}
+                        />
+                        <p></p>
+                        <div
+                            className="card-body"
+                            data-mdb-perfect-scrollbar="true"
+                            style={{position: "relative", height: 330, overflowY: "auto"}}
+                        >
+                            {/* dataSeachImeis */}
+                            {dataSeachImeis.length === 0 ? (<ul class="list-group mb-3">
+                                {dataImeiClick.map((imei, index) => (<ul class="list-group mb-3">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>{index + 1}</span>
+                                        <span style={{paddingLeft: "10px"}}>
                             {imei.codeImei}
-                                                        <br/>
+                                            <br/>
                           </span>
-                                                    <strong>
-                                                        <Button
-                                                            type="text"
-                                                            danger
-                                                            onClick={() =>
-                                                                handleImeiClick(imei.codeImei, dataIdBillDetail)
-                                                            }
-                                                        >
-                                                            Chọn
-                                                        </Button>
-                                                    </strong>
-                                                </li>
-                                            </ul>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <ul class="list-group mb-3">
-                                        {dataSeachImeis.map((imei, index) => (
-                                            <ul class="list-group mb-3">
-                                                <li class="list-group-item d-flex justify-content-between">
-                                                    <span>{index + 1}</span>
-                                                    <span style={{paddingLeft: "10px"}}>
+                                        <strong>
+                                            <Button
+                                                type="text"
+                                                danger
+                                                onClick={() => handleImeiClick(imei.codeImei, dataIdBillDetail)}
+                                            >
+                                                Chọn
+                                            </Button>
+                                        </strong>
+                                    </li>
+                                </ul>))}
+                            </ul>) : (<ul class="list-group mb-3">
+                                {dataSeachImeis.map((imei, index) => (<ul class="list-group mb-3">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>{index + 1}</span>
+                                        <span style={{paddingLeft: "10px"}}>
                             {imei.codeImei}
-                                                        <br/>
+                                            <br/>
                           </span>
-                                                    <strong>
-                                                        <Button
-                                                            type="text"
-                                                            danger
-                                                            onClick={() =>
-                                                                handleImeiClick(imei.codeImei, dataIdBillDetail)
-                                                            }
-                                                        >
-                                                            Chọn
-                                                        </Button>
-                                                    </strong>
-                                                </li>
-                                            </ul>
-                                        ))}
-                                    </ul>
-                                )}
-                            </div>
+                                        <strong>
+                                            <Button
+                                                type="text"
+                                                danger
+                                                onClick={() => handleImeiClick(imei.codeImei, dataIdBillDetail)}
+                                            >
+                                                Chọn
+                                            </Button>
+                                        </strong>
+                                    </li>
+                                </ul>))}
+                            </ul>)}
                         </div>
                     </div>
-                </Modal>
-                {/*
+                </div>
+            </Modal>
+            {/*
                     Hiển thị list imei đã chọn ở bill detail
                 */}
-                <Modal
-                    visible={isModelShowImei}
-                    onCancel={hideModelShowImei}
-                    width={550}
-                    footer={null}
-                    bodyStyle={{minHeight: "800px"}}
-                >
-                    <div className="container py-5">
-                        <div className="row d-flex justify-content-center">
-                            {/* <div className="card"> */}
-                            <div>
-                                <h4
-                                    className="mb-0"
-                                    style={{textAlign: "center", margin: "auto"}}
-                                >
-                                    DANH SÁCH IMEI
-                                </h4>
-                            </div>
-                            <div
-                                className="card-header d-flex justify-content-between align-items-center p-3"
-                                style={{borderTop: "4px solid #ffa900"}}
-                            ></div>
-                            <p
-                                style={{
-                                    marginTop: "10px",
-                                    fontWeight: "bold",
-                                    backgroundColor: "orange",
-                                }}
+            <Modal
+                visible={isModelShowImei}
+                onCancel={hideModelShowImei}
+                width={550}
+                footer={null}
+                bodyStyle={{minHeight: "800px"}}
+            >
+                <div className="container py-5">
+                    <div className="row d-flex justify-content-center">
+                        {/* <div className="card"> */}
+                        <div>
+                            <h4
+                                className="mb-0"
+                                style={{textAlign: "center", margin: "auto"}}
                             >
-                                Danh Sách Imei Đã Chọn
-                            </p>
-                            <p></p>
-                            <div
-                                className="card-body"
-                                data-mdb-perfect-scrollbar="true"
-                                style={{position: "relative", height: 250, overflowY: "auto"}}
-                            >
-                                {/* dataSeachImeiDaBan */}
-                                <ul class="list-group mb-3">
-                                    {dataImeiSelected.map((imei, index) => (
-                                        <ul class="list-group mb-3">
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <span>{index + 1}</span>
-                                                <span style={{paddingLeft: "10px"}}>
+                                DANH SÁCH IMEI
+                            </h4>
+                        </div>
+                        <div
+                            className="card-header d-flex justify-content-between align-items-center p-3"
+                            style={{borderTop: "4px solid #ffa900"}}
+                        ></div>
+                        <p
+                            style={{
+                                marginTop: "10px", fontWeight: "bold", backgroundColor: "orange",
+                            }}
+                        >
+                            Danh Sách Imei Đã Chọn
+                        </p>
+                        <p></p>
+                        <div
+                            className="card-body"
+                            data-mdb-perfect-scrollbar="true"
+                            style={{position: "relative", height: 250, overflowY: "auto"}}
+                        >
+                            {/* dataSeachImeiDaBan */}
+                            <ul class="list-group mb-3">
+                                {dataImeiSelected.map((imei, index) => (<ul class="list-group mb-3">
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>{index + 1}</span>
+                                        <span style={{paddingLeft: "10px"}}>
                           {imei.codeImei}
                         </span>
-                                            </li>
-                                        </ul>
-                                    ))}
-                                </ul>
-                            </div>
+                                    </li>
+                                </ul>))}
+                            </ul>
                         </div>
                     </div>
-                </Modal>
-            </List>
-        </>
-    );
+                </div>
+            </Modal>
+        </List>
+    </>);
 };
 
 export default OderDisplay;
