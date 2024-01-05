@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
@@ -79,4 +80,10 @@ public class BillServerController {
     public Bill noAcceptReturn(@RequestBody AcceptReturn acceptReturn){
         return billService.noAcceptReturn(acceptReturn);
     }
+
+    @GetMapping(value = "/searchBillByCode/{id}")
+    public Optional<Bill> searchBillByCode(@PathVariable Integer id){
+        return billService.searchBillById(id);
+    }
+
 }

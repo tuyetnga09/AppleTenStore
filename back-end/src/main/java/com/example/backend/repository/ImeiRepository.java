@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOffLineIonRespon;
+import com.example.backend.controller.order_management.model.billOffLine.ion.ImeiBillOfflinePDF;
 import com.example.backend.entity.Imei;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -83,6 +84,13 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
             "                                 (select id from bill_detail where id_bill = ?1))", nativeQuery = true)
     void updateStatusImeiWhereIdBill(Integer idBill);
 
+    @Modifying
+    @Transactional
+    @Query(value = "update imei set status = 2 where code_imei in \n" +
+            "                                 (select code_imei from imei_da_ban where id_bill_detail in \n" +
+            "                                 (select id from bill_detail where id_bill = ?1))", nativeQuery = true)
+    void returnStatusImeiWhereIdBill(Integer idBill);
+
     //seach imei -> list imei (co where status)
     @Query(value = "select * from imei where code_imei  like %?1% and status =?2 and sku_id=?3 ORDER BY Id DESC", nativeQuery = true)
     List<Imei> seachImeisWhereStatus(String codeImei, Integer status, Long idSku);
@@ -106,4 +114,10 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
     //laays ra lisst imei theo idsku and status = 3 =4 =5 =7 (đã bán)
     @Query(value = "select * from imei i where i.sku_id=?1 and (i.status =?2 or i.status =4 or i.status =5 or i.status =7)   ORDER BY Id DESC", nativeQuery = true)
     List<Imei> getAllImeiWherIdSkuDaBan(Long idSku, Integer status);
+
+    //lấy thông tin để in hóa đơn
+    @Query(value = "select p.name as 'nameProduct', s.capacity as 'capacity', s.color as 'color', s.price as 'price', i.code_imei as 'codeImei'\n" +
+            "from imei_da_ban i join bill_detail bd on bd.id = i.id_bill_detail join sku s on s.id = bd.id_sku\n" +
+            "join product p on p.id = s.product_id join bill b on b.id = bd.id_bill where b.code = ?1", nativeQuery = true)
+    List<ImeiBillOfflinePDF> getImeiBillDetailPDF(String idBill );
 }

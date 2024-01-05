@@ -109,8 +109,8 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    const checked1 = document.getElementById("htnn_4");
-    checked1.checked = isChecked1;
+    // const checked1 = document.getElementById("htnn_4");
+    // checked1.checked = isChecked1;
     const checked2 = document.getElementById("htnn_5");
     checked2.checked = isChecked2;
     const checked3 = document.getElementById("htnn_6");
@@ -283,41 +283,8 @@ const Checkout = () => {
     setIsChecked1(false);
     setIsChecked2(true);
     setIsChecked3(false);
-    document.getElementById("htnn_4").checked = false;
+    // document.getElementById("htnn_4").checked = false;
     document.getElementById("htnn_6").checked = false;
-  }
-
-  function nhanTaiCuaHang() {
-    const select0 = document.getElementById("0");
-    select0.selected = true;
-    const select_1 = document.getElementById("-1");
-    select_1.selected = true;
-    const select_2 = document.getElementById("-2");
-    select_2.selected = true;
-    const select_3 = document.getElementById("-3");
-    select_3.selected = true;
-    const select = document.getElementById("floatingSelect1");
-    select.hidden = false;
-    const input = document.getElementById("floatingSelect2");
-    input.hidden = true;
-    input.value = "";
-    const divDcmd = document.getElementById("dcmd2");
-    divDcmd.hidden = true;
-    const notDcmd = document.getElementById("notDcmd");
-    notDcmd.hidden = true;
-    setTransportationFeeDTO({
-      toDistrictId: null,
-      toWardCode: null,
-      insuranceValue: null,
-      quantity: 1,
-    });
-    setBill({
-      ...bill,
-      address: "Nhận tại cửa hàng",
-    });
-    setIsChecked1(true);
-    setIsChecked2(false);
-    setIsChecked3(false);
   }
 
   function diaChiMacDinh() {
@@ -342,7 +309,7 @@ const Checkout = () => {
     setIsChecked1(false);
     setIsChecked2(false);
     setIsChecked3(true);
-    document.getElementById("htnn_4").checked = false;
+    // document.getElementById("htnn_4").checked = false;
     document.getElementById("htnn_5").checked = false;
   }
 
@@ -372,7 +339,7 @@ const Checkout = () => {
         storedEmail !== null
           ? storedEmail
           : storedUser !== null
-          ? storedUser.user.email
+          ? storedUser.email
           : "",
     });
   }, [products, fee, soTienThanhToan, ponit]);
@@ -1355,19 +1322,6 @@ const Checkout = () => {
                   <div class="col-md-12">
                     <br />
                     <b for="kh_ngaysinh">Hình thức nhận hàng</b>
-                    <div class="custom-control custom-radio">
-                      <input
-                        id="htnn_4"
-                        type="radio"
-                        class="custom-control-input"
-                        required=""
-                        value="1"
-                        onClick={() => nhanTaiCuaHang()}
-                      ></input>
-                      <label class="custom-control-label" for="htnn_4">
-                        Nhận tại cửa hàng
-                      </label>
-                    </div>
                     <div class="custom-control custom-radio">
                       <input
                         id="htnn_5"

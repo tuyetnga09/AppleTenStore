@@ -1,5 +1,6 @@
 package com.example.backend.controller.product_controller.service.impl;
 
+import com.example.backend.controller.product_controller.model.product_detail.ion.SkuOfBillDetails;
 import com.example.backend.controller.product_controller.model.request.ListSkuProduct;
 import com.example.backend.controller.product_controller.service.Iservice;
 import com.example.backend.entity.Product;
@@ -89,4 +90,13 @@ public class SKUServiceImpl implements Iservice<SKU> {
         }
         return bigDecimals;
     }
+
+    public List<SkuOfBillDetails> getSKUForAddBill(){
+        return skuRepositoty.getSKUForAddBill();
+    }
+
+    public List<SkuOfBillDetails> searchSKUForAddBill(String name){
+        return skuRepositoty.searcgSKUForAddBill(name);
+    }
+
 }

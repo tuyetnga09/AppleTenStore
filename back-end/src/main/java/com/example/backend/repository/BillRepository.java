@@ -7,6 +7,7 @@ import com.example.backend.controller.product_controller.model.respon.IdBillTheo
 import com.example.backend.entity.Bill;
 import com.example.backend.entity.projectIon.AnnualRevenueIon;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,10 +24,12 @@ import java.util.Optional;
 public interface BillRepository extends JpaRepository<Bill, Integer> {
 
 
-    @Query(value = "select bill.id as 'IdBill', p.method as 'PaymentMethod', bill.address as 'Address', bill.phone_number as 'PhoneNumber', bill.code, bill.total_money as 'TotalMoney', bill.status_bill as 'StatusBill' from bill join payments p on bill.id = p.id_bill where bill.code = ?1", nativeQuery = true)
-    BillPayDone findBillPayDoneByCode(String code);
+    @Query(value = "select bill.id as 'IdBill', p.method as 'PaymentMethod', bill.address as 'Address', bill.phone_number as 'PhoneNumber', bill.code, bill.total_money as 'TotalMoney', bill.status_bill as 'StatusBill' from bill join payments p on bill.id = p.id_bill where bill.code = ?1 and bill.phone_number = ?2", nativeQuery = true)
+    BillPayDone findBillPayDoneByCode(String code, String phoneNumber);
 
     Optional<Bill> findByCode(String code);
+
+    Optional<Bill> findById(Integer id);
 
 //    @Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill join account on bill.id_account = account.id join user on account.id_user = user.id where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and user.id like %?3% ORDER BY date_create DESC, Id DESC", nativeQuery = true)
 @Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% ORDER BY date_create DESC, Id DESC", nativeQuery = true)

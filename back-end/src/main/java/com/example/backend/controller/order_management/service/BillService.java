@@ -10,6 +10,7 @@ import com.example.backend.entity.Bill;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface BillService {
     Bill createBillCustomerOnlineRequest( BillRequestOnline request) ;
@@ -24,9 +25,13 @@ public interface BillService {
 
     List<Bill> searchNoDate(String key, String status);
 
+    Optional<Bill> searchBillById(Integer id);
+
     List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
     void updateStatusBill(Integer idAccount,int id);
+
+    void returnStatusBill(Integer id);
 
     void returnBill(Integer idAccount, Integer id, String noteReturn);
 
@@ -50,7 +55,7 @@ public interface BillService {
 
     Bill noAcceptReturn(AcceptReturn AcceptReturn);
 
-    BillPayDone findBillPayDoneByCode(String code);
+    BillPayDone findBillPayDoneByCode(String code, String phoneNumber);
 
     Bill deliveryFailed(Integer idAccount, Integer idBill, String note);
 }

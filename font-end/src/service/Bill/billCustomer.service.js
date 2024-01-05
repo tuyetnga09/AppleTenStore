@@ -10,6 +10,8 @@ export const readAllByIdAndStatus = (id, status) => {
   );
 };
 
-export const readByCodeBill = (code) => {
-  return httpClient.get(`/customer/bill/search/${code}`);
+export const readByCodeBill = (code, phoneNumber) => {
+  return httpClient.get(
+    `/customer/bill/search/${code}?phoneNumber=${phoneNumber}`
+  );
 };
