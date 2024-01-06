@@ -643,55 +643,55 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     //xoá hoá đơn chờ cuối ngày
     @Override
     public List<XoaHoaDonCho> xoaHoaDonChoOffLineCuoiNgay() {
-        List<Bill> billList = billRepository.listBillHoaDonCho();
-
-//        if (billList.size() ==0 || billList == null){
-//            List<XoaHoaDonCho> xoaHoaDonChoList = new ArrayList<>();
-//            return xoaHoaDonChoList;
+//        List<Bill> billList = billRepository.listBillHoaDonCho();
+//
+////        if (billList.size() ==0 || billList == null){
+////            List<XoaHoaDonCho> xoaHoaDonChoList = new ArrayList<>();
+////            return xoaHoaDonChoList;
+////        }
+//        for (Bill bill : billList) {
+//            List<XoaHoaDonChoIon> xoaHoaDonChoList = billDetailRepository.listSanPhamHoaDonChoCanXoa(bill.getId());
+//            if (xoaHoaDonChoList.size() > 0) {
+//                for (XoaHoaDonChoIon xoaHoaDonChoIon : xoaHoaDonChoList) {
+////                    ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(xoaHoaDonChoIon.getCodeImei());
+//                    //xoá imei trong hoá đơn chờ vào cuối nagyf
+//                    imeiDaBanRepository.deleteById(xoaHoaDonChoIon.getIdImeiDaBan());
+//
+//                    //cập nhật lại trngj thái imei khi xoá hoá đơn chờ là 0 (hoạt động)
+//                    Imei imei = imeiRepository.findByCodeImei(xoaHoaDonChoIon.getCodeImei());
+//                    imei.setStatus(0);
+//                    imeiRepository.save(imei);
+//
+//                    //Cập nhật lại bill_detail
+//                    BillDetails billDetailUpdate = billDetailRepository.findById(xoaHoaDonChoIon.getIdBillDetail()).get();
+//                    billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
+////                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
+//                    StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
+//                    billDetailUpdate.setStatusBill(statusBill);
+//                    billDetailRepository.save(billDetailUpdate);
+//                }
+//            }
+//            List<BillDetails> billDetailsList = billDetailRepository.findByBill_Id(bill.getId());
+//            for (BillDetails details : billDetailsList
+//                 ) {
+//                BillDetails billDetailUpdate = billDetailRepository.findById(details.getId()).get();
+//                billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
+////                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
+//                StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
+//                billDetailUpdate.setStatusBill(statusBill);
+//                billDetailRepository.save(billDetailUpdate);
+//            }
+//            //cập nhật bill
+//            Bill billUpdate = billRepository.findById(bill.getId()).get();
+//            billUpdate.setDateUpdate(bill.getDateCreate());
+//            billUpdate.setNote("Đã tự huỷ hoá đơn chờ! - Lý do: Hoá đơn không thanh toán.");
+//            billUpdate.setStatusBill(StatusBill.HUY_HOA_DON_CHO);
+//            billUpdate.setTotalMoney(BigDecimal.valueOf(0));
+//            billUpdate.setMoneyShip(BigDecimal.valueOf(0));
+//            billUpdate.setPersonUpdate(bill.getPersonCreate());
+//
+//            billRepository.save(billUpdate);
 //        }
-        for (Bill bill : billList) {
-            List<XoaHoaDonChoIon> xoaHoaDonChoList = billDetailRepository.listSanPhamHoaDonChoCanXoa(bill.getId());
-            if (xoaHoaDonChoList.size() > 0) {
-                for (XoaHoaDonChoIon xoaHoaDonChoIon : xoaHoaDonChoList) {
-//                    ImeiDaBan imeiDaBan = imeiDaBanRepository.findByCodeImei(xoaHoaDonChoIon.getCodeImei());
-                    //xoá imei trong hoá đơn chờ vào cuối nagyf
-                    imeiDaBanRepository.deleteById(xoaHoaDonChoIon.getIdImeiDaBan());
-
-                    //cập nhật lại trngj thái imei khi xoá hoá đơn chờ là 0 (hoạt động)
-                    Imei imei = imeiRepository.findByCodeImei(xoaHoaDonChoIon.getCodeImei());
-                    imei.setStatus(0);
-                    imeiRepository.save(imei);
-
-                    //Cập nhật lại bill_detail
-                    BillDetails billDetailUpdate = billDetailRepository.findById(xoaHoaDonChoIon.getIdBillDetail()).get();
-                    billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
-//                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
-                    StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
-                    billDetailUpdate.setStatusBill(statusBill);
-                    billDetailRepository.save(billDetailUpdate);
-                }
-            }
-            List<BillDetails> billDetailsList = billDetailRepository.findByBill_Id(bill.getId());
-            for (BillDetails details : billDetailsList
-                 ) {
-                BillDetails billDetailUpdate = billDetailRepository.findById(details.getId()).get();
-                billDetailUpdate.setPersonUpdate(billDetailUpdate.getPersonCreate());
-//                    billDetailUpdate.setPrice(BigDecimal.valueOf(0));
-                StatusBill statusBill = StatusBill.HUY_HOA_DON_CHO;
-                billDetailUpdate.setStatusBill(statusBill);
-                billDetailRepository.save(billDetailUpdate);
-            }
-            //cập nhật bill
-            Bill billUpdate = billRepository.findById(bill.getId()).get();
-            billUpdate.setDateUpdate(bill.getDateCreate());
-            billUpdate.setNote("Đã tự huỷ hoá đơn chờ! - Lý do: Hoá đơn không thanh toán.");
-            billUpdate.setStatusBill(StatusBill.HUY_HOA_DON_CHO);
-            billUpdate.setTotalMoney(BigDecimal.valueOf(0));
-            billUpdate.setMoneyShip(BigDecimal.valueOf(0));
-            billUpdate.setPersonUpdate(bill.getPersonCreate());
-
-            billRepository.save(billUpdate);
-        }
         List<XoaHoaDonCho> list = new ArrayList<>();
         return list;
     }
