@@ -2,6 +2,7 @@ package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
@@ -27,7 +28,7 @@ public class BillServerController {
     }
 
     @GetMapping("/searchNoDate")
-    public List<Bill> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status){
+    public List<BillAndPayment> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status){
         return billService.searchNoDate(key, status);
     }
 

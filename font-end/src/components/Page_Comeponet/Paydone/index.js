@@ -58,7 +58,7 @@ const Paydone = () => {
           createBillAccount(storedBill)
             .then((response) => {
               console.log(response.data);
-              findBillByCode(storedBill?.code)
+              findBillByCode(storedBill?.code, storedBill?.phoneNumber)
                 .then((response) => {
                   setBill(response.data);
                   console.log(response.data);
@@ -76,7 +76,7 @@ const Paydone = () => {
           createBill(storedBill)
             .then((response) => {
               console.log(response.data);
-              findBillByCode(storedBill?.code)
+              findBillByCode(storedBill?.code, storedBill?.phoneNumber)
                 .then((response) => {
                   setBill(response.data);
                   console.log(response.data);
@@ -94,7 +94,7 @@ const Paydone = () => {
         }
       }
     } else {
-      findBillByCode(storedBill2?.code)
+      findBillByCode(storedBill2?.code, storedBill2?.phoneNumber)
         .then((response) => {
           setBill(response.data);
           console.log(response.data);

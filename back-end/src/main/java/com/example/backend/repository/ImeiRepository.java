@@ -86,7 +86,7 @@ public interface ImeiRepository extends JpaRepository<Imei, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "update imei set status = 2 where code_imei in \n" +
+    @Query(value = "update imei set status = 0 where code_imei in \n" +
             "                                 (select code_imei from imei_da_ban where id_bill_detail in \n" +
             "                                 (select id from bill_detail where id_bill = ?1))", nativeQuery = true)
     void returnStatusImeiWhereIdBill(Integer idBill);

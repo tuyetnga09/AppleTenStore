@@ -5,6 +5,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
 import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.controller.order_management.service.BillService;
@@ -448,7 +449,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<Bill> searchNoDate(String key, String status) {
+    public List<BillAndPayment> searchNoDate(String key, String status) {
         return billRepository.searchNoDate(key, status);
     }
 
