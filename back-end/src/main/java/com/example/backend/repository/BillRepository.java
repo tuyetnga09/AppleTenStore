@@ -35,12 +35,96 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
 //    @Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill join account on bill.id_account = account.id join user on account.id_user = user.id where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and user.id like %?3% ORDER BY date_create DESC, Id DESC", nativeQuery = true)
 //@Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% ORDER BY date_create DESC, Id DESC", nativeQuery = true)
 //    List<Bill> searchNoDate(String key, String status);
-@Query(value = "select bill.id as 'Id', bill.address as 'Address', bill.code as 'Code', bill.completion_date as 'CompletionDate', bill.confirmation_date as 'ConfirmationDate', bill.date_create as 'DateCreate', bill.date_update as 'DateUpdate', bill.delivery_date as 'DeliveryDate', bill.item_discount as 'ItemDiscount', bill.money_ship as 'MoneyShip', bill.note as 'Note', bill.person_create as 'PersonCreate', bill.person_update as 'PersonUpdate', bill.phone_number as 'PhoneNumber', bill.receive_date as 'ReceiveDate', bill.status_bill as 'StatusBill', bill.total_money as 'TotalMoney', bill.type as 'Type', bill.user_name as 'UserName', bill.id_account as 'IdAccount', bill.id_customer as 'IdCustomer', bill.number_of_points_used as 'NumberOfPointsUsed', bill.point_conversion_amount as 'PointConversionAmount', bill.note_return as 'NoteReturn', p.method as 'Method' from bill join payments p on bill.id = p.id_bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% ORDER BY bill.date_create DESC, Id DESC", nativeQuery = true)
-List<BillAndPayment> searchNoDate(String key, String status);
+//@Query(value = "select bill.id as 'Id', bill.address as 'Address', bill.code as 'Code', bill.completion_date as 'CompletionDate', bill.confirmation_date as 'ConfirmationDate', bill.date_create as 'DateCreate', bill.date_update as 'DateUpdate', bill.delivery_date as 'DeliveryDate', bill.item_discount as 'ItemDiscount', bill.money_ship as 'MoneyShip', bill.note as 'Note', bill.person_create as 'PersonCreate', bill.person_update as 'PersonUpdate', bill.phone_number as 'PhoneNumber', bill.receive_date as 'ReceiveDate', bill.status_bill as 'StatusBill', bill.total_money as 'TotalMoney', bill.type as 'TypeBill', bill.user_name as 'UserName', bill.id_account as 'IdAccount', bill.id_customer as 'IdCustomer', bill.number_of_points_used as 'NumberOfPointsUsed', bill.point_conversion_amount as 'PointConversionAmount', bill.note_return as 'NoteReturn', p.method as 'Method', p.money_payment as 'MoneyPayment' from bill join payments p on bill.id = p.id_bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% ORDER BY bill.date_create DESC, Id DESC", nativeQuery = true)
+@Query(value = "SELECT\n" +
+        "    bill.id as 'Id',\n" +
+        "    bill.address as 'Address',\n" +
+        "    bill.code as 'Code',\n" +
+        "    bill.completion_date as 'CompletionDate',\n" +
+        "    bill.confirmation_date as 'ConfirmationDate',\n" +
+        "    bill.date_create as 'DateCreate',\n" +
+        "    bill.date_update as 'DateUpdate',\n" +
+        "    bill.delivery_date as 'DeliveryDate',\n" +
+        "    bill.item_discount as 'ItemDiscount',\n" +
+        "    bill.money_ship as 'MoneyShip',\n" +
+        "    bill.note as 'Note',\n" +
+        "    bill.person_create as 'PersonCreate',\n" +
+        "    bill.person_update as 'PersonUpdate',\n" +
+        "    bill.phone_number as 'PhoneNumber',\n" +
+        "    bill.receive_date as 'ReceiveDate',\n" +
+        "    bill.status_bill as 'StatusBill',\n" +
+        "    bill.total_money as 'TotalMoney',\n" +
+        "    bill.type as 'TypeBill',\n" +
+        "    bill.user_name as 'UserName',\n" +
+        "    bill.id_account as 'IdAccount',\n" +
+        "    bill.id_customer as 'IdCustomer',\n" +
+        "    bill.number_of_points_used as 'NumberOfPointsUsed',\n" +
+        "    bill.point_conversion_amount as 'PointConversionAmount',\n" +
+        "    bill.note_return as 'NoteReturn',\n" +
+        "    GROUP_CONCAT(DISTINCT p.method) as 'Method', SUM(CASE WHEN p.method = 'TIEN_MAT' THEN p.money_payment ELSE 0 END) as 'Cash', SUM(CASE WHEN p.method = 'CHUYEN_KHOAN' THEN p.money_payment ELSE 0 END) as 'TransferMoney'\n" +
+        "FROM\n" +
+        "    bill\n" +
+        "        JOIN\n" +
+        "    payments p ON bill.id = p.id_bill\n" +
+        "WHERE\n" +
+        "    (bill.code LIKE %?1% OR bill.person_create LIKE %?1%)\n" +
+        "  AND bill.status_bill LIKE ?2%\n" +
+        "GROUP BY\n" +
+        "    bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update,\n" +
+        "    bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update,\n" +
+        "    bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name,\n" +
+        "    bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return\n" +
+        "ORDER BY\n" +
+        "    bill.date_create DESC,\n" +
+        "    bill.Id DESC", nativeQuery = true)
+    List<BillAndPayment> searchNoDate(String key, String status);
 
 //    @Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer from bill join account on bill.id_account = account.id join user on account.id_user = user.id where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and user.id like %?3% and (bill.date_create >= ?4 and bill.date_create <= ?5) ORDER BY date_create DESC, Id DESC", nativeQuery = true)
-@Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and (bill.date_create >= ?3 and bill.date_create <= ?4) ORDER BY date_create DESC, Id DESC", nativeQuery = true)
-List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
+//@Query(value = "select bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update, bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update, bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name, bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return from bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and (bill.date_create >= ?3 and bill.date_create <= ?4) ORDER BY date_create DESC, Id DESC", nativeQuery = true)
+//List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
+//@Query(value = "select bill.id as 'Id', bill.address as 'Address', bill.code as 'Code', bill.completion_date as 'CompletionDate', bill.confirmation_date as 'ConfirmationDate', bill.date_create as 'DateCreate', bill.date_update as 'DateUpdate', bill.delivery_date as 'DeliveryDate', bill.item_discount as 'ItemDiscount', bill.money_ship as 'MoneyShip', bill.note as 'Note', bill.person_create as 'PersonCreate', bill.person_update as 'PersonUpdate', bill.phone_number as 'PhoneNumber', bill.receive_date as 'ReceiveDate', bill.status_bill as 'StatusBill', bill.total_money as 'TotalMoney', bill.type as 'TypeBill', bill.user_name as 'UserName', bill.id_account as 'IdAccount', bill.id_customer as 'IdCustomer', bill.number_of_points_used as 'NumberOfPointsUsed', bill.point_conversion_amount as 'PointConversionAmount', bill.note_return as 'NoteReturn', p.method as 'Method', p.money_payment as 'MoneyPayment' from bill join payments p on bill.id = p.id_bill where (bill.code like %?1% or bill.person_create like %?1%) and bill.status_bill like ?2% and (bill.date_create >= ?3 and bill.date_create <= ?4) ORDER BY bill.date_create DESC, Id DESC", nativeQuery = true)
+@Query(value = "SELECT\n" +
+        "    bill.id as 'Id',\n" +
+        "    bill.address as 'Address',\n" +
+        "    bill.code as 'Code',\n" +
+        "    bill.completion_date as 'CompletionDate',\n" +
+        "    bill.confirmation_date as 'ConfirmationDate',\n" +
+        "    bill.date_create as 'DateCreate',\n" +
+        "    bill.date_update as 'DateUpdate',\n" +
+        "    bill.delivery_date as 'DeliveryDate',\n" +
+        "    bill.item_discount as 'ItemDiscount',\n" +
+        "    bill.money_ship as 'MoneyShip',\n" +
+        "    bill.note as 'Note',\n" +
+        "    bill.person_create as 'PersonCreate',\n" +
+        "    bill.person_update as 'PersonUpdate',\n" +
+        "    bill.phone_number as 'PhoneNumber',\n" +
+        "    bill.receive_date as 'ReceiveDate',\n" +
+        "    bill.status_bill as 'StatusBill',\n" +
+        "    bill.total_money as 'TotalMoney',\n" +
+        "    bill.type as 'TypeBill',\n" +
+        "    bill.user_name as 'UserName',\n" +
+        "    bill.id_account as 'IdAccount',\n" +
+        "    bill.id_customer as 'IdCustomer',\n" +
+        "    bill.number_of_points_used as 'NumberOfPointsUsed',\n" +
+        "    bill.point_conversion_amount as 'PointConversionAmount',\n" +
+        "    bill.note_return as 'NoteReturn',\n" +
+        "    GROUP_CONCAT(DISTINCT p.method) as 'Method', SUM(CASE WHEN p.method = 'TIEN_MAT' THEN p.money_payment ELSE 0 END) as 'Cash', SUM(CASE WHEN p.method = 'CHUYEN_KHOAN' THEN p.money_payment ELSE 0 END) as 'TransferMoney'\n" +
+        "FROM\n" +
+        "    bill\n" +
+        "        JOIN\n" +
+        "    payments p ON bill.id = p.id_bill\n" +
+        "WHERE\n" +
+        "    (bill.code LIKE %?1% OR bill.person_create LIKE %?1%)\n" +
+        "  AND bill.status_bill LIKE ?2% and (bill.date_create >= ?3 and bill.date_create <= ?4)\n" +
+        "GROUP BY\n" +
+        "    bill.id, bill.address, bill.code, bill.completion_date, bill.confirmation_date, bill.date_create, bill.date_update,\n" +
+        "    bill.delivery_date, bill.item_discount, bill.money_ship, bill.note, bill.person_create, bill.person_update,\n" +
+        "    bill.phone_number, bill.receive_date, bill.status_bill, bill.total_money, bill.type, bill.user_name,\n" +
+        "    bill.id_account, bill.id_customer, bill.number_of_points_used, bill.point_conversion_amount, bill.note_return\n" +
+        "ORDER BY\n" +
+        "    bill.date_create DESC,\n" +
+        "    bill.Id DESC", nativeQuery = true)
+    List<BillAndPayment> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
     @Modifying
     @Transactional

@@ -33,7 +33,7 @@ public class BillServerController {
     }
 
     @GetMapping("/searchWithDate")
-    public List<Bill> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
+    public List<BillAndPayment> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
         return billService.searchWithDate(key, status, dateStart, dateEnd);
     }
 

@@ -153,7 +153,8 @@ public class BillServiceImpl implements BillService {
         Payments payments = Payments.builder()
                 .method(request.getPaymentMethod().equals("TIEN_MAT") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                 .bill(bill)
-                .moneyPayment(request.getTotalMoney())
+//                .moneyPayment(request.getTotalMoney())
+                .moneyPayment(request.getAfterPrice())
                 .dateCreate(new Date(new java.util.Date().getTime()))
                 .typePayment(StatusPayment.THANH_TOAN).build();
         paymentsRepository.save(payments);
@@ -278,7 +279,8 @@ public class BillServiceImpl implements BillService {
             Payments payments = Payments.builder()
                     .method(request.getPaymentMethod().equals("TIEN_MAT") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                     .bill(bill)
-                    .moneyPayment(request.getTotalMoney())
+//                    .moneyPayment(request.getTotalMoney())
+                    .moneyPayment(request.getAfterPrice())
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
@@ -459,7 +461,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd) {
+    public List<BillAndPayment> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd) {
         return billRepository.searchWithDate(key, status, dateStart, dateEnd);
     }
 
