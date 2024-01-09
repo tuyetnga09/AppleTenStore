@@ -853,7 +853,7 @@ const OderDisplay = ({}) => {
   const toast1 = useRef(null);
 
   const reject = () => {
-    toast1.current.show({
+    toast1?.current.show({
       severity: "warn",
       summary: "Hủy thao tác",
       detail: "Bạn đã huy thao tác",
