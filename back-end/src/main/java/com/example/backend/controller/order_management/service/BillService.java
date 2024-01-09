@@ -28,7 +28,7 @@ public interface BillService {
 
     Optional<Bill> searchBillById(Integer id);
 
-    List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
+    List<BillAndPayment> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
     void updateStatusBill(Integer idAccount,int id);
 

@@ -57,4 +57,8 @@ public interface BillAndPayment {
     String getUserName();
 
     String getMethod();
+
+    BigDecimal getCash();
+
+    BigDecimal getTransferMoney();
 }
