@@ -350,6 +350,15 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
+      if (transportationFeeDTO != []) {
+        getFee(transportationFeeDTO)
+          .then((response) => {
+            setFee(response.data.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
       //thông báo khi có hóa đơn mới
       let lastPendingBills = null;
       let timeout = null;
@@ -1079,6 +1088,13 @@ const OderDisplay = ({}) => {
       .catch((error) => {
         console.log(error);
       });
+    getSKUForBillDetail()
+      .then((response) => {
+        setListSku(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   function handleCancelHideForm() {
@@ -1186,15 +1202,18 @@ const OderDisplay = ({}) => {
     setPriceProductBillUpdate(priceProductBillUpdate1);
   };
 
-  function handleAddress() {
-    getFee(transportationFeeDTO)
-      .then((response) => {
-        setFee(response.data.data);
-        console.log(response.data.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
+  function handleAddress(event) {
+    setBillUpdate({
+      ...billUpdate,
+      address:
+        event.target.value +
+        ", " +
+        wardBillUpdate +
+        ", " +
+        districtBillUpdate +
+        ", " +
+        proviceBillUpdate,
+    });
   }
 
   function giaoTanNoi() {
@@ -1245,7 +1264,9 @@ const OderDisplay = ({}) => {
     // document.getElementById("htnn_4").checked = false;
     document.getElementById("htnn_5").checked = false;
   }
-
+  const [proviceBillUpdate, setProviceBillUpdate] = useState();
+  const [districtBillUpdate, setDistrictBillUpdate] = useState();
+  const [wardBillUpdate, setWardBillUpdate] = useState();
   const handleProvince = (event) => {
     if (document.getElementById(event.target.value) !== null) {
       const target = event.target;
@@ -1269,6 +1290,7 @@ const OderDisplay = ({}) => {
       //     ...bill,
       //     province: document.getElementById(value).innerText,
       //   });
+      setProviceBillUpdate(document.getElementById(value).innerText);
       setShowDistricts(true);
     } else {
       setShowDistricts(false);
@@ -1302,6 +1324,7 @@ const OderDisplay = ({}) => {
       //     ...bill,
       //     district: document.getElementById(value).innerText,
       //   });
+      setDistrictBillUpdate(document.getElementById(value).innerText);
       setShowWards(true);
     } else {
       setShowWards(false);
@@ -1329,6 +1352,7 @@ const OderDisplay = ({}) => {
       //     wards: document.getElementById(value).innerText,
       //   });
       //   console.log(bill);
+      setWardBillUpdate(document.getElementById(value).innerText);
     } else {
       setTransportationFeeDTO({
         ...transportationFeeDTO,
@@ -1338,7 +1362,6 @@ const OderDisplay = ({}) => {
     console.log(transportationFeeDTO);
     setIsChecked2(true);
     setIsChecked3(false);
-    console.log(transportationFeeDTO);
   };
 
   function chinhSuaThongTinDatHang() {
@@ -2683,7 +2706,11 @@ const OderDisplay = ({}) => {
                       </div>
                       <br />
                       <div className="row col-md-5">
-                        <button type="submit" className="btn btn-success">
+                        <button
+                          type="button"
+                          className="btn btn-success"
+                          onClick={() => console.log(billUpdate)}
+                        >
                           Xác nhận
                         </button>
                       </div>
@@ -2828,6 +2855,145 @@ const OderDisplay = ({}) => {
                       }}
                     />
                   </Table>
+
+                  <div className="form-search">
+                    <h3 className="align-content-center">TÌM KIẾM SẢN PHẨM</h3>
+                    <Form.Item name="name" noStyle>
+                      <Input
+                        style={{ width: "300px" }}
+                        placeholder={"Product Search"}
+                        suffix={<SearchOutlined />}
+                        onChange={handleSearchSku}
+                        name="key"
+                      />
+                    </Form.Item>
+                  </div>
+                  <div className="table-sku">
+                    <Table
+                      rowKey="oop"
+                      dataSource={listSku}
+                      pagination={{
+                        pageSize: 5,
+                        showSizeChanger: false,
+                        showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                      }}
+                    >
+                      {/* tên sp */}
+                      <Table.Column
+                        align="center"
+                        dataIndex="images"
+                        title="Ảnh"
+                        render={(text, record) => (
+                          <div style={{ textAlign: "center" }}>
+                            <AvtProduct product={record.productId} />
+                          </div>
+                        )}
+                        width={150}
+                      />
+
+                      {/* tên sp */}
+                      <Table.Column
+                        align="center"
+                        key="isActive"
+                        dataIndex="isActive"
+                        title="Tên Sản Phẩm"
+                        render={(text, record) => {
+                          return (
+                            <Form.Item name="title" style={{ margin: 0 }}>
+                              <p>{record.name}</p>
+                            </Form.Item>
+                          );
+                        }}
+                      />
+                      {/* sumSKU */}
+                      <Table.Column
+                        align="center"
+                        key="isActive"
+                        dataIndex="isActive"
+                        title="Phiên Bản"
+                        render={(text, record) => {
+                          return (
+                            <Form.Item name="title" style={{ margin: 0 }}>
+                              <p>
+                                {record.color} - {record.capacity}
+                              </p>
+                            </Form.Item>
+                          );
+                        }}
+                      />
+                      {/* priceSKU  */}
+                      <Table.Column
+                        align="center"
+                        key="price"
+                        dataIndex="price"
+                        title="Giá Bán"
+                        sorter={(a, b) => a.price - b.price}
+                        render={(text, record) => {
+                          return record.price === null ? (
+                            <Form.Item name="title" style={{ margin: 0 }}>
+                              <WarningFilled
+                                value={false}
+                                style={{
+                                  color: "#FFCC00",
+                                }}
+                              />
+                              {parseFloat(0).toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
+                            </Form.Item>
+                          ) : (
+                            <Form.Item name="title" style={{ margin: 0 }}>
+                              {parseFloat(record.price).toLocaleString(
+                                "vi-VN",
+                                {
+                                  style: "currency",
+                                  currency: "VND",
+                                }
+                              )}
+                            </Form.Item>
+                          );
+                        }}
+                      />
+
+                      <Table.Column
+                        align="center"
+                        key="isActive"
+                        dataIndex="isActive"
+                        title="Số lượng"
+                        render={(text, record) => {
+                          return (
+                            <input
+                              type="number"
+                              value={record.quantity}
+                              readOnly
+                              className="form-control"
+                            />
+                          );
+                        }}
+                      />
+
+                      {/* sumImeiTrongKho */}
+                      <Table.Column
+                        align="center"
+                        key="isActive"
+                        dataIndex="isActive"
+                        title="Thêm"
+                        render={(text, record) => {
+                          return (
+                            <button
+                              type="button"
+                              className="btn btn-success"
+                              onClick={() => handleAddSkuToBill(record)}
+                            >
+                              Thêm
+                            </button>
+                          );
+                        }}
+                      />
+                    </Table>
+                  </div>
                 </div>
               </div>
               <hr />
