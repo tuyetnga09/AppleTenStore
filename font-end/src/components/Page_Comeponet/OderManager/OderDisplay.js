@@ -1072,6 +1072,9 @@ const OderDisplay = ({}) => {
                 response.data.map((item) =>
                     temp.push({
                         id: item.id,
+                        idProduct: item.idProduct,
+                        nameProduct: item.nameProduct,
+                        version: item.skuColor + "-" + item.skuCapacity,
                         bill: item.bill,
                         sku: item.idSKU,
                         price: item.price,
@@ -1080,7 +1083,6 @@ const OderDisplay = ({}) => {
                     })
                 );
                 setNewBillDetails(temp);
-                console.log(temp)
                 setHideForm(true);
                 let priceProductBillUpdate1 = 0;
                 temp.map((data) => {
@@ -1153,8 +1155,12 @@ const OderDisplay = ({}) => {
     }
 
     const handleAddSkuToBill = (record) => {
+        console.log(record)
         const billTemp = {
             id: null,
+            idProduct: record.productId,
+            nameProduct: record.name,
+            version: record.color + "-" + record.capacity,
             bill: idBillTemp,
             sku: record.id,
             price: record.price,
