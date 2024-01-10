@@ -3538,7 +3538,7 @@ const OderDisplay = ({}) => {
                   showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
                 }}
               >
-                {/* {dataBillDetails} */}
+                {/* {newBillDetails} */}
                 {/* tên sp */}
                 <Table.Column
                   align="center"
@@ -3546,7 +3546,7 @@ const OderDisplay = ({}) => {
                   title="Ảnh"
                   render={(text, record) => (
                     <div style={{ textAlign: "center" }}>
-                      <AvtProduct product={record.id} />
+                      <AvtProduct product={record.idProduct} />
                     </div>
                   )}
                   width={150}
