@@ -22,13 +22,13 @@ export const updateStatusBill = (idAccount, id, noteReturn) => {
 };
 
 export const returnStatusBill = (id) => {
-  return httpClient.put(
-      `/customer/bill/return-status/${id}`
-  );
+  return httpClient.put(`/customer/bill/return-status/${id}`);
 };
 
-export const findBillByCode = (code) => {
-  return httpClient.get(`/customer/bill/search/${code}`);
+export const findBillByCode = (code, phoneNumber) => {
+  return httpClient.get(
+    `/customer/bill/search/${code}?phoneNumber=${phoneNumber}`
+  );
 };
 
 export const deleteBillById = (id, noteReturn, idAccount) => {
@@ -75,4 +75,4 @@ export const deliveryFailed = (idAccount, idBill, note) => {
 
 export const searchBillByCode = (id) => {
   return httpClient.get(`manager/bill/searchBillByCode/${id}`);
-}
+};

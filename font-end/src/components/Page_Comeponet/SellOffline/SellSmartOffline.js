@@ -336,6 +336,25 @@ export default function SellSmart() {
   }
 
   //Tạo hoá đơn off - phongnh
+  //config khi xoá bill_detail - phongnh
+  const rejectTaoHoaDon = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmTaoHoaDon = () => {
+    confirmDialog({
+      message: "Tạo hoá đơn mới.",
+      header: "XÁC NHẬN THÔNG BÁO",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleCreateOrder(),
+      reject: () => rejectTaoHoaDon(),
+    });
+  };
   async function handleCreateOrder() {
     // Kiểm tra xem đã có mã hóa đơn trước đó hay chưa
     if (dataBillOffLine.codeBill) {
@@ -732,6 +751,24 @@ export default function SellSmart() {
     }));
   };
   const history = useHistory();
+  const rejectTaoKhachHang = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmTaoKhachHang = () => {
+    confirmDialog({
+      message: "Tạo hoá đơn mới.",
+      header: "XÁC NHẬN THÔNG BÁO",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleSave(),
+      reject: () => rejectTaoKhachHang(),
+    });
+  };
   const handleSave = () => {
     const items = { ...khachHang };
     const fullname = document.getElementById("fullname").value;
@@ -977,7 +1014,9 @@ export default function SellSmart() {
       formatCurrency(selecteVoucher ? selecteVoucher.valueVoucher : 0)
     );
     const totalVoucherFreeShip = unidecode(
-      formatCurrency(selecteVoucherFreeShip ? selecteVoucherFreeShip.valueVoucher : 0)
+      formatCurrency(
+        selecteVoucherFreeShip ? selecteVoucherFreeShip.valueVoucher : 0
+      )
     );
     const totalShip = unidecode(formatCurrency(fee == null ? 0 : fee?.total));
 
@@ -1269,32 +1308,32 @@ export default function SellSmart() {
                   .catch((err) => {
                     console.log(err);
                   });
-                  try {
-                    const response = await getImeiToPDF(dataBillOffLine.codeBill);
-                    // setProductList(response.data);
-                    // console.log(productList);
-                    // console.log(response.data);
-                    const dataProduct = response.data;
-                    
-                    const pdfBytes = await createBillSusses(
-                      dataBillOffLine.codeBill,
-                      dataBillOffLine.codeAccount,
-                      dataBillDetailOffline,
-                      selectedValues,
-                      selectedOptions,
-                      dataDoneBill,
-                      dataProduct
-                    );
-                    
-                    const blob = new Blob([pdfBytes], {
-                      type: "application/pdf",
-                    });
-                    
-                    const url = URL.createObjectURL(blob);
-                    window.open(url);
-                  } catch (err) {
-                    console.log(err);
-                  }
+                try {
+                  const response = await getImeiToPDF(dataBillOffLine.codeBill);
+                  // setProductList(response.data);
+                  // console.log(productList);
+                  // console.log(response.data);
+                  const dataProduct = response.data;
+
+                  const pdfBytes = await createBillSusses(
+                    dataBillOffLine.codeBill,
+                    dataBillOffLine.codeAccount,
+                    dataBillDetailOffline,
+                    selectedValues,
+                    selectedOptions,
+                    dataDoneBill,
+                    dataProduct
+                  );
+
+                  const blob = new Blob([pdfBytes], {
+                    type: "application/pdf",
+                  });
+
+                  const url = URL.createObjectURL(blob);
+                  window.open(url);
+                } catch (err) {
+                  console.log(err);
+                }
                 // console.log("ok");
                 const ghiChu = document.getElementById("ghiChu");
                 ghiChu.value = "";
@@ -1358,33 +1397,33 @@ export default function SellSmart() {
                 .catch((err) => {
                   console.log(err);
                 });
-                try {
-                  const response = await getImeiToPDF(dataBillOffLine.codeBill);
-                  // setProductList(response.data);
-                  // console.log(productList);
-                  // console.log(response.data);
-                  const dataProduct = response.data;
-                  
-                  const pdfBytes = await createBillSusses(
-                    dataBillOffLine.codeBill,
-                    dataBillOffLine.codeAccount,
-                    dataBillDetailOffline,
-                    selectedValues,
-                    selectedOptions,
-                    dataDoneBill,
-                    dataProduct
-                  );
-                  
-                  const blob = new Blob([pdfBytes], {
-                    type: "application/pdf",
-                  });
-                  
-                  const url = URL.createObjectURL(blob);
-                  window.open(url);
-                } catch (err) {
-                  console.log(err);
-                }
-              
+              try {
+                const response = await getImeiToPDF(dataBillOffLine.codeBill);
+                // setProductList(response.data);
+                // console.log(productList);
+                // console.log(response.data);
+                const dataProduct = response.data;
+
+                const pdfBytes = await createBillSusses(
+                  dataBillOffLine.codeBill,
+                  dataBillOffLine.codeAccount,
+                  dataBillDetailOffline,
+                  selectedValues,
+                  selectedOptions,
+                  dataDoneBill,
+                  dataProduct
+                );
+
+                const blob = new Blob([pdfBytes], {
+                  type: "application/pdf",
+                });
+
+                const url = URL.createObjectURL(blob);
+                window.open(url);
+              } catch (err) {
+                console.log(err);
+              }
+
               // console.log("ok");
               const ghiChu = document.getElementById("ghiChu");
               ghiChu.value = "";
@@ -1743,8 +1782,8 @@ export default function SellSmart() {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    console.log(target + " check imei");
-    console.log(value + " check imei - name");
+    // console.log(target + " check imei");
+    // console.log(value + " check imei - name");
 
     // let item = { key: "" };
     // item[name] = value;
@@ -1753,7 +1792,7 @@ export default function SellSmart() {
       getListImeiThatLac(value)
         .then((response) => {
           setDataImeiThatLac(response.data);
-          console.log(response.data + " check imei - response.data");
+          // console.log(response.data + " check imei - response.data");
         })
         .catch((error) => {
           console.log(`${error}`);
@@ -2767,7 +2806,7 @@ export default function SellSmart() {
                             marginRight: "10px",
                             backgroundColor: "green",
                           }}
-                          onClick={() => handleCreateOrder()}
+                          onClick={() => confirmTaoHoaDon()}
                         >
                           {/* <FallOutlined /> */}TẠO HOÁ ĐƠN
                         </button>
@@ -3866,7 +3905,7 @@ export default function SellSmart() {
             className="btn btn-success"
             style={{ marginRight: "10px" }}
             type="button"
-            onClick={handleSave}
+            onClick={confirmTaoKhachHang}
           >
             Lưu lại
           </button>

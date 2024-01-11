@@ -4,6 +4,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
 import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.entity.Bill;
@@ -23,11 +24,11 @@ public interface BillService {
     Bill  saveBillOffline(Integer id,  BillRequestOffline request);
     Bill detail(Integer id);
 
-    List<Bill> searchNoDate(String key, String status);
+    List<BillAndPayment> searchNoDate(String key, String status);
 
     Optional<Bill> searchBillById(Integer id);
 
-    List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
+    List<BillAndPayment> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd);
 
     void updateStatusBill(Integer idAccount,int id);
 

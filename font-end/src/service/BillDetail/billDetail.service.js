@@ -13,3 +13,7 @@ export const getAllBillDetailReturn = (status, idBill, codeImei) => {
     `/admin/billDetail/getAllBillDetailReturn?status=${status}&idBill=${idBill}&codeImei=${codeImei}`
   );
 };
+
+export const saveBillDetail = (billDetail) => {
+  return httpClient.post(`/admin/billDetail/save`, billDetail)
+}

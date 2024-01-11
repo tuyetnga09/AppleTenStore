@@ -45,7 +45,7 @@ export default function CartDisplay() {
 
   const toast = useRef(null);
   const [loaded, setLoaded] = useState(false);
-  
+
   useEffect(() => {
     if (idAccount !== null && idAccount !== "") {
       readAll(idAccount)
@@ -213,7 +213,7 @@ export default function CartDisplay() {
 
   const confirmXoaAllGioHang = () => {
     confirmDialog({
-      message: "Bán có muốn xóa hết giỏ hàng?",
+      message: "Bạn có muốn xóa hết giỏ hàng?",
       header: "Giỏ hàng",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
@@ -238,7 +238,7 @@ export default function CartDisplay() {
             .catch((error) => {
               console.log(`${error}`);
             });
-            setQuantity("");
+          setQuantity("");
         });
       }
     } else {
@@ -259,8 +259,8 @@ export default function CartDisplay() {
   return (
     <React.Fragment>
       <>
-      <Toast ref={toast} />
-      <ConfirmDialog />
+        <Toast ref={toast} />
+        <ConfirmDialog />
         <div class="top-nav group">
           <section>
             <div class="social-top-nav">

@@ -2,9 +2,10 @@ import React, {useEffect, useRef, useState} from "react";
 import {useTranslate} from "@refinedev/core";
 import {
     AppstoreAddOutlined,
-    CheckCircleOutlined,
+    BellOutlined,
     CloseCircleOutlined,
     DashboardOutlined,
+    FileDoneOutlined,
     FormOutlined,
     GiftOutlined,
     LogoutOutlined,
@@ -12,13 +13,11 @@ import {
     MenuUnfoldOutlined,
     MoreOutlined,
     SearchOutlined,
+    SettingOutlined,
     ShopOutlined,
+    UnorderedListOutlined,
     UserOutlined,
     WarningFilled,
-    BellOutlined,
-    SettingOutlined,
-    UnorderedListOutlined,
-    FileDoneOutlined,
 } from "@ant-design/icons";
 import {
     Badge,
@@ -36,27 +35,29 @@ import {
     notification,
     Row,
     Select,
+    Space,
+    Switch,
     Table,
     theme,
     Typography,
-    Space,
-    Switch,
 } from "antd";
 import {DateField, List, NumberField} from "@refinedev/antd";
 import {Link, useHistory} from "react-router-dom/cjs/react-router-dom.min";
 import {
+    acceptReturn,
     deleteBillById,
+    deliveryFailed,
+    getAllBillCXN,
+    getAllBillOFFLINECXN,
+    getCountBillChoXacNhan,
+    noAcceptReturn,
+    returnBillById,
+    returnStatusBill,
+    searchBillByCode,
     searchNoDate,
     searchWithDate,
-    updateStatusBill,
     updateAllCVC,
-    getAllBillCXN,
-    getCountBillChoXacNhan,
-    returnBillById,
-    getAllBillOFFLINECXN,
-    acceptReturn,
-    noAcceptReturn,
-    deliveryFailed, returnStatusBill, searchBllByCode, searchBillByCode,
+    updateStatusBill,
 } from "../../../service/Bill/bill.service";
 import {readAllUser} from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -85,10 +86,18 @@ import {
     findBillDetails,
     getAllBillDetailReturn,
 } from "../../../service/BillDetail/billDetail.service";
-import AudioTT from "../../../nontification/H42VWCD-notification.mp3";
 import AvtProduct from "../../custumer_componet/avtProduct";
 import HeaderDashBoard from "../header/index";
-import {getSKUForBillDetail, searchSKUForBillDetail} from "../../../service/sku.service";
+import {
+    getSKUForBillDetail,
+    searchSKUForBillDetail,
+} from "../../../service/sku.service";
+import {readAllWard} from "../../../service/AddressAPI/ward.service";
+import {readAllDistrict} from "../../../service/AddressAPI/district.service";
+import {readAllProvince} from "../../../service/AddressAPI/province.service";
+import {readAllByIdUser} from "../../../service/AddressAPI/address.service";
+import {getFee} from "../../../service/AddressAPI/fee.service";
+import {data} from "jquery";
 
 const {RangePicker} = DatePicker;
 const {SubMenu} = Menu;
@@ -132,21 +141,52 @@ const OderDisplay = ({}) => {
     const [billOFFCXN, setBillOFFCXN] = useState([]);
     const [dataBillDetails, setDataBillDetails] = useState([]); // lisst bill detail cuar idbill
     const [returnStatus, setReturnStatus] = useState(1);
+    const [isChecked2, setIsChecked2] = useState(true);
+    const [isChecked3, setIsChecked3] = useState(false);
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [province_id, setProvince_id] = useState();
+    const [district_id, setDistrict_id] = useState();
+    const [showDistricts, setShowDistricts] = useState(true);
+    const [showWards, setShowWards] = useState(true);
+    const [fee, setFee] = useState([]);
+    const [transportationFeeDTO, setTransportationFeeDTO] = useState({
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: null,
+        quantity: 1,
+    });
+    const [defaultAddress, setDefaultAddress] = useState([]);
 
     const orderSelectProps = {
         options: [
             {label: "Tạo hóa đơn", value: "TAO_HOA_DON"},
-            {label: "Chờ xác nhận", value: "CHO_XAC_NHAN"},
+            {
+                label: "Chờ xác nhận",
+                value: "CHO_XAC_NHAN",
+            },
             {label: "Chờ vận chuyển", value: "CHO_VAN_CHUYEN"},
-            {label: "Vận chuyển", value: "VAN_CHUYEN"},
+            {
+                label: "Vận chuyển",
+                value: "VAN_CHUYEN",
+            },
             {label: "Đã thanh toán", value: "DA_THANH_TOAN"},
-            {label: "Không trả hàng", value: "KHONG_TRA_HANG"},
+            {
+                label: "Không trả hàng",
+                value: "KHONG_TRA_HANG",
+            },
             {label: "Trả hàng", value: "TRA_HANG"},
             {label: "Đã hủy", value: "DA_HUY"},
-            {label: "Yêu cầu trả hàng", value: "YEU_CAU_TRA_HANG"},
+            {
+                label: "Yêu cầu trả hàng",
+                value: "YEU_CAU_TRA_HANG",
+            },
             {label: "Giao hàng thất bại", value: "GIAO_HANG_THAT_BAI"},
-            {label: "Đã huỷ hoá đơn chờ", value: "HUY_HOA_DON_CHO"},
-            // Thêm các giá trị khác nếu cần
+            {
+                label: "Đã huỷ hoá đơn chờ",
+                value: "HUY_HOA_DON_CHO",
+            }, // Thêm các giá trị khác nếu cần
         ],
     };
 
@@ -198,14 +238,12 @@ const OderDisplay = ({}) => {
 
     const [filtersNoDate, setFiltersNoDate] = useState({
         key: "",
-        status: "",
-        // user: "",
+        status: "", // user: "",
     });
 
     const [filtersWithDate, setFiltersWithDate] = useState({
         key: "",
-        status: "",
-        // user: "",
+        status: "", // user: "",
         dateStart: "",
         dateEnd: "",
     });
@@ -231,7 +269,7 @@ const OderDisplay = ({}) => {
             if (dateFilter.value == "") {
                 searchNoDate(paramsString)
                     .then((response) => {
-                        // console.log(response.data);
+                        console.log(response.data);
                         setOder(response.data);
                         // setEditedVoucher(response.data);
                     })
@@ -281,6 +319,46 @@ const OderDisplay = ({}) => {
                 .catch((error) => {
                     console.log(`${error}`);
                 });
+            readAllProvince()
+                .then((response) => {
+                    setProvinces(response.data.data);
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+            readAllDistrict(province_id)
+                .then((response) => {
+                    // setDistricts(response.data.data);
+                    if (showDistricts === true) {
+                        setDistricts(response.data.data);
+                    } else {
+                        setDistricts([]);
+                    }
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+            readAllWard(district_id)
+                .then((response) => {
+                    // setWards(response.data.data);
+                    if (showWards === true) {
+                        setWards(response.data.data);
+                    } else {
+                        setWards([]);
+                    }
+                })
+                .catch((error) => {
+                    console.log(`${error}`);
+                });
+            if (transportationFeeDTO != []) {
+                getFee(transportationFeeDTO)
+                    .then((response) => {
+                        setFee(response.data.data);
+                    })
+                    .catch((error) => {
+                        console.log(`${error}`);
+                    });
+            }
             //thông báo khi có hóa đơn mới
             let lastPendingBills = null;
             let timeout = null;
@@ -340,7 +418,17 @@ const OderDisplay = ({}) => {
             .catch((err) => {
                 console.log(err);
             });
-    }, [filtersNoDate, filtersWithDate, load, playSound]);
+    }, [
+        filtersNoDate,
+        filtersWithDate,
+        load,
+        playSound,
+        province_id,
+        district_id,
+        showDistricts,
+        showWards,
+        transportationFeeDTO,
+    ]);
 
     function handleChangeSearch(event) {
         const target = event.target;
@@ -563,17 +651,18 @@ const OderDisplay = ({}) => {
                     header: "Xác nhận",
                     icon: "pi pi-info-circle",
                     acceptClassName: "p-button-danger",
-                    accept: () => updateStatusBill(idAccount, id)
-                        .then((response) => {
-                            notification.success({
-                                message: "Xác nhận thành công!",
-                            });
-                            setLoad(!load);
-                            loadDisplay = !loadDisplay;
-                        })
-                        .catch((error) => {
-                            console.error("Error updating status:", error);
-                        }),
+                    accept: () =>
+                        updateStatusBill(idAccount, id)
+                            .then((response) => {
+                                notification.success({
+                                    message: "Xác nhận thành công!",
+                                });
+                                setLoad(!load);
+                                loadDisplay = !loadDisplay;
+                            })
+                            .catch((error) => {
+                                console.error("Error updating status:", error);
+                            }),
                     reject,
                 });
             } else {
@@ -604,7 +693,7 @@ const OderDisplay = ({}) => {
         try {
             let tempObj = {};
             const responses = await getAllBillCXN();
-            console.log(responses.data)
+            console.log(responses.data);
 
             for (let index = 0; index < responses.data.length; index++) {
                 if (responses.data[index]?.bill === id) {
@@ -762,16 +851,16 @@ const OderDisplay = ({}) => {
         });
     };
 
-    const toast = useRef(null);
+    const toast1 = useRef(null);
 
     const reject = () => {
-        toast.current.show({
+        toast1?.current.show({
             severity: "warn",
             summary: "Hủy thao tác",
             detail: "Bạn đã huy thao tác",
             life: 3000,
         });
-    }
+    };
 
     // Hàm để ẩn Modal
     const handleCannelReturnDetails = () => {
@@ -922,83 +1011,390 @@ const OderDisplay = ({}) => {
     );
 
     const returnStatusBillPrev = async (id) => {
-        returnStatusBill(id).then((response) => {
-            notification.success({
-                message: "Hoàn trả trạng thái thành công!",
-                description: "Đã xác nhận hoàn trả",
-            });
-            setLoad(!load);
-            loadDisplay = !loadDisplay;
-        })
-    }
+        confirmDialog({
+            message: "Xác nhận thao tác?",
+            header: "Xác nhận",
+            icon: "pi pi-info-circle",
+            acceptClassName: "p-button-danger",
+            accept: () =>
+                returnStatusBill(id)
+                    .then((response) => {
+                        notification.success({
+                            message: "Hoàn trả trạng thái thành công!",
+                            description: "Đã xác nhận hoàn trả",
+                        });
+                        setLoad(!load);
+                        loadDisplay = !loadDisplay;
+                    })
+                    .catch((error) => {
+                        console.error("Error updating status:", error);
+                    }),
+            reject,
+        });
+    };
 
     // Tạo biến bill sau khi tìm đc
     const [billUpdate, setBillUpdate] = useState({});
-    const [hideForm, setHideForm] = useState(false)
+    const [hideForm, setHideForm] = useState(false);
+
+    let [newBillDetails, setNewBillDetails] = useState([]);
+    const [idBillTemp, setIdBillTemp] = useState(null);
+    let temp = [];
+
+    const [priceProductBillUpdate, setPriceProductBillUpdate] = useState(0);
 
     function searchBill(id) {
-        searchBillByCode(id).then((response) => {
-            setBillUpdate(response.data);
-            console.log(response.data)
-        }).catch((error) => {
-            console.log(error)
-        });
+        setIdBillTemp(id);
+        searchBillByCode(id)
+            .then((response) => {
+                setBillUpdate(response.data);
+                console.log(response.data.account);
+                if (response.data.account != null) {
+                    readAllByIdUser(response.data.account.id)
+                        .then((res) => {
+                            setDefaultAddress(res.data);
+                            console.log(res.data);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                } else {
+                    setDefaultAddress([]);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
 
-        findBillDetails(id).then((response) => {
-            setDataBillDetails(response.data);
-            setHideForm(true);
-        }).catch((error) => {
-            console.log(error);
-        });
-
-
+        findBillDetails(id)
+            .then((response) => {
+                setDataBillDetails(response.data);
+                response.data.map((item) =>
+                    temp.push({
+                        id: item.id,
+                        idProduct: item.idProduct,
+                        nameProduct: item.nameProduct,
+                        version: item.skuColor + "-" + item.skuCapacity,
+                        bill: item.bill,
+                        sku: item.idSKU,
+                        price: item.price,
+                        quantity: item.quantity,
+                        status: "CHO_XAC_NHAN",
+                    })
+                );
+                setNewBillDetails(temp);
+                setHideForm(true);
+                let priceProductBillUpdate1 = 0;
+                temp.map((data) => {
+                    priceProductBillUpdate1 += data.price * data.quantity;
+                });
+                setPriceProductBillUpdate(priceProductBillUpdate1);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        getSKUForBillDetail()
+            .then((response) => {
+                setListSku(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 
     function handleCancelHideForm() {
+        temp.length = 0;
+        setIdBillTemp(null);
         setHideForm(false);
+        document.getElementById("hoVaTen").disabled = true;
+        document.getElementById("phoneNumber").disabled = true;
+        document.getElementById("chinhSua1").hidden = true;
+        document.getElementById("notDcmd").hidden = true;
     }
 
     function hanldeName(event) {
         setBillUpdate({
             ...billUpdate,
-            userName: event.target.value
-        })
+            userName: event.target.value,
+        });
     }
 
     function hanldPhone(event) {
         setBillUpdate({
             ...billUpdate,
-            phoneNumber: event.target.value
-        })
+            phoneNumber: event.target.value,
+        });
     }
 
     const [hideFormSearchSku, setHideFormSearchSku] = useState(false);
     const [listSku, setListSku] = useState([]);
 
-
     function handleCancelHideFormSearchSku() {
-        getSKUForBillDetail().then((response) => {
-            setListSku(response.data)
-        }).catch((error) => {
-            console.log(error)
-        })
+        getSKUForBillDetail()
+            .then((response) => {
+                setListSku(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
         setHideFormSearchSku(!hideFormSearchSku);
     }
 
     const handleSearchSku = (event) => {
-        searchSKUForBillDetail(event.target.value).then((response) => {
-            setListSku(response.data)
-        }).catch((error) => {
-            console.log(error)
-        })
+        searchSKUForBillDetail(event.target.value)
+            .then((response) => {
+                setListSku(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    // Delete product from bill
+    const handleDeleteSkuFromBillDetail = (record) => {
+        setNewBillDetails([...newBillDetails.filter((item) => item.sku !== record.sku)])
     }
 
-    const handleAddSkuToBill = (id) => {
+    // Add product to bill
+    const handleAddSkuToBill = (record) => {
+        if (newBillDetails.find((item) => item.sku === record.id) !== undefined) {
+            newBillDetails.map((item, index) => {
+                if (item.sku === record.id) {
+                    newBillDetails[newBillDetails.indexOf(item)] = {
+                        ...item,
+                        quantity: item.quantity + 1
+                    };
+                    document.getElementById(`quantitySKU_${index}`).value = item.quantity + 1
+                }
+            });
+            setNewBillDetails((newBillDetails) => [...newBillDetails]);
+        } else {
+            const billTemp = {
+                id: null,
+                idProduct: record.productId,
+                nameProduct: record.name,
+                version: record.color + "-" + record.capacity,
+                bill: idBillTemp,
+                sku: record.id,
+                price: record.price,
+                quantity: 1,
+                status: "CHO_XAC_NHAN",
+            };
+            setNewBillDetails((newBillDetails) => [...newBillDetails, billTemp]);
+        }
+    };
 
+    const handleChangeQuantity = (record) => {
+        newBillDetails.map((item, index) => {
+            if (item.sku === record.sku) {
+                newBillDetails[newBillDetails.indexOf(item)] = {
+                    ...item,
+                    quantity: Number(
+                        document.getElementById(`quantitySKU_${index}`).value
+                    ),
+                };
+            }
+        });
+        setNewBillDetails((newBillDetails) => [...newBillDetails]);
+
+        let totalQuantity = 0;
+        newBillDetails.map((data) => {
+            totalQuantity += data.quantity;
+        });
+        let priceTotal = 0;
+        newBillDetails.map((data) => {
+            priceTotal += data.price * data.quantity;
+        });
+
+        setTransportationFeeDTO({
+            ...transportationFeeDTO,
+            quantity: totalQuantity,
+            insuranceValue: priceTotal,
+        });
+
+        getFee(transportationFeeDTO)
+            .then((response) => {
+                setFee(response.data.data);
+                console.log(response.data.data);
+            })
+            .catch((error) => {
+                console.log(`${error}`);
+            });
+        let priceProductBillUpdate1 = 0;
+        newBillDetails.map((data) => {
+            priceProductBillUpdate1 += data.price * data.quantity;
+        });
+        setPriceProductBillUpdate(priceProductBillUpdate1);
+    };
+
+    function handleAddress(event) {
+        setBillUpdate({
+            ...billUpdate,
+            address:
+                event.target.value +
+                ", " +
+                wardBillUpdate +
+                ", " +
+                districtBillUpdate +
+                ", " +
+                proviceBillUpdate,
+        });
     }
 
-    function handleChangeQuantity(event) {
-        
+    function giaoTanNoi() {
+        const select0 = document.getElementById("0");
+        select0.selected = true;
+        // const select = document.getElementById("floatingSelect1");
+        // select.hidden = true;
+        const input = document.getElementById("floatingSelect2");
+        input.hidden = false;
+        const divDcmd = document.getElementById("dcmd2");
+        divDcmd.hidden = true;
+        const notDcmd = document.getElementById("notDcmd");
+        notDcmd.hidden = false;
+        // setTransportationFeeDTO({
+        //   toDistrictId: null,
+        //   toWardCode: null,
+        //   insuranceValue: null,
+        //   quantity: 1,
+        // });
+        // setIsChecked1(false);
+        setIsChecked2(true);
+        setIsChecked3(false);
+        // document.getElementById("htnn_4").checked = false;
+        document.getElementById("htnn_6").checked = false;
+    }
+
+    function diaChiMacDinh() {
+        const input = document.getElementById("floatingSelect2");
+        input.value = "";
+        const select_1 = document.getElementById("-1");
+        select_1.selected = true;
+        const select_2 = document.getElementById("-2");
+        select_2.selected = true;
+        const select_3 = document.getElementById("-3");
+        select_3.selected = true;
+        const divDcmd = document.getElementById("dcmd2");
+        divDcmd.hidden = false;
+        const notDcmd = document.getElementById("notDcmd");
+        notDcmd.hidden = true;
+        // setTransportationFeeDTO({
+        //   toDistrictId: null,
+        //   toWardCode: null,
+        //   insuranceValue: null,
+        //   quantity: 1,
+        // });
+        setIsChecked2(false);
+        setIsChecked3(true);
+        // document.getElementById("htnn_4").checked = false;
+        document.getElementById("htnn_5").checked = false;
+    }
+
+    const [proviceBillUpdate, setProviceBillUpdate] = useState();
+    const [districtBillUpdate, setDistrictBillUpdate] = useState();
+    const [wardBillUpdate, setWardBillUpdate] = useState();
+    const handleProvince = (event) => {
+        if (document.getElementById(event.target.value) !== null) {
+            const target = event.target;
+            const value = target.value;
+            setProvince_id(value);
+            console.log(value);
+            setDistrict_id(null);
+            setWards([]);
+            let totalQuantity = 0;
+            newBillDetails.map((data) => {
+                totalQuantity += data.quantity;
+            });
+            let item = {
+                toDistrictId: null,
+                toWardCode: null,
+                insuranceValue: null,
+                quantity: totalQuantity,
+            };
+            setTransportationFeeDTO(item);
+            //   setBill({
+            //     ...bill,
+            //     province: document.getElementById(value).innerText,
+            //   });
+            setProviceBillUpdate(document.getElementById(value).innerText);
+            setShowDistricts(true);
+        } else {
+            setShowDistricts(false);
+            setShowWards(false);
+            setTransportationFeeDTO({
+                toDistrictId: null,
+                toWardCode: null,
+                // insuranceValue: soTienThanhToan,
+                // quantity: quantityCart,
+            });
+        }
+        setIsChecked2(true);
+        setIsChecked3(false);
+    };
+
+    const handleDistrict = (event) => {
+        if (document.getElementById(event.target.value) !== null) {
+            const target = event.target;
+            const value = target.value;
+            setDistrict_id(value);
+            let item = {...transportationFeeDTO};
+            item["toDistrictId"] = parseInt(value);
+            let priceTotal = 0;
+            newBillDetails.map((data) => {
+                priceTotal += data.price * data.quantity;
+            });
+            item["insuranceValue"] = parseInt(priceTotal);
+            setTransportationFeeDTO(item);
+            console.log(transportationFeeDTO);
+            //   setBill({
+            //     ...bill,
+            //     district: document.getElementById(value).innerText,
+            //   });
+            setDistrictBillUpdate(document.getElementById(value).innerText);
+            setShowWards(true);
+        } else {
+            setShowWards(false);
+            setTransportationFeeDTO({
+                toDistrictId: event.target.value,
+                toWardCode: null,
+                // insuranceValue: soTienThanhToan,
+                // quantity: quantityCart,
+            });
+        }
+        setIsChecked2(true);
+        setIsChecked3(false);
+    };
+
+    const handleWard = (event) => {
+        if (document.getElementById(event.target.value) !== null) {
+            const target = event.target;
+            const value = target.value;
+            let item = {...transportationFeeDTO};
+            item["toWardCode"] = value;
+            setTransportationFeeDTO(item);
+            console.log(transportationFeeDTO);
+            //   setBill({
+            //     ...bill,
+            //     wards: document.getElementById(value).innerText,
+            //   });
+            //   console.log(bill);
+            setWardBillUpdate(document.getElementById(value).innerText);
+        } else {
+            setTransportationFeeDTO({
+                ...transportationFeeDTO,
+                toWardCode: event.target.value,
+            });
+        }
+        console.log(transportationFeeDTO);
+        setIsChecked2(true);
+        setIsChecked3(false);
+    };
+
+    function chinhSuaThongTinDatHang() {
+        document.getElementById("hoVaTen").disabled = false;
+        document.getElementById("phoneNumber").disabled = false;
+        document.getElementById("chinhSua1").hidden = false;
+        document.getElementById("notDcmd").hidden = false;
     }
 
     return (
@@ -1259,16 +1655,24 @@ const OderDisplay = ({}) => {
                                         <Table.Column
                                             key="edit"
                                             dataIndex="edit"
-                                            render={(text, record) =>
-                                                <FormOutlined
-                                                    style={{
-                                                        color: "orange",
-                                                    }}
-                                                    onClick={() => {
-                                                        searchBill(record.id)
-                                                    }}
-                                                />
-                                            }
+                                            render={(text, record) => (
+                                                <span>
+                          {record.statusBill === "CHO_XAC_NHAN" &&
+                          record.typeBill === "ONLINE" &&
+                          record.method === "TIEN_MAT" ? (
+                              <FormOutlined
+                                  style={{
+                                      color: "orange",
+                                  }}
+                                  onClick={() => {
+                                      searchBill(record.id);
+                                  }}
+                              />
+                          ) : (
+                              ""
+                          )}
+                        </span>
+                                            )}
                                         />
                                         <Table.Column
                                             key="code"
@@ -1300,6 +1704,54 @@ const OderDisplay = ({}) => {
                                                 );
                                             }}
                                             sorter={(a, b) => a.totalMoney - b.totalMoney}
+                                        />
+                                        <Table.Column
+                                            key="method"
+                                            dataIndex="method"
+                                            title={t("HTTT")}
+                                            render={(text, record) => (
+                                                <span>
+                          {record.method === "TIEN_MAT"
+                              ? "Tiền mặt"
+                              : record.method === "CHUYEN_KHOAN"
+                                  ? "Chuyển khoản"
+                                  : "Tiền mặt và chuyển khoản"}
+                        </span>
+                                            )}
+                                        />
+                                        <Table.Column
+                                            key="cash"
+                                            dataIndex="cash"
+                                            title={t("Tiền mặt")}
+                                            render={(text, record) => {
+                                                return (
+                                                    <NumberField
+                                                        options={{
+                                                            currency: "VND",
+                                                            style: "currency",
+                                                        }}
+                                                        value={record.cash}
+                                                    />
+                                                );
+                                            }}
+                                            // sorter={(a, b) => a.moneyPayment - b.moneyPayment}
+                                        />
+                                        <Table.Column
+                                            key="transferMoney"
+                                            dataIndex="transferMoney"
+                                            title={t("Tiền chuyển khoản")}
+                                            render={(text, record) => {
+                                                return (
+                                                    <NumberField
+                                                        options={{
+                                                            currency: "VND",
+                                                            style: "currency",
+                                                        }}
+                                                        value={record.transferMoney}
+                                                    />
+                                                );
+                                            }}
+                                            // sorter={(a, b) => a.moneyPayment - b.moneyPayment}
                                         />
                                         <Table.Column
                                             key="user"
@@ -1340,8 +1792,10 @@ const OderDisplay = ({}) => {
                                             key="dateCreate"
                                             dataIndex="dateCreate"
                                             title={t("Ngày tạo")}
-                                            render={(text, record) => (
-                                                // <span>{record.dateCreate}</span>
+                                            render={(
+                                                text,
+                                                record // <span>{record.dateCreate}</span>
+                                            ) => (
                                                 <DateField
                                                     value={record.dateCreate}
                                                     format="DD/MM/YYYY"
@@ -1353,8 +1807,10 @@ const OderDisplay = ({}) => {
                                             key="dateUpdate"
                                             dataIndex="dateUpdate"
                                             title={t("Ngày cập nhật")}
-                                            render={(text, record) => (
-                                                // <span>{record.dateUpdate}</span>
+                                            render={(
+                                                text,
+                                                record // <span>{record.dateUpdate}</span>
+                                            ) => (
                                                 <DateField
                                                     value={record.dateUpdate}
                                                     format="DD/MM/YYYY"
@@ -1437,124 +1893,211 @@ const OderDisplay = ({}) => {
                                   />
                               </Dropdown>
                           ) : record.statusBill === "CHO_VAN_CHUYEN" ? (
-                              <Dropdown
-                                  overlay={
-                                      <Menu mode="vertical">
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "green",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => confirm2(record.id)}
-                                          >
-                                              Đã lấy hàng
-                                          </Menu.Item>
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <FormOutlined
-                                                      style={{
-                                                          color: "orange",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => {
-                                                  returnStatusBillPrev(record.id);
-                                              }}
-                                          >
-                                              Trở lại
-                                          </Menu.Item>
-                                      </Menu>
-                                  }
-                                  trigger={["click"]}
-                              >
-                                  <MoreOutlined
-                                      style={{
-                                          fontSize: 24,
-                                      }}
-                                  />
-                              </Dropdown>
+                              record.typeBill === "ONLINE" ? (
+                                  <Dropdown
+                                      overlay={
+                                          <Menu mode="vertical">
+                                              <Menu.Item
+                                                  key="1"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <CloseCircleOutlined
+                                                          style={{
+                                                              color: "green",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() => confirm2(record.id)}
+                                              >
+                                                  Đã lấy hàng
+                                              </Menu.Item>
+                                              <Menu.Item
+                                                  key="1"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <FormOutlined
+                                                          style={{
+                                                              color: "orange",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() => {
+                                                      returnStatusBillPrev(record.id);
+                                                  }}
+                                              >
+                                                  Trở lại
+                                              </Menu.Item>
+                                          </Menu>
+                                      }
+                                      trigger={["click"]}
+                                  >
+                                      <MoreOutlined
+                                          style={{
+                                              fontSize: 24,
+                                          }}
+                                      />
+                                  </Dropdown>
+                              ) : (
+                                  <Dropdown
+                                      overlay={
+                                          <Menu mode="vertical">
+                                              <Menu.Item
+                                                  key="1"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <CloseCircleOutlined
+                                                          style={{
+                                                              color: "green",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() => confirm2(record.id)}
+                                              >
+                                                  Đã lấy hàng
+                                              </Menu.Item>
+                                          </Menu>
+                                      }
+                                      trigger={["click"]}
+                                  >
+                                      <MoreOutlined
+                                          style={{
+                                              fontSize: 24,
+                                          }}
+                                      />
+                                  </Dropdown>
+                              )
+
                           ) : record.statusBill === "VAN_CHUYEN" ? (
-                              <Dropdown
-                                  overlay={
-                                      <Menu mode="vertical">
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "green",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => confirm2(record.id)}
-                                          >
-                                              Đã thanh toán
-                                          </Menu.Item>
-                                          <Menu.Item
-                                              key="2"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <CloseCircleOutlined
-                                                      style={{
-                                                          color: "red",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() =>
-                                                  handleClickDeliveryFailed(record)
-                                              }
-                                          >
-                                              Giao hàng thất bại
-                                          </Menu.Item>
-                                          <Menu.Item
-                                              key="1"
-                                              disabled={record.stock <= 0}
-                                              style={{
-                                                  fontWeight: 500,
-                                              }}
-                                              icon={
-                                                  <FormOutlined
-                                                      style={{
-                                                          color: "orange",
-                                                      }}
-                                                  />
-                                              }
-                                              onClick={() => {
-                                                  returnStatusBillPrev(record.id);
-                                              }}
-                                          >
-                                              Trở lại
-                                          </Menu.Item>
-                                      </Menu>
-                                  }
-                                  trigger={["click"]}
-                              >
-                                  <MoreOutlined
-                                      style={{
-                                          fontSize: 24,
-                                      }}
-                                  />
-                              </Dropdown>
+                              record.typeBill === "ONLINE" ? (
+                                  <Dropdown
+                                      overlay={
+                                          <Menu mode="vertical">
+                                              <Menu.Item
+                                                  key="1"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <CloseCircleOutlined
+                                                          style={{
+                                                              color: "green",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() => confirm2(record.id)}
+                                              >
+                                                  Đã thanh toán
+                                              </Menu.Item>
+                                              <Menu.Item
+                                                  key="2"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <CloseCircleOutlined
+                                                          style={{
+                                                              color: "red",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() =>
+                                                      handleClickDeliveryFailed(record)
+                                                  }
+                                              >
+                                                  Giao hàng thất bại
+                                              </Menu.Item>
+                                              <Menu.Item
+                                                  key="1"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <FormOutlined
+                                                          style={{
+                                                              color: "orange",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() => {
+                                                      returnStatusBillPrev(record.id);
+                                                  }}
+                                              >
+                                                  Trở lại
+                                              </Menu.Item>
+                                          </Menu>
+                                      }
+                                      trigger={["click"]}
+                                  >
+                                      <MoreOutlined
+                                          style={{
+                                              fontSize: 24,
+                                          }}
+                                      />
+                                  </Dropdown>
+                              ) : (
+                                  <Dropdown
+                                      overlay={
+                                          <Menu mode="vertical">
+                                              <Menu.Item
+                                                  key="1"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <CloseCircleOutlined
+                                                          style={{
+                                                              color: "green",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() => confirm2(record.id)}
+                                              >
+                                                  Đã thanh toán
+                                              </Menu.Item>
+                                              <Menu.Item
+                                                  key="2"
+                                                  disabled={record.stock <= 0}
+                                                  style={{
+                                                      fontWeight: 500,
+                                                  }}
+                                                  icon={
+                                                      <CloseCircleOutlined
+                                                          style={{
+                                                              color: "red",
+                                                          }}
+                                                      />
+                                                  }
+                                                  onClick={() =>
+                                                      handleClickDeliveryFailed(record)
+                                                  }
+                                              >
+                                                  Giao hàng thất bại
+                                              </Menu.Item>
+                                          </Menu>
+                                      }
+                                      trigger={["click"]}
+                                  >
+                                      <MoreOutlined
+                                          style={{
+                                              fontSize: 24,
+                                          }}
+                                      />
+                                  </Dropdown>
+                              )
+
                           ) : record.statusBill === "DA_THANH_TOAN" &&
                           Math.floor(
                               (new Date(
@@ -1596,8 +2139,7 @@ const OderDisplay = ({}) => {
                                           .padStart(2, "0")
                                   )) /
                               (1000 * 60 * 60 * 24)
-                          ) <= 3 ? (
-                              // <Dropdown
+                          ) <= 3 ? ( // <Dropdown
                               //   overlay={
                               //     <Menu mode="vertical">
                               //       <Menu.Item
@@ -2054,323 +2596,554 @@ const OderDisplay = ({}) => {
                             </form>
                         </Modal>
 
-                        /*
-                        Modal hiển thị form edit
-                        */
                         <Modal
                             visible={hideForm}
                             onCancel={handleCancelHideForm}
-                            width={800}
+                            width={1500}
                             footer={null}
                             bodyStyle={{minHeight: "150px"}}
                         >
-                            <form onSubmit={handleSubmitDeliveryFailed}>
-                                <div className="col-md-12">
-                                    <div className="col-md-8 order-md-1">
-                                        <h4 className="mb-3">Thông tin khách hàng</h4>
-                                        <div className="row">
-                                            <div className="col-md-5">
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Tên"
-                                                    name="name"
-                                                    value={billUpdate.userName}
-                                                    onChange={hanldeName}
-                                                    required
-                                                ></input>
-                                                <br/>
-                                            </div>
-                                            <div className="col-md-5">
-                                                <input
-                                                    id="phoneNumber"
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Số điện thoại"
-                                                    name="phoneNumber"
-                                                    value={billUpdate.phoneNumber}
-                                                    onChange={hanldPhone}
-                                                    required
-                                                ></input>
-                                            </div>
-                                            <div className="col-md-12">
-                                                <b htmlFor="kh_ngaysinh">Hình thức nhận hàng</b>
-                                                <div className="custom-control custom-radio">
+                            <h1 style={{textAlign: "center"}}>Thông tin hóa đơn</h1>
+                            <hr/>
+                            <div className="row">
+                                <form
+                                    className="col-md-4"
+                                    //   onSubmit={handleSubmitDeliveryFailed}
+                                >
+                                    <div>
+                                        <div className="col-md-12 order-md-1">
+                                            <h4 className="mb-3">Thông tin đặt hàng</h4>
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <p>Họ và tên</p>
                                                     <input
-                                                        id="htnn_5"
-                                                        type="radio"
-                                                        className="custom-control-input"
-                                                        required=""
-                                                        value="2"
-                                                        // onClick={() => giaoTanNoi()}
+                                                        id="hoVaTen"
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Tên"
+                                                        name="name"
+                                                        value={billUpdate.userName}
+                                                        onChange={hanldeName}
+                                                        required
+                                                        disabled
                                                     ></input>
-                                                    <label className="custom-control-label" htmlFor="htnn_5">
-                                                        Giao tận nơi
-                                                    </label>
+                                                    <br/>
                                                 </div>
-                                                <div
-                                                    className="custom-control custom-radio"
-                                                    id="dcmd"
-                                                    // hidden={storedUser !== null ? false : true}
-                                                >
+                                                <div className="col-md-6">
+                                                    <p>Số điện thoại</p>
                                                     <input
-                                                        id="htnn_6"
-                                                        type="radio"
-                                                        className="custom-control-input"
-                                                        required=""
-                                                        value="3"
-                                                        // onClick={() => diaChiMacDinh()}
-                                                        hidden
+                                                        id="phoneNumber"
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Số điện thoại"
+                                                        name="phoneNumber"
+                                                        value={billUpdate.phoneNumber}
+                                                        onChange={hanldPhone}
+                                                        required
+                                                        disabled
                                                     ></input>
-                                                    <label className="custom-control-label" htmlFor="htnn_6">
-                                                        Địa chỉ mặc định
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div hidden className="row" id="notDcmd">
-                                                <div className="col-md-4">
-                                                    <br/>
-                                                    <label htmlFor="kh_cmnd">Tỉnh, thành phố:</label>
-                                                    <select
-                                                        className="form-select"
-                                                        id="provinces"
-                                                        aria-label="Floating label select example"
-                                                        // onChange={handleProvince}
-                                                    >
-                                                        <option selected id="-1"></option>
-                                                        {/*{provinces.map((pr) => {*/}
-                                                        {/*    return (*/}
-                                                        {/*        <option*/}
-                                                        {/*            id={pr.ProvinceID}*/}
-                                                        {/*            key={pr.ProvinceID}*/}
-                                                        {/*            value={pr.ProvinceID}*/}
-                                                        {/*        >*/}
-                                                        {/*            {pr.ProvinceName}*/}
-                                                        {/*        </option>*/}
-                                                        {/*    );*/}
-                                                        {/*})}*/}
-                                                    </select>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <br/>
-                                                    <label htmlFor="kh_cmnd">Quận, huyện:</label>
-                                                    <select
-                                                        className="form-select"
-                                                        id="districts"
-                                                        aria-label="Floating label select example"
-                                                        // onChange={handleDistrict}
-                                                    >
-                                                        <option selected id="-2"></option>
-                                                        {/*{districts.map((dt) => {*/}
-                                                        {/*    return (*/}
-                                                        {/*        <option*/}
-                                                        {/*            id={dt.DistrictID}*/}
-                                                        {/*            key={dt.DistrictID}*/}
-                                                        {/*            value={dt.DistrictID}*/}
-                                                        {/*        >*/}
-                                                        {/*            {dt.DistrictName}*/}
-                                                        {/*        </option>*/}
-                                                        {/*    );*/}
-                                                        {/*})}*/}
-                                                    </select>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <br/>
-                                                    <label htmlFor="kh_cmnd">Phường, xã:</label>
-                                                    <select
-                                                        className="form-select"
-                                                        id="wards"
-                                                        aria-label="Floating label select example"
-                                                        // onChange={handleWard}
-                                                    >
-                                                        <option selected id="-3"></option>
-                                                        {/*{wards.map((w) => {*/}
-                                                        {/*    return (*/}
-                                                        {/*        <option*/}
-                                                        {/*            id={w.WardCode}*/}
-                                                        {/*            key={w.WardID}*/}
-                                                        {/*            value={w.WardCode}*/}
-                                                        {/*        >*/}
-                                                        {/*            {w.WardName}*/}
-                                                        {/*        </option>*/}
-                                                        {/*    );*/}
-                                                        {/*})}*/}
-                                                    </select>
                                                 </div>
                                                 <div className="col-md-12">
-                                                    <input
-                                                        hidden
-                                                        id="floatingSelect2"
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder="Địa chỉ cụ thể"
-                                                        aria-label="default input example"
-                                                        // onChange={handleAddress}
-                                                    />
+                                                    <p>Địa chỉ</p>
+                                                    <textarea
+                                                        class="form-control"
+                                                        aria-label="With textarea"
+                                                        value={billUpdate.address}
+                                                        disabled
+                                                    ></textarea>
+                                                    {/* <input
+                            id="address"
+                            type="text"
+                            className="form-control"
+                            placeholder="Địa chỉ"
+                            name="address"
+                            value={billUpdate.address}
+                            // onChange={hanldPhone}
+                            required
+                            disabled
+                          ></input> */}
                                                 </div>
-                                            </div>
-                                            <div id="dcmd2" hidden>
-                                                <br/>
-                                                <label htmlFor="kh_cmnd">Mời bạn chọn địa chỉ mặc định:</label>
-                                                <select
-                                                    className="form-select"
-                                                    id="floatingSelect"
-                                                    aria-label="Floating label select example"
-                                                    // onChange={handleDefaultAddress}
-                                                >
-                                                    <option selected id="0" value={0}></option>
-                                                    {/*{defaultAddress.map((da) => {*/}
-                                                    {/*    return (*/}
-                                                    {/*        <option id={da.id} key={da.id} value={da.id}>*/}
-                                                    {/*            {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}*/}
-                                                    {/*            {da.tinhThanhPho}*/}
-                                                    {/*        </option>*/}
-                                                    {/*    );*/}
-                                                    {/*})}*/}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <br/>
-                                        <div className="row col-md-5">
-                                            <button type="submit" className="btn btn-success">
-                                                Xác nhận
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                            <br/>
-                            <div className="row col-md-12">
-                                <div className="row col-md-3">
-                                    <button type="button" onClick={handleCancelHideFormSearchSku}
-                                            className="btn btn-warning">+
-                                    </button>
-                                </div>
-                                <br/>
-                                <Table
-                                    rowKey="oop"
-                                    dataSource={dataBillDetails}
-                                    pagination={{
-                                        pageSize: 5,
-                                        showSizeChanger: false,
-                                        showTotal: (total) => `Tổng số ${total} sản phẩm`,
-                                        showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
-                                    }}
-                                >
-                                    {/* tên sp */}
-                                    <Table.Column
-                                        align="center"
-                                        dataIndex="images"
-                                        title="Ảnh"
-                                        render={(text, record) => (
-                                            <div style={{textAlign: "center"}}>
-                                                <AvtProduct product={record.idProduct}/>
-                                            </div>
-                                        )}
-                                        width={150}
-                                    />
-
-                                    {/* tên sp */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Tên Sản Phẩm"
-                                        render={(text, record) => {
-                                            return (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <p>{record.nameProduct}</p>
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-                                    {/* sumSKU */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Phiên Bản"
-                                        render={(text, record) => {
-                                            return (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <p>
-                                                        {record.skuColor} - {record.skuCapacity}
-                                                    </p>
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-                                    {/* priceSKU  */}
-                                    <Table.Column
-                                        align="center"
-                                        key="price"
-                                        dataIndex="price"
-                                        title="Giá Bán"
-                                        sorter={(a, b) => a.price - b.price}
-                                        render={(text, record) => {
-                                            return record.price === null ? (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    <WarningFilled
-                                                        value={false}
-                                                        style={{
-                                                            color: "#FFCC00",
-                                                        }}
-                                                    />
-                                                    {parseFloat(0).toLocaleString("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    })}
-                                                </Form.Item>
-                                            ) : (
-                                                <Form.Item name="title" style={{margin: 0}}>
-                                                    {parseFloat(record.price).toLocaleString("vi-VN", {
-                                                        style: "currency",
-                                                        currency: "VND",
-                                                    })}
-                                                </Form.Item>
-                                            );
-                                        }}
-                                    />
-
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Số lượng"
-                                        render={(text, record) => {
-                                            return (
-                                                <input type="number"
-                                                       value={record.quantity}
-                                                       min="1"
-                                                       className="form-control"
-                                                       onChange={handleChangeQuantity}
-                                                />
-                                            );
-                                        }}
-                                    />
-
-                                    {/* sumImeiTrongKho */}
-                                    <Table.Column
-                                        align="center"
-                                        key="isActive"
-                                        dataIndex="isActive"
-                                        title="Xóa"
-                                        render={(text, record) => {
-                                            return (
                                                 <button
                                                     type="button"
-                                                    className="btn btn-danger"
-                                                    onClick={function () {
-                                                        console.log(record)
+                                                    class="btn btn-outline-warning"
+                                                    onClick={() => chinhSuaThongTinDatHang()}
+                                                    style={{
+                                                        marginTop: "10px",
                                                     }}
                                                 >
-                                                    Xóa
+                                                    Chỉnh sửa thông tin đặt hàng
                                                 </button>
-                                            );
+                                                <div className="col-md-12" hidden id="chinhSua1">
+                                                    <b htmlFor="kh_ngaysinh">Hình thức nhận hàng</b>
+                                                    <div className="custom-control custom-radio">
+                                                        <input
+                                                            id="htnn_5"
+                                                            type="radio"
+                                                            className="custom-control-input"
+                                                            required=""
+                                                            value="2"
+                                                            onClick={() => giaoTanNoi()}
+                                                            checked={isChecked2}
+                                                        ></input>
+                                                        <label
+                                                            className="custom-control-label"
+                                                            htmlFor="htnn_5"
+                                                        >
+                                                            Giao tận nơi
+                                                        </label>
+                                                    </div>
+                                                    <div
+                                                        className="custom-control custom-radio"
+                                                        id="dcmd"
+                                                        // hidden={storedUser !== null ? false : true}
+                                                    >
+                                                        <input
+                                                            id="htnn_6"
+                                                            type="radio"
+                                                            className="custom-control-input"
+                                                            required=""
+                                                            value="3"
+                                                            onClick={() => diaChiMacDinh()}
+                                                            // hidden
+                                                        ></input>
+                                                        <label
+                                                            className="custom-control-label"
+                                                            htmlFor="htnn_6"
+                                                        >
+                                                            Địa chỉ mặc định
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div hidden className="row" id="notDcmd">
+                                                    <div className="col-md-4">
+                                                        <br/>
+                                                        <label htmlFor="kh_cmnd">Tỉnh, thành phố:</label>
+                                                        <select
+                                                            className="form-select"
+                                                            id="provinces"
+                                                            aria-label="Floating label select example"
+                                                            onChange={handleProvince}
+                                                        >
+                                                            <option selected id="-1"></option>
+                                                            {provinces.map((pr) => {
+                                                                return (
+                                                                    <option
+                                                                        id={pr.ProvinceID}
+                                                                        key={pr.ProvinceID}
+                                                                        value={pr.ProvinceID}
+                                                                    >
+                                                                        {pr.ProvinceName}
+                                                                    </option>
+                                                                );
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <br/>
+                                                        <label htmlFor="kh_cmnd">Quận, huyện:</label>
+                                                        <select
+                                                            className="form-select"
+                                                            id="districts"
+                                                            aria-label="Floating label select example"
+                                                            onChange={handleDistrict}
+                                                        >
+                                                            <option selected id="-2"></option>
+                                                            {districts.map((dt) => {
+                                                                return (
+                                                                    <option
+                                                                        id={dt.DistrictID}
+                                                                        key={dt.DistrictID}
+                                                                        value={dt.DistrictID}
+                                                                    >
+                                                                        {dt.DistrictName}
+                                                                    </option>
+                                                                );
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <br/>
+                                                        <label htmlFor="kh_cmnd">Phường, xã:</label>
+                                                        <select
+                                                            className="form-select"
+                                                            id="wards"
+                                                            aria-label="Floating label select example"
+                                                            onChange={handleWard}
+                                                        >
+                                                            <option selected id="-3"></option>
+                                                            {wards.map((w) => {
+                                                                return (
+                                                                    <option
+                                                                        id={w.WardCode}
+                                                                        key={w.WardID}
+                                                                        value={w.WardCode}
+                                                                    >
+                                                                        {w.WardName}
+                                                                    </option>
+                                                                );
+                                                            })}
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-md-12">
+                                                        <input
+                                                            // hidden
+                                                            id="floatingSelect2"
+                                                            className="form-control"
+                                                            type="text"
+                                                            placeholder="Địa chỉ cụ thể"
+                                                            aria-label="default input example"
+                                                            onChange={handleAddress}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div id="dcmd2" hidden>
+                                                    <br/>
+                                                    <label htmlFor="kh_cmnd">
+                                                        Mời bạn chọn địa chỉ mặc định:
+                                                    </label>
+                                                    <select
+                                                        className="form-select"
+                                                        id="floatingSelect"
+                                                        aria-label="Floating label select example"
+                                                        // onChange={handleDefaultAddress}
+                                                    >
+                                                        <option selected id="0" value={0}></option>
+                                                        {defaultAddress.map((da) => {
+                                                            return (
+                                                                <option id={da.id} key={da.id} value={da.id}>
+                                                                    {da.address}, {da.xaPhuong}, {da.quanHuyen},{" "}
+                                                                    {da.tinhThanhPho}
+                                                                </option>
+                                                            );
+                                                        })}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br/>
+                                            <div className="row col-md-5">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-success"
+                                                    onClick={() => console.log(newBillDetails)}
+                                                >
+                                                    Xác nhận
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <br/>
+                                <div className="col-md-8">
+                                    <div className="row col-md-3">
+                                        Giỏ hàng của khách hàng
+                                        {/* <button
+                    type="button"
+                    onClick={handleCancelHideFormSearchSku}
+                    className="btn btn-warning"
+                  >
+                    +
+                  </button> */}
+                                    </div>
+                                    <br/>
+                                    <Table
+                                        rowKey="oop"
+                                        dataSource={newBillDetails}
+                                        pagination={{
+                                            pageSize: 5,
+                                            showSizeChanger: false,
+                                            showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                            showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
                                         }}
-                                    />
-                                </Table>
+                                    >
+                                        {/* tên sp */}
+                                        <Table.Column
+                                            align="center"
+                                            dataIndex="images"
+                                            title="Ảnh"
+                                            render={(text, record) => (
+                                                <div style={{textAlign: "center"}}>
+                                                    <AvtProduct product={record.idProduct}/>
+                                                </div>
+                                            )}
+                                            width={150}
+                                        />
+
+                                        {/* tên sp */}
+                                        <Table.Column
+                                            align="center"
+                                            key="isActive"
+                                            dataIndex="isActive"
+                                            title="Tên Sản Phẩm"
+                                            render={(text, record) => {
+                                                return (
+                                                    <Form.Item name="title" style={{margin: 0}}>
+                                                        <p>{record.nameProduct}</p>
+                                                    </Form.Item>
+                                                );
+                                            }}
+                                        />
+                                        {/* sumSKU */}
+                                        <Table.Column
+                                            align="center"
+                                            key="isActive"
+                                            dataIndex="isActive"
+                                            title="Phiên Bản"
+                                            render={(text, record) => {
+                                                return (
+                                                    <Form.Item name="title" style={{margin: 0}}>
+                                                        <p>
+                                                            {record.skuColor} - {record.skuCapacity}
+                                                        </p>
+                                                    </Form.Item>
+                                                );
+                                            }}
+                                        />
+                                        {/* priceSKU  */}
+                                        <Table.Column
+                                            align="center"
+                                            key="price"
+                                            dataIndex="price"
+                                            title="Giá Bán"
+                                            sorter={(a, b) => a.price - b.price}
+                                            render={(text, record) => {
+                                                return record.price === null ? (
+                                                    <Form.Item name="title" style={{margin: 0}}>
+                                                        <WarningFilled
+                                                            value={false}
+                                                            style={{
+                                                                color: "#FFCC00",
+                                                            }}
+                                                        />
+                                                        {parseFloat(0).toLocaleString("vi-VN", {
+                                                            style: "currency",
+                                                            currency: "VND",
+                                                        })}
+                                                    </Form.Item>
+                                                ) : (
+                                                    <Form.Item name="title" style={{margin: 0}}>
+                                                        {parseFloat(record.price).toLocaleString("vi-VN", {
+                                                            style: "currency",
+                                                            currency: "VND",
+                                                        })}
+                                                    </Form.Item>
+                                                );
+                                            }}
+                                        />
+
+                                        <Table.Column
+                                            align="center"
+                                            key="isActive"
+                                            dataIndex="isActive"
+                                            title="Số lượng"
+                                            render={(text, record, index) => {
+                                                return (
+                                                    <input
+                                                        type="number"
+                                                        defaultValue={record.quantity}
+                                                        min="1"
+                                                        id={`quantitySKU_${index}`}
+                                                        className="form-control"
+                                                        onChange={() => handleChangeQuantity(record)}
+                                                    />
+                                                );
+                                            }}
+                                        />
+
+                                        {/* sumImeiTrongKho */}
+                                        <Table.Column
+                                            align="center"
+                                            key="isActive"
+                                            dataIndex="isActive"
+                                            title="Xóa"
+                                            render={(text, record) => {
+                                                return (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-danger"
+                                                        onClick={() => handleDeleteSkuFromBillDetail(record)}
+                                                    >
+                                                        Xóa
+                                                    </button>
+                                                );
+                                            }}
+                                        />
+                                    </Table>
+
+                                    <div className="form-search">
+                                        <h3 className="align-content-center">TÌM KIẾM SẢN PHẨM</h3>
+                                        <Form.Item name="name" noStyle>
+                                            <Input
+                                                style={{width: "300px"}}
+                                                placeholder={"Product Search"}
+                                                suffix={<SearchOutlined/>}
+                                                onChange={handleSearchSku}
+                                                name="key"
+                                            />
+                                        </Form.Item>
+                                    </div>
+                                    <div className="table-sku">
+                                        <Table
+                                            rowKey="oop"
+                                            dataSource={listSku}
+                                            pagination={{
+                                                pageSize: 5,
+                                                showSizeChanger: false,
+                                                showTotal: (total) => `Tổng số ${total} sản phẩm`,
+                                                showLessItems: true, // Hiển thị "..." thay vì tất cả các trang
+                                            }}
+                                        >
+                                            {/* tên sp */}
+                                            <Table.Column
+                                                align="center"
+                                                dataIndex="images"
+                                                title="Ảnh"
+                                                render={(text, record) => (
+                                                    <div style={{textAlign: "center"}}>
+                                                        <AvtProduct product={record.productId}/>
+                                                    </div>
+                                                )}
+                                                width={150}
+                                            />
+
+                                            {/* tên sp */}
+                                            <Table.Column
+                                                align="center"
+                                                key="isActive"
+                                                dataIndex="isActive"
+                                                title="Tên Sản Phẩm"
+                                                render={(text, record) => {
+                                                    return (
+                                                        <Form.Item name="title" style={{margin: 0}}>
+                                                            <p>{record.name}</p>
+                                                        </Form.Item>
+                                                    );
+                                                }}
+                                            />
+                                            {/* sumSKU */}
+                                            <Table.Column
+                                                align="center"
+                                                key="isActive"
+                                                dataIndex="isActive"
+                                                title="Phiên Bản"
+                                                render={(text, record) => {
+                                                    return (
+                                                        <Form.Item name="title" style={{margin: 0}}>
+                                                            <p>
+                                                                {record.color} - {record.capacity}
+                                                            </p>
+                                                        </Form.Item>
+                                                    );
+                                                }}
+                                            />
+                                            {/* priceSKU  */}
+                                            <Table.Column
+                                                align="center"
+                                                key="price"
+                                                dataIndex="price"
+                                                title="Giá Bán"
+                                                sorter={(a, b) => a.price - b.price}
+                                                render={(text, record) => {
+                                                    return record.price === null ? (
+                                                        <Form.Item name="title" style={{margin: 0}}>
+                                                            <WarningFilled
+                                                                value={false}
+                                                                style={{
+                                                                    color: "#FFCC00",
+                                                                }}
+                                                            />
+                                                            {parseFloat(0).toLocaleString("vi-VN", {
+                                                                style: "currency",
+                                                                currency: "VND",
+                                                            })}
+                                                        </Form.Item>
+                                                    ) : (
+                                                        <Form.Item name="title" style={{margin: 0}}>
+                                                            {parseFloat(record.price).toLocaleString(
+                                                                "vi-VN",
+                                                                {
+                                                                    style: "currency",
+                                                                    currency: "VND",
+                                                                }
+                                                            )}
+                                                        </Form.Item>
+                                                    );
+                                                }}
+                                            />
+
+                                            <Table.Column
+                                                align="center"
+                                                key="isActive"
+                                                dataIndex="isActive"
+                                                title="Số lượng"
+                                                render={(text, record) => {
+                                                    return (
+                                                        <input
+                                                            type="number"
+                                                            value={record.quantity}
+                                                            readOnly
+                                                            className="form-control"
+                                                        />
+                                                    );
+                                                }}
+                                            />
+
+                                            {/* sumImeiTrongKho */}
+                                            <Table.Column
+                                                align="center"
+                                                key="isActive"
+                                                dataIndex="isActive"
+                                                title="Thêm"
+                                                render={(text, record) => {
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-success"
+                                                            onClick={() => handleAddSkuToBill(record)}
+                                                        >
+                                                            Thêm
+                                                        </button>
+                                                    );
+                                                }}
+                                            />
+                                        </Table>
+                                    </div>
+                                </div>
                             </div>
+                            <hr/>
+                            <p>
+                                Tổng tiền sản phẩm:{" "}
+                                {parseFloat(priceProductBillUpdate).toLocaleString("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                })}
+                            </p>
+                            <p>
+                                Tiền ship:{" "}
+                                {parseFloat(billUpdate.moneyShip).toLocaleString("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                })}
+                            </p>
+                            <p>
+                                Tiền voucher:{" "}
+                                {parseFloat(billUpdate.itemDiscount).toLocaleString("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                })}
+                            </p>
+                            <p>
+                                Số điểm sử dụng:{" "}
+                                {billUpdate.numberOfPointsUsed == null
+                                    ? "0"
+                                    : billUpdate.numberOfPointsUsed}
+                            </p>
+                            <p>
+                                Tiền ship mới:{" "}
+                                {parseFloat(fee?.total).toLocaleString("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                })}
+                            </p>
                         </Modal>
                         <Modal
                             visible={hideFormSearchSku}
@@ -2484,8 +3257,12 @@ const OderDisplay = ({}) => {
                                         title="Số lượng"
                                         render={(text, record) => {
                                             return (
-                                                <input type="number" value={record.quantity} readOnly
-                                                       className="form-control"/>
+                                                <input
+                                                    type="number"
+                                                    value={record.quantity}
+                                                    readOnly
+                                                    className="form-control"
+                                                />
                                             );
                                         }}
                                     />
@@ -2495,13 +3272,13 @@ const OderDisplay = ({}) => {
                                         align="center"
                                         key="isActive"
                                         dataIndex="isActive"
-                                        title="Xóa"
+                                        title="Thêm"
                                         render={(text, record) => {
                                             return (
                                                 <button
                                                     type="button"
                                                     className="btn btn-success"
-                                                    onClick={() => handleAddSkuToBill(record.id)}
+                                                    onClick={() => handleAddSkuToBill(record)}
                                                 >
                                                     Thêm
                                                 </button>

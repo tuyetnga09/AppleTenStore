@@ -5,6 +5,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
+import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
 import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.controller.order_management.service.BillService;
@@ -152,7 +153,8 @@ public class BillServiceImpl implements BillService {
         Payments payments = Payments.builder()
                 .method(request.getPaymentMethod().equals("TIEN_MAT") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                 .bill(bill)
-                .moneyPayment(request.getTotalMoney())
+//                .moneyPayment(request.getTotalMoney())
+                .moneyPayment(request.getAfterPrice())
                 .dateCreate(new Date(new java.util.Date().getTime()))
                 .typePayment(StatusPayment.THANH_TOAN).build();
         paymentsRepository.save(payments);
@@ -277,7 +279,8 @@ public class BillServiceImpl implements BillService {
             Payments payments = Payments.builder()
                     .method(request.getPaymentMethod().equals("TIEN_MAT") ? TypePayment.TIEN_MAT : TypePayment.CHUYEN_KHOAN)
                     .bill(bill)
-                    .moneyPayment(request.getTotalMoney())
+//                    .moneyPayment(request.getTotalMoney())
+                    .moneyPayment(request.getAfterPrice())
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
@@ -448,7 +451,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<Bill> searchNoDate(String key, String status) {
+    public List<BillAndPayment> searchNoDate(String key, String status) {
         return billRepository.searchNoDate(key, status);
     }
 
@@ -458,7 +461,7 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<Bill> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd) {
+    public List<BillAndPayment> searchWithDate(String key, String status, LocalDate dateStart, LocalDate dateEnd) {
         return billRepository.searchWithDate(key, status, dateStart, dateEnd);
     }
 

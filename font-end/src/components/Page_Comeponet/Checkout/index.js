@@ -1,7 +1,7 @@
 import * as React from "react";
 import "../Checkout/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Header from "../../Page_Comeponet/layout/Header";
 import Footer from "../../Page_Comeponet/layout/Footer";
 import { readAll, getbysku } from "../../../service/cart.service";
@@ -31,6 +31,8 @@ import { DateField } from "@refinedev/antd";
 import { readAllByIdUser } from "../../../service/AddressAPI/address.service";
 import { getOne } from "../../../service/Point/point.service";
 import { getOneSKU } from "../../../service/sku.service";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
 
 const Checkout = () => {
   const history = useHistory();
@@ -47,7 +49,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [isChecked, setIsChecked] = useState([true]);
   const [isChecked1, setIsChecked1] = useState(true);
-  const [isChecked2, setIsChecked2] = useState(false);
+  const [isChecked2, setIsChecked2] = useState(true);
   const [isChecked3, setIsChecked3] = useState(false);
   const [voucherFreeShip, setVoucherFreeShip] = useState([true]);
   const [selecteVoucherFreeShip, setSelectedVoucherFreeShip] = useState(0);
@@ -266,8 +268,8 @@ const Checkout = () => {
   function giaoTanNoi() {
     const select0 = document.getElementById("0");
     select0.selected = true;
-    const select = document.getElementById("floatingSelect1");
-    select.hidden = true;
+    // const select = document.getElementById("floatingSelect1");
+    // select.hidden = true;
     const input = document.getElementById("floatingSelect2");
     input.hidden = false;
     const divDcmd = document.getElementById("dcmd2");
@@ -825,7 +827,8 @@ const Checkout = () => {
             message: "Bạn chưa chọn địa chỉ!",
           });
         } else {
-          doneOrder();
+          // doneOrder();
+          confirmDoneOrder();
         }
       } else if (dcmd?.checked) {
         if (dcmdSelect?.value == 0) {
@@ -833,10 +836,12 @@ const Checkout = () => {
             message: "Bạn chưa chọn địa chỉ!",
           });
         } else {
-          doneOrder();
+          // doneOrder();
+          confirmDoneOrder();
         }
       } else {
-        doneOrder();
+        // doneOrder();
+        confirmDoneOrder();
       }
     } else {
       notification.error({
@@ -957,9 +962,30 @@ const Checkout = () => {
   const handleCancelPoint = () => {
     setIsModalVisiblePoint(false);
   };
+  const toast = useRef(null);
+  const rejectDoneOrder = () => {
+    toast.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục mua hàng.",
+      life: 3000,
+    });
+  };
+  const confirmDoneOrder = () => {
+    confirmDialog({
+      message: "Bạn chắc chắn muốn thanh toán?",
+      header: "THANH TOÁN",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => doneOrder(),
+      reject: () => rejectDoneOrder(),
+    });
+  };
 
   return (
     <>
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <Header />
       {loading && (
         <div
@@ -1354,7 +1380,11 @@ const Checkout = () => {
                       </label>
                     </div>
                   </div>
-                  <div hidden className="row" id="notDcmd">
+                  <div
+                    // hidden
+                    className="row"
+                    id="notDcmd"
+                  >
                     <div class="col-md-4">
                       <br />
                       <label for="kh_cmnd">Tỉnh, thành phố:</label>
@@ -1425,21 +1455,8 @@ const Checkout = () => {
                       </select>
                     </div>
                     <div class="col-md-12">
-                      <br />
-                      <select
-                        class="form-select"
-                        id="floatingSelect1"
-                        aria-label="Floating label select example"
-                      >
-                        <option selected>Mời bạn chọn địa chỉ cửa hàng</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                      </select>
-                    </div>
-                    <div class="col-md-12">
                       <input
-                        hidden
+                        // hidden
                         id="floatingSelect2"
                         class="form-control"
                         type="text"
