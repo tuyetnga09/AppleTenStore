@@ -1150,10 +1150,12 @@ const OderDisplay = ({}) => {
             });
     };
 
+    // Delete product from bill
     const handleDeleteSkuFromBillDetail = (record) => {
         setNewBillDetails([...newBillDetails.filter((item) => item.sku !== record.sku)])
     }
 
+    // Add product to bill
     const handleAddSkuToBill = (record) => {
         if (newBillDetails.find((item) => item.sku === record.id) !== undefined) {
             newBillDetails.map((item, index) => {
