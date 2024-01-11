@@ -1176,28 +1176,44 @@ const OderDisplay = ({}) => {
       });
   };
 
-  const handleDeleteSkuFromBillDetail = (idSKU) => {
-    setNewBillDetails([...newBillDetails.filter((item) => item.sku !== idSKU)]);
+  const handleDeleteSkuFromBillDetail = (record) => {
+    setNewBillDetails([
+      ...newBillDetails.filter((item) => item.sku !== record.sku),
+    ]);
   };
 
   const handleAddSkuToBill = (record) => {
-    const billTemp = {
-      id: null,
-      idProduct: record.productId,
-      nameProduct: record.name,
-      version: record.color + "-" + record.capacity,
-      bill: idBillTemp,
-      sku: record.id,
-      price: record.price,
-      quantity: 1,
-      status: "CHO_XAC_NHAN",
-    };
-    setNewBillDetails((newBillDetails) => [...newBillDetails, billTemp]);
+    if (newBillDetails.find((item) => item.sku === record.id) !== undefined) {
+      newBillDetails.map((item, index) => {
+        if (item.sku === record.id) {
+          newBillDetails[newBillDetails.indexOf(item)] = {
+            ...item,
+            quantity: item.quantity + 1,
+          };
+          document.getElementById(`quantitySKU_${index}`).value =
+            item.quantity + 1;
+        }
+      });
+      setNewBillDetails((newBillDetails) => [...newBillDetails]);
+    } else {
+      const billTemp = {
+        id: null,
+        idProduct: record.productId,
+        nameProduct: record.name,
+        version: record.color + "-" + record.capacity,
+        bill: idBillTemp,
+        sku: record.id,
+        price: record.price,
+        quantity: 1,
+        status: "CHO_XAC_NHAN",
+      };
+      setNewBillDetails((newBillDetails) => [...newBillDetails, billTemp]);
+    }
   };
 
   const handleChangeQuantity = (record) => {
     newBillDetails.map((item, index) => {
-      if (item.sku === record.idSKU) {
+      if (item.sku === record.sku) {
         newBillDetails[newBillDetails.indexOf(item)] = {
           ...item,
           quantity: Number(
@@ -2754,7 +2770,7 @@ const OderDisplay = ({}) => {
               <br />
               <Table
                 rowKey="oop"
-                dataSource={dataBillDetails}
+                dataSource={newBillDetails}
                 pagination={{
                   pageSize: 5,
                   showSizeChanger: false,
@@ -3384,7 +3400,7 @@ const OderDisplay = ({}) => {
                             type="button"
                             className="btn btn-danger"
                             onClick={() =>
-                              handleDeleteSkuFromBillDetail(record.idSKU)
+                              handleDeleteSkuFromBillDetail(record)
                             }
                           >
                             Xóa
