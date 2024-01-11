@@ -7,6 +7,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
+import com.example.backend.controller.order_management.model.billOnline.response.VoucherHoaDonTruocKhiUpdate;
 import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.*;
@@ -119,8 +120,8 @@ public class BillServiceImpl implements BillService {
                 .statusBill(StatusBill.CHO_XAC_NHAN)
                 .dateCreate(LocalDate.now())
 //                .account(account).
-        .customer(customer).
-                build();
+                .customer(customer).
+                        build();
         billRepository.save(bill);
 
         // lịch sử thông tin hoá đơn
@@ -191,7 +192,7 @@ public class BillServiceImpl implements BillService {
 //        } else {
 //            return null;
 //        }
-        if(request.getIdVoucher() != null){
+        if (request.getIdVoucher() != null) {
             Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -204,7 +205,7 @@ public class BillServiceImpl implements BillService {
             voucherDetailRepository.save(voucherDetail);
         }
         //lấy thoong tin voucher freeship
-        if(request.getIdVoucherFreeShip() != null){
+        if (request.getIdVoucherFreeShip() != null) {
             Voucher voucher = voucherRepository.findById(request.getIdVoucherFreeShip()).get();
 
             VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -217,12 +218,12 @@ public class BillServiceImpl implements BillService {
             voucherDetailRepository.save(voucherDetail);
         }
         //trừ số lượng voucher - voucher freeship
-        if(request.getIdVoucher() != null){
+        if (request.getIdVoucher() != null) {
             Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
             voucher.setQuantity(voucher.getQuantity() - 1);
             voucherRepository.save(voucher);
         }
-        if(request.getIdVoucherFreeShip() != null) {
+        if (request.getIdVoucherFreeShip() != null) {
             Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
             voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
             voucherRepository.save(voucherFreeShip);
@@ -284,7 +285,7 @@ public class BillServiceImpl implements BillService {
                     .typePayment(StatusPayment.THANH_TOAN).build();
             paymentsRepository.save(payments);
 
-            if(request.getIdVoucher() != null){
+            if (request.getIdVoucher() != null) {
                 Voucher voucher = voucherRepository.findById(request.getIdVoucher()).get();
 
                 VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -297,7 +298,7 @@ public class BillServiceImpl implements BillService {
                 voucherDetailRepository.save(voucherDetail);
             }
             //lấy thoong tin voucher freeship
-            if(request.getIdVoucherFreeShip() != null){
+            if (request.getIdVoucherFreeShip() != null) {
                 Voucher voucher = voucherRepository.findById(request.getIdVoucherFreeShip()).get();
 
                 VoucherDetail voucherDetail = VoucherDetail.builder()
@@ -317,26 +318,26 @@ public class BillServiceImpl implements BillService {
             }
 
             //trừ só lương voucher
-            if(request.getIdVoucher() != null){
+            if (request.getIdVoucher() != null) {
                 Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
                 voucher.setQuantity(voucher.getQuantity() - 1);
                 voucherRepository.save(voucher);
             }
-            if(request.getIdVoucherFreeShip() != null) {
+            if (request.getIdVoucherFreeShip() != null) {
                 Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
                 voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
                 voucherRepository.save(voucherFreeShip);
             }
 
             //tính điểm
-            if(request.getIdUser() != null){
+            if (request.getIdUser() != null) {
                 User user = userRepository.getOne(request.getIdUser());
                 user.setPoints(user.getPoints() - request.getPoint());
                 userRepository.save(user);
-                if(user.getPointsHistory() == null){
+                if (user.getPointsHistory() == null) {
                     user.setPointsHistory(request.getPointHistory());
                     userRepository.save(user);
-                }else{
+                } else {
                     user.setPointsHistory(user.getPointsHistory() + request.getPointHistory());
                     userRepository.save(user);
                 }
@@ -422,12 +423,12 @@ public class BillServiceImpl implements BillService {
             return "Lỗi";
         }
         //trừ số lượng
-        if(request.getIdVoucher() != null){
+        if (request.getIdVoucher() != null) {
             Voucher voucher = voucherRepository.getOne(request.getIdVoucher());
             voucher.setQuantity(voucher.getQuantity() - 1);
             voucherRepository.save(voucher);
         }
-        if(request.getIdVoucherFreeShip() != null) {
+        if (request.getIdVoucherFreeShip() != null) {
             Voucher voucherFreeShip = voucherRepository.getOne(request.getIdVoucherFreeShip());
             voucherFreeShip.setQuantity(voucherFreeShip.getQuantity() - 1);
             voucherRepository.save(voucherFreeShip);
@@ -468,14 +469,14 @@ public class BillServiceImpl implements BillService {
     @Override
     public void updateStatusBill(Integer idAccount, int id) {
         Bill bill = billRepository.findById(id).get();
-        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
+        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)) {
             bill.setStatusBill(StatusBill.DA_THANH_TOAN);
             bill.setCompletionDate(LocalDate.now());
         }
-        if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)){
+        if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)) {
             bill.setStatusBill(StatusBill.VAN_CHUYEN);
         }
-        if (bill.getStatusBill().equals(StatusBill.CHO_XAC_NHAN)){
+        if (bill.getStatusBill().equals(StatusBill.CHO_XAC_NHAN)) {
             bill.setStatusBill(StatusBill.CHO_VAN_CHUYEN);
         }
         Account account = acountRepository.findById(idAccount).get();
@@ -485,19 +486,19 @@ public class BillServiceImpl implements BillService {
         imeiDaBanRepository.updateStatusImeiWhereIdBill(id);
         billDetailRepository.updateStatusBillDetailWhereIdBill(id);
         billRepository.save(bill);
-        if (bill.getTypeBill().equals(TypeBill.ONLINE) && bill.getStatusBill().equals(StatusBill.DA_THANH_TOAN)){
-        Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
-        User user = userRepository.findById(account1.getUser().getId()).get();
-        if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == 0){
-            user.setPoints(user.getPoints() + 100);
-        } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == 0){
-            user.setPoints(user.getPoints() + 200);
-        } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == 0){
-            user.setPoints(user.getPoints() + 300);
-        } else {
-            user.setPoints(user.getPoints() + 500);
-        }
-        userRepository.save(user);
+        if (bill.getTypeBill().equals(TypeBill.ONLINE) && bill.getStatusBill().equals(StatusBill.DA_THANH_TOAN)) {
+            Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
+            User user = userRepository.findById(account1.getUser().getId()).get();
+            if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == 0) {
+                user.setPoints(user.getPoints() + 100);
+            } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == 0) {
+                user.setPoints(user.getPoints() + 200);
+            } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == 0) {
+                user.setPoints(user.getPoints() + 300);
+            } else {
+                user.setPoints(user.getPoints() + 500);
+            }
+            userRepository.save(user);
         }
 //        this.billRepository.updateBillStatus(id);
     }
@@ -505,10 +506,10 @@ public class BillServiceImpl implements BillService {
     @Override
     public void returnStatusBill(Integer id) {
         Bill bill = billRepository.findById(id).get();
-        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
+        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)) {
             bill.setStatusBill(StatusBill.CHO_VAN_CHUYEN);
             bill.setDateUpdate(LocalDate.now());
-        } else if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)){
+        } else if (bill.getStatusBill().equals(StatusBill.CHO_VAN_CHUYEN)) {
             imeiRepository.returnStatusImeiWhereIdBill(id);
             imeiDaBanRepository.returnStatusImeiWhereIdBill(id);
             billDetailRepository.returnStatusBillDetailWhereIdBill(id);
@@ -521,24 +522,24 @@ public class BillServiceImpl implements BillService {
     @Override
     public void returnBill(Integer idAccount, Integer id, String noteReturn) {
         Bill bill = billRepository.findById(id).get();
-        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)){
-            if (bill.getNumberOfPointsUsed() != null){
-                if (bill.getNumberOfPointsUsed() != 0){
-                Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
-                User user = userRepository.findById(account1.getUser().getId()).get();
-                user.setPoints(user.getPoints() + bill.getNumberOfPointsUsed());
-                userRepository.save(user);
+        if (bill.getStatusBill().equals(StatusBill.VAN_CHUYEN)) {
+            if (bill.getNumberOfPointsUsed() != null) {
+                if (bill.getNumberOfPointsUsed() != 0) {
+                    Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
+                    User user = userRepository.findById(account1.getUser().getId()).get();
+                    user.setPoints(user.getPoints() + bill.getNumberOfPointsUsed());
+                    userRepository.save(user);
                 }
             }
-        }else {
-            if (bill.getAccount() != null){
+        } else {
+            if (bill.getAccount() != null) {
                 Account account1 = acountRepository.findById(bill.getAccount().getId()).get();
                 User user = userRepository.findById(account1.getUser().getId()).get();
-                if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == 0){
+                if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(30000000)) == 0) {
                     user.setPoints(user.getPoints() - 100);
-                } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == 0){
+                } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(50000000)) == 0) {
                     user.setPoints(user.getPoints() - 200);
-                } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == 0){
+                } else if (bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == -1 || bill.getTotalMoney().compareTo(BigDecimal.valueOf(70000000)) == 0) {
                     user.setPoints(user.getPoints() - 300);
                 } else {
                     user.setPoints(user.getPoints() - 500);
@@ -551,20 +552,21 @@ public class BillServiceImpl implements BillService {
         bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
         bill.setDateUpdate(LocalDate.now());
         billRepository.save(bill);
-        if (voucherDetailRepository.listVoucherDetailByIdBill(id) != null){
-        for (VoucherDetail voucherDetail : voucherDetailRepository.listVoucherDetailByIdBill(id)
-             ) {
-            Voucher voucher = voucherRepository.findById(voucherDetail.getVoucher().getId()).get();
-            voucher.setQuantity(voucher.getQuantity() + 1);
-            voucherRepository.save(voucher);
-        }}
+        if (voucherDetailRepository.listVoucherDetailByIdBill(id) != null) {
+            for (VoucherDetail voucherDetail : voucherDetailRepository.listVoucherDetailByIdBill(id)
+            ) {
+                Voucher voucher = voucherRepository.findById(voucherDetail.getVoucher().getId()).get();
+                voucher.setQuantity(voucher.getQuantity() + 1);
+                voucherRepository.save(voucher);
+            }
+        }
         for (BillDetails billDetails : billDetailRepository.findByBillDetailOfIdBill(id)
-             ) {
+        ) {
             SKU sku = skuRepositoty.findById(billDetails.getSku().getId()).get();
             sku.setQuantity(sku.getQuantity() + billDetails.getQuantity());
             skuRepositoty.save(sku);
             for (ImeiDaBan imeiDaBan : imeiDaBanRepository.findImeiDaBanByBillDetail_Id(billDetails.getId())
-                 ) {
+            ) {
                 imeiDaBanRepository.deleteById(imeiDaBan.getId());
                 Imei imei = imeiRepository.findByCodeImei(imeiDaBan.getCodeImei());
                 imei.setStatus(0);
@@ -594,18 +596,18 @@ public class BillServiceImpl implements BillService {
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
         this.billRepository.deleteBill(noteReturn, id);
         Bill bill = billRepository.findById(id).get();
-        if (idAccount != -1){
+        if (idAccount != -1) {
             Account account = acountRepository.findById(idAccount).get();
             bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
             bill.setDateUpdate(LocalDate.now());
             billRepository.save(bill);
-        }else {
+        } else {
             bill.setPersonUpdate("Khách hàng lẻ");
             bill.setDateUpdate(LocalDate.now());
             billRepository.save(bill);
         }
-        if (bill.getNumberOfPointsUsed() != null){
-            if (bill.getNumberOfPointsUsed() != 0){
+        if (bill.getNumberOfPointsUsed() != null) {
+            if (bill.getNumberOfPointsUsed() != 0) {
                 Account account = acountRepository.findById(bill.getAccount().getId()).get();
                 User user = userRepository.findById(account.getUser().getId()).get();
                 user.setPoints(user.getPoints() + bill.getNumberOfPointsUsed());
@@ -618,18 +620,19 @@ public class BillServiceImpl implements BillService {
             sku.setQuantity(sku.getQuantity() + billDetails.getQuantity());
             skuRepositoty.save(sku);
         }
-        if (voucherDetailRepository.listVoucherDetailByIdBill(id) != null){
+        if (voucherDetailRepository.listVoucherDetailByIdBill(id) != null) {
             for (VoucherDetail voucherDetail : voucherDetailRepository.listVoucherDetailByIdBill(id)
             ) {
                 Voucher voucher = voucherRepository.findById(voucherDetail.getVoucher().getId()).get();
                 voucher.setQuantity(voucher.getQuantity() + 1);
                 voucherRepository.save(voucher);
-            }}
+            }
+        }
     }
 
     @Override
     public void updateAllChoThanhToan(String personUpdate) {
-         billRepository.updateAllChoVanChuyen(personUpdate);
+        billRepository.updateAllChoVanChuyen(personUpdate);
     }
 
     //lấy ra list bill_detail của 1 bill theo id_bill
@@ -656,7 +659,7 @@ public class BillServiceImpl implements BillService {
         bill.setDateUpdate(LocalDate.now());
         bill.setPersonUpdate(acceptReturn.getPersonUpdate());
         for (String codeImei : acceptReturn.getCodeImeiDaBan()
-             ) {
+        ) {
             imeiDaBanRepository.updateStatusImeiDaBanByCodeImei(6, codeImei);
 
             Imei imei = imeiRepository.findByCodeImei(codeImei);
@@ -709,6 +712,24 @@ public class BillServiceImpl implements BillService {
             skuRepositoty.save(sku);
         }
         return bill;
+    }
+
+    @Override
+    public List<VoucherHoaDonTruocKhiUpdate> listVoucherTruocUpdateHoaDon(Integer idHoaDon) {
+        if (idHoaDon == null) {
+            return null;
+        }
+        if (!billRepository.existsById(idHoaDon)) {
+            return null;
+        }
+        List<VoucherHoaDonTruocKhiUpdate> list = voucherRepository.findVoucherKhiUpdateHoaDon(idHoaDon);
+        return list;
+    }
+
+    @Override
+    public Integer soDiemSuDung(Integer idBill) {
+        Integer soDiem = billRepository.soDiemSuDung(idBill);
+        return soDiem;
     }
 
 }

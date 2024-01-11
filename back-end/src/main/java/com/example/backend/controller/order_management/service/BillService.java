@@ -6,6 +6,7 @@ import com.example.backend.controller.order_management.model.bill.request.BillRe
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
+import com.example.backend.controller.order_management.model.billOnline.response.VoucherHoaDonTruocKhiUpdate;
 import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.entity.Bill;
 
@@ -59,4 +60,8 @@ public interface BillService {
     BillPayDone findBillPayDoneByCode(String code, String phoneNumber);
 
     Bill deliveryFailed(Integer idAccount, Integer idBill, String note);
+
+    List<VoucherHoaDonTruocKhiUpdate> listVoucherTruocUpdateHoaDon(Integer idHoaDon);
+
+    Integer soDiemSuDung(Integer idBill);
 }

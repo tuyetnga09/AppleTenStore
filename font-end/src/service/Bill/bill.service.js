@@ -76,3 +76,15 @@ export const deliveryFailed = (idAccount, idBill, note) => {
 export const searchBillByCode = (id) => {
   return httpClient.get(`manager/bill/searchBillByCode/${id}`);
 };
+
+export const voucherTruocUpdate = (idHoaDon) => {
+  return httpClient.get(
+    `manager/bill/find-voucher/truoc-update?idHoaDon=${idHoaDon}`
+  );
+};
+
+export const soDiemTruocUpdate = (idBill) => {
+  return httpClient.get(
+    `manager/bill/find-so-diem/truoc-update?idBill=${idBill}`
+  );
+};

@@ -429,4 +429,8 @@ public interface BillRepository extends JpaRepository<Bill, Integer> {
     //list bill hoa đơn chờ hom nay
     @Query(value = "select * from bill where type ='OFFLINE' and status_bill= 'CHO_XAC_NHAN' and date_create != CURDATE()", nativeQuery = true)
     List<Bill> listBillHoaDonCho();
+
+
+    @Query(value = "select number_of_points_used from bill where bill.id =?1", nativeQuery = true)
+    Integer soDiemSuDung(Integer idBill);
 }

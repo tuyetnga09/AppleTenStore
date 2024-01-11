@@ -58,6 +58,8 @@ import {
   searchWithDate,
   updateAllCVC,
   updateStatusBill,
+  voucherTruocUpdate,
+  soDiemTruocUpdate,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -103,6 +105,7 @@ import {
   getVoucherFreeShip,
 } from "../../../service/Voucher/voucher.service";
 import { Image } from "antd";
+import { red } from "@material-ui/core/colors";
 
 const { RangePicker } = DatePicker;
 const { SubMenu } = Menu;
@@ -1094,6 +1097,9 @@ const OderDisplay = ({}) => {
         response.data.map((item) =>
           temp.push({
             id: item.id,
+            idProduct: item.idProduct,
+            nameProduct: item.nameProduct,
+            version: item.skuColor + "-" + item.skuCapacity,
             bill: item.bill,
             sku: item.idSKU,
             price: item.price,
@@ -1177,6 +1183,9 @@ const OderDisplay = ({}) => {
   const handleAddSkuToBill = (record) => {
     const billTemp = {
       id: null,
+      idProduct: record.productId,
+      nameProduct: record.name,
+      version: record.color + "-" + record.capacity,
       bill: idBillTemp,
       sku: record.id,
       price: record.price,
@@ -1401,6 +1410,10 @@ const OderDisplay = ({}) => {
 
   //xác nhận sửa hoá đơn
   const [dataSumTongTien, setDataSumTongTien] = useState(0);
+  const [dataVouCherTruocUpdateHoaDon, setDataVouCherTruocUpdateHoaDon] =
+    useState([]);
+  const [dataTongTienKhachHangPhaiTra, setDataTongTienKhachHangPhaiTra] =
+    useState(0);
   const suaHoaDon = (newBillDetails) => {
     console.log(newBillDetails);
     let sumTongTien = 0;
@@ -1409,6 +1422,35 @@ const OderDisplay = ({}) => {
         sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
     }
     setDataSumTongTien(sumTongTien);
+    voucherTruocUpdate(billUpdate.id)
+      .then((response) => {
+        setDataVouCherTruocUpdateHoaDon(response.data);
+        let sum = sumTongTien;
+        if (response.data.length > 0) {
+          for (let i = 0; i < response.data.length; i++) {
+            if (sumTongTien > response.data[i].valueMin) {
+              sum = sum - response.data[i].valueVoucher;
+            }
+          }
+          console.log(sum + " yyyy ");
+        }
+        // chưa cộng tiền ship
+        // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+        // console.log(sum + " yyyy2 ");
+        // tính số điểm ra tiền
+        soDiemTruocUpdate(billUpdate.id)
+          .then((response) => {
+            let quyDoi = response.data * 1000;
+            sum = sum - quyDoi;
+            setDataTongTienKhachHangPhaiTra(sum);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     handleOpenSuaHoaDon();
   };
 
@@ -1433,11 +1475,24 @@ const OderDisplay = ({}) => {
   // mở modal sau kh ấn xác nhận để sửa voucher và điểm
   const [isModalVisibleSuaHoaDon, setIsModalVisibleSuaHoaDon] = useState(false);
 
+  const [dataVoucher, setDataVoucher] = useState({ id: null, value: 0 });
+  const [dataVoucherShip, setDataVoucherShip] = useState({
+    id: null,
+    value: 0,
+  });
+
   const handleOpenSuaHoaDon = () => {
+    setDataVoucher({ id: null, value: 0 });
+    setDataVoucherShip({ id: null, value: 0 });
+    // if(dataSumTongTien > dataVouCherTruocUpdateHoaDon.valueMin){
+
+    // }
+
     setIsModalVisibleSuaHoaDon(true);
   };
   // Hàm để ẩn Modal
   const handleCancelSuaHoaDon = () => {
+    setDataTongTienKhachHangPhaiTra(0);
     setIsModalVisibleSuaHoaDon(false);
   };
 
@@ -1489,9 +1544,28 @@ const OderDisplay = ({}) => {
   const handleCancelVoucher = () => {
     setIsModalVisibleVoucher(false);
   };
+  // cònig chọn lại voucher
+  const rejectChonLaiVoucher1 = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmChonLaiVoucher1 = (voucher) => {
+    confirmDialog({
+      message: "Chọn lại voucher mới - Voucher cũ sẽ bị huỷ?",
+      header: "XÁC NHẬN CHỌN LẠI VOUCHER",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleVoucherFreeShipClick(voucher),
+      reject: () => rejectChonLaiVoucher1(),
+    });
+  };
   //click Voucher freeship
   const handleVoucherFreeShipClick = (voucher) => {
-    if (totalPrice < voucher.valueMinimum) {
+    if (dataSumTongTien < voucher.valueMinimum) {
       notification.error({
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
@@ -1508,10 +1582,16 @@ const OderDisplay = ({}) => {
       });
     } else {
       setSelectedVoucherFreeShip(voucher);
-      setBill({
-        ...bill,
-        itemDiscountFreeShip: voucher.valueVoucher,
-        idVoucherFreeShip: voucher.id,
+      //   setBill({
+      //     ...bill,
+      //     itemDiscountFreeShip: voucher.valueVoucher,
+      //     idVoucherFreeShip: voucher.id,
+      //   });
+
+      setDataVoucherShip({
+        ...dataVoucherShip,
+        id: voucher.id,
+        value: voucher.valueVoucher,
       });
       //   if (storedUser !== null) {
       //     // readAll(idAccount)
@@ -1525,11 +1605,33 @@ const OderDisplay = ({}) => {
       //   } else {
       //     setProducts(cartItems);
       //   }
+      //   setDataVoucherShip(voucher.valueVoucher);
+
       notification.success({
         message: "VOUCHER",
         description: "Áp dụng voucher thành công",
       });
     }
+  };
+
+  // cònig chọn lại voucher
+  const rejectChonLaiVoucher11 = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmChonLaiVoucher11 = (id) => {
+    confirmDialog({
+      message: "Chọn lại voucher mới?",
+      header: "XÁC NHẬN HUỶ VOUCHER",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleClearVoucherFreeShip(id),
+      reject: () => rejectChonLaiVoucher11(),
+    });
   };
   //clear voucher freeship
   const handleClearVoucherFreeShip = (id) => {
@@ -1547,15 +1649,46 @@ const OderDisplay = ({}) => {
       //   } else {
       //     setProducts(cartItems);
       //   }
+      setDataVoucherShip({
+        ...dataVoucherShip,
+        id: null,
+        value: 0,
+      });
+
       notification.success({
         message: "VOUCHER",
         description: "Hủy voucher thành công",
       });
+    } else {
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thất bại!",
+      });
     }
   };
-  //click Voucher
+
+  // cònig chọn lại voucher
+  const rejectChonLaiVoucher2 = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmChonLaiVoucher2 = (voucher) => {
+    confirmDialog({
+      message: "Chọn lại voucher mới - Voucher cũ sẽ bị huỷ?",
+      header: "XÁC NHẬN CHỌN LẠI VOUCHER",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleVoucherClick(voucher),
+      reject: () => rejectChonLaiVoucher2(),
+    });
+  };
+  //click Voucher - giamr tieenf
   const handleVoucherClick = (voucher) => {
-    if (totalPrice < voucher.valueMinimum) {
+    if (dataSumTongTien < voucher.valueMinimum) {
       notification.error({
         message: "VOUCHER",
         description: "Không thể áp dụng do đơn hàng không đủ điều kiện",
@@ -1567,11 +1700,11 @@ const OderDisplay = ({}) => {
       });
     } else {
       setSelectedVoucher(voucher);
-      setBill({
-        ...bill,
-        itemDiscount: voucher.valueVoucher,
-        idVoucher: voucher.id,
-      });
+      //   setBill({
+      //     ...bill,
+      //     itemDiscount: voucher.valueVoucher,
+      //     idVoucher: voucher.id,
+      //   });
       //   if (storedUser !== null) {
       //     readAll(idAccount)
       //       .then((response) => {
@@ -1584,6 +1717,58 @@ const OderDisplay = ({}) => {
       //   } else {
       //     setProducts(cartItems);
       //   }
+      setDataVoucher({
+        ...dataVoucher,
+        id: voucher.id,
+        value: voucher.valueVoucher,
+      });
+
+      let sum = dataSumTongTien;
+      sum = sum - voucher.valueVoucher;
+      // chuaw coong tien ship
+      if (dataVoucherShip.value > 0 && dataVoucherShip.id !== null) {
+        sum = sum - dataVoucherShip.value;
+        // tính số điểm ra tiền
+        soDiemTruocUpdate(billUpdate.id)
+          .then((response) => {
+            let quyDoi = response.data * 1000;
+            sum = sum - quyDoi;
+            setDataTongTienKhachHangPhaiTra(sum);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      } else {
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            //   setDataVouCherTruocUpdateHoaDon(response.data);
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher <= 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
       notification.success({
         message: "VOUCHER",
         description: "Áp dụng voucher thành công",
@@ -1591,25 +1776,43 @@ const OderDisplay = ({}) => {
     }
   };
 
+  // cònig chọn lại voucher
+  const rejectChonLaiVoucher22 = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const confirmChonLaiVoucher22 = (id) => {
+    confirmDialog({
+      message: "Chọn lại voucher mới?",
+      header: "XÁC NHẬN HUỶ VOUCHER",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleClearVoucher(id),
+      reject: () => rejectChonLaiVoucher22(),
+    });
+  };
   //clear voucher
   const handleClearVoucher = (id) => {
     if (selecteVoucher?.id === id) {
       setSelectedVoucher(null);
-      //   if (storedUser !== null) {
-      //     readAll(idAccount)
-      //       .then((response) => {
-      //         console.log(response.data);
-      //         setProducts(response.data);
-      //       })
-      //       .catch((error) => {
-      //         console.log(`${error}`);
-      //       });
-      //   } else {
-      //     setProducts(cartItems);
-      //   }
+
+      setDataVoucher({
+        ...dataVoucher,
+        id: null,
+        value: 0,
+      });
       notification.success({
         message: "VOUCHER",
         description: "Hủy voucher thành công",
+      });
+    } else {
+      notification.success({
+        message: "VOUCHER",
+        description: "Hủy voucher thất bại!",
       });
     }
   };
@@ -3520,6 +3723,7 @@ const OderDisplay = ({}) => {
               <h2>Xác Nhận Thông Tin Đơn Hàng</h2>
 
               <div>
+                {billUpdate.id}
                 <p>Họ Và Tên: {billUpdate.userName}</p>
                 <p>SĐT: {billUpdate.phoneNumber}</p>
                 <p>Địa Chỉ: {billUpdate.address}</p>
@@ -3539,6 +3743,19 @@ const OderDisplay = ({}) => {
                 }}
               >
                 {/* {newBillDetails} */}
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="STT"
+                  render={(text, record, index) => {
+                    return (
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{index + 1}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
                 {/* tên sp */}
                 <Table.Column
                   align="center"
@@ -3575,9 +3792,7 @@ const OderDisplay = ({}) => {
                   render={(text, record) => {
                     return (
                       <Form.Item name="title" style={{ margin: 0 }}>
-                        <p>
-                          {record.skuColor} - {record.skuCapacity}
-                        </p>
+                        <p>{record.version}</p>
                       </Form.Item>
                     );
                   }}
@@ -3621,20 +3836,44 @@ const OderDisplay = ({}) => {
                   title="Số lượng"
                   render={(text, record, index) => {
                     return (
-                      <input
-                        type="number"
-                        defaultValue={record.quantity}
-                        min="1"
-                        id={`quantitySKU_${index}`}
-                        className="form-control"
-                        onChange={() => handleChangeQuantity(record)}
-                      />
+                      //   <input
+                      //     type="number"
+                      //     defaultValue={record.quantity}
+                      //     min="1"
+                      //     id={`quantitySKU_${index}`}
+                      //     className="form-control"
+                      //     onChange={() => handleChangeQuantity(record)}
+                      //   />
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        <p>{record.quantity}</p>
+                      </Form.Item>
+                    );
+                  }}
+                />
+                <Table.Column
+                  align="center"
+                  key="isActive"
+                  dataIndex="isActive"
+                  title="Thành Tiền"
+                  render={(text, record, index) => {
+                    return (
+                      //   <Form.Item name="title" style={{ margin: 0 }}>
+                      //     <p>{record.quantity * record.quantity}</p>
+                      //   </Form.Item>
+                      <Form.Item name="title" style={{ margin: 0 }}>
+                        {parseFloat(
+                          record.price * record.quantity
+                        ).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </Form.Item>
                     );
                   }}
                 />
 
                 {/* sumImeiTrongKho */}
-                <Table.Column
+                {/* <Table.Column
                   align="center"
                   key="isActive"
                   dataIndex="isActive"
@@ -3652,7 +3891,7 @@ const OderDisplay = ({}) => {
                       </button>
                     );
                   }}
-                />
+                /> */}
               </Table>
               <hr />
               <div>
@@ -3663,16 +3902,131 @@ const OderDisplay = ({}) => {
                     currency: "VND",
                   })}
                 </p>
+                <span>
+                  {dataVouCherTruocUpdateHoaDon.map((item, index) => (
+                    <div>
+                      <span>
+                        {item.valueVoucher > 100000 ? (
+                          <div>
+                            {dataVoucher.value !== 0 ? (
+                              <p
+                                style={{
+                                  textDecorationLine: "line-through",
+                                  color: "red",
+                                }}
+                              >
+                                Voucher Giảm Giá:{" "}
+                                {parseFloat(item.valueVoucher).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}{" "}
+                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                {parseFloat(item.valueMin).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}
+                              </p>
+                            ) : (
+                              <p>
+                                Voucher Giảm Giá:{" "}
+                                {parseFloat(item.valueVoucher).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}{" "}
+                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                {parseFloat(item.valueMin).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <div>
+                            {dataVoucherShip.value !== 0 ? (
+                              <p
+                                style={{
+                                  textDecorationLine: "line-through",
+                                  color: "red",
+                                }}
+                              >
+                                Giảm Giá Ship:{" "}
+                                {parseFloat(item.valueVoucher).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}{" "}
+                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                {parseFloat(item.valueMin).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}
+                              </p>
+                            ) : (
+                              <p>
+                                Giảm Giá Ship:{" "}
+                                {parseFloat(item.valueVoucher).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}{" "}
+                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                {parseFloat(item.valueMin).toLocaleString(
+                                  "vi-VN",
+                                  {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }
+                                )}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </span>
                 <Button onClick={() => handleEditClickVoucher()}>
                   Chọn Voucher Mới
                 </Button>
-                <p>
-                  Tiền Voucher:{" "}
-                  {parseFloat(billUpdate.itemDiscount).toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
-                </p>
+                {dataVoucher.value === 0 ? null : (
+                  <p>
+                    Tiền Voucher Giảm Giá Mới:{" "}
+                    {parseFloat(dataVoucher.value).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </p>
+                )}
+
+                {dataVoucherShip.value === 0 ? null : (
+                  <p>
+                    Tiền Giảm giá tiền vận chuyển Mới:{" "}
+                    {parseFloat(dataVoucherShip.value).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </p>
+                )}
                 <p>
                   Tiền Ship:{" "}
                   {fee?.total === undefined
@@ -3687,12 +4041,30 @@ const OderDisplay = ({}) => {
                 </p>
                 <p>
                   Số Điểm Sử Dụng:{" "}
-                  {billUpdate.numberOfPointsUsed == null
-                    ? "0"
-                    : billUpdate.numberOfPointsUsed}
+                  {billUpdate.numberOfPointsUsed == null ? (
+                    "0"
+                  ) : (
+                    <span>
+                      {billUpdate.numberOfPointsUsed} - Tương Đương Được Giảm:
+                      {parseFloat(
+                        billUpdate.numberOfPointsUsed * 1000
+                      ).toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                  )}
                 </p>
-                <Button>Chọn Lại Số Điểm Sử Dụng</Button>
-                <p>Tổng Tiền Khách Phải Trả:</p>
+                <p>
+                  Tổng Tiền Khách Phải Trả:{" "}
+                  {parseFloat(dataTongTienKhachHangPhaiTra).toLocaleString(
+                    "vi-VN",
+                    {
+                      style: "currency",
+                      currency: "VND",
+                    }
+                  )}{" "}
+                </p>
               </div>
 
               <div>
@@ -3785,9 +4157,7 @@ const OderDisplay = ({}) => {
                             <Button
                               type="text"
                               danger
-                              onClick={() =>
-                                handleVoucherFreeShipClick(voucher)
-                              }
+                              onClick={() => confirmChonLaiVoucher1(voucher)}
                             >
                               Áp dụng
                             </Button>
@@ -3796,7 +4166,7 @@ const OderDisplay = ({}) => {
                               type="text"
                               danger
                               onClick={() =>
-                                handleClearVoucherFreeShip(voucher.id)
+                                confirmChonLaiVoucher11(voucher.id)
                               }
                             >
                               Hủy
@@ -3872,7 +4242,7 @@ const OderDisplay = ({}) => {
                             <Button
                               type="text"
                               danger
-                              onClick={() => handleVoucherClick(voucher)}
+                              onClick={() => confirmChonLaiVoucher2(voucher)}
                             >
                               Áp dụng
                             </Button>
@@ -3880,7 +4250,9 @@ const OderDisplay = ({}) => {
                             <Button
                               type="text"
                               danger
-                              onClick={() => handleClearVoucher(voucher.id)}
+                              onClick={() =>
+                                confirmChonLaiVoucher22(voucher.id)
+                              }
                             >
                               Hủy
                             </Button>

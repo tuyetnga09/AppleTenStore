@@ -3,6 +3,7 @@ package com.example.backend.controller.order_management.controller.server;
 import com.example.backend.controller.order_management.model.ResponseObj;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
+import com.example.backend.controller.order_management.model.billOnline.response.VoucherHoaDonTruocKhiUpdate;
 import com.example.backend.controller.order_management.model.dto.AcceptReturn;
 import com.example.backend.controller.order_management.service.BillService;
 import com.example.backend.entity.Bill;
@@ -23,23 +24,23 @@ public class BillServerController {
     private BillService billService;
 
     @GetMapping("/detail/{id}")
-    public ResponseObj detail(@PathVariable("id") Integer id){
-        return  new ResponseObj(billService.detail(id));
+    public ResponseObj detail(@PathVariable("id") Integer id) {
+        return new ResponseObj(billService.detail(id));
     }
 
     @GetMapping("/searchNoDate")
-    public List<BillAndPayment> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status){
+    public List<BillAndPayment> searchNoDate(@RequestParam("key") String key, @RequestParam("status") String status) {
         return billService.searchNoDate(key, status);
     }
 
     @GetMapping("/searchWithDate")
-    public List<BillAndPayment> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd){
+    public List<BillAndPayment> searchWithDate(@RequestParam("key") String key, @RequestParam("status") String status, @RequestParam("dateStart") LocalDate dateStart, @RequestParam("dateEnd") LocalDate dateEnd) {
         return billService.searchWithDate(key, status, dateStart, dateEnd);
     }
 
     @PutMapping("/updateAll/{personUpdate}")
-    public void updateAllCVC(@PathVariable("personUpdate") String personUpdate){
-         billService.updateAllChoThanhToan(personUpdate);
+    public void updateAllCVC(@PathVariable("personUpdate") String personUpdate) {
+        billService.updateAllChoThanhToan(personUpdate);
     }
 
     @GetMapping("/getAll-bill-detail-CXN")
@@ -73,18 +74,29 @@ public class BillServerController {
 //    }
 
     @PutMapping("/acceptReturn")
-    public Bill acceptReturn(@RequestBody AcceptReturn acceptReturn){
+    public Bill acceptReturn(@RequestBody AcceptReturn acceptReturn) {
         return billService.acceptReturn(acceptReturn);
     }
 
     @PutMapping("/noAcceptReturn")
-    public Bill noAcceptReturn(@RequestBody AcceptReturn acceptReturn){
+    public Bill noAcceptReturn(@RequestBody AcceptReturn acceptReturn) {
         return billService.noAcceptReturn(acceptReturn);
     }
 
     @GetMapping(value = "/searchBillByCode/{id}")
-    public Optional<Bill> searchBillByCode(@PathVariable Integer id){
+    public Optional<Bill> searchBillByCode(@PathVariable Integer id) {
         return billService.searchBillById(id);
     }
 
+    @GetMapping("/find-voucher/truoc-update")
+    public ResponseEntity<List<VoucherHoaDonTruocKhiUpdate>> voucherTruocUpdate(@RequestParam("idHoaDon") Integer idHoaDon) {
+        List<VoucherHoaDonTruocKhiUpdate> list = billService.listVoucherTruocUpdateHoaDon(idHoaDon);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/find-so-diem/truoc-update")
+    public ResponseEntity<Integer> soDiemTruocUpdate(@RequestParam("idBill") Integer idBill) {
+        Integer soDiem = billService.soDiemSuDung(idBill);
+        return new ResponseEntity<>(soDiem, HttpStatus.OK);
+    }
 }

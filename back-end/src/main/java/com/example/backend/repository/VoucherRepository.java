@@ -1,5 +1,6 @@
 package com.example.backend.repository;
 
+import com.example.backend.controller.order_management.model.billOnline.response.VoucherHoaDonTruocKhiUpdate;
 import com.example.backend.controller.voucher_managment.model.request.FindVoucherRequest;
 import com.example.backend.controller.voucher_managment.model.response.VoucherResponse;
 import com.example.backend.entity.User;
@@ -82,4 +83,10 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
             "            FROM voucher\n" +
             "            WHERE CURRENT_DATE BETWEEN date_start AND date_end AND code like %?1% ", nativeQuery = true)
     List<Voucher> searchVoucher(String codeVoucher);
+
+    @Query(value = "select v.name as 'nameVoucher' , v.value_voucher as 'valueVoucher' , v.value_minimum as 'valueMin' from voucher v join voucher_detail vd on v.id = vd.id_voucher join bill b on vd.id_bill = b.id \n" +
+            "where b.id=?1", nativeQuery = true)
+    List<VoucherHoaDonTruocKhiUpdate> findVoucherKhiUpdateHoaDon(Integer idHoaDon);
+
+
 }
