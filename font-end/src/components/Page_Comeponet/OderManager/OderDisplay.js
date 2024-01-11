@@ -1152,8 +1152,8 @@ const OderDisplay = ({}) => {
     });
   }
 
-  const [hideFormSearchSku, setHideFormSearchSku] = useState(false);
-  const [listSku, setListSku] = useState([]);
+  //   const [hideFormSearchSku, setHideFormSearchSku] = useState(false);
+  //   const [listSku, setListSku] = useState([]);
 
   function handleCancelHideFormSearchSku() {
     getSKUForBillDetail()
@@ -1166,93 +1166,93 @@ const OderDisplay = ({}) => {
     setHideFormSearchSku(!hideFormSearchSku);
   }
 
-  const handleSearchSku = (event) => {
-    searchSKUForBillDetail(event.target.value)
-      .then((response) => {
-        setListSku(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  //   const handleSearchSku = (event) => {
+  //     searchSKUForBillDetail(event.target.value)
+  //       .then((response) => {
+  //         setListSku(response.data);
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //       });
+  //   };
 
-  const handleDeleteSkuFromBillDetail = (record) => {
-    setNewBillDetails([
-      ...newBillDetails.filter((item) => item.sku !== record.sku),
-    ]);
-  };
+  //   const handleDeleteSkuFromBillDetail = (record) => {
+  //     setNewBillDetails([
+  //       ...newBillDetails.filter((item) => item.sku !== record.sku),
+  //     ]);
+  //   };
 
-  const handleAddSkuToBill = (record) => {
-    if (newBillDetails.find((item) => item.sku === record.id) !== undefined) {
-      newBillDetails.map((item, index) => {
-        if (item.sku === record.id) {
-          newBillDetails[newBillDetails.indexOf(item)] = {
-            ...item,
-            quantity: item.quantity + 1,
-          };
-          document.getElementById(`quantitySKU_${index}`).value =
-            item.quantity + 1;
-        }
-      });
-      setNewBillDetails((newBillDetails) => [...newBillDetails]);
-    } else {
-      const billTemp = {
-        id: null,
-        idProduct: record.productId,
-        nameProduct: record.name,
-        version: record.color + "-" + record.capacity,
-        bill: idBillTemp,
-        sku: record.id,
-        price: record.price,
-        quantity: 1,
-        status: "CHO_XAC_NHAN",
-      };
-      setNewBillDetails((newBillDetails) => [...newBillDetails, billTemp]);
-    }
-  };
+  //   const handleAddSkuToBill = (record) => {
+  //     if (newBillDetails.find((item) => item.sku === record.id) !== undefined) {
+  //       newBillDetails.map((item, index) => {
+  //         if (item.sku === record.id) {
+  //           newBillDetails[newBillDetails.indexOf(item)] = {
+  //             ...item,
+  //             quantity: item.quantity + 1,
+  //           };
+  //           document.getElementById(`quantitySKU_${index}`).value =
+  //             item.quantity + 1;
+  //         }
+  //       });
+  //       setNewBillDetails((newBillDetails) => [...newBillDetails]);
+  //     } else {
+  //       const billTemp = {
+  //         id: null,
+  //         idProduct: record.productId,
+  //         nameProduct: record.name,
+  //         version: record.color + "-" + record.capacity,
+  //         bill: idBillTemp,
+  //         sku: record.id,
+  //         price: record.price,
+  //         quantity: 1,
+  //         status: "CHO_XAC_NHAN",
+  //       };
+  //       setNewBillDetails((newBillDetails) => [...newBillDetails, billTemp]);
+  //     }
+  //   };
 
-  const handleChangeQuantity = (record) => {
-    newBillDetails.map((item, index) => {
-      if (item.sku === record.sku) {
-        newBillDetails[newBillDetails.indexOf(item)] = {
-          ...item,
-          quantity: Number(
-            document.getElementById(`quantitySKU_${index}`).value
-          ),
-        };
-      }
-    });
-    setNewBillDetails((newBillDetails) => [...newBillDetails]);
+  //   const handleChangeQuantity = (record) => {
+  //     newBillDetails.map((item, index) => {
+  //       if (item.sku === record.sku) {
+  //         newBillDetails[newBillDetails.indexOf(item)] = {
+  //           ...item,
+  //           quantity: Number(
+  //             document.getElementById(`quantitySKU_${index}`).value
+  //           ),
+  //         };
+  //       }
+  //     });
+  //     setNewBillDetails((newBillDetails) => [...newBillDetails]);
 
-    let totalQuantity = 0;
-    newBillDetails.map((data) => {
-      totalQuantity += data.quantity;
-    });
-    let priceTotal = 0;
-    newBillDetails.map((data) => {
-      priceTotal += data.price * data.quantity;
-    });
+  //     let totalQuantity = 0;
+  //     newBillDetails.map((data) => {
+  //       totalQuantity += data.quantity;
+  //     });
+  //     let priceTotal = 0;
+  //     newBillDetails.map((data) => {
+  //       priceTotal += data.price * data.quantity;
+  //     });
 
-    setTransportationFeeDTO({
-      ...transportationFeeDTO,
-      quantity: totalQuantity,
-      insuranceValue: priceTotal,
-    });
+  //     setTransportationFeeDTO({
+  //       ...transportationFeeDTO,
+  //       quantity: totalQuantity,
+  //       insuranceValue: priceTotal,
+  //     });
 
-    getFee(transportationFeeDTO)
-      .then((response) => {
-        setFee(response.data.data);
-        console.log(response.data.data);
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    let priceProductBillUpdate1 = 0;
-    newBillDetails.map((data) => {
-      priceProductBillUpdate1 += data.price * data.quantity;
-    });
-    setPriceProductBillUpdate(priceProductBillUpdate1);
-  };
+  //     getFee(transportationFeeDTO)
+  //       .then((response) => {
+  //         setFee(response.data.data);
+  //         console.log(response.data.data);
+  //       })
+  //       .catch((error) => {
+  //         console.log(`${error}`);
+  //       });
+  //     let priceProductBillUpdate1 = 0;
+  //     newBillDetails.map((data) => {
+  //       priceProductBillUpdate1 += data.price * data.quantity;
+  //     });
+  //     setPriceProductBillUpdate(priceProductBillUpdate1);
+  //   };
 
   function handleAddress(event) {
     setBillUpdate({
@@ -1317,105 +1317,105 @@ const OderDisplay = ({}) => {
     document.getElementById("htnn_5").checked = false;
   }
 
-  const [proviceBillUpdate, setProviceBillUpdate] = useState();
-  const [districtBillUpdate, setDistrictBillUpdate] = useState();
-  const [wardBillUpdate, setWardBillUpdate] = useState();
-  const handleProvince = (event) => {
-    if (document.getElementById(event.target.value) !== null) {
-      const target = event.target;
-      const value = target.value;
-      setProvince_id(value);
-      console.log(value);
-      setDistrict_id(null);
-      setWards([]);
-      let totalQuantity = 0;
-      newBillDetails.map((data) => {
-        totalQuantity += data.quantity;
-      });
-      let item = {
-        toDistrictId: null,
-        toWardCode: null,
-        insuranceValue: null,
-        quantity: totalQuantity,
-      };
-      setTransportationFeeDTO(item);
-      //   setBill({
-      //     ...bill,
-      //     province: document.getElementById(value).innerText,
-      //   });
-      setProviceBillUpdate(document.getElementById(value).innerText);
-      setShowDistricts(true);
-    } else {
-      setShowDistricts(false);
-      setShowWards(false);
-      setTransportationFeeDTO({
-        toDistrictId: null,
-        toWardCode: null,
-        // insuranceValue: soTienThanhToan,
-        // quantity: quantityCart,
-      });
-    }
-    setIsChecked2(true);
-    setIsChecked3(false);
-  };
+  //   const [proviceBillUpdate, setProviceBillUpdate] = useState();
+  //   const [districtBillUpdate, setDistrictBillUpdate] = useState();
+  //   const [wardBillUpdate, setWardBillUpdate] = useState();
+  //   const handleProvince = (event) => {
+  //     if (document.getElementById(event.target.value) !== null) {
+  //       const target = event.target;
+  //       const value = target.value;
+  //       setProvince_id(value);
+  //       console.log(value);
+  //       setDistrict_id(null);
+  //       setWards([]);
+  //       let totalQuantity = 0;
+  //       newBillDetails.map((data) => {
+  //         totalQuantity += data.quantity;
+  //       });
+  //       let item = {
+  //         toDistrictId: null,
+  //         toWardCode: null,
+  //         insuranceValue: null,
+  //         quantity: totalQuantity,
+  //       };
+  //       setTransportationFeeDTO(item);
+  //       //   setBill({
+  //       //     ...bill,
+  //       //     province: document.getElementById(value).innerText,
+  //       //   });
+  //       setProviceBillUpdate(document.getElementById(value).innerText);
+  //       setShowDistricts(true);
+  //     } else {
+  //       setShowDistricts(false);
+  //       setShowWards(false);
+  //       setTransportationFeeDTO({
+  //         toDistrictId: null,
+  //         toWardCode: null,
+  //         // insuranceValue: soTienThanhToan,
+  //         // quantity: quantityCart,
+  //       });
+  //     }
+  //     setIsChecked2(true);
+  //     setIsChecked3(false);
+  //   };
 
-  const handleDistrict = (event) => {
-    if (document.getElementById(event.target.value) !== null) {
-      const target = event.target;
-      const value = target.value;
-      setDistrict_id(value);
-      let item = { ...transportationFeeDTO };
-      item["toDistrictId"] = parseInt(value);
-      let priceTotal = 0;
-      newBillDetails.map((data) => {
-        priceTotal += data.price * data.quantity;
-      });
-      item["insuranceValue"] = parseInt(priceTotal);
-      setTransportationFeeDTO(item);
-      console.log(transportationFeeDTO);
-      //   setBill({
-      //     ...bill,
-      //     district: document.getElementById(value).innerText,
-      //   });
-      setDistrictBillUpdate(document.getElementById(value).innerText);
-      setShowWards(true);
-    } else {
-      setShowWards(false);
-      setTransportationFeeDTO({
-        toDistrictId: event.target.value,
-        toWardCode: null,
-        // insuranceValue: soTienThanhToan,
-        // quantity: quantityCart,
-      });
-    }
-    setIsChecked2(true);
-    setIsChecked3(false);
-  };
+  //   const handleDistrict = (event) => {
+  //     if (document.getElementById(event.target.value) !== null) {
+  //       const target = event.target;
+  //       const value = target.value;
+  //       setDistrict_id(value);
+  //       let item = { ...transportationFeeDTO };
+  //       item["toDistrictId"] = parseInt(value);
+  //       let priceTotal = 0;
+  //       newBillDetails.map((data) => {
+  //         priceTotal += data.price * data.quantity;
+  //       });
+  //       item["insuranceValue"] = parseInt(priceTotal);
+  //       setTransportationFeeDTO(item);
+  //       console.log(transportationFeeDTO);
+  //       //   setBill({
+  //       //     ...bill,
+  //       //     district: document.getElementById(value).innerText,
+  //       //   });
+  //       setDistrictBillUpdate(document.getElementById(value).innerText);
+  //       setShowWards(true);
+  //     } else {
+  //       setShowWards(false);
+  //       setTransportationFeeDTO({
+  //         toDistrictId: event.target.value,
+  //         toWardCode: null,
+  //         // insuranceValue: soTienThanhToan,
+  //         // quantity: quantityCart,
+  //       });
+  //     }
+  //     setIsChecked2(true);
+  //     setIsChecked3(false);
+  //   };
 
-  const handleWard = (event) => {
-    if (document.getElementById(event.target.value) !== null) {
-      const target = event.target;
-      const value = target.value;
-      let item = { ...transportationFeeDTO };
-      item["toWardCode"] = value;
-      setTransportationFeeDTO(item);
-      console.log(transportationFeeDTO);
-      //   setBill({
-      //     ...bill,
-      //     wards: document.getElementById(value).innerText,
-      //   });
-      //   console.log(bill);
-      setWardBillUpdate(document.getElementById(value).innerText);
-    } else {
-      setTransportationFeeDTO({
-        ...transportationFeeDTO,
-        toWardCode: event.target.value,
-      });
-    }
-    console.log(transportationFeeDTO);
-    setIsChecked2(true);
-    setIsChecked3(false);
-  };
+  //   const handleWard = (event) => {
+  //     if (document.getElementById(event.target.value) !== null) {
+  //       const target = event.target;
+  //       const value = target.value;
+  //       let item = { ...transportationFeeDTO };
+  //       item["toWardCode"] = value;
+  //       setTransportationFeeDTO(item);
+  //       console.log(transportationFeeDTO);
+  //       //   setBill({
+  //       //     ...bill,
+  //       //     wards: document.getElementById(value).innerText,
+  //       //   });
+  //       //   console.log(bill);
+  //       setWardBillUpdate(document.getElementById(value).innerText);
+  //     } else {
+  //       setTransportationFeeDTO({
+  //         ...transportationFeeDTO,
+  //         toWardCode: event.target.value,
+  //       });
+  //     }
+  //     console.log(transportationFeeDTO);
+  //     setIsChecked2(true);
+  //     setIsChecked3(false);
+  //   };
 
   function chinhSuaThongTinDatHang() {
     document.getElementById("hoVaTen").disabled = false;
@@ -1431,43 +1431,144 @@ const OderDisplay = ({}) => {
   const [dataTongTienKhachHangPhaiTra, setDataTongTienKhachHangPhaiTra] =
     useState(0);
   const suaHoaDon = (newBillDetails) => {
-    console.log(newBillDetails);
-    let sumTongTien = 0;
-    for (let i = 0; i < newBillDetails.length; i++) {
-      sumTongTien =
-        sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
-    }
-    setDataSumTongTien(sumTongTien);
-    voucherTruocUpdate(billUpdate.id)
-      .then((response) => {
-        setDataVouCherTruocUpdateHoaDon(response.data);
-        let sum = sumTongTien;
-        if (response.data.length > 0) {
-          for (let i = 0; i < response.data.length; i++) {
-            if (sumTongTien > response.data[i].valueMin) {
-              sum = sum - response.data[i].valueVoucher;
-            }
-          }
-          console.log(sum + " yyyy ");
+    const gtn = document.getElementById("htnn_5");
+    const dcmd = document.getElementById("htnn_6");
+    const wards = document.getElementById("wards");
+    const dcct = document.getElementById("floatingSelect2");
+    const dcmdSelect = document.getElementById("floatingSelect");
+    if (gtn?.checked) {
+      if (wards?.value === "" || dcct?.value === "") {
+        notification.error({
+          message: "Bạn chưa chọn địa chỉ!",
+        });
+      } else {
+        // doneOrder();
+        console.log(newBillDetails);
+        let sumTongTien = 0;
+        for (let i = 0; i < newBillDetails.length; i++) {
+          sumTongTien =
+            sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
         }
-        // chưa cộng tiền ship
-        // setDataTongTienKhachHangPhaiTra(sum + tien ship);
-        // console.log(sum + " yyyy2 ");
-        // tính số điểm ra tiền
-        soDiemTruocUpdate(billUpdate.id)
+        setDataSumTongTien(sumTongTien);
+        voucherTruocUpdate(billUpdate.id)
           .then((response) => {
-            let quyDoi = response.data * 1000;
-            sum = sum - quyDoi;
-            setDataTongTienKhachHangPhaiTra(sum);
+            setDataVouCherTruocUpdateHoaDon(response.data);
+            let sum = sumTongTien + fee.total;
+            alert(sum + " kkk");
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (sumTongTien > response.data[i].valueMin) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+            // chưa cộng tiền ship
+            // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+            // console.log(sum + " yyyy2 ");
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
           })
           .catch((error) => {
             console.log(`${error}`);
           });
-      })
-      .catch((error) => {
-        console.log(`${error}`);
-      });
-    handleOpenSuaHoaDon();
+        handleOpenSuaHoaDon();
+      }
+    } else if (dcmd?.checked) {
+      if (dcmdSelect?.value == 0) {
+        notification.error({
+          message: "Bạn chưa chọn địa chỉ!",
+        });
+      } else {
+        // doneOrder();
+        console.log(newBillDetails);
+        let sumTongTien = 0;
+        for (let i = 0; i < newBillDetails.length; i++) {
+          sumTongTien =
+            sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
+        }
+        setDataSumTongTien(sumTongTien);
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            setDataVouCherTruocUpdateHoaDon(response.data);
+            let sum = sumTongTien + fee.total;
+            alert(sum + " kkk");
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (sumTongTien > response.data[i].valueMin) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+            // chưa cộng tiền ship
+            // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+            // console.log(sum + " yyyy2 ");
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        handleOpenSuaHoaDon();
+      }
+    } else {
+      // doneOrder();
+      console.log(newBillDetails);
+      let sumTongTien = 0;
+      for (let i = 0; i < newBillDetails.length; i++) {
+        sumTongTien =
+          sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
+      }
+      setDataSumTongTien(sumTongTien);
+      voucherTruocUpdate(billUpdate.id)
+        .then((response) => {
+          setDataVouCherTruocUpdateHoaDon(response.data);
+          let sum = sumTongTien + fee.total;
+          alert(sum + " kkk");
+          if (response.data.length > 0) {
+            for (let i = 0; i < response.data.length; i++) {
+              if (sumTongTien > response.data[i].valueMin) {
+                sum = sum - response.data[i].valueVoucher;
+              }
+            }
+            console.log(sum + " yyyy ");
+          }
+          // chưa cộng tiền ship
+          // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+          // console.log(sum + " yyyy2 ");
+          // tính số điểm ra tiền
+          soDiemTruocUpdate(billUpdate.id)
+            .then((response) => {
+              let quyDoi = response.data * 1000;
+              sum = sum - quyDoi;
+              setDataTongTienKhachHangPhaiTra(sum);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      handleOpenSuaHoaDon();
+    }
   };
 
   const rejectXacNhanSuaHoaDon = () => {
@@ -1832,6 +1933,547 @@ const OderDisplay = ({}) => {
       });
     }
   };
+
+  //     });
+  //   };
+
+  // Tạo biến bill sau khi tìm đc
+  //   const [billUpdate, setBillUpdate] = useState({});
+  //   const [hideForm, setHideForm] = useState(false);
+
+  //   let [newBillDetails, setNewBillDetails] = useState([]);
+  //   const [idBillTemp, setIdBillTemp] = useState(null);
+  //   let temp = [];
+
+  //   const [priceProductBillUpdate, setPriceProductBillUpdate] = useState(0);
+
+  function searchBill(id) {
+    setIdBillTemp(id);
+    searchBillByCode(id)
+      .then((response) => {
+        setBillUpdate(response.data);
+        console.log(response.data.account);
+        if (response.data.account != null) {
+          readAllByIdUser(response.data.account.id)
+            .then((res) => {
+              setDefaultAddress(res.data);
+              console.log(res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          setDefaultAddress([]);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    findBillDetails(id)
+      .then((response) => {
+        setDataBillDetails(response.data);
+        response.data.map((item) =>
+          temp.push({
+            id: item.id,
+            idProduct: item.idProduct,
+            nameProduct: item.nameProduct,
+            version: item.skuColor + "-" + item.skuCapacity,
+            bill: item.bill,
+            sku: item.idSKU,
+            price: item.price,
+            quantity: item.quantity,
+            status: "CHO_XAC_NHAN",
+          })
+        );
+        setNewBillDetails(temp);
+        setHideForm(true);
+        let priceProductBillUpdate1 = 0;
+        temp.map((data) => {
+          priceProductBillUpdate1 += data.price * data.quantity;
+        });
+        setPriceProductBillUpdate(priceProductBillUpdate1);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    getSKUForBillDetail()
+      .then((response) => {
+        setListSku(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function handleCancelHideForm() {
+    temp.length = 0;
+    setIdBillTemp(null);
+    setHideForm(false);
+  }
+
+  function hanldeName(event) {
+    setBillUpdate({
+      ...billUpdate,
+      userName: event.target.value,
+    });
+  }
+
+  function hanldPhone(event) {
+    setBillUpdate({
+      ...billUpdate,
+      phoneNumber: event.target.value,
+    });
+  }
+
+  const [hideFormSearchSku, setHideFormSearchSku] = useState(false);
+  const [listSku, setListSku] = useState([]);
+
+  function handleCancelHideFormSearchSku() {
+    getSKUForBillDetail()
+      .then((response) => {
+        setListSku(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    setHideFormSearchSku(!hideFormSearchSku);
+  }
+
+  const handleSearchSku = (event) => {
+    searchSKUForBillDetail(event.target.value)
+      .then((response) => {
+        setListSku(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // Delete product from bill
+  const handleDeleteSkuFromBillDetail = (record) => {
+    setNewBillDetails((prevBillDetails) => {
+      const updatedBillDetails = prevBillDetails.filter(
+        (item) => item.sku !== record.sku
+      );
+
+      let totalQuantity = 0;
+      updatedBillDetails.forEach((data) => {
+        totalQuantity += data.quantity;
+      });
+
+      let priceTotal = 0;
+      updatedBillDetails.forEach((data) => {
+        priceTotal += data.price * data.quantity;
+      });
+
+      setTransportationFeeDTO((prevTransportationFeeDTO) => ({
+        ...prevTransportationFeeDTO,
+        quantity: totalQuantity,
+        insuranceValue: priceTotal,
+      }));
+
+      return updatedBillDetails;
+    });
+  };
+
+  // Add product to bill
+  // const handleAddSkuToBill = (record) => {
+  //   if (newBillDetails.find((item) => item.sku === record.id) !== undefined) {
+  //     newBillDetails.map((item, index) => {
+  //       if (item.sku === record.id) {
+  //         newBillDetails[newBillDetails.indexOf(item)] = {
+  //           ...item,
+  //           quantity: item.quantity + 1,
+  //         };
+  //         document.getElementById(`quantitySKU_${index}`).value =
+  //           item.quantity + 1;
+  //       }
+  //     });
+  //     setNewBillDetails((newBillDetails) => [...newBillDetails]);
+  //     let totalQuantity = 0;
+  //     newBillDetails.map((data) => {
+  //       totalQuantity += data.quantity;
+  //     });
+  //     let priceTotal = 0;
+  //     newBillDetails.map((data) => {
+  //       priceTotal += data.price * data.quantity;
+  //     });
+
+  //     setTransportationFeeDTO({
+  //       ...transportationFeeDTO,
+  //       quantity: totalQuantity,
+  //       insuranceValue: priceTotal,
+  //     });
+  //   } else {
+  //     const billTemp = {
+  //       id: null,
+  //       idProduct: record.productId,
+  //       nameProduct: record.name,
+  //       version: record.color + "-" + record.capacity,
+  //       bill: idBillTemp,
+  //       sku: record.id,
+  //       price: record.price,
+  //       quantity: 1,
+  //       status: "CHO_XAC_NHAN",
+  //     };
+  //     setNewBillDetails((newBillDetails) => [...newBillDetails, billTemp]);
+  //     let totalQuantity = 0;
+  //     newBillDetails.map((data) => {
+  //       totalQuantity += data.quantity;
+  //     });
+  //     let priceTotal = 0;
+  //     newBillDetails.map((data) => {
+  //       priceTotal += data.price * data.quantity;
+  //     });
+
+  //     setTransportationFeeDTO({
+  //       ...transportationFeeDTO,
+  //       quantity: totalQuantity,
+  //       insuranceValue: priceTotal,
+  //     });
+  //   }
+  // };
+  const handleAddSkuToBill = (record) => {
+    setNewBillDetails((prevBillDetails) => {
+      const existingItem = prevBillDetails.find(
+        (item) => item.sku === record.id
+      );
+
+      if (existingItem) {
+        const updatedDetails = prevBillDetails.map((item) =>
+          item.sku === record.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+
+        let totalQuantity = 0;
+        updatedDetails.forEach((data) => {
+          totalQuantity += data.quantity;
+        });
+
+        let priceTotal = 0;
+        updatedDetails.forEach((data) => {
+          priceTotal += data.price * data.quantity;
+        });
+
+        setTransportationFeeDTO((prevTransportationFeeDTO) => ({
+          ...prevTransportationFeeDTO,
+          quantity: totalQuantity,
+          insuranceValue: priceTotal,
+        }));
+
+        return updatedDetails;
+      } else {
+        const billTemp = {
+          id: null,
+          idProduct: record.productId,
+          nameProduct: record.name,
+          version: record.color + "-" + record.capacity,
+          bill: idBillTemp,
+          sku: record.id,
+          price: record.price,
+          quantity: 1,
+          status: "CHO_XAC_NHAN",
+        };
+
+        const updatedDetails = [...prevBillDetails, billTemp];
+
+        let totalQuantity = 0;
+        updatedDetails.forEach((data) => {
+          totalQuantity += data.quantity;
+        });
+
+        let priceTotal = 0;
+        updatedDetails.forEach((data) => {
+          priceTotal += data.price * data.quantity;
+        });
+
+        setTransportationFeeDTO((prevTransportationFeeDTO) => ({
+          ...prevTransportationFeeDTO,
+          quantity: totalQuantity,
+          insuranceValue: priceTotal,
+        }));
+
+        return updatedDetails;
+      }
+    });
+    // Đặt giá trị mới cho quantitySKU sau khi cập nhật state
+    const index = newBillDetails.findIndex((item) => item.sku === record.id);
+    if (index !== -1) {
+      document.getElementById(`quantitySKU_${index}`).value =
+        newBillDetails[index].quantity + 1;
+    }
+  };
+
+  const handleChangeQuantity = (record) => {
+    newBillDetails.map((item, index) => {
+      if (item.sku === record.sku) {
+        newBillDetails[newBillDetails.indexOf(item)] = {
+          ...item,
+          quantity: Number(
+            document.getElementById(`quantitySKU_${index}`).value
+          ),
+        };
+      }
+    });
+    setNewBillDetails((newBillDetails) => [...newBillDetails]);
+
+    let totalQuantity = 0;
+    newBillDetails.map((data) => {
+      totalQuantity += data.quantity;
+    });
+    let priceTotal = 0;
+    newBillDetails.map((data) => {
+      priceTotal += data.price * data.quantity;
+    });
+
+    setTransportationFeeDTO({
+      ...transportationFeeDTO,
+      quantity: totalQuantity,
+      insuranceValue: priceTotal,
+    });
+    let priceProductBillUpdate1 = 0;
+    newBillDetails.map((data) => {
+      priceProductBillUpdate1 += data.price * data.quantity;
+    });
+    setPriceProductBillUpdate(priceProductBillUpdate1);
+  };
+
+  function handleAddress(event) {
+    setBillUpdate({
+      ...billUpdate,
+      address:
+        event.target.value +
+        ", " +
+        wardBillUpdate +
+        ", " +
+        districtBillUpdate +
+        ", " +
+        proviceBillUpdate,
+    });
+  }
+
+  function giaoTanNoi() {
+    const select0 = document.getElementById("0");
+    select0.selected = true;
+    // const select = document.getElementById("floatingSelect1");
+    // select.hidden = true;
+    const input = document.getElementById("floatingSelect2");
+    input.hidden = false;
+    const divDcmd = document.getElementById("dcmd2");
+    divDcmd.hidden = true;
+    const notDcmd = document.getElementById("notDcmd");
+    notDcmd.hidden = false;
+    // setTransportationFeeDTO({
+    //   toDistrictId: null,
+    //   toWardCode: null,
+    //   insuranceValue: null,
+    //   quantity: 1,
+    // });
+    // setIsChecked1(false);
+    setIsChecked2(true);
+    setIsChecked3(false);
+    // document.getElementById("htnn_4").checked = false;
+    document.getElementById("htnn_6").checked = false;
+  }
+
+  function diaChiMacDinh() {
+    const input = document.getElementById("floatingSelect2");
+    input.value = "";
+    const select_1 = document.getElementById("-1");
+    select_1.selected = true;
+    const select_2 = document.getElementById("-2");
+    select_2.selected = true;
+    const select_3 = document.getElementById("-3");
+    select_3.selected = true;
+    const divDcmd = document.getElementById("dcmd2");
+    divDcmd.hidden = false;
+    const notDcmd = document.getElementById("notDcmd");
+    notDcmd.hidden = true;
+    setTransportationFeeDTO({
+      toDistrictId: null,
+      toWardCode: null,
+      insuranceValue: null,
+      quantity: 1,
+    });
+    setIsChecked2(false);
+    setIsChecked3(true);
+    // document.getElementById("htnn_4").checked = false;
+    document.getElementById("htnn_5").checked = false;
+  }
+
+  const [proviceBillUpdate, setProviceBillUpdate] = useState();
+  const [districtBillUpdate, setDistrictBillUpdate] = useState();
+  const [wardBillUpdate, setWardBillUpdate] = useState();
+  const handleProvince = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setProvince_id(value);
+      console.log(value);
+      setDistrict_id(null);
+      setWards([]);
+      let totalQuantity = 0;
+      newBillDetails.map((data) => {
+        totalQuantity += data.quantity;
+      });
+      let item = {
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: null,
+        quantity: totalQuantity,
+      };
+      setTransportationFeeDTO(item);
+      //   setBill({
+      //     ...bill,
+      //     province: document.getElementById(value).innerText,
+      //   });
+      setProviceBillUpdate(document.getElementById(value).innerText);
+      setShowDistricts(true);
+    } else {
+      setShowDistricts(false);
+      setShowWards(false);
+      setTransportationFeeDTO({
+        toDistrictId: null,
+        toWardCode: null,
+        // insuranceValue: soTienThanhToan,
+        // quantity: quantityCart,
+      });
+    }
+    setIsChecked2(true);
+    setIsChecked3(false);
+  };
+
+  const handleDistrict = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      setDistrict_id(value);
+      let item = { ...transportationFeeDTO };
+      item["toDistrictId"] = parseInt(value);
+      let priceTotal = 0;
+      newBillDetails.map((data) => {
+        priceTotal += data.price * data.quantity;
+      });
+      item["insuranceValue"] = parseInt(priceTotal);
+      setTransportationFeeDTO(item);
+      console.log(transportationFeeDTO);
+      //   setBill({
+      //     ...bill,
+      //     district: document.getElementById(value).innerText,
+      //   });
+      setDistrictBillUpdate(document.getElementById(value).innerText);
+      setShowWards(true);
+    } else {
+      setShowWards(false);
+      setTransportationFeeDTO({
+        toDistrictId: event.target.value,
+        toWardCode: null,
+        // insuranceValue: soTienThanhToan,
+        // quantity: quantityCart,
+      });
+    }
+    setIsChecked2(true);
+    setIsChecked3(false);
+  };
+
+  const handleWard = (event) => {
+    if (document.getElementById(event.target.value) !== null) {
+      const target = event.target;
+      const value = target.value;
+      let item = { ...transportationFeeDTO };
+      item["toWardCode"] = value;
+      setTransportationFeeDTO(item);
+      console.log(transportationFeeDTO);
+      //   setBill({
+      //     ...bill,
+      //     wards: document.getElementById(value).innerText,
+      //   });
+      //   console.log(bill);
+      setWardBillUpdate(document.getElementById(value).innerText);
+    } else {
+      setTransportationFeeDTO({
+        ...transportationFeeDTO,
+        toWardCode: event.target.value,
+      });
+    }
+    console.log(transportationFeeDTO);
+    setIsChecked2(true);
+    setIsChecked3(false);
+  };
+
+  function chinhSuaThongTinDatHang() {
+    document.getElementById("hoVaTen").disabled = false;
+    document.getElementById("phoneNumber").disabled = false;
+    document.getElementById("chinhSua1").hidden = false;
+    document.getElementById("notDcmd").hidden = false;
+  }
+
+  function handleDefaultAddress(event) {
+    let totalQuantity = 0;
+    newBillDetails.map((data) => {
+      totalQuantity += data.quantity;
+    });
+    let priceTotal = 0;
+    newBillDetails.map((data) => {
+      priceTotal += data.price * data.quantity;
+    });
+    const inputString = document.getElementById(event.target.value).innerText;
+    if (inputString !== "") {
+      const dataArray = inputString.split(",").map((item) => item.trim());
+      setBillUpdate({
+        ...billUpdate,
+        // province: dataArray[dataArray.length - 1],
+        // district: dataArray[dataArray.length - 2],
+        // wards: dataArray[dataArray.length - 3],
+        address: inputString,
+      });
+      let province_id = [...provinces].filter(
+        (pr) => pr.ProvinceName === dataArray[dataArray.length - 1]
+      )[0].ProvinceID;
+      readAllDistrict(province_id)
+        .then((response) => {
+          let district_id = [...response.data.data].filter(
+            (dt) => dt.DistrictName === dataArray[dataArray.length - 2]
+          )[0].DistrictID;
+          readAllWard(district_id)
+            .then((response) => {
+              let ward_code = [...response.data.data].filter(
+                (w) => w.WardName === dataArray[dataArray.length - 3]
+              )[0].WardCode;
+              setTransportationFeeDTO({
+                toDistrictId: district_id,
+                toWardCode: ward_code,
+                insuranceValue: priceTotal,
+                quantity: totalQuantity,
+              });
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+      getFee(transportationFeeDTO)
+        .then((response) => {
+          setFee(response.data.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    } else {
+      setTransportationFeeDTO({
+        toDistrictId: null,
+        toWardCode: null,
+        insuranceValue: priceTotal,
+        quantity: totalQuantity,
+      });
+    }
+    setIsChecked2(false);
+    setIsChecked3(true);
+  }
 
   return (
     <>
@@ -3098,17 +3740,17 @@ const OderDisplay = ({}) => {
                             disabled
                           ></input> */}
                         </div>
-                        <button
-                          type="button"
-                          class="btn btn-outline-warning"
-                          onClick={() => chinhSuaThongTinDatHang()}
-                          style={{
-                            marginTop: "10px",
-                          }}
-                        >
-                          Chỉnh sửa thông tin đặt hàng
-                        </button>
-                        <div className="col-md-12" hidden id="chinhSua1">
+                        {/* <button
+                                                    type="button"
+                                                    class="btn btn-outline-warning"
+                                                    onClick={() => chinhSuaThongTinDatHang()}
+                                                    style={{
+                                                        marginTop: "10px",
+                                                    }}
+                                                >
+                                                    Chỉnh sửa thông tin đặt hàng
+                                                </button> */}
+                        <div className="col-md-12" id="chinhSua1">
                           <b htmlFor="kh_ngaysinh">Hình thức nhận hàng</b>
                           <div className="custom-control custom-radio">
                             <input
@@ -3149,7 +3791,7 @@ const OderDisplay = ({}) => {
                             </label>
                           </div>
                         </div>
-                        <div hidden className="row" id="notDcmd">
+                        <div className="row" id="notDcmd">
                           <div className="col-md-4">
                             <br />
                             <label htmlFor="kh_cmnd">Tỉnh, thành phố:</label>
@@ -3240,7 +3882,7 @@ const OderDisplay = ({}) => {
                             className="form-select"
                             id="floatingSelect"
                             aria-label="Floating label select example"
-                            // onChange={handleDefaultAddress}
+                            onChange={handleDefaultAddress}
                           >
                             <option selected id="0" value={0}></option>
                             {defaultAddress.map((da) => {
@@ -3286,7 +3928,7 @@ const OderDisplay = ({}) => {
                   <br />
                   <Table
                     rowKey="oop"
-                    dataSource={dataBillDetails}
+                    dataSource={newBillDetails}
                     pagination={{
                       pageSize: 5,
                       showSizeChanger: false,
@@ -3330,9 +3972,7 @@ const OderDisplay = ({}) => {
                       render={(text, record) => {
                         return (
                           <Form.Item name="title" style={{ margin: 0 }}>
-                            <p>
-                              {record.skuColor} - {record.skuCapacity}
-                            </p>
+                            <p>{record.version}</p>
                           </Form.Item>
                         );
                       }}
