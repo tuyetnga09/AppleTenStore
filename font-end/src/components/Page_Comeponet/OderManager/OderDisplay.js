@@ -1437,95 +1437,97 @@ const OderDisplay = ({}) => {
     const dcct = document.getElementById("floatingSelect2");
     const dcmdSelect = document.getElementById("floatingSelect");
     if (gtn?.checked) {
+      console.log(newBillDetails);
+      let sumTongTien = 0;
+      for (let i = 0; i < newBillDetails.length; i++) {
+        sumTongTien =
+          sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
+      }
+      setDataSumTongTien(sumTongTien);
+      voucherTruocUpdate(billUpdate.id)
+        .then((response) => {
+          setDataVouCherTruocUpdateHoaDon(response.data);
+          let sum = sumTongTien + fee.total;
+          alert(sum + " kkk");
+          if (response.data.length > 0) {
+            for (let i = 0; i < response.data.length; i++) {
+              if (sumTongTien > response.data[i].valueMin) {
+                sum = sum - response.data[i].valueVoucher;
+              }
+            }
+            console.log(sum + " yyyy ");
+          }
+          // chưa cộng tiền ship
+          // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+          // console.log(sum + " yyyy2 ");
+          // tính số điểm ra tiền
+          soDiemTruocUpdate(billUpdate.id)
+            .then((response) => {
+              let quyDoi = response.data * 1000;
+              sum = sum - quyDoi;
+              setDataTongTienKhachHangPhaiTra(sum);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       if (wards?.value === "" || dcct?.value === "") {
         notification.error({
           message: "Bạn chưa chọn địa chỉ!",
         });
       } else {
         // doneOrder();
-        console.log(newBillDetails);
-        let sumTongTien = 0;
-        for (let i = 0; i < newBillDetails.length; i++) {
-          sumTongTien =
-            sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
-        }
-        setDataSumTongTien(sumTongTien);
-        voucherTruocUpdate(billUpdate.id)
-          .then((response) => {
-            setDataVouCherTruocUpdateHoaDon(response.data);
-            let sum = sumTongTien + fee.total;
-            alert(sum + " kkk");
-            if (response.data.length > 0) {
-              for (let i = 0; i < response.data.length; i++) {
-                if (sumTongTien > response.data[i].valueMin) {
-                  sum = sum - response.data[i].valueVoucher;
-                }
-              }
-              console.log(sum + " yyyy ");
-            }
-            // chưa cộng tiền ship
-            // setDataTongTienKhachHangPhaiTra(sum + tien ship);
-            // console.log(sum + " yyyy2 ");
-            // tính số điểm ra tiền
-            soDiemTruocUpdate(billUpdate.id)
-              .then((response) => {
-                let quyDoi = response.data * 1000;
-                sum = sum - quyDoi;
-                setDataTongTienKhachHangPhaiTra(sum);
-              })
-              .catch((error) => {
-                console.log(`${error}`);
-              });
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+
         handleOpenSuaHoaDon();
       }
     } else if (dcmd?.checked) {
+      console.log(newBillDetails);
+      let sumTongTien = 0;
+      for (let i = 0; i < newBillDetails.length; i++) {
+        sumTongTien =
+          sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
+      }
+      setDataSumTongTien(sumTongTien);
+      voucherTruocUpdate(billUpdate.id)
+        .then((response) => {
+          setDataVouCherTruocUpdateHoaDon(response.data);
+          let sum = sumTongTien + fee.total;
+          alert(sum + " kkk");
+          if (response.data.length > 0) {
+            for (let i = 0; i < response.data.length; i++) {
+              if (sumTongTien > response.data[i].valueMin) {
+                sum = sum - response.data[i].valueVoucher;
+              }
+            }
+            console.log(sum + " yyyy ");
+          }
+          // chưa cộng tiền ship
+          // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+          // console.log(sum + " yyyy2 ");
+          // tính số điểm ra tiền
+          soDiemTruocUpdate(billUpdate.id)
+            .then((response) => {
+              let quyDoi = response.data * 1000;
+              sum = sum - quyDoi;
+              setDataTongTienKhachHangPhaiTra(sum);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
       if (dcmdSelect?.value == 0) {
         notification.error({
           message: "Bạn chưa chọn địa chỉ!",
         });
       } else {
         // doneOrder();
-        console.log(newBillDetails);
-        let sumTongTien = 0;
-        for (let i = 0; i < newBillDetails.length; i++) {
-          sumTongTien =
-            sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
-        }
-        setDataSumTongTien(sumTongTien);
-        voucherTruocUpdate(billUpdate.id)
-          .then((response) => {
-            setDataVouCherTruocUpdateHoaDon(response.data);
-            let sum = sumTongTien + fee.total;
-            alert(sum + " kkk");
-            if (response.data.length > 0) {
-              for (let i = 0; i < response.data.length; i++) {
-                if (sumTongTien > response.data[i].valueMin) {
-                  sum = sum - response.data[i].valueVoucher;
-                }
-              }
-              console.log(sum + " yyyy ");
-            }
-            // chưa cộng tiền ship
-            // setDataTongTienKhachHangPhaiTra(sum + tien ship);
-            // console.log(sum + " yyyy2 ");
-            // tính số điểm ra tiền
-            soDiemTruocUpdate(billUpdate.id)
-              .then((response) => {
-                let quyDoi = response.data * 1000;
-                sum = sum - quyDoi;
-                setDataTongTienKhachHangPhaiTra(sum);
-              })
-              .catch((error) => {
-                console.log(`${error}`);
-              });
-          })
-          .catch((error) => {
-            console.log(`${error}`);
-          });
+
         handleOpenSuaHoaDon();
       }
     } else {
