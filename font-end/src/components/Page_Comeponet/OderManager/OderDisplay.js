@@ -1453,154 +1453,208 @@ const OderDisplay = ({}) => {
     const dcmdSelect = document.getElementById("floatingSelect");
     if (gtn?.checked) {
       console.log(newBillDetails);
-      let sumTongTien = 0;
-      for (let i = 0; i < newBillDetails.length; i++) {
-        sumTongTien =
-          sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
-      }
-      setDataSumTongTien(sumTongTien);
-      voucherTruocUpdate(billUpdate.id)
-        .then((response) => {
-          setDataVouCherTruocUpdateHoaDon(response.data);
-          let sum = sumTongTien + fee.total;
-          if (response.data.length > 0) {
-            for (let i = 0; i < response.data.length; i++) {
-              if (sumTongTien > response.data[i].valueMin) {
-                sum = sum - response.data[i].valueVoucher;
-              }
-            }
-            console.log(sum + " yyyy ");
-          }
-          // chưa cộng tiền ship
-          // setDataTongTienKhachHangPhaiTra(sum + tien ship);
-          // console.log(sum + " yyyy2 ");
-          // tính số điểm ra tiền
-          // const voucherGG = { idVC: null, value: 0 };
-          // const voucherFS = { idVC: null, value: 0 };
-
-          soDiemTruocUpdate(billUpdate.id)
-            .then((response) => {
-              let quyDoi = response.data * 1000;
-              sum = sum - quyDoi;
-              setDataTongTienKhachHangPhaiTra(sum);
-              setDataSuaHoaDon({
-                ...dataSuaHoaDon,
-                idHoaDon: billUpdate.id,
-                hoVaTen: billUpdate.userName,
-                sdt: billUpdate.phoneNumber,
-                diaChi: billUpdate.address,
-                products: newBillDetails,
-                tongTienSanPham: sumTongTien,
-                tienShipMoi: fee.total,
-                voucherGiamGia: { id: null, value: 0 },
-                voucherShip: { id: null, value: 0 },
-                soDiemSuDung: billUpdate.numberOfPointsUsed,
-                tongTienKhachPhaiTra: sum,
-              });
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
-
-      if (wards?.value === "" || dcct?.value === "") {
+      if (newBillDetails.length === 0) {
         notification.error({
-          message: "Bạn chưa chọn địa chỉ!",
+          message: "THÔNG BÁO",
+          description: "Hãy chọn sản phẩm",
         });
       } else {
-        // doneOrder();
+        let sumTongTien = 0;
+        for (let i = 0; i < newBillDetails.length; i++) {
+          sumTongTien =
+            sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
+        }
+        setDataSumTongTien(sumTongTien);
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            setDataVouCherTruocUpdateHoaDon(response.data);
+            let sum = sumTongTien + fee?.total;
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (sumTongTien > response.data[i].valueMin) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+            // chưa cộng tiền ship
+            // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+            // console.log(sum + " yyyy2 ");
+            // tính số điểm ra tiền
+            // const voucherGG = { idVC: null, value: 0 };
+            // const voucherFS = { idVC: null, value: 0 };
 
-        handleOpenSuaHoaDon();
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: sumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: { id: null, value: 0 },
+                  voucherShip: { id: null, value: 0 },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        if (wards?.value === "" || dcct?.value === "") {
+          notification.error({
+            message: "Bạn chưa chọn địa chỉ!",
+          });
+        } else {
+          // doneOrder();
+          handleOpenSuaHoaDon();
+        }
       }
     } else if (dcmd?.checked) {
       console.log(newBillDetails);
-      let sumTongTien = 0;
-      for (let i = 0; i < newBillDetails.length; i++) {
-        sumTongTien =
-          sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
-      }
-      setDataSumTongTien(sumTongTien);
-      voucherTruocUpdate(billUpdate.id)
-        .then((response) => {
-          setDataVouCherTruocUpdateHoaDon(response.data);
-          let sum = sumTongTien + fee.total;
-          if (response.data.length > 0) {
-            for (let i = 0; i < response.data.length; i++) {
-              if (sumTongTien > response.data[i].valueMin) {
-                sum = sum - response.data[i].valueVoucher;
-              }
-            }
-            console.log(sum + " yyyy ");
-          }
-          // chưa cộng tiền ship
-          // setDataTongTienKhachHangPhaiTra(sum + tien ship);
-          // console.log(sum + " yyyy2 ");
-          // tính số điểm ra tiền
-          soDiemTruocUpdate(billUpdate.id)
-            .then((response) => {
-              let quyDoi = response.data * 1000;
-              sum = sum - quyDoi;
-              setDataTongTienKhachHangPhaiTra(sum);
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
-        })
-        .catch((error) => {
-          console.log(`${error}`);
-        });
-      if (dcmdSelect?.value == 0) {
+      if (newBillDetails.length === 0) {
         notification.error({
-          message: "Bạn chưa chọn địa chỉ!",
+          message: "THÔNG BÁO",
+          description: "Hãy chọn sản phẩm",
         });
       } else {
-        // doneOrder();
+        let sumTongTien = 0;
+        for (let i = 0; i < newBillDetails.length; i++) {
+          sumTongTien =
+            sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
+        }
+        setDataSumTongTien(sumTongTien);
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            setDataVouCherTruocUpdateHoaDon(response.data);
+            let sum = sumTongTien + fee?.total;
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (sumTongTien > response.data[i].valueMin) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+            // chưa cộng tiền ship
+            // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+            // console.log(sum + " yyyy2 ");
+            // tính số điểm ra tiền
+            // const voucherGG = { idVC: null, value: 0 };
+            // const voucherFS = { idVC: null, value: 0 };
 
-        handleOpenSuaHoaDon();
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: sumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: { id: null, value: 0 },
+                  voucherShip: { id: null, value: 0 },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        if (dcmdSelect?.value == 0) {
+          notification.error({
+            message: "Bạn chưa chọn địa chỉ!",
+          });
+        } else {
+          // doneOrder();
+          handleOpenSuaHoaDon();
+        }
       }
     } else {
       // doneOrder();
       console.log(newBillDetails);
-      let sumTongTien = 0;
-      for (let i = 0; i < newBillDetails.length; i++) {
-        sumTongTien =
-          sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
-      }
-      setDataSumTongTien(sumTongTien);
-      voucherTruocUpdate(billUpdate.id)
-        .then((response) => {
-          setDataVouCherTruocUpdateHoaDon(response.data);
-          let sum = sumTongTien + fee.total;
-          if (response.data.length > 0) {
-            for (let i = 0; i < response.data.length; i++) {
-              if (sumTongTien > response.data[i].valueMin) {
-                sum = sum - response.data[i].valueVoucher;
-              }
-            }
-            console.log(sum + " yyyy ");
-          }
-          // chưa cộng tiền ship
-          // setDataTongTienKhachHangPhaiTra(sum + tien ship);
-          // console.log(sum + " yyyy2 ");
-          // tính số điểm ra tiền
-          soDiemTruocUpdate(billUpdate.id)
-            .then((response) => {
-              let quyDoi = response.data * 1000;
-              sum = sum - quyDoi;
-              setDataTongTienKhachHangPhaiTra(sum);
-            })
-            .catch((error) => {
-              console.log(`${error}`);
-            });
-        })
-        .catch((error) => {
-          console.log(`${error}`);
+      if (newBillDetails.length === 0) {
+        notification.error({
+          message: "THÔNG BÁO",
+          description: "Hãy chọn sản phẩm",
         });
-      handleOpenSuaHoaDon();
+      } else {
+        let sumTongTien = 0;
+        for (let i = 0; i < newBillDetails.length; i++) {
+          sumTongTien =
+            sumTongTien + newBillDetails[i].price * newBillDetails[i].quantity;
+        }
+        setDataSumTongTien(sumTongTien);
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            setDataVouCherTruocUpdateHoaDon(response.data);
+            let sum = sumTongTien + fee?.total;
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (sumTongTien > response.data[i].valueMin) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+            // chưa cộng tiền ship
+            // setDataTongTienKhachHangPhaiTra(sum + tien ship);
+            // console.log(sum + " yyyy2 ");
+            // tính số điểm ra tiền
+            // const voucherGG = { idVC: null, value: 0 };
+            // const voucherFS = { idVC: null, value: 0 };
+
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: sumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: { id: null, value: 0 },
+                  voucherShip: { id: null, value: 0 },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
     }
+    // if (newBillDetails.length > 0) {
+    //   handleOpenSuaHoaDon();
+    // }
   };
 
   const rejectXacNhanSuaHoaDon = () => {
@@ -1636,7 +1690,7 @@ const OderDisplay = ({}) => {
     // if(dataSumTongTien > dataVouCherTruocUpdateHoaDon.valueMin){
 
     // }
-
+    console.log(dataSuaHoaDon);
     setIsModalVisibleSuaHoaDon(true);
   };
   // Hàm để ẩn Modal
@@ -2389,6 +2443,12 @@ const OderDisplay = ({}) => {
 
   // Delete product from bill
   const handleDeleteSkuFromBillDetail = (record) => {
+    // Đặt giá trị mới cho quantitySKU sau khi cập nhật state
+    const index = newBillDetails.findIndex((item) => item.sku === record.sku);
+    if (index !== -1) {
+      document.getElementById(`quantitySKU_${index}`).value =
+        newBillDetails[index + 1].quantity;
+    }
     setNewBillDetails((prevBillDetails) => {
       const updatedBillDetails = prevBillDetails.filter(
         (item) => item.sku !== record.sku
@@ -2402,6 +2462,7 @@ const OderDisplay = ({}) => {
       let priceTotal = 0;
       updatedBillDetails.forEach((data) => {
         priceTotal += data.price * data.quantity;
+        setPriceProductBillUpdate(priceTotal);
       });
 
       setTransportationFeeDTO((prevTransportationFeeDTO) => ({
@@ -2492,6 +2553,7 @@ const OderDisplay = ({}) => {
         let priceTotal = 0;
         updatedDetails.forEach((data) => {
           priceTotal += data.price * data.quantity;
+          setPriceProductBillUpdate(priceTotal);
         });
 
         setTransportationFeeDTO((prevTransportationFeeDTO) => ({
@@ -2524,6 +2586,7 @@ const OderDisplay = ({}) => {
         let priceTotal = 0;
         updatedDetails.forEach((data) => {
           priceTotal += data.price * data.quantity;
+          setPriceProductBillUpdate(priceTotal);
         });
 
         setTransportationFeeDTO((prevTransportationFeeDTO) => ({
@@ -2831,8 +2894,20 @@ const OderDisplay = ({}) => {
       reject: () => rejectXacNhanSuaHoaDonTuNhanVien(),
     });
   };
+
+  // Hàm làm mới trang sau 2 giây
+  const reloadPage = () => {
+    window.location.reload();
+  };
+
+  // Thiết lập thời gian chạy là 2000 milliseconds (2 giây)
+  const delayInMilliseconds = 1000;
+
+  // Sử dụng setTimeout để gọi hàm reloadPage sau khoảng thời gian được thiết lập
+
   const handleXacNhanSuaHoaDonTuNhanVien = (dataSuaHoaDon) => {
     console.log(dataSuaHoaDon);
+
     xacNhanSuaHoaDonKhiKhachGoiYeuCau(dataSuaHoaDon)
       .then((response) => {
         if (response.data === 1) {
@@ -2842,6 +2917,7 @@ const OderDisplay = ({}) => {
           });
           handleCancelHideForm();
           handleCancelSuaHoaDon();
+          setTimeout(reloadPage, delayInMilliseconds);
         }
         if (response.data === -1) {
           notification.error({
@@ -2873,6 +2949,7 @@ const OderDisplay = ({}) => {
       accept: () => xacNhanHuyThaoTacTuNhanVien(),
       reject: () => rejectXacNhanHuyThaoTacNhanVien(),
     });
+    console.log(dataSuaHoaDon);
   };
 
   const xacNhanHuyThaoTacTuNhanVien = () => {
@@ -3244,8 +3321,12 @@ const OderDisplay = ({}) => {
                     <Table.Column
                       key="user"
                       dataIndex="user"
-                      title={t("Tên khách hàng")}
-                      render={(text, record) => <span>{record?.userName}</span>}
+                      title={t("Thông tin khách hàng")}
+                      render={(text, record) => (
+                        <span>
+                          {record?.userName} - {record?.phoneNumber}
+                        </span>
+                      )}
                     />
 
                     {/* <Table.Column
@@ -4110,7 +4191,7 @@ const OderDisplay = ({}) => {
                             value={billUpdate.userName}
                             onChange={hanldeName}
                             required
-                            disabled
+                            // disabled
                           ></input>
                           <br />
                         </div>
@@ -4125,7 +4206,7 @@ const OderDisplay = ({}) => {
                             value={billUpdate.phoneNumber}
                             onChange={hanldPhone}
                             required
-                            disabled
+                            // disabled
                           ></input>
                         </div>
                         <div className="col-md-12">
@@ -4269,7 +4350,10 @@ const OderDisplay = ({}) => {
                               })}
                             </select>
                           </div>
-                          <div className="col-md-12">
+                          <div
+                            className="col-md-12"
+                            style={{ marginTop: "10px" }}
+                          >
                             <input
                               // hidden
                               id="floatingSelect2"
@@ -4323,16 +4407,17 @@ const OderDisplay = ({}) => {
                 </form>
                 <br />
                 <div className="col-md-8">
-                  <div className="row col-md-3">
-                    Giỏ hàng của khách hàng
-                    {/* <button
+                  {/* <div className="row col-md-3"> */}
+                  <h4>Giỏ hàng của khách hàng</h4>
+
+                  {/* <button
                     type="button"
                     onClick={handleCancelHideFormSearchSku}
                     className="btn btn-warning"
                   >
                     +
                   </button> */}
-                  </div>
+                  {/* </div> */}
                   <br />
                   <Table
                     rowKey="oop"
@@ -4459,10 +4544,15 @@ const OderDisplay = ({}) => {
                   </Table>
 
                   <div className="form-search">
-                    <h3 className="align-content-center">TÌM KIẾM SẢN PHẨM</h3>
+                    <h4
+                      className="align-content-center"
+                      style={{ marginBottom: "10px" }}
+                    >
+                      Tìm kiếm sản phẩm
+                    </h4>
                     <Form.Item name="name" noStyle>
                       <Input
-                        style={{ width: "300px" }}
+                        style={{ width: "300px", marginBottom: "10px" }}
                         placeholder={"Product Search"}
                         suffix={<SearchOutlined />}
                         onChange={handleSearchSku}
@@ -4574,6 +4664,7 @@ const OderDisplay = ({}) => {
                             />
                           );
                         }}
+                        sorter={(a, b) => a.quantity - b.quantity}
                       />
 
                       {/* sumImeiTrongKho */}
@@ -4628,10 +4719,15 @@ const OderDisplay = ({}) => {
               </p>
               <p>
                 Tiền ship mới:{" "}
-                {parseFloat(fee?.total).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
+                {fee?.total === undefined
+                  ? parseFloat(0).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : parseFloat(fee?.total).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
               </p>
             </Modal>
             <Modal
@@ -5425,7 +5521,21 @@ const UserAccountTable = ({ record, onSomeAction }) => {
       .catch((error) => {
         console.log(`Lỗi đọc sku: ${error}`);
       });
-
+    seachImeis(idSKU, "")
+      .then((response) => {
+        setDataSeachImeis(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    seachImeisDaBan(idBillDetail, idSKU, "")
+      .then((response) => {
+        setDataSeachImeiDaBan(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     handleImeiOpen(idBillDetail, idSKU);
     setIsModalVisibleAddImei(true);
   };
@@ -5530,7 +5640,21 @@ const UserAccountTable = ({ record, onSomeAction }) => {
             .catch((error) => {
               console.log(`Lỗi đọc imei của sku: ${error}`);
             });
-          setDataSeachImeiDaBan([]);
+          seachImeisDaBan(dataIdBillDetail, dataIdSKU, "")
+            .then((response) => {
+              setDataSeachImeiDaBan(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+          seachImeis(dataIdSKU, "")
+            .then((response) => {
+              setDataSeachImeis(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+          // setDataSeachImeiDaBan([]);
           //load lại bill_detaill để update số lượng imei_da_chon -phongnh
           getIdBill(dataIdBillDetail)
             .then((response) => {
@@ -5622,6 +5746,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
         console.log(`Lỗi đọc bill_detail: ${error}`);
       });
   };
+
   //config khi xoá all imei của bill_detail - phongnh
   const rejectDeleteAllImeiBillDetail = () => {
     toast.current.show({
@@ -5661,9 +5786,16 @@ const UserAccountTable = ({ record, onSomeAction }) => {
           .catch((error) => {
             console.log(`Lỗi đọc imei của sku: ${error}`);
           });
-        seachImeisDaBan(dataIdBillDetail, dataIdSKU, codeImeiDaBan)
+        seachImeisDaBan(dataIdBillDetail, dataIdSKU, "")
           .then((response) => {
             setDataSeachImeiDaBan(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        seachImeis(dataIdSKU, "")
+          .then((response) => {
+            setDataSeachImeis(response.data);
           })
           .catch((error) => {
             console.log(`${error}`);
@@ -5682,6 +5814,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
           .catch((error) => {
             console.log(`${error}`);
           });
+
         notification.success({
           message: "Xoá Imei Thành Công",
         });
@@ -5713,23 +5846,23 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 
   function handleChangeImeis(event) {
     //comment vì chưa có dữ liệu
-    // const target = event.target;
-    // const value = target.value;
-    // const name = target.name;
-    // console.log(target + " check imei");
-    // console.log(value + " check imei - name");
-    // // let item = { key: "" };
-    // // item[name] = value;
-    // // setDataImeiThatLac(item);
-    // if (value !== undefined) {
-    //   seachImeis(dataIdSKU, value)
-    //     .then((response) => {
-    //       setDataSeachImeis(response.data);
-    //     })
-    //     .catch((error) => {
-    //       console.log(`${error}`);
-    //     });
-    // }
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    console.log(target + " check imei");
+    console.log(value + " check imei - name");
+    // let item = { key: "" };
+    // item[name] = value;
+    // setDataImeiThatLac(item);
+    if (value !== undefined) {
+      seachImeis(dataIdSKU, value)
+        .then((response) => {
+          setDataSeachImeis(response.data);
+        })
+        .catch((error) => {
+          console.log(`${error}`);
+        });
+    }
   }
 
   //add imei vào bảng imei dã bán - phongnh
@@ -5763,9 +5896,16 @@ const UserAccountTable = ({ record, onSomeAction }) => {
             .catch((error) => {
               console.log(`Lỗi đọc imei của sku: ${error}`);
             });
-          seachImeis(dataIdSKU, codeImei)
+          seachImeis(dataIdSKU, "")
             .then((response) => {
               setDataSeachImeis(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+          seachImeisDaBan(idBillDetail, dataIdSKU, "")
+            .then((response) => {
+              setDataSeachImeiDaBan(response.data);
             })
             .catch((error) => {
               console.log(`${error}`);
@@ -6147,12 +6287,48 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               >
                 {/* dataSeachImeiDaBan */}
                 {dataSeachImeiDaBan.length === 0 ? (
+                  // <ul class="list-group mb-3">
+                  //   {dataImeiSelected.map((imei, index) => (
+                  //     <ul class="list-group mb-3">
+                  //       <li class="list-group-item d-flex justify-content-between">
+                  //         <span>{index + 1}</span>
+
+                  //         <input
+                  //           type="checkbox"
+                  //           value={imei.codeImeiDaBan}
+                  //           checked={selectedCheckboxes.includes(
+                  //             imei.codeImeiDaBan
+                  //           )}
+                  //           onChange={handleCheckboxChange}
+                  //         />
+                  //         <span style={{ paddingLeft: "10px" }}>
+                  //           {imei.codeImeiDaBan}
+                  //         </span>
+                  //         <strong>
+                  //           <Button
+                  //             type="text"
+                  //             danger
+                  //             onClick={() =>
+                  //               handleClearImeiDaBan(
+                  //                 imei.idImeiDaBan,
+                  //                 imei.codeImeiDaBan
+                  //               )
+                  //             }
+                  //           >
+                  //             Hủy
+                  //           </Button>
+                  //         </strong>
+                  //       </li>
+                  //     </ul>
+                  //   ))}
+                  // </ul>
+                  <p></p>
+                ) : (
                   <ul class="list-group mb-3">
-                    {dataImeiSelected.map((imei, index) => (
+                    {dataSeachImeiDaBan.map((imei, index) => (
                       <ul class="list-group mb-3">
                         <li class="list-group-item d-flex justify-content-between">
                           <span>{index + 1}</span>
-
                           <input
                             type="checkbox"
                             value={imei.codeImeiDaBan}
@@ -6161,33 +6337,6 @@ const UserAccountTable = ({ record, onSomeAction }) => {
                             )}
                             onChange={handleCheckboxChange}
                           />
-                          <span style={{ paddingLeft: "10px" }}>
-                            {imei.codeImeiDaBan}
-                          </span>
-                          <strong>
-                            <Button
-                              type="text"
-                              danger
-                              onClick={() =>
-                                handleClearImeiDaBan(
-                                  imei.idImeiDaBan,
-                                  imei.codeImeiDaBan
-                                )
-                              }
-                            >
-                              Hủy
-                            </Button>
-                          </strong>
-                        </li>
-                      </ul>
-                    ))}
-                  </ul>
-                ) : (
-                  <ul class="list-group mb-3">
-                    {dataSeachImeiDaBan.map((imei, index) => (
-                      <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                          <span>{index + 1}</span>
                           <span style={{ paddingLeft: "10px" }}>
                             {imei.codeImeiDaBan}
                           </span>
@@ -6242,30 +6391,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
               >
                 {/* dataSeachImeis */}
                 {dataSeachImeis.length === 0 ? (
-                  <ul class="list-group mb-3">
-                    {dataImeiClick.map((imei, index) => (
-                      <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                          <span>{index + 1}</span>
-                          <span style={{ paddingLeft: "10px" }}>
-                            {imei.codeImei}
-                            <br />
-                          </span>
-                          <strong>
-                            <Button
-                              type="text"
-                              danger
-                              onClick={() =>
-                                handleImeiClick(imei.codeImei, dataIdBillDetail)
-                              }
-                            >
-                              Chọn
-                            </Button>
-                          </strong>
-                        </li>
-                      </ul>
-                    ))}
-                  </ul>
+                  <h1></h1>
                 ) : (
                   <ul class="list-group mb-3">
                     {dataSeachImeis.map((imei, index) => (

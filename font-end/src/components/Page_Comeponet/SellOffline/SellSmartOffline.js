@@ -1571,6 +1571,20 @@ export default function SellSmart() {
       .catch((error) => {
         console.log(`Lỗi đọc sku: ${error}`);
       });
+    seachImeisDaBan(idBillDetail, idSKU, "")
+      .then((response) => {
+        setDataSeachImeiDaBan(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+    seachImeis(idSKU, "")
+      .then((response) => {
+        setDataSeachImeis(response.data);
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
     setIsModalVisibleImei(true);
   };
   // Hàm để ẩn Modal imei
@@ -1693,14 +1707,20 @@ export default function SellSmart() {
             .catch((error) => {
               console.log(`Lỗi đọc imei của sku: ${error}`);
             });
-          seachImeis(dataIdSKU, codeImei)
+          seachImeis(dataIdSKU, "")
             .then((response) => {
               setDataSeachImeis(response.data);
             })
             .catch((error) => {
               console.log(`${error}`);
             });
-
+          seachImeisDaBan(idBillDetail, dataIdSKU, "")
+            .then((response) => {
+              setDataSeachImeiDaBan(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
           //load lại bill_detaill để update số lượng imei_da_chon -phongnh
           getIdBill(idBillDetail)
             .then((response) => {
@@ -1744,9 +1764,16 @@ export default function SellSmart() {
           .catch((error) => {
             console.log(`Lỗi đọc imei của sku: ${error}`);
           });
-        seachImeisDaBan(dataIdBillDetail, dataIdSKU, codeImeiDaBan)
+        seachImeisDaBan(dataIdBillDetail, dataIdSKU, "")
           .then((response) => {
             setDataSeachImeiDaBan(response.data);
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+        seachImeis(dataIdSKU, "")
+          .then((response) => {
+            setDataSeachImeis(response.data);
           })
           .catch((error) => {
             console.log(`${error}`);
@@ -1901,8 +1928,21 @@ export default function SellSmart() {
             .catch((error) => {
               console.log(`Lỗi đọc imei của sku: ${error}`);
             });
-
-          setDataSeachImeiDaBan([]);
+          seachImeisDaBan(dataIdBillDetail, dataIdSKU, "")
+            .then((response) => {
+              setDataSeachImeiDaBan(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+          seachImeis(dataIdSKU, "")
+            .then((response) => {
+              setDataSeachImeis(response.data);
+            })
+            .catch((error) => {
+              console.log(`${error}`);
+            });
+          // setDataSeachImeiDaBan([]);
           //load lại bill_detaill để update số lượng imei_da_chon -phongnh
           getIdBill(dataIdBillDetail)
             .then((response) => {
@@ -4258,12 +4298,52 @@ export default function SellSmart() {
               >
                 {/* dataSeachImeiDaBan */}
                 {dataSeachImeiDaBan.length === 0 ? (
+                  // <ul class="list-group mb-3">
+                  //   {dataImeiSelected.map((imei, index) => (
+                  //     <ul class="list-group mb-3">
+                  //       <li class="list-group-item d-flex justify-content-between">
+                  //         <span>{index + 1}</span>
+
+                  //         <input
+                  //           type="checkbox"
+                  //           value={imei.codeImeiDaBan}
+                  //           checked={selectedCheckboxes.includes(
+                  //             imei.codeImeiDaBan
+                  //           )}
+                  //           onChange={handleCheckboxChange}
+                  //         />
+                  //         <span style={{ paddingLeft: "10px" }}>
+                  //           {imei.codeImeiDaBan}
+                  //         </span>
+                  //         <strong>
+                  //           <Button
+                  //             type="text"
+                  //             danger
+                  //             onClick={() => {
+                  //               handleClearImeiDaBan(
+                  //                 imei.idImeiDaBan,
+                  //                 imei.codeImeiDaBan
+                  //               );
+                  //               let filteredArray = arrCodeImeiDaBan.filter(
+                  //                 (item) => item !== imei.codeImeiDaBan
+                  //               );
+                  //               arrCodeImeiDaBan = filteredArray;
+                  //             }}
+                  //           >
+                  //             Hủy
+                  //           </Button>
+                  //         </strong>
+                  //       </li>
+                  //     </ul>
+                  //   ))}
+                  // </ul>
+                  <p></p>
+                ) : (
                   <ul class="list-group mb-3">
-                    {dataImeiSelected.map((imei, index) => (
+                    {dataSeachImeiDaBan.map((imei, index) => (
                       <ul class="list-group mb-3">
                         <li class="list-group-item d-flex justify-content-between">
                           <span>{index + 1}</span>
-
                           <input
                             type="checkbox"
                             value={imei.codeImeiDaBan}
@@ -4272,37 +4352,6 @@ export default function SellSmart() {
                             )}
                             onChange={handleCheckboxChange}
                           />
-                          <span style={{ paddingLeft: "10px" }}>
-                            {imei.codeImeiDaBan}
-                          </span>
-                          <strong>
-                            <Button
-                              type="text"
-                              danger
-                              onClick={() => {
-                                handleClearImeiDaBan(
-                                  imei.idImeiDaBan,
-                                  imei.codeImeiDaBan
-                                );
-                                let filteredArray = arrCodeImeiDaBan.filter(
-                                  (item) => item !== imei.codeImeiDaBan
-                                );
-                                arrCodeImeiDaBan = filteredArray;
-                              }}
-                            >
-                              Hủy
-                            </Button>
-                          </strong>
-                        </li>
-                      </ul>
-                    ))}
-                  </ul>
-                ) : (
-                  <ul class="list-group mb-3">
-                    {dataSeachImeiDaBan.map((imei, index) => (
-                      <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                          <span>{index + 1}</span>
                           <span style={{ paddingLeft: "10px" }}>
                             {imei.codeImeiDaBan}
                           </span>
@@ -4357,30 +4406,31 @@ export default function SellSmart() {
               >
                 {/* dataSeachImeis */}
                 {dataSeachImeis.length === 0 ? (
-                  <ul class="list-group mb-3">
-                    {dataImeiClick.map((imei, index) => (
-                      <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between">
-                          <span>{index + 1}</span>
-                          <span style={{ paddingLeft: "10px" }}>
-                            {imei.codeImei}
-                            <br />
-                          </span>
-                          <strong>
-                            <Button
-                              type="text"
-                              danger
-                              onClick={() =>
-                                handleImeiClick(imei.codeImei, dataIdBillDetail)
-                              }
-                            >
-                              Chọn
-                            </Button>
-                          </strong>
-                        </li>
-                      </ul>
-                    ))}
-                  </ul>
+                  // <ul class="list-group mb-3">
+                  //   {dataImeiClick.map((imei, index) => (
+                  //     <ul class="list-group mb-3">
+                  //       <li class="list-group-item d-flex justify-content-between">
+                  //         <span>{index + 1}</span>
+                  //         <span style={{ paddingLeft: "10px" }}>
+                  //           {imei.codeImei}
+                  //           <br />
+                  //         </span>
+                  //         <strong>
+                  //           <Button
+                  //             type="text"
+                  //             danger
+                  //             onClick={() =>
+                  //               handleImeiClick(imei.codeImei, dataIdBillDetail)
+                  //             }
+                  //           >
+                  //             Chọn
+                  //           </Button>
+                  //         </strong>
+                  //       </li>
+                  //     </ul>
+                  //   ))}
+                  // </ul>
+                  <p></p>
                 ) : (
                   <ul class="list-group mb-3">
                     {dataSeachImeis.map((imei, index) => (

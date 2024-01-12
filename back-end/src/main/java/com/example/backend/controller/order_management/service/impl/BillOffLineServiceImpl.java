@@ -511,24 +511,24 @@ public class BillOffLineServiceImpl implements BillOffLineService {
     //seach code imei đã bán trong bảng imei đã bán
     @Override
     public List<ImeiDaBanOffLineIonRespon> seachImeiDaBan(Integer idBillDetail, Long idSku, String codeImei) {
-        if (codeImei.trim().equals("")) {
-            return null;
-        } else {
+//        if (codeImei.trim().equals("")) {
+//            return null;
+//        } else {
             List<ImeiDaBanOffLineIonRespon> list =
                     imeiDaBanRepository.seachImeiDaBanFindByCodeImei(idBillDetail, idSku, codeImei);
             return list;
-        }
+//        }
     }
 
     //seach imei theo codeImei
     @Override
     public List<ImeiBillOffLineIonRespon> seachImeiFindByCodeImei(Long idSku, String codeImei) {
-        if (codeImei.trim().equals("")) {
-            return null;
-        } else {
+//        if (codeImei.trim().equals("")) {
+//            return null;
+//        } else {
             List<ImeiBillOffLineIonRespon> list = imeiRepository.seachImeiFindByCodeImei(idSku, codeImei);
             return list;
-        }
+//        }
     }
 
     //delete imei_da_ban - xoá danh sách imei đã bán được chọn (checkbox)

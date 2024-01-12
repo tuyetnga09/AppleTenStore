@@ -881,6 +881,7 @@ public class BillServiceImpl implements BillService {
         // cap nhat laij dia chi
         bill.setAddress(thongTinSuaHoaDon.getDiaChi());
         bill.setPhoneNumber(thongTinSuaHoaDon.getSdt());
+        bill.setUserName(thongTinSuaHoaDon.getHoVaTen());
         bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
         bill.setTotalMoney(thongTinSuaHoaDon.getTongTienKhachPhaiTra());
         bill.setNoteReturn("Khách yêu cầu sửa hoá đơn - " + account.getCode() + " - " + account.getUser().getFullName());

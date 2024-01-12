@@ -24,7 +24,7 @@ public interface ImeiDaBanRepository extends JpaRepository<ImeiDaBan, Long> {
             "    s.color as 'colorSKU', s.price as 'priceSKU', b.status_bill as 'statusBill'\n" +
             "    from bill b join bill_detail bd on b.id = bd.id_bill join sku s on bd.id_sku = s.id\n" +
             "    join imei_da_ban idb on bd.id = idb.id_bill_detail join product p on s.product_id = p.id\n" +
-            "    where idb.code_imei = like %?1%", nativeQuery = true)
+            "    where idb.code_imei like %?1%", nativeQuery = true)
     List<CheckImeiDaBanIonSellOffLine> checkImeiDaBan(String codeImei);
 
     List<ImeiDaBan> findImeiDaBanByBillDetail_Id(Integer id);
