@@ -5991,7 +5991,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
   return (
     <>
       {" "}
-      <Toast ref={toast} />
+      {/* <Toast ref={toast} /> */}
       <ConfirmDialog />
       <List title="Sản phẩm" createButtonProps={undefined}>
         <Col>
