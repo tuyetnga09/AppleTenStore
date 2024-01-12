@@ -88,3 +88,7 @@ export const soDiemTruocUpdate = (idBill) => {
     `manager/bill/find-so-diem/truoc-update?idBill=${idBill}`
   );
 };
+
+export const xacNhanSuaHoaDonKhiKhachGoiYeuCau = (dataSuaHoaDon) => {
+  return httpClient.put(`/manager/bill/sua-hoa-don`, dataSuaHoaDon);
+};

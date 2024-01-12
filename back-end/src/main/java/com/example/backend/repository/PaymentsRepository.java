@@ -17,4 +17,5 @@ public interface PaymentsRepository extends JpaRepository<Payments, Integer> {
     @Query(value = "delete from payments where id_bill = ?1", nativeQuery = true)
     void deletePaymentsByBill(Integer id);
 
+    Payments findByBill_Id(Integer id);
 }

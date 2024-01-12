@@ -1,6 +1,7 @@
 package com.example.backend.controller.order_management.controller.server;
 
 import com.example.backend.controller.order_management.model.ResponseObj;
+import com.example.backend.controller.order_management.model.billOffLine.ThongTinSuaHoaDon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.VoucherHoaDonTruocKhiUpdate;
@@ -98,5 +99,11 @@ public class BillServerController {
     public ResponseEntity<Integer> soDiemTruocUpdate(@RequestParam("idBill") Integer idBill) {
         Integer soDiem = billService.soDiemSuDung(idBill);
         return new ResponseEntity<>(soDiem, HttpStatus.OK);
+    }
+
+    @PutMapping("/sua-hoa-don")
+    public ResponseEntity<Integer> suaHoaDon(@RequestBody ThongTinSuaHoaDon dataSuaHoaDon){
+        Integer update = billService.suaHoaDon(dataSuaHoaDon);
+        return  new ResponseEntity<>(update, HttpStatus.OK);
     }
 }

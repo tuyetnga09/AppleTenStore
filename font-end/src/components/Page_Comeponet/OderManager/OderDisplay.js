@@ -60,6 +60,7 @@ import {
   updateStatusBill,
   voucherTruocUpdate,
   soDiemTruocUpdate,
+  xacNhanSuaHoaDonKhiKhachGoiYeuCau,
 } from "../../../service/Bill/bill.service";
 import { readAllUser } from "../../../service/User/user.service";
 import queryString from "query-string";
@@ -1425,6 +1426,20 @@ const OderDisplay = ({}) => {
   }
 
   //xác nhận sửa hoá đơn
+  const [dataSuaHoaDon, setDataSuaHoaDon] = useState({
+    idHoaDon: null,
+    hoVaTen: null,
+    sdt: null,
+    diaChi: null,
+    products: [],
+    tongTienSanPham: 0,
+    tienShipMoi: 0,
+    voucherGiamGia: { id: null, value: 0 },
+    voucherShip: { id: null, value: 0 },
+    soDiemSuDung: 0,
+    tongTienKhachPhaiTra: 0,
+    idAccount: idAccount,
+  });
   const [dataSumTongTien, setDataSumTongTien] = useState(0);
   const [dataVouCherTruocUpdateHoaDon, setDataVouCherTruocUpdateHoaDon] =
     useState([]);
@@ -1448,7 +1463,6 @@ const OderDisplay = ({}) => {
         .then((response) => {
           setDataVouCherTruocUpdateHoaDon(response.data);
           let sum = sumTongTien + fee.total;
-          alert(sum + " kkk");
           if (response.data.length > 0) {
             for (let i = 0; i < response.data.length; i++) {
               if (sumTongTien > response.data[i].valueMin) {
@@ -1461,11 +1475,28 @@ const OderDisplay = ({}) => {
           // setDataTongTienKhachHangPhaiTra(sum + tien ship);
           // console.log(sum + " yyyy2 ");
           // tính số điểm ra tiền
+          // const voucherGG = { idVC: null, value: 0 };
+          // const voucherFS = { idVC: null, value: 0 };
+
           soDiemTruocUpdate(billUpdate.id)
             .then((response) => {
               let quyDoi = response.data * 1000;
               sum = sum - quyDoi;
               setDataTongTienKhachHangPhaiTra(sum);
+              setDataSuaHoaDon({
+                ...dataSuaHoaDon,
+                idHoaDon: billUpdate.id,
+                hoVaTen: billUpdate.userName,
+                sdt: billUpdate.phoneNumber,
+                diaChi: billUpdate.address,
+                products: newBillDetails,
+                tongTienSanPham: sumTongTien,
+                tienShipMoi: fee.total,
+                voucherGiamGia: { id: null, value: 0 },
+                voucherShip: { id: null, value: 0 },
+                soDiemSuDung: billUpdate.numberOfPointsUsed,
+                tongTienKhachPhaiTra: sum,
+              });
             })
             .catch((error) => {
               console.log(`${error}`);
@@ -1474,6 +1505,7 @@ const OderDisplay = ({}) => {
         .catch((error) => {
           console.log(`${error}`);
         });
+
       if (wards?.value === "" || dcct?.value === "") {
         notification.error({
           message: "Bạn chưa chọn địa chỉ!",
@@ -1495,7 +1527,6 @@ const OderDisplay = ({}) => {
         .then((response) => {
           setDataVouCherTruocUpdateHoaDon(response.data);
           let sum = sumTongTien + fee.total;
-          alert(sum + " kkk");
           if (response.data.length > 0) {
             for (let i = 0; i < response.data.length; i++) {
               if (sumTongTien > response.data[i].valueMin) {
@@ -1543,7 +1574,6 @@ const OderDisplay = ({}) => {
         .then((response) => {
           setDataVouCherTruocUpdateHoaDon(response.data);
           let sum = sumTongTien + fee.total;
-          alert(sum + " kkk");
           if (response.data.length > 0) {
             for (let i = 0; i < response.data.length; i++) {
               if (sumTongTien > response.data[i].valueMin) {
@@ -1712,19 +1742,81 @@ const OderDisplay = ({}) => {
         id: voucher.id,
         value: voucher.valueVoucher,
       });
-      //   if (storedUser !== null) {
-      //     // readAll(idAccount)
-      //     //   .then((response) => {
-      //     //     console.log(response.data);
-      //     //     setProducts(response.data);
-      //     //   })
-      //     //   .catch((error) => {
-      //     //     console.log(`${error}`);
-      //     //   });
-      //   } else {
-      //     setProducts(cartItems);
-      //   }
-      //   setDataVoucherShip(voucher.valueVoucher);
+
+      let sum = dataSumTongTien + fee.total;
+      sum = sum - voucher.valueVoucher; // trừ tiền voucher ship
+
+      if (dataVoucher.value > 0 && dataVoucher.id !== null) {
+        sum = sum - dataVoucher.value;
+        // tính số điểm ra tiền
+        soDiemTruocUpdate(billUpdate.id)
+          .then((response) => {
+            let quyDoi = response.data * 1000;
+            sum = sum - quyDoi;
+            setDataTongTienKhachHangPhaiTra(sum);
+            setDataSuaHoaDon({
+              ...dataSuaHoaDon,
+              idHoaDon: billUpdate.id,
+              hoVaTen: billUpdate.userName,
+              sdt: billUpdate.phoneNumber,
+              diaChi: billUpdate.address,
+              products: newBillDetails,
+              tongTienSanPham: dataSumTongTien,
+              tienShipMoi: fee.total,
+              voucherGiamGia: { id: dataVoucher.id, value: dataVoucher.value },
+              voucherShip: { id: voucher.id, value: voucher.valueVoucher },
+              soDiemSuDung: billUpdate.numberOfPointsUsed,
+              tongTienKhachPhaiTra: sum,
+            });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      } else {
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            //   setDataVouCherTruocUpdateHoaDon(response.data);
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher > 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: dataSumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: { id: null, value: 0 },
+                  voucherShip: { id: voucher.id, value: voucher.valueVoucher },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
 
       notification.success({
         message: "VOUCHER",
@@ -1773,6 +1865,107 @@ const OderDisplay = ({}) => {
         id: null,
         value: 0,
       });
+
+      let sum = dataSumTongTien + fee.total;
+      //   sum = sum - voucher.valueVoucher;
+      // alert(sum);
+      if (dataVoucher.value > 0 && dataVoucher.id !== null) {
+        sum = sum - dataVoucher.value;
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher <= 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: dataSumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: {
+                    id: dataVoucher.id,
+                    value: dataVoucher.value,
+                  },
+                  voucherShip: { id: null, value: 0 },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      } else {
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            //   setDataVouCherTruocUpdateHoaDon(response.data);
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher <= 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher > 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: dataSumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: { id: null, value: 0 },
+                  voucherShip: { id: null, value: 0 },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
 
       notification.success({
         message: "VOUCHER",
@@ -1842,7 +2035,7 @@ const OderDisplay = ({}) => {
         value: voucher.valueVoucher,
       });
 
-      let sum = dataSumTongTien;
+      let sum = dataSumTongTien + fee.total;
       sum = sum - voucher.valueVoucher;
       // chuaw coong tien ship
       if (dataVoucherShip.value > 0 && dataVoucherShip.id !== null) {
@@ -1853,6 +2046,23 @@ const OderDisplay = ({}) => {
             let quyDoi = response.data * 1000;
             sum = sum - quyDoi;
             setDataTongTienKhachHangPhaiTra(sum);
+            setDataSuaHoaDon({
+              ...dataSuaHoaDon,
+              idHoaDon: billUpdate.id,
+              hoVaTen: billUpdate.userName,
+              sdt: billUpdate.phoneNumber,
+              diaChi: billUpdate.address,
+              products: newBillDetails,
+              tongTienSanPham: dataSumTongTien,
+              tienShipMoi: fee.total,
+              voucherGiamGia: { id: voucher.id, value: voucher.valueVoucher },
+              voucherShip: {
+                id: dataVoucherShip.id,
+                value: dataVoucherShip.value,
+              },
+              soDiemSuDung: billUpdate.numberOfPointsUsed,
+              tongTienKhachPhaiTra: sum,
+            });
           })
           .catch((error) => {
             console.log(`${error}`);
@@ -1879,6 +2089,26 @@ const OderDisplay = ({}) => {
                 let quyDoi = response.data * 1000;
                 sum = sum - quyDoi;
                 setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: dataSumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: {
+                    id: voucher.id,
+                    value: voucher.valueVoucher,
+                  },
+                  voucherShip: {
+                    id: null,
+                    value: 0,
+                  },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
               })
               .catch((error) => {
                 console.log(`${error}`);
@@ -1924,6 +2154,111 @@ const OderDisplay = ({}) => {
         id: null,
         value: 0,
       });
+
+      let sum = dataSumTongTien + fee.total;
+      //   sum = sum - voucher.valueVoucher;
+      // alert(sum);
+      if (dataVoucherShip.value > 0 && dataVoucherShip.id !== null) {
+        sum = sum - dataVoucherShip.value;
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher > 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: dataSumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: {
+                    id: null,
+                    value: 0,
+                  },
+                  voucherShip: {
+                    id: dataVoucherShip.id,
+                    value: dataVoucherShip.value,
+                  },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      } else {
+        voucherTruocUpdate(billUpdate.id)
+          .then((response) => {
+            //   setDataVouCherTruocUpdateHoaDon(response.data);
+            if (response.data.length > 0) {
+              for (let i = 0; i < response.data.length; i++) {
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher <= 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+                if (
+                  dataSumTongTien > response.data[i].valueMin &&
+                  response.data[i].valueVoucher > 100000
+                ) {
+                  sum = sum - response.data[i].valueVoucher;
+                }
+              }
+              console.log(sum + " yyyy ");
+            }
+
+            // tính số điểm ra tiền
+            soDiemTruocUpdate(billUpdate.id)
+              .then((response) => {
+                let quyDoi = response.data * 1000;
+                sum = sum - quyDoi;
+                setDataTongTienKhachHangPhaiTra(sum);
+                setDataSuaHoaDon({
+                  ...dataSuaHoaDon,
+                  idHoaDon: billUpdate.id,
+                  hoVaTen: billUpdate.userName,
+                  sdt: billUpdate.phoneNumber,
+                  diaChi: billUpdate.address,
+                  products: newBillDetails,
+                  tongTienSanPham: dataSumTongTien,
+                  tienShipMoi: fee.total,
+                  voucherGiamGia: { id: null, value: 0 },
+                  voucherShip: { id: null, value: 0 },
+                  soDiemSuDung: billUpdate.numberOfPointsUsed,
+                  tongTienKhachPhaiTra: sum,
+                });
+              })
+              .catch((error) => {
+                console.log(`${error}`);
+              });
+          })
+          .catch((error) => {
+            console.log(`${error}`);
+          });
+      }
+
       notification.success({
         message: "VOUCHER",
         description: "Hủy voucher thành công",
@@ -2477,6 +2812,77 @@ const OderDisplay = ({}) => {
     setIsChecked3(true);
   }
 
+  //xasc nhan sua hoa don tu nhan vien
+  const rejectXacNhanSuaHoaDonTuNhanVien = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const configXacNhanSuaHoaDonTuNhanVien = (dataSuaHoaDon) => {
+    confirmDialog({
+      message: "Bạn Chắc Chắn Sửa Hoá Đơn - Lưu Lại Hoá Đơn?",
+      header: "XÁC NHẬN CẬP NHẬT LẠI HOÁ ĐƠN?",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => handleXacNhanSuaHoaDonTuNhanVien(dataSuaHoaDon),
+      reject: () => rejectXacNhanSuaHoaDonTuNhanVien(),
+    });
+  };
+  const handleXacNhanSuaHoaDonTuNhanVien = (dataSuaHoaDon) => {
+    console.log(dataSuaHoaDon);
+    xacNhanSuaHoaDonKhiKhachGoiYeuCau(dataSuaHoaDon)
+      .then((response) => {
+        if (response.data === 1) {
+          notification.success({
+            message: "THÔNG BÁO",
+            description: "Sửa hoá đơn thành công",
+          });
+          handleCancelHideForm();
+          handleCancelSuaHoaDon();
+        }
+        if (response.data === -1) {
+          notification.error({
+            message: "THÔNG BÁO",
+            description: "Sửa hoá đơn thất bại!",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(`${error}`);
+      });
+  };
+
+  // huy thao tac configXacNhanHuyThaoTacNhanVien
+  const rejectXacNhanHuyThaoTacNhanVien = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const configXacNhanHuyThaoTacNhanVien = () => {
+    confirmDialog({
+      message: "Bạn Chắc Chắn Huỷ Thao Tác?",
+      header: "XÁC NHẬN HUỶ CẬP NHẬT LẠI HOÁ ĐƠN?",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => xacNhanHuyThaoTacTuNhanVien(),
+      reject: () => rejectXacNhanHuyThaoTacNhanVien(),
+    });
+  };
+
+  const xacNhanHuyThaoTacTuNhanVien = () => {
+    handleCancelHideForm();
+    handleCancelSuaHoaDon();
+    notification.warning({
+      message: "THÔNG BÁO",
+      description: "Tiếp tục bán hàng",
+    });
+  };
   return (
     <>
       <Toast ref={toast1} />
@@ -4381,7 +4787,6 @@ const OderDisplay = ({}) => {
               <h2>Xác Nhận Thông Tin Đơn Hàng</h2>
 
               <div>
-                {billUpdate.id}
                 <p>Họ Và Tên: {billUpdate.userName}</p>
                 <p>SĐT: {billUpdate.phoneNumber}</p>
                 <p>Địa Chỉ: {billUpdate.address}</p>
@@ -4726,8 +5131,20 @@ const OderDisplay = ({}) => {
               </div>
 
               <div>
-                <Button>Xác Nhận Sửa Hoá Đơn</Button>{" "}
-                <Button>Huỷ Thao Tác</Button>
+                <Button
+                  type="text"
+                  onClick={() =>
+                    configXacNhanSuaHoaDonTuNhanVien(dataSuaHoaDon)
+                  }
+                >
+                  Xác Nhận Sửa Hoá Đơn
+                </Button>{" "}
+                <Button
+                  type="text"
+                  onClick={() => configXacNhanHuyThaoTacNhanVien()}
+                >
+                  Huỷ Thao Tác
+                </Button>
               </div>
             </Modal>
             <Modal

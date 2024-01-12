@@ -4,6 +4,8 @@ import com.example.backend.controller.order_management.model.bill.request.BillAs
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
+import com.example.backend.controller.order_management.model.billOffLine.NewProducts;
+import com.example.backend.controller.order_management.model.billOffLine.ThongTinSuaHoaDon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
@@ -18,10 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -730,6 +732,170 @@ public class BillServiceImpl implements BillService {
     public Integer soDiemSuDung(Integer idBill) {
         Integer soDiem = billRepository.soDiemSuDung(idBill);
         return soDiem;
+    }
+
+    //luu thong tin sua bill
+    @Override
+    public Integer suaHoaDon(ThongTinSuaHoaDon thongTinSuaHoaDon) {
+        // return -1 (k tim thay hoa don trong DB)
+        if (!billRepository.existsById(thongTinSuaHoaDon.getIdHoaDon())) {
+            return -1;
+        }
+        // lấy ra bill
+        Bill bill = billRepository.findById(thongTinSuaHoaDon.getIdHoaDon()).get();
+
+        // lay ra danh sach san pham moi duoc chon
+        List<NewProducts> newProducts = thongTinSuaHoaDon.getProducts();
+
+        // lấy ra danh sách bill_detail xem có sp nào bị xoá hết không để xoá imei trong bảng imei_da_ban
+        List<BillDetails> billDetailsList = billDetailRepository.findByBill_Id(thongTinSuaHoaDon.getIdHoaDon());
+
+        for (int i = 0; i < billDetailsList.size(); i++) {
+            Integer count = 0;
+            for (int j = 0; j < newProducts.size(); j++) {
+                if ((billDetailsList.get(i).getSku().getId() == newProducts.get(j).getSku()) && (newProducts.get(j).getId() != null)) {
+                    // cap nhat laij bill detail
+                    BillDetails billDetails = billDetailRepository.findById(billDetailsList.get(i).getId()).get();
+                    billDetails.setPrice(newProducts.get(j).getPrice());
+                    billDetails.setQuantity(newProducts.get(j).getQuantity());
+                    billDetails.setStatusBill(newProducts.get(j).getStatus());
+
+                    billDetailRepository.save(billDetails);
+                    count++;
+                }
+            }
+            if (count == 0) {
+                List<ImeiDaBan> imeiDaBanList = imeiDaBanRepository.findImeiDaBanByBillDetail_Id(billDetailsList.get(i).getId());
+                for (ImeiDaBan imeiDaBan : imeiDaBanList) {
+                    //* cap nhat lai status imei bangr imei ...
+                    Imei imei = imeiRepository.findByCodeImei(imeiDaBan.getCodeImei());
+                    imei.setStatus(0);
+                    imeiRepository.save(imei);
+
+                    // xoa imei khoi bang imei da ban
+                    imeiDaBanRepository.deleteById(imeiDaBan.getId());
+                }
+                // xoa sp do ra khoi bill_detail
+                billDetailRepository.deleteById(billDetailsList.get(i).getId());
+            }
+        }
+
+        // them cac sp moiw vao bill_detail
+        Date newDate = new Date();
+        for (int i = 0; i < newProducts.size(); i++) {
+            if (newProducts.get(i).getId() == null) {
+                //lay ra sku
+                SKU sku = skuRepositoty.findById(newProducts.get(i).getSku()).get();
+
+                BillDetails billDetail = new BillDetails();
+                billDetail.setBill(bill);
+                billDetail.setPrice(newProducts.get(i).getPrice());
+                billDetail.setQuantity(newProducts.get(i).getQuantity());
+                billDetail.setDateUpdate(newDate);
+                billDetail.setSku(sku);
+                StatusBill statusBill = StatusBill.CHO_XAC_NHAN;
+                billDetail.setStatusBill(statusBill);
+                // billDetail.setPersonCreate(account.getCode() + " - " + account.getUser().getFullName()); **
+                billDetailRepository.save(billDetail);
+
+            }
+        }
+
+        // cap nha voucher Giam Gia
+        if (thongTinSuaHoaDon.getVoucherGiamGia().getId() != null) {
+            List<VoucherDetail> voucherDetails = voucherDetailRepository.listVoucherDetailByIdBill(thongTinSuaHoaDon.getIdHoaDon());
+            for (int i = 0; i < voucherDetails.size(); i++) {
+                if (Long.valueOf(voucherDetails.get(i).getDiscountPrice().longValue()) > 100000) {
+                    // cap nhat lai so luong voucher Giam gia
+                    Voucher voucher = voucherRepository.findById(voucherDetails.get(i).getVoucher().getId()).get();
+                    voucher.setQuantity(voucher.getQuantity() + 1);
+                    voucherRepository.save(voucher);
+
+                    // xoa voucher trong bangr voucher detail vaf them voucher moi vao
+                    voucherDetailRepository.deleteById(voucherDetails.get(i).getId());
+                }
+            }
+            // lay ra voucher -> them voucher moi vaof hoa don
+            Voucher voucherGiamGiaUpdate = voucherRepository.findById(thongTinSuaHoaDon.getVoucherGiamGia().getId()).get();
+
+            // them voucher vao voucher_detail
+            VoucherDetail voucherDetail = new VoucherDetail();
+            voucherDetail.setBill(bill);
+            voucherDetail.setVoucher(voucherGiamGiaUpdate);
+            voucherDetail.setDiscountPrice(voucherGiamGiaUpdate.getValueVoucher());
+
+            voucherDetailRepository.save(voucherDetail);
+
+            //tru so luong khi sua voucher
+            Voucher voucherUpdate = voucherRepository.findById(thongTinSuaHoaDon.getVoucherGiamGia().getId()).get();
+            voucherUpdate.setQuantity(voucherUpdate.getQuantity()-1);
+            voucherRepository.save(voucherUpdate);
+
+        }
+
+        // cap nha voucher ship
+        if (thongTinSuaHoaDon.getVoucherShip().getId() != null) {
+            List<VoucherDetail> voucherDetails = voucherDetailRepository.listVoucherDetailByIdBill(thongTinSuaHoaDon.getIdHoaDon());
+            for (int i = 0; i < voucherDetails.size(); i++) {
+                if (Long.valueOf(voucherDetails.get(i).getDiscountPrice().longValue()) <= 100000) {
+                    // cap nhat lai so luong voucher ship
+                    Voucher voucher = voucherRepository.findById(voucherDetails.get(i).getVoucher().getId()).get();
+                    voucher.setQuantity(voucher.getQuantity() + 1);
+                    voucherRepository.save(voucher);
+
+                    // xoa voucher trong bangr voucher detail vaf them voucher moi vao
+                    voucherDetailRepository.deleteById(voucherDetails.get(i).getId());
+                }
+            }
+            // them voucher moi vaof hoa don
+            Voucher voucherShipUpdate = voucherRepository.findById(thongTinSuaHoaDon.getVoucherShip().getId()).get();
+            // them voucher vao voucher_detail
+            VoucherDetail voucherDetail = new VoucherDetail();
+            voucherDetail.setBill(bill);
+            voucherDetail.setVoucher(voucherShipUpdate);
+            voucherDetail.setDiscountPrice(voucherShipUpdate.getValueVoucher());
+
+            voucherDetailRepository.save(voucherDetail);
+
+            //tru so luong khi sua voucher
+            Voucher voucherUpdate = voucherRepository.findById(thongTinSuaHoaDon.getVoucherShip().getId()).get();
+            voucherUpdate.setQuantity(voucherUpdate.getQuantity()-1);
+            voucherRepository.save(voucherUpdate);
+        }
+
+        // cap nhat lai after_price vaf befor_price
+        List<VoucherDetail> voucherDetailListUpdate = voucherDetailRepository.listVoucherDetailByIdBill(thongTinSuaHoaDon.getIdHoaDon());
+        if (voucherDetailListUpdate.size() > 0) {
+            for (int i = 0; i < voucherDetailListUpdate.size(); i++) {
+                // cap nhat lai tien after_price vaf befor_price voucher_detail
+                VoucherDetail voucherDetailupdate = voucherDetailListUpdate.get(i);
+                voucherDetailupdate.setBeforePrice(thongTinSuaHoaDon.getTongTienSanPham());
+                voucherDetailupdate.setAfterPrice(thongTinSuaHoaDon.getTongTienKhachPhaiTra());
+                voucherDetailRepository.save(voucherDetailupdate);
+            }
+        }
+
+        //lay ra account cap nhat
+        Account account = acountRepository.findById(thongTinSuaHoaDon.getIdAccount()).get();
+
+        // cap nhat laij dia chi
+        bill.setAddress(thongTinSuaHoaDon.getDiaChi());
+        bill.setPhoneNumber(thongTinSuaHoaDon.getSdt());
+        bill.setStatusBill(StatusBill.CHO_XAC_NHAN);
+        bill.setTotalMoney(thongTinSuaHoaDon.getTongTienKhachPhaiTra());
+        bill.setNoteReturn("Khách yêu cầu sửa hoá đơn - " + account.getCode() + " - " + account.getUser().getFullName());
+        bill.setDateUpdate(LocalDate.now());
+        bill.setPersonUpdate(account.getCode() + " - " + account.getUser().getFullName());
+        // cap nhat laij bill
+        billRepository.save(bill);
+
+        // update payments
+        Payments payments = paymentsRepository.findByBill_Id(bill.getId());
+        payments.setMoneyPayment(thongTinSuaHoaDon.getTongTienKhachPhaiTra());
+        payments.setDateUpdate(newDate);
+        paymentsRepository.save(payments);
+
+        return 1;
     }
 
 }

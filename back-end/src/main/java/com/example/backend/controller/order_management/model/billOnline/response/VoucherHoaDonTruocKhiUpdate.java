@@ -5,6 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
 
 public interface VoucherHoaDonTruocKhiUpdate {
+
+    @Value("#{target.idVC}")
+    Integer getIdVC();
+
     @Value("#{target.nameVoucher}")
     String getNameVoucher();
 

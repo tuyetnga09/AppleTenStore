@@ -3,6 +3,7 @@ package com.example.backend.controller.order_management.service;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOffline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnline;
 import com.example.backend.controller.order_management.model.bill.request.BillRequestOnlineAccount;
+import com.example.backend.controller.order_management.model.billOffLine.ThongTinSuaHoaDon;
 import com.example.backend.controller.order_management.model.billOffLine.ion.BillDetailOffLineIon;
 import com.example.backend.controller.order_management.model.billOnline.response.BillAndPayment;
 import com.example.backend.controller.order_management.model.billOnline.response.BillPayDone;
@@ -64,4 +65,6 @@ public interface BillService {
     List<VoucherHoaDonTruocKhiUpdate> listVoucherTruocUpdateHoaDon(Integer idHoaDon);
 
     Integer soDiemSuDung(Integer idBill);
+
+    Integer suaHoaDon(ThongTinSuaHoaDon thongTinSuaHoaDon);
 }

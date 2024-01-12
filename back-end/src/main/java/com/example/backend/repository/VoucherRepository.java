@@ -84,7 +84,7 @@ public interface VoucherRepository extends CustomVoucherRepository, JpaRepositor
             "            WHERE CURRENT_DATE BETWEEN date_start AND date_end AND code like %?1% ", nativeQuery = true)
     List<Voucher> searchVoucher(String codeVoucher);
 
-    @Query(value = "select v.name as 'nameVoucher' , v.value_voucher as 'valueVoucher' , v.value_minimum as 'valueMin' from voucher v join voucher_detail vd on v.id = vd.id_voucher join bill b on vd.id_bill = b.id \n" +
+    @Query(value = "select v.id as 'idVC', v.name as 'nameVoucher' , v.value_voucher as 'valueVoucher' , v.value_minimum as 'valueMin' from voucher v join voucher_detail vd on v.id = vd.id_voucher join bill b on vd.id_bill = b.id \n" +
             "where b.id=?1", nativeQuery = true)
     List<VoucherHoaDonTruocKhiUpdate> findVoucherKhiUpdateHoaDon(Integer idHoaDon);
 
