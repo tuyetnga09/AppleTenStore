@@ -4876,18 +4876,34 @@ const OderDisplay = ({}) => {
             <Modal
               visible={isModalVisibleSuaHoaDon}
               onCancel={handleCancelSuaHoaDon}
-              width={700}
+              width={800}
               footer={null}
               bodyStyle={{ minHeight: "150px" }}
             >
-              <h2>Xác Nhận Thông Tin Đơn Hàng</h2>
+              <h3
+                style={{
+                  marginTop: "20px",
+                  marginBottom: "40px",
+                  textAlign: "center",
+                }}
+              >
+                Xác Nhận Thông Tin Đơn Hàng
+              </h3>
 
               <div>
-                <p>Họ Và Tên: {billUpdate.userName}</p>
-                <p>SĐT: {billUpdate.phoneNumber}</p>
-                <p>Địa Chỉ: {billUpdate.address}</p>
+                <p>
+                  <b>Họ Và Tên:</b> {billUpdate.userName}
+                </p>
+                <p>
+                  <b>SĐT:</b> {billUpdate.phoneNumber}
+                </p>
+                <p>
+                  <b>Địa Chỉ:</b> {billUpdate.address}
+                </p>
               </div>
-              <div>Sản Phẩm:</div>
+              <div>
+                <b>Sản Phẩm:</b>
+              </div>
               {/* <div className="row col-md-3">Giỏ hàng của khách hàng</div> */}
               <br />
               {/* {newBillDetails} */}
@@ -4933,17 +4949,18 @@ const OderDisplay = ({}) => {
                   align="center"
                   key="isActive"
                   dataIndex="isActive"
-                  title="Tên Sản Phẩm"
+                  title="Sản Phẩm"
                   render={(text, record) => {
                     return (
                       <Form.Item name="title" style={{ margin: 0 }}>
                         <p>{record.nameProduct}</p>
+                        <p>{record.version}</p>
                       </Form.Item>
                     );
                   }}
                 />
                 {/* sumSKU */}
-                <Table.Column
+                {/* <Table.Column
                   align="center"
                   key="isActive"
                   dataIndex="isActive"
@@ -4955,7 +4972,7 @@ const OderDisplay = ({}) => {
                       </Form.Item>
                     );
                   }}
-                />
+                /> */}
                 {/* priceSKU  */}
                 <Table.Column
                   align="center"
@@ -5055,7 +5072,7 @@ const OderDisplay = ({}) => {
               <hr />
               <div>
                 <p>
-                  Tổng Tiền Sản Phẩm:{" "}
+                  <b>Tổng Tiền Sản Phẩm:</b>{" "}
                   {parseFloat(dataSumTongTien).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
@@ -5074,7 +5091,7 @@ const OderDisplay = ({}) => {
                                   color: "red",
                                 }}
                               >
-                                Voucher Giảm Giá:{" "}
+                                <b> Voucher Giảm Giá:</b>{" "}
                                 {parseFloat(item.valueVoucher).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5082,7 +5099,7 @@ const OderDisplay = ({}) => {
                                     currency: "VND",
                                   }
                                 )}{" "}
-                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                <b>- Giá Trị Tối Thiểu Đơn Hàng:</b>{" "}
                                 {parseFloat(item.valueMin).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5093,7 +5110,7 @@ const OderDisplay = ({}) => {
                               </p>
                             ) : (
                               <p>
-                                Voucher Giảm Giá:{" "}
+                                <b>Voucher Giảm Giá:</b>{" "}
                                 {parseFloat(item.valueVoucher).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5101,7 +5118,7 @@ const OderDisplay = ({}) => {
                                     currency: "VND",
                                   }
                                 )}{" "}
-                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                <b>- Giá Trị Tối Thiểu Đơn Hàng:</b>{" "}
                                 {parseFloat(item.valueMin).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5121,7 +5138,7 @@ const OderDisplay = ({}) => {
                                   color: "red",
                                 }}
                               >
-                                Giảm Giá Ship:{" "}
+                                <b>Giảm Giá Ship:</b>{" "}
                                 {parseFloat(item.valueVoucher).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5129,7 +5146,7 @@ const OderDisplay = ({}) => {
                                     currency: "VND",
                                   }
                                 )}{" "}
-                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                <b>- Giá Trị Tối Thiểu Đơn Hàng:</b>{" "}
                                 {parseFloat(item.valueMin).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5140,7 +5157,7 @@ const OderDisplay = ({}) => {
                               </p>
                             ) : (
                               <p>
-                                Giảm Giá Ship:{" "}
+                                <b>Giảm Giá Ship:</b>{" "}
                                 {parseFloat(item.valueVoucher).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5148,7 +5165,7 @@ const OderDisplay = ({}) => {
                                     currency: "VND",
                                   }
                                 )}{" "}
-                                - Giá Trị Tối Thiểu Đơn Hàng:{" "}
+                                <b>- Giá Trị Tối Thiểu Đơn Hàng:</b>{" "}
                                 {parseFloat(item.valueMin).toLocaleString(
                                   "vi-VN",
                                   {
@@ -5164,12 +5181,15 @@ const OderDisplay = ({}) => {
                     </div>
                   ))}
                 </span>
-                <Button onClick={() => handleEditClickVoucher()}>
+                <button
+                  class="btn btn-outline-info"
+                  onClick={() => handleEditClickVoucher()}
+                >
                   Chọn Voucher Mới
-                </Button>
+                </button>
                 {dataVoucher.value === 0 ? null : (
                   <p>
-                    Tiền Voucher Giảm Giá Mới:{" "}
+                    <b>Tiền Voucher Giảm Giá Mới:</b>{" "}
                     {parseFloat(dataVoucher.value).toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND",
@@ -5179,7 +5199,7 @@ const OderDisplay = ({}) => {
 
                 {dataVoucherShip.value === 0 ? null : (
                   <p>
-                    Tiền Giảm giá tiền vận chuyển Mới:{" "}
+                    <b>Tiền Giảm giá tiền vận chuyển Mới:</b>{" "}
                     {parseFloat(dataVoucherShip.value).toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND",
@@ -5187,7 +5207,7 @@ const OderDisplay = ({}) => {
                   </p>
                 )}
                 <p>
-                  Tiền Ship:{" "}
+                  <b>Tiền Ship:</b>{" "}
                   {fee?.total === undefined
                     ? parseFloat(billUpdate.moneyShip).toLocaleString("vi-VN", {
                         style: "currency",
@@ -5199,12 +5219,13 @@ const OderDisplay = ({}) => {
                       })}
                 </p>
                 <p>
-                  Số Điểm Sử Dụng:{" "}
+                  <b>Số Điểm Sử Dụng:</b>{" "}
                   {billUpdate.numberOfPointsUsed == null ? (
                     "0"
                   ) : (
                     <span>
-                      {billUpdate.numberOfPointsUsed} - Tương Đương Được Giảm:
+                      {billUpdate.numberOfPointsUsed}{" "}
+                      <b>- Tương Đương Được Giảm:</b>{" "}
                       {parseFloat(
                         billUpdate.numberOfPointsUsed * 1000
                       ).toLocaleString("vi-VN", {
@@ -5214,8 +5235,8 @@ const OderDisplay = ({}) => {
                     </span>
                   )}
                 </p>
-                <p>
-                  Tổng Tiền Khách Phải Trả:{" "}
+                <h5>
+                  <b>Tổng Tiền Khách Phải Trả:</b>{" "}
                   {parseFloat(dataTongTienKhachHangPhaiTra).toLocaleString(
                     "vi-VN",
                     {
@@ -5223,24 +5244,34 @@ const OderDisplay = ({}) => {
                       currency: "VND",
                     }
                   )}{" "}
-                </p>
+                </h5>
               </div>
 
-              <div>
-                <Button
-                  type="text"
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "30px",
+                  marginBottom: "30px",
+                }}
+              >
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  style={{ marginRight: "60px" }}
                   onClick={() =>
                     configXacNhanSuaHoaDonTuNhanVien(dataSuaHoaDon)
                   }
                 >
                   Xác Nhận Sửa Hoá Đơn
-                </Button>{" "}
-                <Button
-                  type="text"
+                </button>{" "}
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  style={{ marginLeft: "60px" }}
                   onClick={() => configXacNhanHuyThaoTacNhanVien()}
                 >
                   Huỷ Thao Tác
-                </Button>
+                </button>
               </div>
             </Modal>
             <Modal
@@ -5990,9 +6021,8 @@ const UserAccountTable = ({ record, onSomeAction }) => {
 
   return (
     <>
-      {" "}
-      {/* <Toast ref={toast} /> */}
-      <ConfirmDialog />
+      <Toast ref={toast} />
+      {/* <ConfirmDialog /> */}
       <List title="Sản phẩm" createButtonProps={undefined}>
         <Col>
           <List>
