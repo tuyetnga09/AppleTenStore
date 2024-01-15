@@ -594,7 +594,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public void deleteBill(String noteReturn, Integer id, Integer idAccount) {
         this.billDetailRepository.deleteBillDetailsByBill(id);
-        this.paymentsRepository.deletePaymentsByBill(id);
+//        this.paymentsRepository.deletePaymentsByBill(id);
         this.billHistoryRepository.deleteBillHistoriesByIdBill(id);
         this.billRepository.deleteBill(noteReturn, id);
         Bill bill = billRepository.findById(id).get();

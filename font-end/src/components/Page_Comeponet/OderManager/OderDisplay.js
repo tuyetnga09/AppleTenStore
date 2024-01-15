@@ -3484,7 +3484,7 @@ const OderDisplay = ({}) => {
                                       Đã lấy hàng
                                     </Menu.Item>
                                     <Menu.Item
-                                      key="1"
+                                      key="2"
                                       disabled={record.stock <= 0}
                                       style={{
                                         fontWeight: 500,
