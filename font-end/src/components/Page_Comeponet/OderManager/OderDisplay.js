@@ -3586,7 +3586,7 @@ const OderDisplay = ({}) => {
                                       Giao hàng thất bại
                                     </Menu.Item>
                                     <Menu.Item
-                                      key="1"
+                                      key="3"
                                       disabled={record.stock <= 0}
                                       style={{
                                         fontWeight: 500,
@@ -3901,7 +3901,7 @@ const OderDisplay = ({}) => {
               <br />
               <Table
                 rowKey="oop"
-                dataSource={newBillDetails}
+                dataSource={dataBillDetails}
                 pagination={{
                   pageSize: 5,
                   showSizeChanger: false,
@@ -3916,7 +3916,7 @@ const OderDisplay = ({}) => {
                   title="Ảnh"
                   render={(text, record) => (
                     <div style={{ textAlign: "center" }}>
-                      <AvtProduct product={record.idProduct} />
+                      <AvtProduct product={record.productId} />
                     </div>
                   )}
                   width={150}
@@ -3946,7 +3946,7 @@ const OderDisplay = ({}) => {
                     return (
                       <Form.Item name="title" style={{ margin: 0 }}>
                         <p>
-                          {record.skuColor} - {record.skuCapacity}
+                          {record.color} - {record.capacity}
                         </p>
                       </Form.Item>
                     );

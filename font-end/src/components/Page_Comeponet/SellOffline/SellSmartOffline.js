@@ -761,7 +761,7 @@ export default function SellSmart() {
   };
   const confirmTaoKhachHang = () => {
     confirmDialog({
-      message: "Tạo hoá đơn mới.",
+      message: "Tạo khách hàng mới.",
       header: "XÁC NHẬN THÔNG BÁO",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
