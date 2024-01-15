@@ -136,6 +136,7 @@ const OderDisplay = ({}) => {
       // Thêm các giá trị khác nếu cần
     ],
   };
+  const toast1 = useRef(null);
 
   // Hàm để hiển thị Modal khi cần
   const handleEditClick = (record) => {
@@ -716,7 +717,25 @@ const OderDisplay = ({}) => {
     });
   };
 
-  function returnConfirmation() {
+  const rejectreturnConfirmation = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const returnConfirmation = () => {
+    confirmDialog({
+      message: "Bạn chắc chắn xác nhận?",
+      header: "XÁCH NHẬN YÊU CẦU TRẢ HÀNG",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => returnConfirmations(),
+      reject: () => rejectreturnConfirmation(),
+    });
+  };
+  function returnConfirmations() {
     acceptReturn(acceptReturnBill)
       .then((res) => {
         setLoad(!load);
@@ -732,7 +751,26 @@ const OderDisplay = ({}) => {
     setLoad(!load);
   }
 
-  function noReturnConfirmation() {
+  const rejectnoReturnConfirmation = () => {
+    toast1.current.show({
+      severity: "warn",
+      summary: "THÔNG BÁO",
+      detail: "Tiếp tục bán hàng.",
+      life: 3000,
+    });
+  };
+  const noReturnConfirmation = () => {
+    confirmDialog({
+      message: "Bạn chắc chắn huỷ?",
+      header: "HUỶ YÊU CẦU TRẢ HÀNG",
+      icon: "pi pi-info-circle",
+      acceptClassName: "p-button-danger",
+      accept: () => noReturnConfirmations(),
+      reject: () => rejectnoReturnConfirmation(),
+    });
+  };
+
+  function noReturnConfirmations() {
     noAcceptReturn(acceptReturnBill)
       .then((res) => {
         setLoad(!load);
@@ -781,6 +819,8 @@ const OderDisplay = ({}) => {
 
   return (
     <>
+      <Toast ref={toast1} />
+      <ConfirmDialog />
       <Layout>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
@@ -2024,7 +2064,7 @@ const UserAccountTable = ({ record, onSomeAction }) => {
     <>
       {" "}
       <Toast ref={toast} />
-      <ConfirmDialog />
+      {/* <ConfirmDialog /> */}
       <List title="Bill Detail" createButtonProps={undefined}>
         <Col>
           <List>
